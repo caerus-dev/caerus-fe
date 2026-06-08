@@ -3,7 +3,8 @@
 import Link from "next/link"
 import { useState } from "react"
 import { Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 const navigation = [
   { name: "Producto", href: "#features" },
@@ -11,7 +12,7 @@ const navigation = [
   { name: "Precios", href: "#pricing" },
 ]
 
-export function Navbar() {
+export function Navbar({ user }: { user?: any }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
@@ -39,16 +40,26 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex md:items-center md:gap-4">
-          <Link href="/login">
-            <Button variant="ghost" size="sm">
-              Iniciar Sesión
-            </Button>
-          </Link>
-          <Link href="/dashboard">
-            <Button size="sm" className="glow-primary">
-              Comenzar Gratis
-            </Button>
-          </Link>
+          {user ? (
+            <>
+              <span className="text-sm text-muted-foreground mr-2">{user.email || user.name}</span>
+              <Link href="/dashboard" className={cn(buttonVariants({ size: "sm" }), "glow-primary")}>
+                Dashboard
+              </Link>
+              <a href="/auth/logout" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                Cerrar Sesión
+              </a>
+            </>
+          ) : (
+            <>
+              <a href="/auth/login" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                Iniciar Sesión
+              </a>
+              <a href="/auth/login?screen_hint=signup" className={cn(buttonVariants({ size: "sm" }), "glow-primary")}>
+                Comenzar Gratis
+              </a>
+            </>
+          )}
         </div>
 
         <button
@@ -80,14 +91,26 @@ export function Navbar() {
               </Link>
             ))}
             <div className="flex flex-col gap-2 pt-4 border-t border-border mt-4">
-              <Link href="/login">
-                <Button variant="ghost" className="w-full justify-start">
-                  Iniciar Sesión
-                </Button>
-              </Link>
-              <Link href="/dashboard">
-                <Button className="w-full">Comenzar Gratis</Button>
-              </Link>
+              {user ? (
+                <>
+                  <span className="text-sm text-muted-foreground px-4 pb-2">{user.email || user.name}</span>
+                  <Link href="/dashboard" className={cn(buttonVariants(), "w-full justify-start glow-primary")}>
+                    Dashboard
+                  </Link>
+                  <a href="/auth/logout" className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start text-red-500")}>
+                    Cerrar Sesión
+                  </a>
+                </>
+              ) : (
+                <>
+                  <a href="/auth/login" className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start")}>
+                    Iniciar Sesión
+                  </a>
+                  <a href="/auth/login?screen_hint=signup" className={cn(buttonVariants(), "w-full justify-start glow-primary")}>
+                    Comenzar Gratis
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </div>
