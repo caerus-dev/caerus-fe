@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { Menu, X, LayoutDashboard, LogOut, Settings } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -16,13 +17,30 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const navigation = [
-  { name: "Producto", href: "#features" },
+  { name: "Producto", href: "/#features" },
   { name: "Documentación", href: "/docs" },
-  { name: "Precios", href: "#pricing" },
+  { name: "Precios", href: "/#pricing" },
 ]
+
 
 export function Navbar({ user }: { user?: any }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+
+  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith("#") || href.startsWith("/#")) {
+      const hash = href.includes("#") ? href.substring(href.indexOf("#")) : "";
+      if (hash && (pathname === "/" || pathname === "")) {
+        e.preventDefault();
+        const targetId = hash.replace("#", "");
+        const elem = document.getElementById(targetId);
+        if (elem) {
+          elem.scrollIntoView({ behavior: "smooth" });
+          window.history.pushState(null, "", hash);
+        }
+      }
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -41,6 +59,7 @@ export function Navbar({ user }: { user?: any }) {
             <Link
               key={item.name}
               href={item.href}
+              onClick={(e) => handleScroll(e, item.href)}
               className="text-base font-semibold text-muted-foreground/90 transition-all duration-200 hover:text-primary hover:scale-105"
             >
               {item.name}
@@ -60,9 +79,9 @@ export function Navbar({ user }: { user?: any }) {
               >
                 Dashboard
               </Link>
-              <DropdownMenu>
+              <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-border">
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-border cursor-pointer transition-all duration-200 hover:scale-105 hover:border-primary/50">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user.picture} alt={user.name || user.email} />
                       <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
@@ -71,7 +90,7 @@ export function Navbar({ user }: { user?: any }) {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-card border-border" align="end" forceMount>
+                <DropdownMenuContent className="w-56 bg-card border-border" align="end" sideOffset={10} forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none text-foreground">{user.name}</p>
@@ -135,8 +154,11 @@ export function Navbar({ user }: { user?: any }) {
               <Link
                 key={item.name}
                 href={item.href}
-                className="block py-2 text-sm text-muted-foreground hover:text-foreground"
-                onClick={() => setMobileMenuOpen(false)}
+                className="block py-2 text-base font-semibold text-muted-foreground hover:text-foreground"
+                onClick={(e) => {
+                  setMobileMenuOpen(false);
+                  handleScroll(e, item.href);
+                }}
               >
                 {item.name}
               </Link>

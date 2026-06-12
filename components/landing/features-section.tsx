@@ -47,7 +47,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-24 px-6">
+    <section id="features" className="py-24 px-6 scroll-mt-20">
       <div className="max-w-7xl mx-auto">
         {/* Section header */}
         <div className="text-center mb-16">
