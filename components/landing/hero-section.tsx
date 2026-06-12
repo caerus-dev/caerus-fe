@@ -6,7 +6,7 @@ export function HeroSection() {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-6 pt-20">
       {/* Background grid effect */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.25_0.005_260/0.3)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.25_0.005_260/0.3)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.25_0.005_325/0.3)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.25_0.005_325/0.3)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]" />
       
       {/* Glow effect */}
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary/10 rounded-full blur-[120px]" />
