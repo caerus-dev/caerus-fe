@@ -47,9 +47,7 @@ export function Navbar({ user }: { user?: any }) {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <span className="font-mono text-sm font-bold text-primary-foreground">C</span>
-            </div>
+            <img src="/logo.svg" alt="Caerus Logo" className="h-8 w-auto transition-transform duration-200 hover:scale-105" />
             <span className="text-xl font-semibold tracking-tight">Caerus</span>
           </Link>
         </div>
