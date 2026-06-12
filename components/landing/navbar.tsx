@@ -2,9 +2,18 @@
 
 import Link from "next/link"
 import { useState } from "react"
-import { Menu, X } from "lucide-react"
+import { Menu, X, LayoutDashboard, LogOut, Settings } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const navigation = [
   { name: "Producto", href: "#features" },
@@ -32,7 +41,7 @@ export function Navbar({ user }: { user?: any }) {
             <Link
               key={item.name}
               href={item.href}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+              className="text-base font-semibold text-muted-foreground/90 transition-all duration-200 hover:text-primary hover:scale-105"
             >
               {item.name}
             </Link>
@@ -42,13 +51,55 @@ export function Navbar({ user }: { user?: any }) {
         <div className="hidden md:flex md:items-center md:gap-4">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground mr-2">{user.email || user.name}</span>
-              <Link href="/dashboard" className={cn(buttonVariants({ size: "sm" }), "glow-primary")}>
+              <Link
+                href="/dashboard"
+                className={cn(
+                  buttonVariants({ size: "sm" }),
+                  "glow-primary bg-primary text-primary-foreground font-semibold px-4 hover:bg-primary/95 transition-all hover:scale-105 duration-200"
+                )}
+              >
                 Dashboard
               </Link>
-              <a href="/auth/logout" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                Cerrar Sesión
-              </a>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-border">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.picture} alt={user.name || user.email} />
+                      <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
+                        {(user.name || user.email || "U").substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 bg-card border-border" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none text-foreground">{user.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="bg-border" />
+                  <DropdownMenuItem asChild className="cursor-pointer hover:bg-muted focus:bg-muted">
+                    <Link href="/dashboard" className="flex w-full items-center">
+                      <LayoutDashboard className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <span>Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="cursor-pointer hover:bg-muted focus:bg-muted">
+                    <Link href="/dashboard/settings" className="flex w-full items-center">
+                      <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
+                      <span>Configuración</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-border" />
+                  <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
+                    <a href="/auth/logout" className="flex w-full items-center">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Cerrar Sesión</span>
+                    </a>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </>
           ) : (
             <>
@@ -93,11 +144,28 @@ export function Navbar({ user }: { user?: any }) {
             <div className="flex flex-col gap-2 pt-4 border-t border-border mt-4">
               {user ? (
                 <>
-                  <span className="text-sm text-muted-foreground px-4 pb-2">{user.email || user.name}</span>
-                  <Link href="/dashboard" className={cn(buttonVariants(), "w-full justify-start glow-primary")}>
+                  <div className="flex items-center gap-3 px-4 py-2 border border-border/50 rounded-lg bg-secondary/35 mb-2">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={user.picture} alt={user.name || user.email} />
+                      <AvatarFallback className="bg-primary/20 text-primary text-sm font-semibold">
+                        {(user.name || user.email || "U").substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-medium text-foreground truncate">{user.name}</span>
+                      <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+                    </div>
+                  </div>
+                  <Link href="/dashboard" className={cn(buttonVariants(), "w-full justify-start gap-2 glow-primary")} onClick={() => setMobileMenuOpen(false)}>
+                    <LayoutDashboard className="h-4 w-4" />
                     Dashboard
                   </Link>
-                  <a href="/auth/logout" className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start text-red-500")}>
+                  <Link href="/dashboard/settings" className={cn(buttonVariants({ variant: "outline" }), "w-full justify-start gap-2")} onClick={() => setMobileMenuOpen(false)}>
+                    <Settings className="h-4 w-4" />
+                    Configuración
+                  </Link>
+                  <a href="/auth/logout" className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive")}>
+                    <LogOut className="h-4 w-4" />
                     Cerrar Sesión
                   </a>
                 </>
