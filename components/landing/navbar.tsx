@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState } from "react"
+import { useState, MouseEvent } from "react"
 import { usePathname } from "next/navigation"
 import { Menu, X, LayoutDashboard, LogOut, Settings } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -27,7 +27,7 @@ export function Navbar({ user }: { user?: any }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
 
-  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleScroll = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith("#") || href.startsWith("/#")) {
       const hash = href.includes("#") ? href.substring(href.indexOf("#")) : "";
       if (hash && (pathname === "/" || pathname === "")) {
