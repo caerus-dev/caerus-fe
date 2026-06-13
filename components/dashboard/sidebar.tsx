@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import {
@@ -43,27 +44,7 @@ const navigation = [
   },
 ]
 
-// Mock applications - in real app this would come from API/state
-const applications = [
-  {
-    name: "reserva-engine",
-    href: "/dashboard/applications/reserva-engine",
-    environment: "prod",
-    icon: Box,
-  },
-  {
-    name: "lock-service",
-    href: "/dashboard/applications/lock-service",
-    environment: "dev",
-    icon: Lock,
-  },
-  {
-    name: "payment-sync",
-    href: "/dashboard/applications/payment-sync",
-    environment: "prod",
-    icon: Lock,
-  },
-]
+// Mock applications removed to fetch from API dynamically
 
 const accountNav = [
   {
@@ -91,6 +72,30 @@ export interface DashboardSidebarProps {
 export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: DashboardSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const [applications, setApplications] = useState<any[]>([])
+
+  useEffect(() => {
+    const loadApps = async () => {
+      try {
+        const res = await fetch("/api/applications")
+        if (res.ok) {
+          const data = await res.json()
+          if (data && data.content) {
+            const mapped = data.content.map((app: any) => ({
+              name: app.name,
+              href: `/dashboard/applications/${app.id}`,
+              environment: "dev",
+              icon: Box,
+            }))
+            setApplications(mapped)
+          }
+        }
+      } catch (error) {
+        console.error("Error loading sidebar applications:", error)
+      }
+    }
+    loadApps()
+  }, [pathname])
 
   const getEnvironmentBadgeClass = (env: string) => {
     switch (env) {

@@ -51,8 +51,30 @@ export default function NewApplicationPage() {
     }
 
     setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    router.push("/dashboard/applications")
+    try {
+      const response = await fetch("/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          description: formData.description,
+        }),
+      });
+
+      if (response.ok) {
+        router.push("/dashboard/applications");
+      } else {
+        const errData = await response.json().catch(() => ({}));
+        setError(errData.error || "Error al crear la aplicación");
+      }
+    } catch (error) {
+      console.error("Error creating application:", error);
+      setError("Ocurrió un error inesperado al intentar crear la aplicación");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (

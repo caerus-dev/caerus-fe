@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { use, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -26,19 +26,47 @@ interface Environment {
   enabled: boolean
 }
 
-export default function ApplicationSettingsPage() {
+export default function ApplicationSettingsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params)
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [formData, setFormData] = useState({
-    name: "E-Commerce Platform",
-    description: "Sistema de reservas para inventario de productos",
+    name: "",
+    description: "",
   })
   const [environments, setEnvironments] = useState<Environment[]>([
     { id: "dev", name: "development", label: "Development", enabled: true },
     { id: "stg", name: "staging", label: "Staging", enabled: true },
     { id: "prod", name: "production", label: "Production", enabled: true },
   ])
+
+  useEffect(() => {
+    const fetchApp = async () => {
+      try {
+        const res = await fetch(`/api/applications/${id}`)
+        if (res.ok) {
+          const data = await res.json()
+          setFormData({
+            name: data.name,
+            description: data.description || "",
+          })
+        } else {
+          console.error("Failed to load application settings")
+        }
+      } catch (error) {
+        console.error("Error loading application settings:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchApp()
+  }, [id])
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -53,15 +81,51 @@ export default function ApplicationSettingsPage() {
   }
 
   const handleSave = async () => {
-    setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsLoading(false)
+    setIsSaving(true)
+    try {
+      const response = await fetch(`/api/applications/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+      if (response.ok) {
+        router.push(`/dashboard/applications/${id}`)
+      } else {
+        console.error("Failed to save application settings")
+      }
+    } catch (error) {
+      console.error("Error saving application settings:", error)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleDelete = async () => {
-    setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    router.push("/dashboard/applications")
+    setIsSaving(true)
+    try {
+      const response = await fetch(`/api/applications/${id}`, {
+        method: "DELETE",
+      })
+      if (response.ok) {
+        router.push("/dashboard/applications")
+      } else {
+        console.error("Failed to delete application")
+      }
+    } catch (error) {
+      console.error("Error deleting application:", error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    )
   }
 
   return (
@@ -99,7 +163,7 @@ export default function ApplicationSettingsPage() {
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                disabled={isLoading}
+                disabled={isSaving}
               />
             </div>
 
@@ -109,7 +173,7 @@ export default function ApplicationSettingsPage() {
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleChange("description", e.target.value)}
-                disabled={isLoading}
+                disabled={isSaving}
                 rows={3}
               />
             </div>
@@ -162,7 +226,7 @@ export default function ApplicationSettingsPage() {
                       <Switch
                         checked={env.enabled}
                         onCheckedChange={() => toggleEnvironment(env.id)}
-                        disabled={isLoading}
+                        disabled={isSaving}
                       />
                     </div>
                   </div>
@@ -196,7 +260,7 @@ export default function ApplicationSettingsPage() {
               <Button
                 variant="destructive"
                 onClick={() => setDeleteDialogOpen(true)}
-                disabled={isLoading}
+                disabled={isSaving}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Eliminar
@@ -205,15 +269,14 @@ export default function ApplicationSettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Save Button */}
         <div className="flex justify-end gap-3">
           <Link href="/dashboard/applications">
-            <Button variant="outline" disabled={isLoading}>
+            <Button variant="outline" disabled={isSaving}>
               Cancelar
             </Button>
           </Link>
-          <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? (
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Guardando...

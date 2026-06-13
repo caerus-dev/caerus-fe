@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { use } from "react"
+import { use, useState, useEffect } from "react"
 import {
   Box,
   Lock,
@@ -15,6 +15,7 @@ import {
   Play,
   Pause,
   Trash2,
+  Loader2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -112,7 +113,37 @@ export default function ApplicationDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const app = applicationData[id] || applicationData["reserva-engine"]
+  const [app, setApp] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchApp = async () => {
+      try {
+        const res = await fetch(`/api/applications/${id}`)
+        if (res.ok) {
+          const data = await res.json()
+          setApp({
+            id: data.id.toString(),
+            name: data.name,
+            description: data.description || "",
+            environment: "dev",
+            status: "active",
+            createdAt: data.createdAt || new Date().toISOString(),
+            resources: [],
+            locks: [],
+            apiKeys: [],
+          })
+        } else {
+          console.error("Failed to fetch application details")
+        }
+      } catch (error) {
+        console.error("Error fetching application details:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchApp()
+  }, [id])
 
   const getEnvironmentBadgeClass = (env: string) => {
     switch (env) {
@@ -136,6 +167,25 @@ export default function ApplicationDetailPage({
       default:
         return "bg-secondary text-muted-foreground"
     }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    )
+  }
+
+  if (!app) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No se encontró la aplicación o no tienes acceso.</p>
+        <Link href="/dashboard/applications" className="text-primary hover:underline mt-4 inline-block">
+          Volver a aplicaciones
+        </Link>
+      </div>
+    )
   }
 
   return (
@@ -228,8 +278,8 @@ export default function ApplicationDetailPage({
           </CardHeader>
           <CardContent>
             <span className="text-2xl font-bold text-chart-4">
-              {app.resources.reduce((sum, r) => sum + r.activeReservations, 0) +
-                app.locks.reduce((sum, l) => sum + l.activeLocks, 0)}
+              {app.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
+                app.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)}
             </span>
           </CardContent>
         </Card>
@@ -280,7 +330,7 @@ export default function ApplicationDetailPage({
             </Card>
           ) : (
             <div className="space-y-3">
-              {app.resources.map((resource) => (
+              {app.resources.map((resource: any) => (
                 <Card key={resource.id} className="bg-card/50 border-border">
                   <CardContent className="flex items-center justify-between py-4">
                     <div className="flex items-center gap-4">
@@ -360,7 +410,7 @@ export default function ApplicationDetailPage({
             </Card>
           ) : (
             <div className="space-y-3">
-              {app.locks.map((lock) => (
+              {app.locks.map((lock: any) => (
                 <Card key={lock.id} className="bg-card/50 border-border">
                   <CardContent className="flex items-center justify-between py-4">
                     <div className="flex items-center gap-4">
@@ -424,7 +474,7 @@ export default function ApplicationDetailPage({
           </div>
 
           <div className="space-y-3">
-            {app.apiKeys.map((key) => (
+            {app.apiKeys.map((key: any) => (
               <Card key={key.id} className="bg-card/50 border-border">
                 <CardContent className="flex items-center justify-between py-4">
                   <div className="flex items-center gap-4">

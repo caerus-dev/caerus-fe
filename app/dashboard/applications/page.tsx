@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,7 +31,8 @@ import {
   Key,
   Layers,
   Calendar,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from "lucide-react"
 
 interface Application {
@@ -79,10 +80,42 @@ const mockApplications: Application[] = [
 ]
 
 export default function ApplicationsPage() {
-  const [applications, setApplications] = useState(mockApplications)
+  const [applications, setApplications] = useState<Application[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [appToDelete, setAppToDelete] = useState<Application | null>(null)
+
+  useEffect(() => {
+    const fetchApps = async () => {
+      try {
+        const res = await fetch("/api/applications");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.content) {
+            const mapped = data.content.map((app: any) => ({
+              id: app.id.toString(),
+              name: app.name,
+              description: app.description || "",
+              environments: ["development"],
+              collaborators: 1,
+              apiCalls: 0,
+              createdAt: app.createdAt || new Date().toISOString(),
+              status: "active",
+            }));
+            setApplications(mapped);
+          }
+        } else {
+          console.error("Failed to fetch applications");
+        }
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchApps();
+  }, []);
 
   const filteredApps = applications.filter(
     (app) =>
@@ -95,11 +128,23 @@ export default function ApplicationsPage() {
     setDeleteDialogOpen(true)
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (appToDelete) {
-      setApplications((prev) => prev.filter((app) => app.id !== appToDelete.id))
-      setDeleteDialogOpen(false)
-      setAppToDelete(null)
+      try {
+        const response = await fetch(`/api/applications/${appToDelete.id}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          setApplications((prev) => prev.filter((app) => app.id !== appToDelete.id))
+        } else {
+          console.error("Failed to delete application");
+        }
+      } catch (error) {
+        console.error("Error deleting application:", error);
+      } finally {
+        setDeleteDialogOpen(false)
+        setAppToDelete(null)
+      }
     }
   }
 
@@ -139,7 +184,11 @@ export default function ApplicationsPage() {
         </div>
 
         {/* Applications Grid */}
-        {filteredApps.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+        ) : filteredApps.length === 0 ? (
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center justify-center py-12">
               <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
