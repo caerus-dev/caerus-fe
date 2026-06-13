@@ -23,7 +23,13 @@ const navigation = [
 ]
 
 
-export function Navbar({ user }: { user?: any }) {
+interface NavbarUser {
+  picture?: string;
+  name?: string;
+  email?: string;
+}
+
+export function Navbar({ user }: { user?: NavbarUser }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
 
@@ -31,10 +37,10 @@ export function Navbar({ user }: { user?: any }) {
     if (href.startsWith("#") || href.startsWith("/#")) {
       const hash = href.includes("#") ? href.substring(href.indexOf("#")) : "";
       if (hash && (pathname === "/" || pathname === "")) {
-        e.preventDefault();
         const targetId = hash.replace("#", "");
         const elem = document.getElementById(targetId);
         if (elem) {
+          e.preventDefault();
           elem.scrollIntoView({ behavior: "smooth" });
           window.history.pushState(null, "", hash);
         }
@@ -81,7 +87,7 @@ export function Navbar({ user }: { user?: any }) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-border cursor-pointer transition-all duration-200 hover:scale-105 hover:border-primary/50">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.picture} alt={user.name || user.email} />
+                      <AvatarImage src={user.picture} alt={user.name || user.email || "Usuario"} />
                       <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
                         {(user.name || user.email || "U").substring(0, 2).toUpperCase()}
                       </AvatarFallback>
@@ -91,8 +97,10 @@ export function Navbar({ user }: { user?: any }) {
                 <DropdownMenuContent className="w-56 bg-card border-border" align="end" sideOffset={10} forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none text-foreground">{user.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground truncate">{user.email}</p>
+                      <p className="text-sm font-medium leading-none text-foreground">{user.name || "Usuario"}</p>
+                      {user.email && (
+                        <p className="text-xs leading-none text-muted-foreground truncate">{user.email}</p>
+                      )}
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-border" />
