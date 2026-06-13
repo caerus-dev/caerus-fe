@@ -57,9 +57,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-              <span className="text-primary font-bold text-xl">C</span>
-            </div>
+            <img src="/logo.svg" alt="Caerus Logo" className="w-10 h-10 transition-transform duration-200 hover:scale-105" />
             <span className="text-2xl font-bold text-foreground">Caerus</span>
           </Link>
         </div>
