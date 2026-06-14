@@ -38,7 +38,7 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Buscar recursos, locks..."
+            placeholder="Buscar recursos, bloqueos..."
             className="w-64 pl-9 bg-secondary/50 border-border focus:bg-background"
           />
         </div>
@@ -48,7 +48,7 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
         {/* Docs link */}
         <Link href="/docs">
           <Button variant="ghost" size="sm" className="text-muted-foreground">
-            Docs
+            Documentación
           </Button>
         </Link>
 

@@ -179,7 +179,7 @@ export default function NewApplicationPage() {
                       htmlFor="development"
                       className="text-sm font-medium cursor-pointer flex items-center gap-2"
                     >
-                      Development
+                      Desarrollo
                       <span className="px-1.5 py-0.5 text-xs rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
                         dev
                       </span>
@@ -229,7 +229,7 @@ export default function NewApplicationPage() {
                       htmlFor="production"
                       className="text-sm font-medium cursor-pointer flex items-center gap-2"
                     >
-                      Production
+                      Producción
                       <span className="px-1.5 py-0.5 text-xs rounded bg-green-500/20 text-green-400 border border-green-500/30">
                         prod
                       </span>

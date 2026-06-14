@@ -197,7 +197,7 @@ export default function ApplicationDetailPage({
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Applications
+          Volver a Aplicaciones
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -221,13 +221,13 @@ export default function ApplicationDetailPage({
             <Link href={`/dashboard/applications/${id}/team`}>
               <Button variant="outline" className="gap-2">
                 <Users className="h-4 w-4" />
-                Team
+                Equipo
               </Button>
             </Link>
             <Link href={`/dashboard/applications/${id}/settings`}>
               <Button variant="outline" className="gap-2">
                 <Settings className="h-4 w-4" />
-                Settings
+                Configuración
               </Button>
             </Link>
           </div>
@@ -240,7 +240,7 @@ export default function ApplicationDetailPage({
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
               <Box className="h-4 w-4" />
-              Resources
+              Recursos
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -251,7 +251,7 @@ export default function ApplicationDetailPage({
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
               <Lock className="h-4 w-4" />
-              Lock Configs
+              Configuraciones de Locks
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -273,7 +273,7 @@ export default function ApplicationDetailPage({
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
               <Activity className="h-4 w-4" />
-              Active Operations
+              Operaciones Activas
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -290,11 +290,11 @@ export default function ApplicationDetailPage({
         <TabsList className="bg-secondary">
           <TabsTrigger value="resources" className="gap-2">
             <Box className="h-4 w-4" />
-            Shared Resources
+            Recursos Compartidos
           </TabsTrigger>
           <TabsTrigger value="locks" className="gap-2">
             <Lock className="h-4 w-4" />
-            Distributed Locks
+            Locks Distribuidos
           </TabsTrigger>
           <TabsTrigger value="keys" className="gap-2">
             <Key className="h-4 w-4" />
@@ -305,12 +305,12 @@ export default function ApplicationDetailPage({
         <TabsContent value="resources" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {app.resources.length} resource configuration{app.resources.length !== 1 && "s"}
+              {app.resources.length === 1 ? "1 recurso configurado" : `${app.resources.length} recursos configurados`}
             </p>
             <Link href={`/dashboard/applications/${id}/resources/new`}>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
-                New Resource
+                Nuevo Recurso
               </Button>
             </Link>
           </div>
@@ -319,11 +319,11 @@ export default function ApplicationDetailPage({
             <Card className="bg-card/50 border-border">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Box className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">No resources configured yet</p>
+                <p className="text-muted-foreground mb-4">Aún no hay recursos configurados</p>
                 <Link href={`/dashboard/applications/${id}/resources/new`}>
                   <Button className="gap-2">
                     <Plus className="h-4 w-4" />
-                    Create First Resource
+                    Crear Primer Recurso
                   </Button>
                 </Link>
               </CardContent>
@@ -340,9 +340,9 @@ export default function ApplicationDetailPage({
                       <div>
                         <p className="font-mono font-medium">{resource.name}</p>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="capitalize">{resource.mode} mode</span>
+                          <span className="capitalize">Modo {resource.mode === "unit" ? "unitario" : "múltiple"}</span>
                           <span>•</span>
-                          <span>{resource.activeReservations} active reservations</span>
+                          <span>{resource.activeReservations} reservas activas</span>
                         </div>
                       </div>
                     </div>
@@ -360,17 +360,17 @@ export default function ApplicationDetailPage({
                           <Link href={`/dashboard/applications/${id}/resources/${resource.id}/edit`}>
                             <DropdownMenuItem className="cursor-pointer">
                               <Settings className="h-4 w-4 mr-2" />
-                              Configure
+                              Configurar
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem>
                             <Pause className="h-4 w-4 mr-2" />
-                            Pause
+                            Pausar
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
+                            Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -385,12 +385,12 @@ export default function ApplicationDetailPage({
         <TabsContent value="locks" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {app.locks.length} lock configuration{app.locks.length !== 1 && "s"}
+              {app.locks.length === 1 ? "1 lock configurado" : `${app.locks.length} locks configurados`}
             </p>
             <Link href={`/dashboard/applications/${id}/locks/new`}>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
-                New Lock Config
+                Nuevo Lock
               </Button>
             </Link>
           </div>
@@ -399,11 +399,11 @@ export default function ApplicationDetailPage({
             <Card className="bg-card/50 border-border">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Lock className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">No lock configurations yet</p>
+                <p className="text-muted-foreground mb-4">Aún no hay configuraciones de locks</p>
                 <Link href={`/dashboard/applications/${id}/locks/new`}>
                   <Button className="gap-2">
                     <Plus className="h-4 w-4" />
-                    Create First Lock Config
+                    Crear Primer Lock
                   </Button>
                 </Link>
               </CardContent>
@@ -420,9 +420,9 @@ export default function ApplicationDetailPage({
                       <div>
                         <p className="font-mono font-medium">{lock.name}</p>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="capitalize">{lock.type} lock</span>
+                          <span className="capitalize">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
                           <span>•</span>
-                          <span>{lock.activeLocks} active</span>
+                          <span>{lock.activeLocks} activos</span>
                         </div>
                       </div>
                     </div>
@@ -440,17 +440,17 @@ export default function ApplicationDetailPage({
                           <Link href={`/dashboard/applications/${id}/locks/${lock.id}/edit`}>
                             <DropdownMenuItem className="cursor-pointer">
                               <Settings className="h-4 w-4 mr-2" />
-                              Configure
+                              Configurar
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem>
                             <Play className="h-4 w-4 mr-2" />
-                            Release All
+                            Liberar Todos
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
+                            Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -465,11 +465,11 @@ export default function ApplicationDetailPage({
         <TabsContent value="keys" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {app.apiKeys.length} API key{app.apiKeys.length !== 1 && "s"}
+              {app.apiKeys.length === 1 ? "1 API Key" : `${app.apiKeys.length} API Keys`}
             </p>
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
-              Generate Key
+              Generar API Key
             </Button>
           </div>
 
@@ -490,8 +490,8 @@ export default function ApplicationDetailPage({
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="text-right text-sm">
-                      <p className="text-muted-foreground">Last used</p>
-                      <p>{key.lastUsed}</p>
+                      <p className="text-muted-foreground">Último uso</p>
+                      <p>{key.lastUsed === "30s ago" ? "Hace 30s" : key.lastUsed === "2m ago" ? "Hace 2m" : key.lastUsed === "5m ago" ? "Hace 5m" : key.lastUsed}</p>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -500,11 +500,11 @@ export default function ApplicationDetailPage({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Reveal Key</DropdownMenuItem>
-                        <DropdownMenuItem>Copy Key</DropdownMenuItem>
+                        <DropdownMenuItem>Revelar API Key</DropdownMenuItem>
+                        <DropdownMenuItem>Copiar API Key</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive">
-                          Revoke Key
+                          Revocar API Key
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

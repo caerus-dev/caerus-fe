@@ -30,12 +30,12 @@ import {
 
 const navigation = [
   {
-    name: "Overview",
+    name: "Inicio",
     href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
-    name: "Applications",
+    name: "Aplicaciones",
     href: "/dashboard/applications",
     icon: Layers,
   },
@@ -45,7 +45,7 @@ const navigation = [
     icon: Key,
   },
   {
-    name: "Collaborators",
+    name: "Colaboradores",
     href: "/dashboard/collaborators",
     icon: Users,
   },
@@ -55,17 +55,17 @@ const navigation = [
 
 const accountNav = [
   {
-    name: "Usage & Billing",
+    name: "Uso y Facturación",
     href: "/dashboard/billing",
     icon: CreditCard,
   },
   {
-    name: "Docs & Quickstart",
+    name: "Documentación",
     href: "/dashboard/docs",
     icon: Book,
   },
   {
-    name: "Settings",
+    name: "Configuración",
     href: "/dashboard/settings",
     icon: Settings,
   },
@@ -237,7 +237,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
         <div className="px-3">
           {!isCollapsed && (
             <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
-              Overview
+              General
             </p>
           )}
           <ul className="space-y-1">
@@ -270,11 +270,11 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
           {!isCollapsed && (
             <div className="mb-2 px-3 flex items-center justify-between">
                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
-                Apps
+                Aplicaciones
                </p>
                <Link href="/dashboard/applications/new">
                  <button className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                   <span className="text-xs font-medium">+ New</span>
+                   <span className="text-xs font-medium">+ Nueva</span>
                  </button>
                </Link>
             </div>
@@ -319,7 +319,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
         <div className="mt-auto px-3">
            {!isCollapsed && (
             <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
-              Account
+              Cuenta
             </p>
           )}
           <ul className="space-y-1">

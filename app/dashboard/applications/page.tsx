@@ -319,19 +319,17 @@ export default function ApplicationsPage() {
                       <p className="text-lg font-semibold text-foreground">
                         {formatNumber(app.apiCalls)}
                       </p>
-                      <p className="text-xs text-muted-foreground">API Calls</p>
+                      <p className="text-xs text-muted-foreground">Llamadas API</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-lg font-semibold text-foreground flex items-center justify-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                      </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm font-semibold text-foreground h-7 flex items-center justify-center">
                         {new Date(app.createdAt).toLocaleDateString("es-AR", {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
                         })}
                       </p>
+                      <p className="text-xs text-muted-foreground">Creado</p>
                     </div>
                   </div>
                 </CardContent>
