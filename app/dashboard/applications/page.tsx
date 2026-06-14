@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -80,6 +81,7 @@ const mockApplications: Application[] = [
 ]
 
 export default function ApplicationsPage() {
+  const router = useRouter()
   const [applications, setApplications] = useState<Application[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
@@ -217,7 +219,14 @@ export default function ApplicationsPage() {
             {filteredApps.map((app) => (
               <Card
                 key={app.id}
-                className="group hover:border-primary/50 transition-colors"
+                className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer"
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (target.closest('[role="menuitem"]') || target.closest('button') || target.closest('[role="button"]')) {
+                    return;
+                  }
+                  router.push(`/dashboard/applications/${app.id}`);
+                }}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
@@ -318,8 +327,9 @@ export default function ApplicationsPage() {
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(app.createdAt).toLocaleDateString("es-AR", {
+                          day: "numeric",
                           month: "short",
-                          year: "2-digit",
+                          year: "numeric",
                         })}
                       </p>
                     </div>

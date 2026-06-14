@@ -1,7 +1,9 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Bell, Search, User, Menu } from "lucide-react"
+import { useTheme } from "next-themes"
+import { Bell, Search, User, Menu, Sun, Moon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -10,6 +12,13 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/80 backdrop-blur-xl px-6">
       <div className="flex items-center gap-4">
@@ -49,6 +58,23 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
           <span className="sr-only">Notifications</span>
         </Button>
+
+        {/* Theme Toggle */}
+        {mounted && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            title="Cambiar tema"
+          >
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <Moon className="h-5 w-5 text-muted-foreground" />
+            )}
+            <span className="sr-only">Cambiar tema</span>
+          </Button>
+        )}
 
         {/* User menu */}
         <Button variant="ghost" size="icon">

@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Loader2, Plus, Trash2, AlertTriangle } from "lucide-react"
+import { cn } from "@/lib/utils"
 interface Environment {
   id: string
   name: string
@@ -158,22 +159,40 @@ export default function ApplicationSettingsPage({
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nombre de la Aplicacion</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="name">Nombre de la Aplicacion</Label>
+                <span className={cn(
+                  "text-[10px] transition-colors",
+                  formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                )}>
+                  {formData.name.length} / 100
+                </span>
+              </div>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
                 disabled={isSaving}
+                maxLength={100}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Descripcion</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="description">Descripcion</Label>
+                <span className={cn(
+                  "text-[10px] transition-colors",
+                  formData.description.length >= 500 ? "text-destructive font-semibold" : formData.description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                )}>
+                  {formData.description.length} / 500
+                </span>
+              </div>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleChange("description", e.target.value)}
                 disabled={isSaving}
+                maxLength={500}
                 rows={3}
               />
             </div>
@@ -275,7 +294,7 @@ export default function ApplicationSettingsPage({
               Cancelar
             </Button>
           </Link>
-          <Button onClick={handleSave} disabled={isSaving}>
+          <Button onClick={handleSave} disabled={isSaving || !formData.name.trim() || formData.name.length > 100 || formData.description.length > 500}>
             {isSaving ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
