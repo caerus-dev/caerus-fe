@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useTheme } from "next-themes"
-import { Bell, Search, User, Menu, Sun, Moon, Check, X } from "lucide-react"
+import { Bell, User, Menu, Sun, Moon, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -77,16 +77,6 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
-
-        {/* Search */}
-        <div className="relative hidden sm:block">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Buscar recursos, bloqueos..."
-            className="w-64 pl-9 bg-secondary/50 border-border focus:bg-background"
-          />
-        </div>
       </div>
 
       <div className="flex items-center gap-2">
