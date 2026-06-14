@@ -15,12 +15,15 @@ export const auth0 = new Auth0Client({
     scope: "openid profile email",
   },
   async onCallback(error, context, session) {
+    console.log("onCallback triggered!");
     if (error) {
       console.error("Auth0 Callback error:", error);
       return NextResponse.redirect(new URL("/error", process.env.APP_BASE_URL || "http://localhost:3000"));
     }
 
-    const token = (session as any)?.token?.token;
+    console.log("Session object in onCallback:", JSON.stringify(session ? { user: session.user, hasTokenSet: !!session.tokenSet } : null));
+
+    const token = (session as any)?.tokenSet?.accessToken;
     if (token) {
       try {
         console.log("Syncing user with backend in onCallback...");
@@ -34,11 +37,13 @@ export const auth0 = new Auth0Client({
         if (!response.ok) {
           console.error("Failed to register/sync user with backend in onCallback:", response.status, await response.text());
         } else {
-          console.log("Successfully synced user in onCallback");
+          console.log("Successfully synced user in onCallback!");
         }
       } catch (err) {
         console.error("Error calling backend to sync user in onCallback:", err);
       }
+    } else {
+      console.warn("No accessToken found in session.tokenSet");
     }
 
     return NextResponse.redirect(new URL(context.returnTo || "/dashboard", process.env.APP_BASE_URL || "http://localhost:3000"));
