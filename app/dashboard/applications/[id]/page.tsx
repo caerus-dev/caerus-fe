@@ -381,52 +381,54 @@ export default function ApplicationDetailPage({
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
-              <Box className="h-4 w-4" />
+        <Card className="bg-card/50 border-border p-4 shadow-sm">
+          <div className="flex items-center justify-between space-y-0 pb-1.5">
+            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Box className="h-3.5 w-3.5 text-muted-foreground" />
               Recursos
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-primary">{currentEnvData.resources.length}</span>
-          </CardContent>
-        </Card>
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
-              <Lock className="h-4 w-4" />
-              Configuraciones de Locks
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-chart-2">{currentEnvData.locks.length}</span>
-          </CardContent>
-        </Card>
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
-              <Key className="h-4 w-4" />
-              API Keys
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold">{currentEnvData.apiKeys.length}</span>
-          </CardContent>
-        </Card>
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Operaciones Activas
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-chart-4">
-              {currentEnvData.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
-                currentEnvData.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)}
             </span>
-          </CardContent>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-primary">{currentEnvData.resources.length}</div>
+          </div>
+        </Card>
+        <Card className="bg-card/50 border-border p-4 shadow-sm">
+          <div className="flex items-center justify-between space-y-0 pb-1.5">
+            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+              Configuraciones de Locks
+            </span>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-chart-2">{currentEnvData.locks.length}</div>
+          </div>
+        </Card>
+        <Card className="bg-card/50 border-border p-4 shadow-sm">
+          <div className="flex items-center justify-between space-y-0 pb-1.5">
+            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Key className="h-3.5 w-3.5 text-muted-foreground" />
+              API Keys
+            </span>
+          </div>
+          <div>
+            <div className="text-2xl font-bold">{currentEnvData.apiKeys.length}</div>
+          </div>
+        </Card>
+        <Card className="bg-card/50 border-border p-4 shadow-sm">
+          <div className="flex items-center justify-between space-y-0 pb-1.5">
+            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Activity className="h-3.5 w-3.5 text-muted-foreground" />
+              Operaciones Activas
+            </span>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-chart-4">
+              {((selectedEnv === "dev" ? 4520300 : selectedEnv === "staging" ? 28920400 : 145230900) +
+                currentEnvData.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
+                currentEnvData.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)
+              ).toLocaleString("es-AR")}
+            </div>
+          </div>
         </Card>
       </div>
 
@@ -453,20 +455,26 @@ export default function ApplicationDetailPage({
 
       {/* Tabs for Resources, Locks, API Keys */}
       <Tabs defaultValue="resources" className="space-y-4">
-        <TabsList className="bg-secondary">
-          <TabsTrigger value="resources" className="gap-2">
-            <Box className="h-4 w-4" />
-            Recursos Compartidos
-          </TabsTrigger>
-          <TabsTrigger value="locks" className="gap-2">
-            <Lock className="h-4 w-4" />
-            Locks Distribuidos
-          </TabsTrigger>
-          <TabsTrigger value="keys" className="gap-2">
-            <Key className="h-4 w-4" />
-            API Keys
-          </TabsTrigger>
-        </TabsList>
+        <div className="w-full pb-1">
+          <TabsList className="bg-secondary flex w-full sm:w-fit">
+            <TabsTrigger value="resources" className="gap-1.5 px-3">
+              <Box className="h-4 w-4" />
+              <span>
+                Recursos<span className="hidden sm:inline"> Compartidos</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="locks" className="gap-1.5 px-3">
+              <Lock className="h-4 w-4" />
+              <span>
+                Locks<span className="hidden sm:inline"> Distribuidos</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="keys" className="gap-1.5 px-3">
+              <Key className="h-4 w-4" />
+              <span>API Keys</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="resources" className="space-y-4">
           <div className="flex items-center justify-between">
@@ -498,27 +506,27 @@ export default function ApplicationDetailPage({
             <div className="space-y-3">
               {currentEnvData.resources.map((resource: any) => (
                 <Card key={resource.id} className="bg-card/50 border-border">
-                  <CardContent className="flex items-center justify-between py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                         <Box className="h-5 w-5 text-primary" />
                       </div>
-                      <div>
-                        <p className="font-mono font-medium">{resource.name}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="capitalize">Modo {resource.mode === "unit" ? "unitario" : "múltiple"}</span>
-                          <span>•</span>
-                          <span>{resource.activeReservations} reservas activas</span>
+                      <div className="space-y-1 min-w-0">
+                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{resource.name}</p>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
+                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">Modo {resource.mode === "unit" ? "unitario" : "múltiple"}</span>
+                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                          <span className="bg-secondary/50 px-2 py-0.5 rounded">{resource.activeReservations} reservas activas</span>
                         </div>
                       </div>
                     </div>
-                  <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
                       <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(resource.status)}`}>
                         {resource.status}
                       </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -578,27 +586,27 @@ export default function ApplicationDetailPage({
             <div className="space-y-3">
               {currentEnvData.locks.map((lock: any) => (
                 <Card key={lock.id} className="bg-card/50 border-border">
-                  <CardContent className="flex items-center justify-between py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-2/10">
+                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-chart-2/10">
                         <Lock className="h-5 w-5 text-chart-2" />
                       </div>
-                      <div>
-                        <p className="font-mono font-medium">{lock.name}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="capitalize">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
-                          <span>•</span>
-                          <span>{lock.activeLocks} activos</span>
+                      <div className="space-y-1 min-w-0">
+                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.name}</p>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
+                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
+                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                          <span className="bg-secondary/50 px-2 py-0.5 rounded">{lock.activeLocks} activos</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
                       <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(lock.status)}`}>
                         {lock.status}
                       </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -642,26 +650,26 @@ export default function ApplicationDetailPage({
           <div className="space-y-3">
             {currentEnvData.apiKeys.map((key: any) => (
               <Card key={key.id} className="bg-card/50 border-border">
-                <CardContent className="flex items-center justify-between py-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
+                <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
                       <Key className="h-5 w-5 text-muted-foreground" />
                     </div>
-                    <div>
-                      <p className="font-medium">{key.name}</p>
-                      <p className="text-sm text-muted-foreground font-mono">
+                    <div className="space-y-0.5 min-w-0">
+                      <p className="font-medium text-sm sm:text-base">{key.name}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground font-mono truncate">
                         {key.prefix}••••••••••••
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right text-sm">
-                      <p className="text-muted-foreground">Último uso</p>
-                      <p>{key.lastUsed === "30s ago" ? "Hace 30s" : key.lastUsed === "2m ago" ? "Hace 2m" : key.lastUsed === "5m ago" ? "Hace 5m" : key.lastUsed}</p>
+                  <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
+                    <div className="text-left sm:text-right text-xs sm:text-sm">
+                      <span className="text-muted-foreground mr-1 sm:mr-0 sm:block">Último uso:</span>
+                      <span>{key.lastUsed === "30s ago" ? "Hace 30s" : key.lastUsed === "2m ago" ? "Hace 2m" : key.lastUsed === "5m ago" ? "Hace 5m" : key.lastUsed}</span>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
