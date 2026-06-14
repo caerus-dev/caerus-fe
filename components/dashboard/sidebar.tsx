@@ -189,9 +189,11 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                 Apps
                </p>
-               <button className="text-muted-foreground hover:text-primary transition-colors">
-                 <span className="text-xs font-medium">+ New</span>
-               </button>
+               <Link href="/dashboard/applications/new">
+                 <button className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
+                   <span className="text-xs font-medium">+ New</span>
+                 </button>
+               </Link>
             </div>
           )}
           <ul className="space-y-1">

@@ -127,6 +127,11 @@
   body {
     @apply bg-background text-foreground;
   }
+  button,
+  a,
+  [role="button"] {
+    cursor: pointer !important;
+  }
 }
 
 /* Code block styling */
