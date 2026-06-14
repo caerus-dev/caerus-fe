@@ -20,6 +20,13 @@ import {
   ChevronDown,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const navigation = [
   {
@@ -145,24 +152,82 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
         </button>
       )}
 
-      {/* Header & Org Selector */}
+      {/* Header & User Selector */}
       <div className="flex h-16 items-center px-4 border-b border-border/50">
-        <div className={cn("flex items-center gap-3 rounded-lg hover:bg-accent/50 p-1.5 transition-colors cursor-pointer w-full", isCollapsed && "justify-center px-0")}>
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-primary to-primary/80 shadow-sm shrink-0">
-            <span className="font-mono text-xs font-bold text-primary-foreground">
-              AC
-            </span>
-          </div>
-          {!isCollapsed && (
-            <>
-              <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-semibold truncate leading-none mb-1">acme-corp</p>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium leading-none">Free Plan</p>
-              </div>
-              <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
-            </>
-          )}
-        </div>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            <div className={cn("flex items-center gap-3 rounded-lg hover:bg-accent/50 p-1.5 transition-colors cursor-pointer w-full select-none outline-none", isCollapsed && "justify-center px-0")}>
+              {user ? (
+                <>
+                  {user.picture ? (
+                    <img
+                      src={user.picture}
+                      alt={user.name || "User Avatar"}
+                      className="h-8 w-8 rounded-full border border-border/80 object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-xs shrink-0">
+                      {(user.name || user.email || "U").charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  {!isCollapsed && (
+                    <>
+                      <div className="flex-1 overflow-hidden text-left">
+                        <p className="text-sm font-semibold truncate leading-none mb-1">
+                          {user.name || user.nickname || "Usuario"}
+                        </p>
+                        <p className="text-[10px] text-muted-foreground truncate leading-none">
+                          {user.email}
+                        </p>
+                      </div>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-primary to-primary/80 shadow-sm shrink-0">
+                    <span className="font-mono text-xs font-bold text-primary-foreground">
+                      U
+                    </span>
+                  </div>
+                  {!isCollapsed && (
+                    <>
+                      <div className="flex-1 overflow-hidden text-left">
+                        <p className="text-sm font-semibold truncate leading-none mb-1">Cargando...</p>
+                      </div>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56 bg-card border-border" align="start" sideOffset={8}>
+            {user && (
+              <>
+                <div className="flex flex-col space-y-1 p-2 select-none">
+                  <p className="text-sm font-medium leading-none text-foreground">{user.name || "Usuario"}</p>
+                  <p className="text-xs leading-none text-muted-foreground truncate">{user.email}</p>
+                </div>
+                <DropdownMenuSeparator className="bg-border" />
+              </>
+            )}
+            <DropdownMenuItem asChild className="cursor-pointer hover:bg-muted focus:bg-muted">
+              <Link href="/dashboard/settings" className="flex w-full items-center">
+                <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
+                <span>Configuración</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-border" />
+            <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
+              <a href="/auth/logout" className="flex w-full items-center">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Cerrar Sesión</span>
+              </a>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Main navigation */}
@@ -281,57 +346,6 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
             })}
           </ul>
         </div>
-      </div>
-
-      {/* User Footer */}
-      <div className="p-3 border-t border-border/50 bg-background/30 backdrop-blur-md">
-        {user ? (
-          <div className={cn("flex w-full items-center gap-2", isCollapsed ? "flex-col justify-center" : "flex-row justify-between px-1")}>
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              {user.picture ? (
-                <img
-                  src={user.picture}
-                  alt={user.name || "User Avatar"}
-                  className="h-8 w-8 rounded-full border border-border/80 object-cover shrink-0"
-                />
-              ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-xs shrink-0">
-                  {(user.name || user.email || "U").charAt(0).toUpperCase()}
-                </div>
-              )}
-              {!isCollapsed && (
-                <div className="flex flex-col overflow-hidden">
-                  <span className="text-xs font-semibold text-foreground truncate leading-none mb-1">
-                    {user.name || user.nickname || "Usuario"}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground truncate leading-none">
-                    {user.email}
-                  </span>
-                </div>
-              )}
-            </div>
-            
-            <a
-              href="/auth/logout"
-              title="Cerrar sesión"
-              className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
-            >
-              <LogOut className="h-[16px] w-[16px]" />
-            </a>
-          </div>
-        ) : (
-          <button
-            onClick={() => window.location.href = "/auth/logout"}
-            title={isCollapsed ? "Sign out" : undefined}
-            className={cn(
-              "flex items-center gap-3 w-full rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-destructive/10 hover:text-destructive",
-              isCollapsed && "justify-center px-0"
-            )}
-          >
-            <LogOut className="h-[18px] w-[18px] shrink-0" />
-            {!isCollapsed && <span>Sign out</span>}
-          </button>
-        )}
       </div>
 
       <style jsx global>{`

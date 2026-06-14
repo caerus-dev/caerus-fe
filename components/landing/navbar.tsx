@@ -50,15 +50,15 @@ export function Navbar({ user }: { user?: NavbarUser }) {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        <div className="flex items-center gap-2">
+      <nav className="mx-auto flex md:grid md:grid-cols-3 max-w-7xl items-center justify-between px-6 py-4 lg:px-8 w-full">
+        <div className="flex items-center gap-2 md:justify-self-start">
           <Link href="/" className="flex items-center gap-2">
             <img src="/logo.svg" alt="Caerus Logo" className="h-8 w-auto transition-transform duration-200 hover:scale-105" />
             <span className="text-xl font-semibold tracking-tight">Caerus</span>
           </Link>
         </div>
 
-        <div className="hidden md:flex md:items-center md:gap-8">
+        <div className="hidden md:flex md:items-center md:gap-8 md:justify-self-center">
           {navigation.map((item) => (
             <Link
               key={item.name}
@@ -71,7 +71,7 @@ export function Navbar({ user }: { user?: NavbarUser }) {
           ))}
         </div>
 
-        <div className="hidden md:flex md:items-center md:gap-4">
+        <div className="hidden md:flex md:items-center md:gap-4 md:justify-self-end">
           {user ? (
             <>
               <Link

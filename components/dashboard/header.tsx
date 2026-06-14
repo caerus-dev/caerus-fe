@@ -75,14 +75,6 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
             <span className="sr-only">Cambiar tema</span>
           </Button>
         )}
-
-        {/* User menu */}
-        <Button variant="ghost" size="icon">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary border border-border">
-            <User className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <span className="sr-only">User menu</span>
-        </Button>
       </div>
     </header>
   )
