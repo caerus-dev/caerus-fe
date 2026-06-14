@@ -302,68 +302,81 @@ export default function ApplicationDetailPage({
           <ArrowLeft className="h-4 w-4" />
           Volver a Aplicaciones
         </Link>
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div className="flex items-start gap-4">
+        {/* Row 1: Title and Controls */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/20">
               <Box className="h-6 w-6 text-primary" />
             </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
-                <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(app.status)}`}>
-                  {app.status}
-                </span>
-              </div>
-              <p className="text-muted-foreground">{app.description}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
+              <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(app.status)}`}>
+                {app.status}
+              </span>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-2 border border-border bg-secondary/30 rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground">
-              <span>Ambiente:</span>
-              <Select
-                value={selectedEnv}
-                onValueChange={(val: any) => setSelectedEnv(val)}
-              >
-                <SelectTrigger size="sm" className="h-7 w-[110px] border-none bg-transparent hover:bg-muted/50 p-0 pl-1 font-semibold text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 cursor-pointer">
-                  <SelectValue placeholder="Ambiente" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="dev">
-                    <span className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-chart-2 shrink-0" />
-                      Desarrollo
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="staging">
-                    <span className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-chart-4 shrink-0" />
-                      Staging
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="prod">
-                    <span className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-primary shrink-0 animate-pulse" />
-                      Producción
-                    </span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
-            <Link href={`/dashboard/applications/${id}/team`}>
-              <Button variant="outline" size="sm" className="gap-2 h-8">
-                <Users className="h-4 w-4" />
-                Equipo
-              </Button>
-            </Link>
-            <Link href={`/dashboard/applications/${id}/settings`}>
-              <Button variant="outline" size="sm" className="gap-2 h-8">
-                <Settings className="h-4 w-4" />
-                Configuración
-              </Button>
-            </Link>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+            <Select
+              value={selectedEnv}
+              onValueChange={(val: any) => setSelectedEnv(val)}
+            >
+              <SelectTrigger
+                size="sm"
+                className="w-full sm:w-[190px] h-8 justify-between border border-border bg-secondary/40 shadow-xs hover:bg-secondary/80 hover:border-primary/40 text-xs font-semibold cursor-pointer"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="text-muted-foreground font-normal">Ambiente:</span>
+                  <SelectValue placeholder="Ambiente" />
+                </span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="dev">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-chart-2 shrink-0" />
+                    Desarrollo
+                  </span>
+                </SelectItem>
+                <SelectItem value="staging">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-chart-4 shrink-0" />
+                    Staging
+                  </span>
+                </SelectItem>
+                <SelectItem value="prod">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-primary shrink-0 animate-pulse" />
+                    Producción
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Link href={`/dashboard/applications/${id}/team`} className="w-full sm:w-auto">
+                <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
+                  <Users className="h-4 w-4" />
+                  Equipo
+                </Button>
+              </Link>
+              <Link href={`/dashboard/applications/${id}/settings`} className="w-full sm:w-auto">
+                <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
+                  <Settings className="h-4 w-4" />
+                  Configuración
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
+
+        {/* Row 2: Description */}
+        {app.description && (
+          <div className="md:pl-16">
+            <p className="text-muted-foreground max-w-2xl text-sm line-clamp-3 md:line-clamp-none">
+              {app.description}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Stats */}
