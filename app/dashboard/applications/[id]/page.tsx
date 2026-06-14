@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,14 +28,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-// Mock data
-const applicationData: Record<string, {
-  name: string
-  description: string
-  environment: string
-  status: string
-  createdAt: string
+interface EnvData {
   resources: Array<{
     id: string
     name: string
@@ -56,55 +58,152 @@ const applicationData: Record<string, {
     createdAt: string
     lastUsed: string
   }>
-}> = {
+}
+
+type AppEnvironmentsData = Record<"dev" | "staging" | "prod", EnvData>
+
+const appEnvironmentsMock: Record<string, AppEnvironmentsData> = {
   "reserva-engine": {
-    name: "reserva-engine",
-    description: "Sistema de reservas para cine multiplex",
-    environment: "prod",
-    status: "active",
-    createdAt: "2024-01-15",
-    resources: [
-      { id: "1", name: "seat_reservation", mode: "multiple", status: "active", activeReservations: 45 },
-      { id: "2", name: "vip_lounge", mode: "unit", status: "active", activeReservations: 2 },
-    ],
-    locks: [
-      { id: "1", name: "payment_processor", type: "exclusive", status: "active", activeLocks: 3 },
-    ],
-    apiKeys: [
-      { id: "1", name: "Production Key", prefix: "ck_live_", createdAt: "2024-01-15", lastUsed: "2m ago" },
-    ],
+    dev: {
+      resources: [
+        { id: "1-dev", name: "seat_reservation_dev", mode: "multiple", status: "active", activeReservations: 12 },
+        { id: "2-dev", name: "test_lounge_dev", mode: "unit", status: "active", activeReservations: 0 },
+      ],
+      locks: [
+        { id: "1-dev", name: "payment_mock_lock", type: "exclusive", status: "active", activeLocks: 1 },
+      ],
+      apiKeys: [
+        { id: "1-dev", name: "Clave Desarrollo", prefix: "ck_test_", createdAt: "2024-01-15", lastUsed: "Hace 5m" },
+      ],
+    },
+    staging: {
+      resources: [
+        { id: "1-stage", name: "seat_reservation_staging", mode: "multiple", status: "active", activeReservations: 5 },
+      ],
+      locks: [
+        { id: "1-stage", name: "payment_stage_lock", type: "exclusive", status: "paused", activeLocks: 0 },
+      ],
+      apiKeys: [
+        { id: "1-stage", name: "Clave Staging", prefix: "ck_stage_", createdAt: "2024-01-15", lastUsed: "Hace 2h" },
+      ],
+    },
+    prod: {
+      resources: [
+        { id: "1-prod", name: "seat_reservation", mode: "multiple", status: "active", activeReservations: 45 },
+        { id: "2-prod", name: "vip_lounge", mode: "unit", status: "active", activeReservations: 2 },
+      ],
+      locks: [
+        { id: "1-prod", name: "payment_processor", type: "exclusive", status: "active", activeLocks: 3 },
+      ],
+      apiKeys: [
+        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-01-15", lastUsed: "Hace 2m" },
+      ],
+    },
   },
   "lock-service": {
-    name: "lock-service",
-    description: "Servicio de locks distribuidos para microservicios",
-    environment: "dev",
-    status: "active",
-    createdAt: "2024-02-20",
-    resources: [],
-    locks: [
-      { id: "1", name: "order_processing", type: "exclusive", status: "active", activeLocks: 1 },
-      { id: "2", name: "inventory_sync", type: "read-write", status: "active", activeLocks: 5 },
-    ],
-    apiKeys: [
-      { id: "1", name: "Development Key", prefix: "ck_test_", createdAt: "2024-02-20", lastUsed: "5m ago" },
-    ],
+    dev: {
+      resources: [],
+      locks: [
+        { id: "1-dev", name: "order_processing_dev", type: "exclusive", status: "active", activeLocks: 1 },
+        { id: "2-dev", name: "inventory_sync_dev", type: "read-write", status: "active", activeLocks: 2 },
+      ],
+      apiKeys: [
+        { id: "1-dev", name: "Development Key", prefix: "ck_test_", createdAt: "2024-02-20", lastUsed: "Hace 5m" },
+      ],
+    },
+    staging: {
+      resources: [],
+      locks: [
+        { id: "1-stage", name: "inventory_sync_staging", type: "read-write", status: "active", activeLocks: 0 },
+      ],
+      apiKeys: [
+        { id: "1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: "2024-02-20", lastUsed: "Hace 1d" },
+      ],
+    },
+    prod: {
+      resources: [],
+      locks: [
+        { id: "1-prod", name: "order_processing", type: "exclusive", status: "active", activeLocks: 1 },
+        { id: "2-prod", name: "inventory_sync", type: "read-write", status: "active", activeLocks: 5 },
+      ],
+      apiKeys: [
+        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-02-20", lastUsed: "Hace 10m" },
+      ],
+    },
   },
   "payment-sync": {
-    name: "payment-sync",
-    description: "Sincronizacion de pagos entre plataformas",
-    environment: "prod",
-    status: "active",
-    createdAt: "2024-03-10",
-    resources: [
-      { id: "1", name: "transaction_slot", mode: "unit", status: "active", activeReservations: 12 },
-    ],
-    locks: [
-      { id: "1", name: "payment_gateway", type: "exclusive", status: "active", activeLocks: 8 },
-    ],
-    apiKeys: [
-      { id: "1", name: "Production Key", prefix: "ck_live_", createdAt: "2024-03-10", lastUsed: "30s ago" },
-    ],
+    dev: {
+      resources: [
+        { id: "1-dev", name: "transaction_slot_dev", mode: "unit", status: "active", activeReservations: 1 },
+      ],
+      locks: [
+        { id: "1-dev", name: "payment_gateway_dev", type: "exclusive", status: "active", activeLocks: 0 },
+      ],
+      apiKeys: [
+        { id: "1-dev", name: "Dev Key", prefix: "ck_test_", createdAt: "2024-03-10", lastUsed: "Hace 1h" },
+      ],
+    },
+    staging: {
+      resources: [
+        { id: "1-stage", name: "transaction_slot_staging", mode: "unit", status: "active", activeReservations: 2 },
+      ],
+      locks: [
+        { id: "1-stage", name: "payment_gateway_staging", type: "exclusive", status: "active", activeLocks: 1 },
+      ],
+      apiKeys: [
+        { id: "1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: "2024-03-10", lastUsed: "Hace 30m" },
+      ],
+    },
+    prod: {
+      resources: [
+        { id: "1-prod", name: "transaction_slot", mode: "unit", status: "active", activeReservations: 12 },
+      ],
+      locks: [
+        { id: "1-prod", name: "payment_gateway", type: "exclusive", status: "active", activeLocks: 8 },
+      ],
+      apiKeys: [
+        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-03-10", lastUsed: "Hace 30s" },
+      ],
+    },
   },
+}
+
+const generateMockDataForApp = (name: string): AppEnvironmentsData => {
+  return {
+    dev: {
+      resources: [
+        { id: "custom-1-dev", name: `${name}_resource_dev`, mode: "multiple", status: "active", activeReservations: 1 },
+      ],
+      locks: [
+        { id: "custom-lock-1-dev", name: `${name}_lock_dev`, type: "exclusive", status: "active", activeLocks: 0 },
+      ],
+      apiKeys: [
+        { id: "custom-key-1-dev", name: "Development Key", prefix: "ck_test_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 10m" },
+      ],
+    },
+    staging: {
+      resources: [
+        { id: "custom-1-stage", name: `${name}_resource_staging`, mode: "multiple", status: "active", activeReservations: 2 },
+      ],
+      locks: [
+        { id: "custom-lock-1-stage", name: `${name}_lock_staging`, type: "exclusive", status: "active", activeLocks: 1 },
+      ],
+      apiKeys: [
+        { id: "custom-key-1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 1d" },
+      ],
+    },
+    prod: {
+      resources: [
+        { id: "custom-1-prod", name: `${name}_resource`, mode: "multiple", status: "active", activeReservations: 5 },
+      ],
+      locks: [
+        { id: "custom-lock-1-prod", name: `${name}_lock`, type: "exclusive", status: "active", activeLocks: 2 },
+      ],
+      apiKeys: [
+        { id: "custom-key-1-prod", name: "Production Key", prefix: "ck_live_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 30s" },
+      ],
+    },
+  }
 }
 
 export default function ApplicationDetailPage({
@@ -115,6 +214,10 @@ export default function ApplicationDetailPage({
   const { id } = use(params)
   const [app, setApp] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedEnv, setSelectedEnv] = useState<"dev" | "staging" | "prod">("dev")
+
+  const envData = app ? (appEnvironmentsMock[app.name] || generateMockDataForApp(app.name)) : null
+  const currentEnvData = envData ? envData[selectedEnv] : { resources: [], locks: [], apiKeys: [] }
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -199,17 +302,14 @@ export default function ApplicationDetailPage({
           <ArrowLeft className="h-4 w-4" />
           Volver a Aplicaciones
         </Link>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/20">
               <Box className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3">
                 <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
-                <span className={`rounded px-2 py-0.5 text-xs font-medium ${getEnvironmentBadgeClass(app.environment)}`}>
-                  {app.environment}
-                </span>
                 <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(app.status)}`}>
                   {app.status}
                 </span>
@@ -217,15 +317,47 @@ export default function ApplicationDetailPage({
               <p className="text-muted-foreground">{app.description}</p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-2 border border-border bg-secondary/30 rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground">
+              <span>Ambiente:</span>
+              <Select
+                value={selectedEnv}
+                onValueChange={(val: any) => setSelectedEnv(val)}
+              >
+                <SelectTrigger size="sm" className="h-7 w-[110px] border-none bg-transparent hover:bg-muted/50 p-0 pl-1 font-semibold text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus:ring-0 cursor-pointer">
+                  <SelectValue placeholder="Ambiente" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="dev">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-chart-2 shrink-0" />
+                      Desarrollo
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="staging">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-chart-4 shrink-0" />
+                      Staging
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="prod">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-primary shrink-0 animate-pulse" />
+                      Producción
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <Link href={`/dashboard/applications/${id}/team`}>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2 h-8">
                 <Users className="h-4 w-4" />
                 Equipo
               </Button>
             </Link>
             <Link href={`/dashboard/applications/${id}/settings`}>
-              <Button variant="outline" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2 h-8">
                 <Settings className="h-4 w-4" />
                 Configuración
               </Button>
@@ -244,7 +376,7 @@ export default function ApplicationDetailPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <span className="text-2xl font-bold text-primary">{app.resources.length}</span>
+            <span className="text-2xl font-bold text-primary">{currentEnvData.resources.length}</span>
           </CardContent>
         </Card>
         <Card className="bg-card/50 border-border">
@@ -255,7 +387,7 @@ export default function ApplicationDetailPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <span className="text-2xl font-bold text-chart-2">{app.locks.length}</span>
+            <span className="text-2xl font-bold text-chart-2">{currentEnvData.locks.length}</span>
           </CardContent>
         </Card>
         <Card className="bg-card/50 border-border">
@@ -266,7 +398,7 @@ export default function ApplicationDetailPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <span className="text-2xl font-bold">{app.apiKeys.length}</span>
+            <span className="text-2xl font-bold">{currentEnvData.apiKeys.length}</span>
           </CardContent>
         </Card>
         <Card className="bg-card/50 border-border">
@@ -278,11 +410,32 @@ export default function ApplicationDetailPage({
           </CardHeader>
           <CardContent>
             <span className="text-2xl font-bold text-chart-4">
-              {app.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
-                app.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)}
+              {currentEnvData.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
+                currentEnvData.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)}
             </span>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Contextual Indicator Banner */}
+      <div className="flex items-center gap-2.5 text-xs text-muted-foreground bg-secondary/20 border border-border/40 rounded-lg p-3">
+        <span className="relative flex h-2 w-2 shrink-0">
+          <span className={cn(
+            "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+            selectedEnv === "dev" ? "bg-chart-2" : selectedEnv === "staging" ? "bg-chart-4" : "bg-primary"
+          )} />
+          <span className={cn(
+            "relative inline-flex rounded-full h-2 w-2",
+            selectedEnv === "dev" ? "bg-chart-2" : selectedEnv === "staging" ? "bg-chart-4" : "bg-primary"
+          )} />
+        </span>
+        <span>
+          Mostrando configuraciones y estadísticas para el ambiente de{" "}
+          <strong className="text-foreground">
+            {selectedEnv === "dev" ? "Desarrollo (dev)" : selectedEnv === "staging" ? "Staging (staging)" : "Producción (prod)"}
+          </strong>
+          . Todo cambio o consulta se aplicará únicamente sobre este entorno.
+        </span>
       </div>
 
       {/* Tabs for Resources, Locks, API Keys */}
@@ -305,7 +458,7 @@ export default function ApplicationDetailPage({
         <TabsContent value="resources" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {app.resources.length === 1 ? "1 recurso configurado" : `${app.resources.length} recursos configurados`}
+              {currentEnvData.resources.length === 1 ? "1 recurso configurado" : `${currentEnvData.resources.length} recursos configurados`}
             </p>
             <Link href={`/dashboard/applications/${id}/resources/new`}>
               <Button className="gap-2">
@@ -315,7 +468,7 @@ export default function ApplicationDetailPage({
             </Link>
           </div>
 
-          {app.resources.length === 0 ? (
+          {currentEnvData.resources.length === 0 ? (
             <Card className="bg-card/50 border-border">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Box className="h-12 w-12 text-muted-foreground mb-4" />
@@ -330,7 +483,7 @@ export default function ApplicationDetailPage({
             </Card>
           ) : (
             <div className="space-y-3">
-              {app.resources.map((resource: any) => (
+              {currentEnvData.resources.map((resource: any) => (
                 <Card key={resource.id} className="bg-card/50 border-border">
                   <CardContent className="flex items-center justify-between py-4">
                     <div className="flex items-center gap-4">
@@ -385,7 +538,7 @@ export default function ApplicationDetailPage({
         <TabsContent value="locks" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {app.locks.length === 1 ? "1 lock configurado" : `${app.locks.length} locks configurados`}
+              {currentEnvData.locks.length === 1 ? "1 lock configurado" : `${currentEnvData.locks.length} locks configurados`}
             </p>
             <Link href={`/dashboard/applications/${id}/locks/new`}>
               <Button className="gap-2">
@@ -395,7 +548,7 @@ export default function ApplicationDetailPage({
             </Link>
           </div>
 
-          {app.locks.length === 0 ? (
+          {currentEnvData.locks.length === 0 ? (
             <Card className="bg-card/50 border-border">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Lock className="h-12 w-12 text-muted-foreground mb-4" />
@@ -410,7 +563,7 @@ export default function ApplicationDetailPage({
             </Card>
           ) : (
             <div className="space-y-3">
-              {app.locks.map((lock: any) => (
+              {currentEnvData.locks.map((lock: any) => (
                 <Card key={lock.id} className="bg-card/50 border-border">
                   <CardContent className="flex items-center justify-between py-4">
                     <div className="flex items-center gap-4">
@@ -465,7 +618,7 @@ export default function ApplicationDetailPage({
         <TabsContent value="keys" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {app.apiKeys.length === 1 ? "1 API Key" : `${app.apiKeys.length} API Keys`}
+              {currentEnvData.apiKeys.length === 1 ? "1 API Key" : `${currentEnvData.apiKeys.length} API Keys`}
             </p>
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
@@ -474,7 +627,7 @@ export default function ApplicationDetailPage({
           </div>
 
           <div className="space-y-3">
-            {app.apiKeys.map((key: any) => (
+            {currentEnvData.apiKeys.map((key: any) => (
               <Card key={key.id} className="bg-card/50 border-border">
                 <CardContent className="flex items-center justify-between py-4">
                   <div className="flex items-center gap-4">

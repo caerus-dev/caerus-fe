@@ -31,15 +31,15 @@ import { Textarea } from "@/components/ui/textarea"
 
 const formSchema = z.object({
   namespace: z.string().min(2, {
-    message: "Namespace must be at least 2 characters.",
+    message: "El Namespace debe tener al menos 2 caracteres.",
   }).regex(/^[a-z0-9_]+$/, {
-    message: "Namespace can only contain lowercase letters, numbers, and underscores.",
+    message: "El Namespace solo puede contener letras minúsculas, números y guiones bajos.",
   }),
   description: z.string().optional(),
   type: z.enum(["exclusive", "read-write"]),
-  ttl: z.coerce.number().min(1, { message: "TTL must be at least 1 second." }),
+  ttl: z.coerce.number().min(1, { message: "El TTL debe ser de al menos 1 segundo." }),
   deadlockStrategy: z.enum(["alert", "kill"]),
-  webhookUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  webhookUrl: z.string().url({ message: "Por favor, ingresa una URL válida." }).optional().or(z.literal('')),
   acquisitionStrategy: z.enum(["fail", "retry", "blocking"]),
   retryInterval: z.coerce.number().min(10).optional(),
   maxRetries: z.coerce.number().min(1).optional(),
@@ -100,12 +100,12 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
         </Button>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            {isEditing ? "Edit Lock Template" : "New Lock Template"}
+            {isEditing ? "Editar Plantilla de Lock" : "Nueva Plantilla de Lock"}
           </h1>
           <p className="text-muted-foreground">
             {isEditing 
-              ? "Modify the configuration of an existing distributed lock."
-              : "Define a new lock namespace for distributed synchronization."}
+              ? "Modifica la configuración de un lock distribuido existente."
+              : "Define un nuevo namespace de lock para sincronización distribuida."}
           </p>
         </div>
       </div>
@@ -116,10 +116,10 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Lock className="h-5 w-5 text-chart-2" />
-                Lock Settings
+                Configuración del Lock
               </CardTitle>
               <CardDescription>
-                Define the behavior of this lock namespace.
+                Define el comportamiento de este namespace de lock.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -129,12 +129,12 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                   name="namespace"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Namespace (Key prefix)</FormLabel>
+                      <FormLabel>Namespace (Prefijo de clave)</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. order_processing" {...field} disabled={isEditing} />
+                        <Input placeholder="ej. order_processing" {...field} disabled={isEditing} />
                       </FormControl>
                       <FormDescription>
-                        Unique identifier for grouping these locks.
+                        Identificador único para agrupar estos locks.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -145,20 +145,20 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Lock Type</FormLabel>
+                      <FormLabel>Tipo de Lock</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select type" />
+                            <SelectValue placeholder="Seleccionar tipo" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="exclusive">Exclusive (Mutex)</SelectItem>
-                          <SelectItem value="read-write">Read / Write</SelectItem>
+                          <SelectItem value="exclusive">Exclusivo (Mutex)</SelectItem>
+                          <SelectItem value="read-write">Lectura / Escritura</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormDescription>
-                        Determines if multiple readers are allowed.
+                        Determina si se permiten múltiples lectores concurrentes.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -171,9 +171,9 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Descripción</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="What is this lock used for?" {...field} />
+                      <Textarea placeholder="¿Para qué se utiliza este lock?" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -186,12 +186,12 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                   name="ttl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Default TTL (seconds)</FormLabel>
+                      <FormLabel>TTL por Defecto (segundos)</FormLabel>
                       <FormControl>
                         <Input type="number" {...field} />
                       </FormControl>
                       <FormDescription>
-                        Safety timeout to prevent infinite deadlocks.
+                        Tiempo de expiración de seguridad para evitar bloqueos infinitos.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -206,7 +206,7 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                       <div className="space-y-0.5">
                         <FormLabel className="text-base text-chart-2 font-semibold">Fencing Tokens</FormLabel>
                         <FormDescription>
-                          Generate strictly incremental tokens to prevent split-brain.
+                          Genera tokens estrictamente incrementales para prevenir inconsistencias (split-brain).
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -224,9 +224,9 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
 
           <Card className="bg-card/50 border-border">
             <CardHeader>
-              <CardTitle className="text-lg">Acquisition & Deadlock Resolution</CardTitle>
+              <CardTitle className="text-lg">Adquisición y Resolución de Deadlocks</CardTitle>
               <CardDescription>
-                Configure how workers acquire locks and how deadlocks are resolved.
+                Configura cómo los workers adquieren locks y cómo se resuelven los bloqueos mutuos.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -236,17 +236,17 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                   name="acquisitionStrategy"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Acquisition Strategy</FormLabel>
+                      <FormLabel>Estrategia de Adquisición</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select strategy" />
+                            <SelectValue placeholder="Seleccionar estrategia" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="fail">Fail immediately</SelectItem>
-                          <SelectItem value="retry">Retry automatically</SelectItem>
-                          <SelectItem value="blocking">Blocking (wait)</SelectItem>
+                          <SelectItem value="fail">Fallo inmediato</SelectItem>
+                          <SelectItem value="retry">Reintento automático</SelectItem>
+                          <SelectItem value="blocking">Bloqueante (esperar)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -259,16 +259,16 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                   name="deadlockStrategy"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Deadlock Resolution Strategy</FormLabel>
+                      <FormLabel>Estrategia de Resolución de Deadlocks</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select strategy" />
+                            <SelectValue placeholder="Seleccionar estrategia" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="alert">Alert Webhook Only</SelectItem>
-                          <SelectItem value="kill">Kill Process Automatically</SelectItem>
+                          <SelectItem value="alert">Solo alertar vía Webhook</SelectItem>
+                          <SelectItem value="kill">Terminar proceso automáticamente</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -284,7 +284,7 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                     name="retryInterval"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Retry Interval (ms)</FormLabel>
+                        <FormLabel>Intervalo de Reintento (ms)</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
@@ -297,7 +297,7 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                     name="maxRetries"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Max Retries</FormLabel>
+                        <FormLabel>Máximo de Reintentos</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
@@ -314,12 +314,12 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                   name="webhookUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Deadlock Alert Webhook URL</FormLabel>
+                      <FormLabel>URL de Webhook para Alerta de Deadlocks</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://api.yourdomain.com/webhooks/deadlocks" {...field} />
+                        <Input placeholder="https://api.tudominio.com/webhooks/deadlocks" {...field} />
                       </FormControl>
                       <FormDescription>
-                        We will POST to this URL if an unsolvable deadlock occurs.
+                        Enviaremos una petición POST a esta URL si ocurre un deadlock inasaltable.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -333,18 +333,18 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
             {isEditing ? (
               <Button type="button" variant="destructive" className="gap-2">
                 <Trash2 className="h-4 w-4" />
-                Delete Template
+                Eliminar Plantilla
               </Button>
             ) : (
               <div /> // Spacer
             )}
             <div className="flex gap-4">
               <Button type="button" variant="outline" onClick={() => router.back()}>
-                Cancel
+                Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting} className="gap-2 bg-chart-2 text-chart-2-foreground hover:bg-chart-2/90">
                 <Save className="h-4 w-4" />
-                {isEditing ? "Save Changes" : "Create Lock Config"}
+                {isEditing ? "Guardar Cambios" : "Crear Configuración de Lock"}
               </Button>
             </div>
           </div>

@@ -156,6 +156,18 @@ export default function ApplicationsPage() {
     return num.toString()
   }
 
+  const formatDate = (dateString: string) => {
+    try {
+      const d = new Date(dateString)
+      if (isNaN(d.getTime())) return dateString
+      const day = d.getDate()
+      const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+      return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`
+    } catch {
+      return dateString
+    }
+  }
+
   return (
     <div className="space-y-6">
         {/* Header */}
@@ -322,12 +334,8 @@ export default function ApplicationsPage() {
                       <p className="text-xs text-muted-foreground">Llamadas API</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-sm font-semibold text-foreground h-7 flex items-center justify-center">
-                        {new Date(app.createdAt).toLocaleDateString("es-AR", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
+                      <p className="text-sm font-semibold text-foreground h-7 flex items-center justify-center whitespace-nowrap">
+                        {formatDate(app.createdAt)}
                       </p>
                       <p className="text-xs text-muted-foreground">Creado</p>
                     </div>
