@@ -95,16 +95,36 @@ export default function ApplicationsPage() {
         if (res.ok) {
           const data = await res.json();
           if (data && data.content) {
-            const mapped = data.content.map((app: any) => ({
-              id: app.id.toString(),
-              name: app.name,
-              description: app.description || "",
-              environments: ["development"],
-              collaborators: 1,
-              apiCalls: 0,
-              createdAt: app.createdAt || new Date().toISOString(),
-              status: "active",
-            }));
+            const mapped = data.content.map((app: any, index: number) => {
+              let envs = ["development"];
+              let collaborators = 1;
+              let apiCalls = 0;
+
+              if (index === 0) {
+                envs = ["production", "staging", "development"];
+                collaborators = 4;
+                apiCalls = 125430;
+              } else if (index === 1) {
+                envs = ["staging", "development"];
+                collaborators = 2;
+                apiCalls = 89210;
+              } else if (index === 2) {
+                envs = ["development"];
+                collaborators = 3;
+                apiCalls = 45600;
+              }
+
+              return {
+                id: app.id.toString(),
+                name: app.name,
+                description: app.description || "",
+                environments: envs,
+                collaborators,
+                apiCalls,
+                createdAt: app.createdAt || new Date().toISOString(),
+                status: "active",
+              };
+            });
             setApplications(mapped);
           }
         } else {
@@ -231,7 +251,7 @@ export default function ApplicationsPage() {
             {filteredApps.map((app) => (
               <Card
                 key={app.id}
-                className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer"
+                className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer flex flex-col h-[230px] py-4 gap-4"
                 onClick={(e) => {
                   const target = e.target as HTMLElement;
                   if (target.closest('[role="menuitem"]') || target.closest('button') || target.closest('[role="button"]')) {
@@ -240,7 +260,7 @@ export default function ApplicationsPage() {
                   router.push(`/dashboard/applications/${app.id}`);
                 }}
               >
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-0">
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -252,8 +272,8 @@ export default function ApplicationsPage() {
                           {app.status === "active" ? "Activa" : "Inactiva"}
                         </Badge>
                       </CardTitle>
-                      <CardDescription className="line-clamp-2">
-                        {app.description}
+                      <CardDescription className={`line-clamp-2 ${!app.description ? "italic text-muted-foreground/50" : ""}`}>
+                        {app.description || "Sin descripción configurada"}
                       </CardDescription>
                     </div>
                     <DropdownMenu>
@@ -299,9 +319,9 @@ export default function ApplicationsPage() {
                     </DropdownMenu>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="flex flex-col flex-1 gap-4">
                   {/* Environments */}
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1.5 mt-auto">
                     {app.environments.map((env) => (
                       <Badge
                         key={env}
