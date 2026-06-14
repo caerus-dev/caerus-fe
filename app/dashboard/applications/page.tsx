@@ -328,10 +328,10 @@ export default function ApplicationsPage() {
                         variant="outline"
                         className={`text-xs ${
                           env === "production"
-                            ? "border-green-500/50 text-green-400"
+                            ? "border-green-500/30 text-green-700 bg-green-50/50 dark:border-green-500/50 dark:text-green-400 dark:bg-transparent"
                             : env === "staging"
-                            ? "border-yellow-500/50 text-yellow-400"
-                            : "border-blue-500/50 text-blue-400"
+                            ? "border-amber-500/30 text-amber-700 bg-amber-50/50 dark:border-yellow-500/50 dark:text-yellow-400 dark:bg-transparent"
+                            : "border-blue-500/30 text-blue-700 bg-blue-50/50 dark:border-blue-500/50 dark:text-blue-400 dark:bg-transparent"
                         }`}
                       >
                         {env}
