@@ -31,13 +31,13 @@ import { Textarea } from "@/components/ui/textarea"
 
 const formSchema = z.object({
   name: z.string().min(2, {
-    message: "Resource name must be at least 2 characters.",
+    message: "El nombre del recurso debe tener al menos 2 caracteres.",
   }).regex(/^[a-z0-9_]+$/, {
-    message: "Name can only contain lowercase letters, numbers, and underscores.",
+    message: "El nombre solo puede contener letras minúsculas, números y guiones bajos.",
   }),
   description: z.string().optional(),
   mode: z.enum(["unit", "multiple"]),
-  ttl: z.coerce.number().min(1, { message: "TTL must be at least 1 minute." }),
+  ttl: z.coerce.number().min(1, { message: "El TTL debe ser de al menos 1 minuto." }),
   saveMetadata: z.boolean().default(false),
   conflictStrategy: z.enum(["fail", "retry", "queue"]),
   retryInterval: z.coerce.number().min(100).optional(),
@@ -97,12 +97,12 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
         </Button>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
-            {isEditing ? "Edit Resource Template" : "New Resource Template"}
+            {isEditing ? "Editar Plantilla de Recurso" : "Nueva Plantilla de Recurso"}
           </h1>
           <p className="text-muted-foreground">
             {isEditing 
-              ? "Modify the configuration of an existing shared resource."
-              : "Define a new shared resource to be managed by the SRE engine."}
+              ? "Modifica la configuración de un recurso compartido existente."
+              : "Define un nuevo recurso compartido para ser gestionado por el motor SRE."}
           </p>
         </div>
       </div>
@@ -113,10 +113,10 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Box className="h-5 w-5 text-primary" />
-                Basic Configuration
+                Configuración Básica
               </CardTitle>
               <CardDescription>
-                Define the identity and lifecycle of this resource.
+                Define la identidad y el ciclo de vida de este recurso.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -126,12 +126,12 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Base Name (Namespace)</FormLabel>
+                      <FormLabel>Nombre Base (Namespace)</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. seat, trip_capacity" {...field} disabled={isEditing} />
+                        <Input placeholder="ej. seat, trip_capacity" {...field} disabled={isEditing} />
                       </FormControl>
                       <FormDescription>
-                        Unique identifier for this resource type.
+                        Identificador único para este tipo de recurso.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -142,20 +142,20 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                   name="mode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Resource Mode</FormLabel>
+                      <FormLabel>Modo del Recurso</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select mode" />
+                            <SelectValue placeholder="Seleccionar modo" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="unit">Unitary (Single Instance)</SelectItem>
-                          <SelectItem value="multiple">Multiple (Stock / Capacity)</SelectItem>
+                          <SelectItem value="unit">Unitario (Instancia única)</SelectItem>
+                          <SelectItem value="multiple">Múltiple (Stock / Capacidad)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormDescription>
-                        Determines if it's a unique object or a pool of items.
+                        Determina si es un objeto único o un conjunto de elementos.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -168,9 +168,9 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Descripción</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="What is this resource used for?" {...field} />
+                      <Textarea placeholder="¿Para qué se utiliza este recurso?" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -183,12 +183,12 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                   name="ttl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Default TTL (minutes)</FormLabel>
+                      <FormLabel>TTL por Defecto (minutos)</FormLabel>
                       <FormControl>
                         <Input type="number" {...field} />
                       </FormControl>
                       <FormDescription>
-                        Maximum time a reservation stays active before auto-release.
+                        Tiempo máximo que una reserva permanece activa antes de liberarse automáticamente.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -201,9 +201,9 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4 shadow-sm h-[76px] mt-2">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base">Save Metadata</FormLabel>
+                        <FormLabel className="text-base">Guardar Metadatos</FormLabel>
                         <FormDescription>
-                          Allow storing contextual JSON data with reservations.
+                          Permitir almacenar datos JSON contextuales con las reservas.
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -221,9 +221,9 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
 
           <Card className="bg-card/50 border-border">
             <CardHeader>
-              <CardTitle className="text-lg">Concurrency & Reliability</CardTitle>
+              <CardTitle className="text-lg">Concurrencia y Fiabilidad</CardTitle>
               <CardDescription>
-                Configure how the engine handles concurrent requests and network issues.
+                Configura cómo maneja el motor las solicitudes concurrentes y problemas de red.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -233,21 +233,21 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                   name="conflictStrategy"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Conflict Strategy</FormLabel>
+                      <FormLabel>Estrategia de Conflicto</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select strategy" />
+                            <SelectValue placeholder="Seleccionar estrategia" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="fail">Fail (Immediate Error)</SelectItem>
-                          <SelectItem value="retry">Retry (Auto-retry)</SelectItem>
-                          <SelectItem value="queue">Queue (Wait list)</SelectItem>
+                          <SelectItem value="fail">Fallo (Error inmediato)</SelectItem>
+                          <SelectItem value="retry">Reintento (Auto-reintentar)</SelectItem>
+                          <SelectItem value="queue">Cola (Lista de espera)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormDescription>
-                        Behavior when the resource is currently unavailable.
+                        Comportamiento cuando el recurso no está disponible actualmente.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -260,9 +260,9 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4 shadow-sm h-[76px] mt-2">
                       <div className="space-y-0.5">
-                        <FormLabel className="text-base">Idempotency</FormLabel>
+                        <FormLabel className="text-base">Idempotencia</FormLabel>
                         <FormDescription>
-                          Prevent duplicate side-effects on network retries.
+                          Prevenir efectos secundarios duplicados en los reintentos de red.
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -283,7 +283,7 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                     name="retryInterval"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Retry Interval (ms)</FormLabel>
+                        <FormLabel>Intervalo de Reintento (ms)</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
@@ -296,7 +296,7 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                     name="maxRetries"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Max Retries</FormLabel>
+                        <FormLabel>Máximo de Reintentos</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
@@ -313,18 +313,18 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
             {isEditing ? (
               <Button type="button" variant="destructive" className="gap-2">
                 <Trash2 className="h-4 w-4" />
-                Delete Template
+                Eliminar Plantilla
               </Button>
             ) : (
               <div /> // Spacer
             )}
             <div className="flex gap-4">
               <Button type="button" variant="outline" onClick={() => router.back()}>
-                Cancel
+                Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting} className="gap-2">
                 <Save className="h-4 w-4" />
-                {isEditing ? "Save Changes" : "Create Resource"}
+                {isEditing ? "Guardar Cambios" : "Crear Recurso"}
               </Button>
             </div>
           </div>

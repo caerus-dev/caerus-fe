@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { use, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Loader2, Plus, Trash2, AlertTriangle } from "lucide-react"
+import { cn } from "@/lib/utils"
 interface Environment {
   id: string
   name: string
@@ -26,19 +27,47 @@ interface Environment {
   enabled: boolean
 }
 
-export default function ApplicationSettingsPage() {
+export default function ApplicationSettingsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params)
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [formData, setFormData] = useState({
-    name: "E-Commerce Platform",
-    description: "Sistema de reservas para inventario de productos",
+    name: "",
+    description: "",
   })
   const [environments, setEnvironments] = useState<Environment[]>([
     { id: "dev", name: "development", label: "Development", enabled: true },
     { id: "stg", name: "staging", label: "Staging", enabled: true },
     { id: "prod", name: "production", label: "Production", enabled: true },
   ])
+
+  useEffect(() => {
+    const fetchApp = async () => {
+      try {
+        const res = await fetch(`/api/applications/${id}`)
+        if (res.ok) {
+          const data = await res.json()
+          setFormData({
+            name: data.name,
+            description: data.description || "",
+          })
+        } else {
+          console.error("Failed to load application settings")
+        }
+      } catch (error) {
+        console.error("Error loading application settings:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchApp()
+  }, [id])
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -53,15 +82,51 @@ export default function ApplicationSettingsPage() {
   }
 
   const handleSave = async () => {
-    setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    setIsLoading(false)
+    setIsSaving(true)
+    try {
+      const response = await fetch(`/api/applications/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+      if (response.ok) {
+        router.push(`/dashboard/applications/${id}`)
+      } else {
+        console.error("Failed to save application settings")
+      }
+    } catch (error) {
+      console.error("Error saving application settings:", error)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const handleDelete = async () => {
-    setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    router.push("/dashboard/applications")
+    setIsSaving(true)
+    try {
+      const response = await fetch(`/api/applications/${id}`, {
+        method: "DELETE",
+      })
+      if (response.ok) {
+        router.push("/dashboard/applications")
+      } else {
+        console.error("Failed to delete application")
+      }
+    } catch (error) {
+      console.error("Error deleting application:", error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    )
   }
 
   return (
@@ -76,10 +141,10 @@ export default function ApplicationSettingsPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              Configuracion de Aplicacion
+              Configuración de Aplicación
             </h1>
             <p className="text-muted-foreground">
-              Modifica la configuracion de tu aplicacion
+              Modifica la configuración de tu aplicación
             </p>
           </div>
         </div>
@@ -87,29 +152,47 @@ export default function ApplicationSettingsPage() {
         {/* Basic Info */}
         <Card>
           <CardHeader>
-            <CardTitle>Informacion General</CardTitle>
+            <CardTitle>Información General</CardTitle>
             <CardDescription>
-              Actualiza el nombre y descripcion de tu aplicacion
+              Actualiza el nombre y descripción de tu aplicación
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nombre de la Aplicacion</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="name">Nombre de la Aplicación</Label>
+                <span className={cn(
+                  "text-[10px] transition-colors",
+                  formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                )}>
+                  {formData.name.length} / 100
+                </span>
+              </div>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                disabled={isLoading}
+                disabled={isSaving}
+                maxLength={100}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Descripcion</Label>
+              <div className="flex justify-between items-center">
+                <Label htmlFor="description">Descripción</Label>
+                <span className={cn(
+                  "text-[10px] transition-colors",
+                  formData.description.length >= 500 ? "text-destructive font-semibold" : formData.description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                )}>
+                  {formData.description.length} / 500
+                </span>
+              </div>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleChange("description", e.target.value)}
-                disabled={isLoading}
+                disabled={isSaving}
+                maxLength={500}
                 rows={3}
               />
             </div>
@@ -123,7 +206,7 @@ export default function ApplicationSettingsPage() {
               <div>
                 <CardTitle>Ambientes</CardTitle>
                 <CardDescription>
-                  Gestiona los ambientes de tu aplicacion
+                  Gestiona los ambientes de tu aplicación
                 </CardDescription>
               </div>
               <Button variant="outline" size="sm">
@@ -162,7 +245,7 @@ export default function ApplicationSettingsPage() {
                       <Switch
                         checked={env.enabled}
                         onCheckedChange={() => toggleEnvironment(env.id)}
-                        disabled={isLoading}
+                        disabled={isSaving}
                       />
                     </div>
                   </div>
@@ -180,23 +263,23 @@ export default function ApplicationSettingsPage() {
               Zona de Peligro
             </CardTitle>
             <CardDescription>
-              Acciones irreversibles para tu aplicacion
+              Acciones irreversibles para tu aplicación
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between p-4 rounded-lg border border-destructive/30 bg-destructive/5">
               <div>
                 <p className="font-medium text-foreground">
-                  Eliminar Aplicacion
+                  Eliminar Aplicación
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Elimina permanentemente esta aplicacion y todos sus datos
+                  Elimina permanentemente esta aplicación y todos sus datos
                 </p>
               </div>
               <Button
                 variant="destructive"
                 onClick={() => setDeleteDialogOpen(true)}
-                disabled={isLoading}
+                disabled={isSaving}
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Eliminar
@@ -205,15 +288,14 @@ export default function ApplicationSettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Save Button */}
         <div className="flex justify-end gap-3">
           <Link href="/dashboard/applications">
-            <Button variant="outline" disabled={isLoading}>
+            <Button variant="outline" disabled={isSaving}>
               Cancelar
             </Button>
           </Link>
-          <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? (
+          <Button onClick={handleSave} disabled={isSaving || !formData.name.trim() || formData.name.length > 100 || formData.description.length > 500}>
+            {isSaving ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Guardando...
@@ -228,14 +310,14 @@ export default function ApplicationSettingsPage() {
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Eliminar Aplicacion</DialogTitle>
+              <DialogTitle>Eliminar Aplicación</DialogTitle>
               <DialogDescription>
-                Esta accion eliminara permanentemente la aplicacion{" "}
+                Esta acción eliminará permanentemente la aplicación{" "}
                 <span className="font-medium text-foreground">
                   {formData.name}
                 </span>{" "}
                 junto con todas sus configuraciones, API keys, y datos de uso.
-                Esta accion no se puede deshacer.
+                Esta acción no se puede deshacer.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

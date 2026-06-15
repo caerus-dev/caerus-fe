@@ -42,33 +42,33 @@
 
 /* For light mode compatibility - keeping dark as default */
 .light {
-  --background: oklch(0.98 0.008 325);
-  --foreground: oklch(0.15 0.015 325);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.015 325);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.015 325);
-  --primary: oklch(0.55 0.18 325);
+  --background: oklch(0.95 0.006 325);
+  --foreground: oklch(0.2 0.015 325);
+  --card: oklch(0.975 0.004 325);
+  --card-foreground: oklch(0.2 0.015 325);
+  --popover: oklch(0.975 0.004 325);
+  --popover-foreground: oklch(0.2 0.015 325);
+  --primary: oklch(0.6 0.18 325);
   --primary-foreground: oklch(0.98 0.01 325);
-  --secondary: oklch(0.94 0.01 325);
+  --secondary: oklch(0.925 0.008 325);
   --secondary-foreground: oklch(0.2 0.015 325);
-  --muted: oklch(0.94 0.01 325);
-  --muted-foreground: oklch(0.5 0.015 325);
-  --accent: oklch(0.55 0.18 325);
+  --muted: oklch(0.925 0.008 325);
+  --muted-foreground: oklch(0.45 0.015 325);
+  --accent: oklch(0.6 0.18 325);
   --accent-foreground: oklch(0.98 0.01 325);
   --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(0.98 0.01 25);
-  --border: oklch(0.9 0.01 325);
-  --input: oklch(0.94 0.01 325);
-  --ring: oklch(0.55 0.18 325);
-  --sidebar: oklch(0.98 0.008 325);
-  --sidebar-foreground: oklch(0.15 0.015 325);
-  --sidebar-primary: oklch(0.55 0.18 325);
+  --border: oklch(0.87 0.01 325);
+  --input: oklch(0.96 0.005 325);
+  --ring: oklch(0.6 0.18 325);
+  --sidebar: oklch(0.925 0.008 325);
+  --sidebar-foreground: oklch(0.2 0.015 325);
+  --sidebar-primary: oklch(0.6 0.18 325);
   --sidebar-primary-foreground: oklch(0.98 0.01 325);
-  --sidebar-accent: oklch(0.94 0.01 325);
+  --sidebar-accent: oklch(0.88 0.015 325);
   --sidebar-accent-foreground: oklch(0.15 0.015 325);
-  --sidebar-border: oklch(0.9 0.01 325);
-  --sidebar-ring: oklch(0.55 0.18 325);
+  --sidebar-border: oklch(0.87 0.01 325);
+  --sidebar-ring: oklch(0.6 0.18 325);
 }
 
 @theme inline {
@@ -126,6 +126,11 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  a,
+  [role="button"]:not([aria-disabled="true"]):not([disabled]) {
+    cursor: pointer;
   }
 }
 

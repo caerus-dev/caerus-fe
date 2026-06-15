@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { use } from "react"
+import { use, useState, useEffect } from "react"
 import {
   Box,
   Lock,
@@ -15,10 +15,12 @@ import {
   Play,
   Pause,
   Trash2,
+  Loader2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,14 +28,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-// Mock data
-const applicationData: Record<string, {
-  name: string
-  description: string
-  environment: string
-  status: string
-  createdAt: string
+interface EnvData {
   resources: Array<{
     id: string
     name: string
@@ -55,55 +58,152 @@ const applicationData: Record<string, {
     createdAt: string
     lastUsed: string
   }>
-}> = {
+}
+
+type AppEnvironmentsData = Record<"dev" | "staging" | "prod", EnvData>
+
+const appEnvironmentsMock: Record<string, AppEnvironmentsData> = {
   "reserva-engine": {
-    name: "reserva-engine",
-    description: "Sistema de reservas para cine multiplex",
-    environment: "prod",
-    status: "active",
-    createdAt: "2024-01-15",
-    resources: [
-      { id: "1", name: "seat_reservation", mode: "multiple", status: "active", activeReservations: 45 },
-      { id: "2", name: "vip_lounge", mode: "unit", status: "active", activeReservations: 2 },
-    ],
-    locks: [
-      { id: "1", name: "payment_processor", type: "exclusive", status: "active", activeLocks: 3 },
-    ],
-    apiKeys: [
-      { id: "1", name: "Production Key", prefix: "ck_live_", createdAt: "2024-01-15", lastUsed: "2m ago" },
-    ],
+    dev: {
+      resources: [
+        { id: "1-dev", name: "seat_reservation_dev", mode: "multiple", status: "active", activeReservations: 12 },
+        { id: "2-dev", name: "test_lounge_dev", mode: "unit", status: "active", activeReservations: 0 },
+      ],
+      locks: [
+        { id: "1-dev", name: "payment_mock_lock", type: "exclusive", status: "active", activeLocks: 1 },
+      ],
+      apiKeys: [
+        { id: "1-dev", name: "Clave Desarrollo", prefix: "ck_test_", createdAt: "2024-01-15", lastUsed: "Hace 5m" },
+      ],
+    },
+    staging: {
+      resources: [
+        { id: "1-stage", name: "seat_reservation_staging", mode: "multiple", status: "active", activeReservations: 5 },
+      ],
+      locks: [
+        { id: "1-stage", name: "payment_stage_lock", type: "exclusive", status: "paused", activeLocks: 0 },
+      ],
+      apiKeys: [
+        { id: "1-stage", name: "Clave Staging", prefix: "ck_stage_", createdAt: "2024-01-15", lastUsed: "Hace 2h" },
+      ],
+    },
+    prod: {
+      resources: [
+        { id: "1-prod", name: "seat_reservation", mode: "multiple", status: "active", activeReservations: 45 },
+        { id: "2-prod", name: "vip_lounge", mode: "unit", status: "active", activeReservations: 2 },
+      ],
+      locks: [
+        { id: "1-prod", name: "payment_processor", type: "exclusive", status: "active", activeLocks: 3 },
+      ],
+      apiKeys: [
+        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-01-15", lastUsed: "Hace 2m" },
+      ],
+    },
   },
   "lock-service": {
-    name: "lock-service",
-    description: "Servicio de locks distribuidos para microservicios",
-    environment: "dev",
-    status: "active",
-    createdAt: "2024-02-20",
-    resources: [],
-    locks: [
-      { id: "1", name: "order_processing", type: "exclusive", status: "active", activeLocks: 1 },
-      { id: "2", name: "inventory_sync", type: "read-write", status: "active", activeLocks: 5 },
-    ],
-    apiKeys: [
-      { id: "1", name: "Development Key", prefix: "ck_test_", createdAt: "2024-02-20", lastUsed: "5m ago" },
-    ],
+    dev: {
+      resources: [],
+      locks: [
+        { id: "1-dev", name: "order_processing_dev", type: "exclusive", status: "active", activeLocks: 1 },
+        { id: "2-dev", name: "inventory_sync_dev", type: "read-write", status: "active", activeLocks: 2 },
+      ],
+      apiKeys: [
+        { id: "1-dev", name: "Development Key", prefix: "ck_test_", createdAt: "2024-02-20", lastUsed: "Hace 5m" },
+      ],
+    },
+    staging: {
+      resources: [],
+      locks: [
+        { id: "1-stage", name: "inventory_sync_staging", type: "read-write", status: "active", activeLocks: 0 },
+      ],
+      apiKeys: [
+        { id: "1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: "2024-02-20", lastUsed: "Hace 1d" },
+      ],
+    },
+    prod: {
+      resources: [],
+      locks: [
+        { id: "1-prod", name: "order_processing", type: "exclusive", status: "active", activeLocks: 1 },
+        { id: "2-prod", name: "inventory_sync", type: "read-write", status: "active", activeLocks: 5 },
+      ],
+      apiKeys: [
+        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-02-20", lastUsed: "Hace 10m" },
+      ],
+    },
   },
   "payment-sync": {
-    name: "payment-sync",
-    description: "Sincronizacion de pagos entre plataformas",
-    environment: "prod",
-    status: "active",
-    createdAt: "2024-03-10",
-    resources: [
-      { id: "1", name: "transaction_slot", mode: "unit", status: "active", activeReservations: 12 },
-    ],
-    locks: [
-      { id: "1", name: "payment_gateway", type: "exclusive", status: "active", activeLocks: 8 },
-    ],
-    apiKeys: [
-      { id: "1", name: "Production Key", prefix: "ck_live_", createdAt: "2024-03-10", lastUsed: "30s ago" },
-    ],
+    dev: {
+      resources: [
+        { id: "1-dev", name: "transaction_slot_dev", mode: "unit", status: "active", activeReservations: 1 },
+      ],
+      locks: [
+        { id: "1-dev", name: "payment_gateway_dev", type: "exclusive", status: "active", activeLocks: 0 },
+      ],
+      apiKeys: [
+        { id: "1-dev", name: "Dev Key", prefix: "ck_test_", createdAt: "2024-03-10", lastUsed: "Hace 1h" },
+      ],
+    },
+    staging: {
+      resources: [
+        { id: "1-stage", name: "transaction_slot_staging", mode: "unit", status: "active", activeReservations: 2 },
+      ],
+      locks: [
+        { id: "1-stage", name: "payment_gateway_staging", type: "exclusive", status: "active", activeLocks: 1 },
+      ],
+      apiKeys: [
+        { id: "1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: "2024-03-10", lastUsed: "Hace 30m" },
+      ],
+    },
+    prod: {
+      resources: [
+        { id: "1-prod", name: "transaction_slot", mode: "unit", status: "active", activeReservations: 12 },
+      ],
+      locks: [
+        { id: "1-prod", name: "payment_gateway", type: "exclusive", status: "active", activeLocks: 8 },
+      ],
+      apiKeys: [
+        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-03-10", lastUsed: "Hace 30s" },
+      ],
+    },
   },
+}
+
+const generateMockDataForApp = (name: string): AppEnvironmentsData => {
+  return {
+    dev: {
+      resources: [
+        { id: "custom-1-dev", name: `${name}_resource_dev`, mode: "multiple", status: "active", activeReservations: 1 },
+      ],
+      locks: [
+        { id: "custom-lock-1-dev", name: `${name}_lock_dev`, type: "exclusive", status: "active", activeLocks: 0 },
+      ],
+      apiKeys: [
+        { id: "custom-key-1-dev", name: "Development Key", prefix: "ck_test_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 10m" },
+      ],
+    },
+    staging: {
+      resources: [
+        { id: "custom-1-stage", name: `${name}_resource_staging`, mode: "multiple", status: "active", activeReservations: 2 },
+      ],
+      locks: [
+        { id: "custom-lock-1-stage", name: `${name}_lock_staging`, type: "exclusive", status: "active", activeLocks: 1 },
+      ],
+      apiKeys: [
+        { id: "custom-key-1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 1d" },
+      ],
+    },
+    prod: {
+      resources: [
+        { id: "custom-1-prod", name: `${name}_resource`, mode: "multiple", status: "active", activeReservations: 5 },
+      ],
+      locks: [
+        { id: "custom-lock-1-prod", name: `${name}_lock`, type: "exclusive", status: "active", activeLocks: 2 },
+      ],
+      apiKeys: [
+        { id: "custom-key-1-prod", name: "Production Key", prefix: "ck_live_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 30s" },
+      ],
+    },
+  }
 }
 
 export default function ApplicationDetailPage({
@@ -112,7 +212,41 @@ export default function ApplicationDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const app = applicationData[id] || applicationData["reserva-engine"]
+  const [app, setApp] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [selectedEnv, setSelectedEnv] = useState<"dev" | "staging" | "prod">("dev")
+
+  const envData = app ? (appEnvironmentsMock[app.name] || generateMockDataForApp(app.name)) : null
+  const currentEnvData = envData ? envData[selectedEnv] : { resources: [], locks: [], apiKeys: [] }
+
+  useEffect(() => {
+    const fetchApp = async () => {
+      try {
+        const res = await fetch(`/api/applications/${id}`)
+        if (res.ok) {
+          const data = await res.json()
+          setApp({
+            id: data.id.toString(),
+            name: data.name,
+            description: data.description || "",
+            environment: "dev",
+            status: "active",
+            createdAt: data.createdAt || new Date().toISOString(),
+            resources: [],
+            locks: [],
+            apiKeys: [],
+          })
+        } else {
+          console.error("Failed to fetch application details")
+        }
+      } catch (error) {
+        console.error("Error fetching application details:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchApp()
+  }, [id])
 
   const getEnvironmentBadgeClass = (env: string) => {
     switch (env) {
@@ -138,6 +272,25 @@ export default function ApplicationDetailPage({
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    )
+  }
+
+  if (!app) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">No se encontró la aplicación o no tienes acceso.</p>
+        <Link href="/dashboard/applications" className="text-primary hover:underline mt-4 inline-block">
+          Volver a aplicaciones
+        </Link>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-8">
       {/* Breadcrumb and header */}
@@ -147,162 +300,233 @@ export default function ApplicationDetailPage({
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Applications
+          Volver a Aplicaciones
         </Link>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        {/* Row 1: Title and Controls */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/20">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/20">
               <Box className="h-6 w-6 text-primary" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
-                <span className={`rounded px-2 py-0.5 text-xs font-medium ${getEnvironmentBadgeClass(app.environment)}`}>
-                  {app.environment}
-                </span>
-                <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(app.status)}`}>
-                  {app.status}
-                </span>
-              </div>
-              <p className="text-muted-foreground">{app.description}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
+              <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(app.status)}`}>
+                {app.status}
+              </span>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Link href={`/dashboard/applications/${id}/team`}>
-              <Button variant="outline" className="gap-2">
-                <Users className="h-4 w-4" />
-                Team
-              </Button>
-            </Link>
-            <Link href={`/dashboard/applications/${id}/settings`}>
-              <Button variant="outline" className="gap-2">
-                <Settings className="h-4 w-4" />
-                Settings
-              </Button>
-            </Link>
+
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+            <Select
+              value={selectedEnv}
+              onValueChange={(val: any) => setSelectedEnv(val)}
+            >
+              <SelectTrigger
+                size="sm"
+                className="w-full sm:w-[190px] h-8 justify-between border border-border bg-secondary/40 shadow-xs hover:bg-secondary/80 hover:border-primary/40 text-xs font-semibold cursor-pointer"
+              >
+                <span className="flex items-center gap-1.5">
+                  <span className="text-muted-foreground font-normal">Ambiente:</span>
+                  <SelectValue placeholder="Ambiente" />
+                </span>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="dev">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-chart-2 shrink-0" />
+                    Desarrollo
+                  </span>
+                </SelectItem>
+                <SelectItem value="staging">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-chart-4 shrink-0" />
+                    Staging
+                  </span>
+                </SelectItem>
+                <SelectItem value="prod">
+                  <span className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-primary shrink-0 animate-pulse" />
+                    Producción
+                  </span>
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Link href={`/dashboard/applications/${id}/team`} className="w-full sm:w-auto">
+                <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
+                  <Users className="h-4 w-4" />
+                  Equipo
+                </Button>
+              </Link>
+              <Link href={`/dashboard/applications/${id}/settings`} className="w-full sm:w-auto">
+                <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
+                  <Settings className="h-4 w-4" />
+                  Configuración
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
+
+        {/* Row 2: Description */}
+        {app.description && (
+          <div className="md:pl-16">
+            <p className="text-muted-foreground max-w-2xl text-sm line-clamp-3 md:line-clamp-none">
+              {app.description}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
-              <Box className="h-4 w-4" />
-              Resources
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-primary">{app.resources.length}</span>
-          </CardContent>
-        </Card>
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
-              <Lock className="h-4 w-4" />
-              Lock Configs
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-chart-2">{app.locks.length}</span>
-          </CardContent>
-        </Card>
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
-              <Key className="h-4 w-4" />
-              API Keys
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold">{app.apiKeys.length}</span>
-          </CardContent>
-        </Card>
-        <Card className="bg-card/50 border-border">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Active Operations
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <span className="text-2xl font-bold text-chart-4">
-              {app.resources.reduce((sum, r) => sum + r.activeReservations, 0) +
-                app.locks.reduce((sum, l) => sum + l.activeLocks, 0)}
+        <Card className="bg-card/50 border-border p-4 shadow-sm">
+          <div className="flex items-center justify-between space-y-0 pb-1.5">
+            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Box className="h-3.5 w-3.5 text-muted-foreground" />
+              Recursos
             </span>
-          </CardContent>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-primary">{currentEnvData.resources.length}</div>
+          </div>
         </Card>
+        <Card className="bg-card/50 border-border p-4 shadow-sm">
+          <div className="flex items-center justify-between space-y-0 pb-1.5">
+            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Lock className="h-3.5 w-3.5 text-muted-foreground" />
+              Configuraciones de Locks
+            </span>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-chart-2">{currentEnvData.locks.length}</div>
+          </div>
+        </Card>
+        <Card className="bg-card/50 border-border p-4 shadow-sm">
+          <div className="flex items-center justify-between space-y-0 pb-1.5">
+            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Key className="h-3.5 w-3.5 text-muted-foreground" />
+              API Keys
+            </span>
+          </div>
+          <div>
+            <div className="text-2xl font-bold">{currentEnvData.apiKeys.length}</div>
+          </div>
+        </Card>
+        <Card className="bg-card/50 border-border p-4 shadow-sm">
+          <div className="flex items-center justify-between space-y-0 pb-1.5">
+            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+              <Activity className="h-3.5 w-3.5 text-muted-foreground" />
+              Operaciones Activas
+            </span>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-chart-4">
+              {((selectedEnv === "dev" ? 4520300 : selectedEnv === "staging" ? 28920400 : 145230900) +
+                currentEnvData.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
+                currentEnvData.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)
+              ).toLocaleString("es-AR")}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Contextual Indicator Banner */}
+      <div className="flex items-center gap-2.5 text-xs text-muted-foreground bg-secondary/20 border border-border/40 rounded-lg p-3">
+        <span className="relative flex h-2 w-2 shrink-0">
+          <span className={cn(
+            "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+            selectedEnv === "dev" ? "bg-chart-2" : selectedEnv === "staging" ? "bg-chart-4" : "bg-primary"
+          )} />
+          <span className={cn(
+            "relative inline-flex rounded-full h-2 w-2",
+            selectedEnv === "dev" ? "bg-chart-2" : selectedEnv === "staging" ? "bg-chart-4" : "bg-primary"
+          )} />
+        </span>
+        <span>
+          Mostrando configuraciones y estadísticas para el ambiente de{" "}
+          <strong className="text-foreground">
+            {selectedEnv === "dev" ? "Desarrollo (dev)" : selectedEnv === "staging" ? "Staging (staging)" : "Producción (prod)"}
+          </strong>
+          . Todo cambio o consulta se aplicará únicamente sobre este entorno.
+        </span>
       </div>
 
       {/* Tabs for Resources, Locks, API Keys */}
       <Tabs defaultValue="resources" className="space-y-4">
-        <TabsList className="bg-secondary">
-          <TabsTrigger value="resources" className="gap-2">
-            <Box className="h-4 w-4" />
-            Shared Resources
-          </TabsTrigger>
-          <TabsTrigger value="locks" className="gap-2">
-            <Lock className="h-4 w-4" />
-            Distributed Locks
-          </TabsTrigger>
-          <TabsTrigger value="keys" className="gap-2">
-            <Key className="h-4 w-4" />
-            API Keys
-          </TabsTrigger>
-        </TabsList>
+        <div className="w-full pb-1">
+          <TabsList className="bg-secondary flex w-full sm:w-fit">
+            <TabsTrigger value="resources" className="gap-1.5 px-3">
+              <Box className="h-4 w-4" />
+              <span>
+                Recursos<span className="hidden sm:inline"> Compartidos</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="locks" className="gap-1.5 px-3">
+              <Lock className="h-4 w-4" />
+              <span>
+                Locks<span className="hidden sm:inline"> Distribuidos</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="keys" className="gap-1.5 px-3">
+              <Key className="h-4 w-4" />
+              <span>API Keys</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="resources" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {app.resources.length} resource configuration{app.resources.length !== 1 && "s"}
+              {currentEnvData.resources.length === 1 ? "1 recurso configurado" : `${currentEnvData.resources.length} recursos configurados`}
             </p>
             <Link href={`/dashboard/applications/${id}/resources/new`}>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
-                New Resource
+                Nuevo Recurso
               </Button>
             </Link>
           </div>
 
-          {app.resources.length === 0 ? (
+          {currentEnvData.resources.length === 0 ? (
             <Card className="bg-card/50 border-border">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Box className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">No resources configured yet</p>
+                <p className="text-muted-foreground mb-4">Aún no hay recursos configurados</p>
                 <Link href={`/dashboard/applications/${id}/resources/new`}>
                   <Button className="gap-2">
                     <Plus className="h-4 w-4" />
-                    Create First Resource
+                    Crear Primer Recurso
                   </Button>
                 </Link>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-3">
-              {app.resources.map((resource) => (
+              {currentEnvData.resources.map((resource: any) => (
                 <Card key={resource.id} className="bg-card/50 border-border">
-                  <CardContent className="flex items-center justify-between py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                         <Box className="h-5 w-5 text-primary" />
                       </div>
-                      <div>
-                        <p className="font-mono font-medium">{resource.name}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="capitalize">{resource.mode} mode</span>
-                          <span>•</span>
-                          <span>{resource.activeReservations} active reservations</span>
+                      <div className="space-y-1 min-w-0">
+                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{resource.name}</p>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
+                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">Modo {resource.mode === "unit" ? "unitario" : "múltiple"}</span>
+                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                          <span className="bg-secondary/50 px-2 py-0.5 rounded">{resource.activeReservations} reservas activas</span>
                         </div>
                       </div>
                     </div>
-                  <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
                       <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(resource.status)}`}>
                         {resource.status}
                       </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -310,17 +534,17 @@ export default function ApplicationDetailPage({
                           <Link href={`/dashboard/applications/${id}/resources/${resource.id}/edit`}>
                             <DropdownMenuItem className="cursor-pointer">
                               <Settings className="h-4 w-4 mr-2" />
-                              Configure
+                              Configurar
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem>
                             <Pause className="h-4 w-4 mr-2" />
-                            Pause
+                            Pausar
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
+                            Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -335,54 +559,54 @@ export default function ApplicationDetailPage({
         <TabsContent value="locks" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {app.locks.length} lock configuration{app.locks.length !== 1 && "s"}
+              {currentEnvData.locks.length === 1 ? "1 lock configurado" : `${currentEnvData.locks.length} locks configurados`}
             </p>
             <Link href={`/dashboard/applications/${id}/locks/new`}>
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
-                New Lock Config
+                Nuevo Lock
               </Button>
             </Link>
           </div>
 
-          {app.locks.length === 0 ? (
+          {currentEnvData.locks.length === 0 ? (
             <Card className="bg-card/50 border-border">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Lock className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">No lock configurations yet</p>
+                <p className="text-muted-foreground mb-4">Aún no hay configuraciones de locks</p>
                 <Link href={`/dashboard/applications/${id}/locks/new`}>
                   <Button className="gap-2">
                     <Plus className="h-4 w-4" />
-                    Create First Lock Config
+                    Crear Primer Lock
                   </Button>
                 </Link>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-3">
-              {app.locks.map((lock) => (
+              {currentEnvData.locks.map((lock: any) => (
                 <Card key={lock.id} className="bg-card/50 border-border">
-                  <CardContent className="flex items-center justify-between py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-chart-2/10">
+                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-chart-2/10">
                         <Lock className="h-5 w-5 text-chart-2" />
                       </div>
-                      <div>
-                        <p className="font-mono font-medium">{lock.name}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="capitalize">{lock.type} lock</span>
-                          <span>•</span>
-                          <span>{lock.activeLocks} active</span>
+                      <div className="space-y-1 min-w-0">
+                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.name}</p>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
+                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
+                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                          <span className="bg-secondary/50 px-2 py-0.5 rounded">{lock.activeLocks} activos</span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
                       <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(lock.status)}`}>
                         {lock.status}
                       </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -390,17 +614,17 @@ export default function ApplicationDetailPage({
                           <Link href={`/dashboard/applications/${id}/locks/${lock.id}/edit`}>
                             <DropdownMenuItem className="cursor-pointer">
                               <Settings className="h-4 w-4 mr-2" />
-                              Configure
+                              Configurar
                             </DropdownMenuItem>
                           </Link>
                           <DropdownMenuItem>
                             <Play className="h-4 w-4 mr-2" />
-                            Release All
+                            Liberar Todos
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-destructive">
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
+                            Eliminar
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -415,46 +639,46 @@ export default function ApplicationDetailPage({
         <TabsContent value="keys" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {app.apiKeys.length} API key{app.apiKeys.length !== 1 && "s"}
+              {currentEnvData.apiKeys.length === 1 ? "1 API Key" : `${currentEnvData.apiKeys.length} API Keys`}
             </p>
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
-              Generate Key
+              Generar API Key
             </Button>
           </div>
 
           <div className="space-y-3">
-            {app.apiKeys.map((key) => (
+            {currentEnvData.apiKeys.map((key: any) => (
               <Card key={key.id} className="bg-card/50 border-border">
-                <CardContent className="flex items-center justify-between py-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
+                <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
                       <Key className="h-5 w-5 text-muted-foreground" />
                     </div>
-                    <div>
-                      <p className="font-medium">{key.name}</p>
-                      <p className="text-sm text-muted-foreground font-mono">
+                    <div className="space-y-0.5 min-w-0">
+                      <p className="font-medium text-sm sm:text-base">{key.name}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground font-mono truncate">
                         {key.prefix}••••••••••••
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right text-sm">
-                      <p className="text-muted-foreground">Last used</p>
-                      <p>{key.lastUsed}</p>
+                  <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
+                    <div className="text-left sm:text-right text-xs sm:text-sm">
+                      <span className="text-muted-foreground mr-1 sm:mr-0 sm:block">Último uso:</span>
+                      <span>{key.lastUsed === "30s ago" ? "Hace 30s" : key.lastUsed === "2m ago" ? "Hace 2m" : key.lastUsed === "5m ago" ? "Hace 5m" : key.lastUsed}</span>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Reveal Key</DropdownMenuItem>
-                        <DropdownMenuItem>Copy Key</DropdownMenuItem>
+                        <DropdownMenuItem>Revelar API Key</DropdownMenuItem>
+                        <DropdownMenuItem>Copiar API Key</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive">
-                          Revoke Key
+                          Revocar API Key
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,7 +32,8 @@ import {
   Key,
   Layers,
   Calendar,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from "lucide-react"
 
 interface Application {
@@ -79,10 +81,63 @@ const mockApplications: Application[] = [
 ]
 
 export default function ApplicationsPage() {
-  const [applications, setApplications] = useState(mockApplications)
+  const router = useRouter()
+  const [applications, setApplications] = useState<Application[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [appToDelete, setAppToDelete] = useState<Application | null>(null)
+
+  useEffect(() => {
+    const fetchApps = async () => {
+      try {
+        const res = await fetch("/api/applications");
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.content) {
+            const mapped = data.content.map((app: any, index: number) => {
+              let envs = ["development"];
+              let collaborators = 1;
+              let apiCalls = 0;
+
+              if (index === 0) {
+                envs = ["production", "staging", "development"];
+                collaborators = 4;
+                apiCalls = 125430;
+              } else if (index === 1) {
+                envs = ["staging", "development"];
+                collaborators = 2;
+                apiCalls = 89210;
+              } else if (index === 2) {
+                envs = ["development"];
+                collaborators = 3;
+                apiCalls = 45600;
+              }
+
+              return {
+                id: app.id.toString(),
+                name: app.name,
+                description: app.description || "",
+                environments: envs,
+                collaborators,
+                apiCalls,
+                createdAt: app.createdAt || new Date().toISOString(),
+                status: "active",
+              };
+            });
+            setApplications(mapped);
+          }
+        } else {
+          console.error("Failed to fetch applications");
+        }
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchApps();
+  }, []);
 
   const filteredApps = applications.filter(
     (app) =>
@@ -95,11 +150,23 @@ export default function ApplicationsPage() {
     setDeleteDialogOpen(true)
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (appToDelete) {
-      setApplications((prev) => prev.filter((app) => app.id !== appToDelete.id))
-      setDeleteDialogOpen(false)
-      setAppToDelete(null)
+      try {
+        const response = await fetch(`/api/applications/${appToDelete.id}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          setApplications((prev) => prev.filter((app) => app.id !== appToDelete.id))
+        } else {
+          console.error("Failed to delete application");
+        }
+      } catch (error) {
+        console.error("Error deleting application:", error);
+      } finally {
+        setDeleteDialogOpen(false)
+        setAppToDelete(null)
+      }
     }
   }
 
@@ -107,6 +174,18 @@ export default function ApplicationsPage() {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
     if (num >= 1000) return `${(num / 1000).toFixed(1)}K`
     return num.toString()
+  }
+
+  const formatDate = (dateString: string) => {
+    try {
+      const d = new Date(dateString)
+      if (isNaN(d.getTime())) return dateString
+      const day = d.getDate()
+      const months = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+      return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`
+    } catch {
+      return dateString
+    }
   }
 
   return (
@@ -122,7 +201,7 @@ export default function ApplicationsPage() {
           <Link href="/dashboard/applications/new">
             <Button>
               <Plus className="w-4 h-4 mr-2" />
-              Nueva Aplicacion
+              Nueva Aplicación
             </Button>
           </Link>
         </div>
@@ -139,7 +218,11 @@ export default function ApplicationsPage() {
         </div>
 
         {/* Applications Grid */}
-        {filteredApps.length === 0 ? (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+        ) : filteredApps.length === 0 ? (
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center justify-center py-12">
               <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -151,13 +234,13 @@ export default function ApplicationsPage() {
               <p className="text-muted-foreground text-sm text-center mb-4">
                 {searchQuery
                   ? "No se encontraron aplicaciones con ese criterio"
-                  : "Crea tu primera aplicacion para comenzar"}
+                  : "Crea tu primera aplicación para comenzar"}
               </p>
               {!searchQuery && (
                 <Link href="/dashboard/applications/new">
                   <Button>
                     <Plus className="w-4 h-4 mr-2" />
-                    Nueva Aplicacion
+                    Nueva Aplicación
                   </Button>
                 </Link>
               )}
@@ -168,9 +251,16 @@ export default function ApplicationsPage() {
             {filteredApps.map((app) => (
               <Card
                 key={app.id}
-                className="group hover:border-primary/50 transition-colors"
+                className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer flex flex-col h-[230px] py-4 gap-4"
+                onClick={(e) => {
+                  const target = e.target as HTMLElement;
+                  if (target.closest('[role="menuitem"]') || target.closest('button') || target.closest('[role="button"]')) {
+                    return;
+                  }
+                  router.push(`/dashboard/applications/${app.id}`);
+                }}
               >
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-0">
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <CardTitle className="text-lg flex items-center gap-2">
@@ -182,8 +272,8 @@ export default function ApplicationsPage() {
                           {app.status === "active" ? "Activa" : "Inactiva"}
                         </Badge>
                       </CardTitle>
-                      <CardDescription className="line-clamp-2">
-                        {app.description}
+                      <CardDescription className={`line-clamp-2 ${!app.description ? "italic text-muted-foreground/50" : ""}`}>
+                        {app.description || "Sin descripción configurada"}
                       </CardDescription>
                     </div>
                     <DropdownMenu>
@@ -229,19 +319,19 @@ export default function ApplicationsPage() {
                     </DropdownMenu>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="flex flex-col flex-1 gap-4">
                   {/* Environments */}
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1.5 mt-auto">
                     {app.environments.map((env) => (
                       <Badge
                         key={env}
                         variant="outline"
                         className={`text-xs ${
                           env === "production"
-                            ? "border-green-500/50 text-green-400"
+                            ? "border-green-500/30 text-green-700 bg-green-50/50 dark:border-green-500/50 dark:text-green-400 dark:bg-transparent"
                             : env === "staging"
-                            ? "border-yellow-500/50 text-yellow-400"
-                            : "border-blue-500/50 text-blue-400"
+                            ? "border-amber-500/30 text-amber-700 bg-amber-50/50 dark:border-yellow-500/50 dark:text-yellow-400 dark:bg-transparent"
+                            : "border-blue-500/30 text-blue-700 bg-blue-50/50 dark:border-blue-500/50 dark:text-blue-400 dark:bg-transparent"
                         }`}
                       >
                         {env}
@@ -261,18 +351,13 @@ export default function ApplicationsPage() {
                       <p className="text-lg font-semibold text-foreground">
                         {formatNumber(app.apiCalls)}
                       </p>
-                      <p className="text-xs text-muted-foreground">API Calls</p>
+                      <p className="text-xs text-muted-foreground">Llamadas API</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-lg font-semibold text-foreground flex items-center justify-center gap-1">
-                        <Calendar className="w-3 h-3" />
+                      <p className="text-sm font-semibold text-foreground h-7 flex items-center justify-center whitespace-nowrap">
+                        {formatDate(app.createdAt)}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(app.createdAt).toLocaleDateString("es-AR", {
-                          month: "short",
-                          year: "2-digit",
-                        })}
-                      </p>
+                      <p className="text-xs text-muted-foreground">Creado</p>
                     </div>
                   </div>
                 </CardContent>
@@ -285,13 +370,13 @@ export default function ApplicationsPage() {
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Eliminar Aplicacion</DialogTitle>
+              <DialogTitle>Eliminar Aplicación</DialogTitle>
               <DialogDescription>
-                Estas seguro que deseas eliminar la aplicacion{" "}
+                ¿Estás seguro que deseas eliminar la aplicación{" "}
                 <span className="font-medium text-foreground">
                   {appToDelete?.name}
                 </span>
-                ? Esta accion no se puede deshacer y eliminara todas las
+                ? Esta acción no se puede deshacer y eliminará todas las
                 configuraciones, API keys y datos asociados.
               </DialogDescription>
             </DialogHeader>

@@ -5,22 +5,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const stats = [
   {
-    name: "Applications",
+    name: "Aplicaciones",
     value: "3",
     icon: Layers,
   },
   {
-    name: "API calls (30d)",
+    name: "Llamadas de API (30d)",
     value: "84.2k",
     icon: Activity,
   },
   {
-    name: "Active locks",
+    name: "Bloqueos activos",
     value: "12",
     icon: Lock,
   },
   {
-    name: "Plan usage",
+    name: "Uso del plan",
     value: "68%",
     icon: Gauge,
   },
@@ -32,35 +32,35 @@ const recentActivity = [
     event: "lock.acquired",
     application: "payment-sync",
     environment: "prod",
-    time: "2s ago",
+    time: "Hace 2s",
   },
   {
     id: 2,
     event: "reserve.confirmed",
     application: "reserva-engine",
     environment: "prod",
-    time: "15s ago",
+    time: "Hace 15s",
   },
   {
     id: 3,
     event: "lock.released",
     application: "lock-service",
     environment: "dev",
-    time: "32s ago",
+    time: "Hace 32s",
   },
   {
     id: 4,
     event: "reserve.expired",
     application: "reserva-engine",
     environment: "prod",
-    time: "1m ago",
+    time: "Hace 1m",
   },
   {
     id: 5,
     event: "api_key.created",
     application: "payment-sync",
     environment: "prod",
-    time: "5m ago",
+    time: "Hace 5m",
   },
 ]
 
@@ -97,7 +97,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Overview</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Vista General</h1>
         <p className="text-muted-foreground font-mono text-sm mt-1">
           $ caerus status --org acme-corp
         </p>
@@ -114,7 +114,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-baseline justify-between">
-                <span className={`text-3xl font-bold ${stat.name === "Plan usage" ? "text-chart-4" : "text-primary"}`}>
+                <span className={`text-3xl font-bold ${stat.name === "Uso del plan" ? "text-chart-4" : "text-primary"}`}>
                   {stat.value}
                 </span>
               </div>
@@ -128,11 +128,11 @@ export default function DashboardPage() {
         <div className="flex items-center gap-3 rounded-lg border border-chart-4/30 bg-chart-4/10 px-4 py-3">
           <AlertTriangle className="h-5 w-5 text-chart-4 flex-shrink-0" />
           <p className="text-sm text-foreground">
-            Usage is at <span className="font-semibold text-chart-4">{usagePercentage}%</span> of your Free plan limit — consider{" "}
+            El uso está al <span className="font-semibold text-chart-4">{usagePercentage}%</span> de tu límite del plan Gratuito — considera{" "}
             <Link href="/dashboard/billing" className="underline hover:text-primary transition-colors">
-              upgrading
+              mejorar tu plan
             </Link>{" "}
-            to avoid service interruption.
+            para evitar interrupciones en el servicio.
           </p>
         </div>
       )}
@@ -141,11 +141,11 @@ export default function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-            Recent Activity
+            Actividad Reciente
           </h2>
           <Link href="/dashboard/usage">
             <Button variant="ghost" size="sm" className="text-muted-foreground gap-1">
-              View all
+              Ver todo
               <ArrowUpRight className="h-3 w-3" />
             </Button>
           </Link>
@@ -157,16 +157,16 @@ export default function DashboardPage() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Event
+                    Evento
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Application
+                    Aplicación
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Environment
+                    Ambiente
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Time
+                    Tiempo
                   </th>
                 </tr>
               </thead>

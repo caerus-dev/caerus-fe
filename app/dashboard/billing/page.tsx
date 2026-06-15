@@ -51,7 +51,7 @@ const plans: Plan[] = [
     description: "Ideal para proyectos personales y pruebas",
     features: [
       "1,000 API calls/mes",
-      "1 Aplicacion",
+      "1 Aplicación",
       "1 Ambiente (dev)",
       "2 Colaboradores",
       "Soporte por email",
@@ -139,7 +139,7 @@ export default function BillingPage() {
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Suscripcion y Consumo
+            Suscripción y Consumo
           </h1>
           <p className="text-muted-foreground">
             Gestiona tu plan y monitorea el uso de la plataforma
@@ -152,7 +152,7 @@ export default function BillingPage() {
             <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5" />
             <div>
               <p className="font-medium text-yellow-500">
-                Te estas acercando al limite de tu plan
+                Te estás acercando al límite de tu plan
               </p>
               <p className="text-sm text-muted-foreground">
                 Has consumido el {usagePercentage.toFixed(0)}% de tus API calls
@@ -208,9 +208,9 @@ export default function BillingPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Grafico de Uso</CardTitle>
+              <CardTitle>Gráfico de Uso</CardTitle>
               <CardDescription>
-                Evolucion del consumo de API calls
+                Evolución del consumo de API calls
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -348,8 +348,8 @@ export default function BillingPage() {
               <DialogTitle>Cambiar a Plan {selectedPlan?.name}</DialogTitle>
               <DialogDescription>
                 {selectedPlan && selectedPlan.price > plans.find((p) => p.id === currentPlan)!.price
-                  ? `Tu nuevo plan incluira ${formatNumber(selectedPlan.apiLimit)} API calls mensuales y todas las caracteristicas del plan ${selectedPlan.name}.`
-                  : `Cambiaras a un plan con menos capacidad. Tu nuevo limite sera de ${selectedPlan ? formatNumber(selectedPlan.apiLimit) : 0} API calls mensuales.`}
+                  ? `Tu nuevo plan incluirá ${formatNumber(selectedPlan.apiLimit)} API calls mensuales y todas las características del plan ${selectedPlan.name}.`
+                  : `Cambiarás a un plan con menos capacidad. Tu nuevo límite será de ${selectedPlan ? formatNumber(selectedPlan.apiLimit) : 0} API calls mensuales.`}
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
