@@ -1,6 +1,6 @@
 import { auth0 } from "./auth0";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8081";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8080";
 
 export async function getBackendHeaders() {
   try {

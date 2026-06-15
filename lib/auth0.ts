@@ -7,7 +7,7 @@ if (!process.env.AUTH0_AUDIENCE) {
   );
 }
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8081";
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8080";
 
 export const auth0 = new Auth0Client({
   authorizationParameters: {
