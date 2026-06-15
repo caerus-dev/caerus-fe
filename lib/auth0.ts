@@ -21,7 +21,6 @@ export const auth0 = new Auth0Client({
       return NextResponse.redirect(new URL("/error", process.env.APP_BASE_URL || "http://localhost:3000"));
     }
 
-    console.log("Session object in onCallback:", JSON.stringify(session ? { user: session.user, hasTokenSet: !!session.tokenSet } : null));
 
     const token = (session as any)?.tokenSet?.accessToken;
     if (token) {

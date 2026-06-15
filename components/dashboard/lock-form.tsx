@@ -319,7 +319,7 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                         <Input placeholder="https://api.tudominio.com/webhooks/deadlocks" {...field} />
                       </FormControl>
                       <FormDescription>
-                        Enviaremos una petición POST a esta URL si ocurre un deadlock inasaltable.
+                        Enviaremos una petición POST a esta URL si ocurre un deadlock insalvable.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

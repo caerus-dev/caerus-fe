@@ -141,10 +141,10 @@ export default function ApplicationSettingsPage({
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-foreground">
-              Configuracion de Aplicacion
+              Configuración de Aplicación
             </h1>
             <p className="text-muted-foreground">
-              Modifica la configuracion de tu aplicacion
+              Modifica la configuración de tu aplicación
             </p>
           </div>
         </div>
@@ -152,15 +152,15 @@ export default function ApplicationSettingsPage({
         {/* Basic Info */}
         <Card>
           <CardHeader>
-            <CardTitle>Informacion General</CardTitle>
+            <CardTitle>Información General</CardTitle>
             <CardDescription>
-              Actualiza el nombre y descripcion de tu aplicacion
+              Actualiza el nombre y descripción de tu aplicación
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <Label htmlFor="name">Nombre de la Aplicacion</Label>
+                <Label htmlFor="name">Nombre de la Aplicación</Label>
                 <span className={cn(
                   "text-[10px] transition-colors",
                   formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
@@ -179,7 +179,7 @@ export default function ApplicationSettingsPage({
 
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <Label htmlFor="description">Descripcion</Label>
+                <Label htmlFor="description">Descripción</Label>
                 <span className={cn(
                   "text-[10px] transition-colors",
                   formData.description.length >= 500 ? "text-destructive font-semibold" : formData.description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
@@ -206,7 +206,7 @@ export default function ApplicationSettingsPage({
               <div>
                 <CardTitle>Ambientes</CardTitle>
                 <CardDescription>
-                  Gestiona los ambientes de tu aplicacion
+                  Gestiona los ambientes de tu aplicación
                 </CardDescription>
               </div>
               <Button variant="outline" size="sm">
@@ -263,17 +263,17 @@ export default function ApplicationSettingsPage({
               Zona de Peligro
             </CardTitle>
             <CardDescription>
-              Acciones irreversibles para tu aplicacion
+              Acciones irreversibles para tu aplicación
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between p-4 rounded-lg border border-destructive/30 bg-destructive/5">
               <div>
                 <p className="font-medium text-foreground">
-                  Eliminar Aplicacion
+                  Eliminar Aplicación
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Elimina permanentemente esta aplicacion y todos sus datos
+                  Elimina permanentemente esta aplicación y todos sus datos
                 </p>
               </div>
               <Button
@@ -310,14 +310,14 @@ export default function ApplicationSettingsPage({
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Eliminar Aplicacion</DialogTitle>
+              <DialogTitle>Eliminar Aplicación</DialogTitle>
               <DialogDescription>
-                Esta accion eliminara permanentemente la aplicacion{" "}
+                Esta acción eliminará permanentemente la aplicación{" "}
                 <span className="font-medium text-foreground">
                   {formData.name}
                 </span>{" "}
                 junto con todas sus configuraciones, API keys, y datos de uso.
-                Esta accion no se puede deshacer.
+                Esta acción no se puede deshacer.
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

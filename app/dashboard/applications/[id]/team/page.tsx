@@ -118,7 +118,7 @@ export default function TeamPage() {
     }
 
     if (collaborators.some((c) => c.email === inviteEmail)) {
-      setInviteError("Este correo ya tiene acceso a la aplicacion")
+      setInviteError("Este correo ya tiene acceso a la aplicación")
       return
     }
 
@@ -189,7 +189,7 @@ export default function TeamPage() {
               Colaboradores
             </h1>
             <p className="text-muted-foreground">
-              Gestiona el equipo que tiene acceso a esta aplicacion
+              Gestiona el equipo que tiene acceso a esta aplicación
             </p>
           </div>
           <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
@@ -204,7 +204,7 @@ export default function TeamPage() {
                 <DialogTitle>Invitar Colaborador</DialogTitle>
                 <DialogDescription>
                   Ingresa el correo electronico del desarrollador que deseas
-                  invitar a colaborar en esta aplicacion
+                  invitar a colaborar en esta aplicación
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
@@ -301,7 +301,7 @@ export default function TeamPage() {
               Equipo ({collaborators.length})
             </CardTitle>
             <CardDescription>
-              Lista de todos los colaboradores con acceso a la aplicacion
+              Lista de todos los colaboradores con acceso a la aplicación
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -375,7 +375,7 @@ export default function TeamPage() {
                 <span className="font-medium text-foreground">
                   {collaboratorToRemove?.name || collaboratorToRemove?.email}
                 </span>{" "}
-                de esta aplicacion? Perdera acceso al panel y a las configuraciones
+                de esta aplicación? Perderá acceso al panel y a las configuraciones
                 de forma inmediata.
               </DialogDescription>
             </DialogHeader>

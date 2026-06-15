@@ -201,7 +201,7 @@ export default function ApplicationsPage() {
           <Link href="/dashboard/applications/new">
             <Button>
               <Plus className="w-4 h-4 mr-2" />
-              Nueva Aplicacion
+              Nueva Aplicación
             </Button>
           </Link>
         </div>
@@ -234,13 +234,13 @@ export default function ApplicationsPage() {
               <p className="text-muted-foreground text-sm text-center mb-4">
                 {searchQuery
                   ? "No se encontraron aplicaciones con ese criterio"
-                  : "Crea tu primera aplicacion para comenzar"}
+                  : "Crea tu primera aplicación para comenzar"}
               </p>
               {!searchQuery && (
                 <Link href="/dashboard/applications/new">
                   <Button>
                     <Plus className="w-4 h-4 mr-2" />
-                    Nueva Aplicacion
+                    Nueva Aplicación
                   </Button>
                 </Link>
               )}
@@ -370,13 +370,13 @@ export default function ApplicationsPage() {
         <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Eliminar Aplicacion</DialogTitle>
+              <DialogTitle>Eliminar Aplicación</DialogTitle>
               <DialogDescription>
-                Estas seguro que deseas eliminar la aplicacion{" "}
+                ¿Estás seguro que deseas eliminar la aplicación{" "}
                 <span className="font-medium text-foreground">
                   {appToDelete?.name}
                 </span>
-                ? Esta accion no se puede deshacer y eliminara todas las
+                ? Esta acción no se puede deshacer y eliminará todas las
                 configuraciones, API keys y datos asociados.
               </DialogDescription>
             </DialogHeader>

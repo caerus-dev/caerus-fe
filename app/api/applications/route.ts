@@ -8,7 +8,8 @@ export async function GET(request: NextRequest) {
     const size = searchParams.get("size") || "50";
     const sort = searchParams.get("sort") || "name,asc";
 
-    const response = await fetchBackend(`/v1/applications?page=${page}&size=${size}&sort=${sort}`);
+    const params = new URLSearchParams({ page, size, sort });
+    const response = await fetchBackend(`/v1/applications?${params.toString()}`);
     if (!response.ok) {
       const errorText = await response.text();
       return NextResponse.json(

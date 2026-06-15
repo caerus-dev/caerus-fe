@@ -127,10 +127,10 @@
   body {
     @apply bg-background text-foreground;
   }
-  button,
+  button:not(:disabled),
   a,
-  [role="button"] {
-    cursor: pointer !important;
+  [role="button"]:not([aria-disabled="true"]):not([disabled]) {
+    cursor: pointer;
   }
 }
 

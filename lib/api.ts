@@ -23,12 +23,16 @@ export async function fetchBackend(path: string, options: RequestInit = {}) {
   const headers = await getBackendHeaders();
   const url = `${BACKEND_URL}${path}`;
   
+  const mergedHeaders = new Headers(headers);
+  if (options.headers) {
+    new Headers(options.headers).forEach((value, key) => {
+      mergedHeaders.set(key, value);
+    });
+  }
+
   const response = await fetch(url, {
     ...options,
-    headers: {
-      ...headers,
-      ...options.headers,
-    },
+    headers: mergedHeaders,
   });
   
   return response;

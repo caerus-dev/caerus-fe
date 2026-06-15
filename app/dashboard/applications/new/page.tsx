@@ -41,7 +41,7 @@ export default function NewApplicationPage() {
     setError("")
 
     if (!formData.name.trim()) {
-      setError("El nombre de la aplicacion es requerido")
+      setError("El nombre de la aplicación es requerido")
       return
     }
 
@@ -89,9 +89,9 @@ export default function NewApplicationPage() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Nueva Aplicacion</h1>
+            <h1 className="text-2xl font-bold text-foreground">Nueva Aplicación</h1>
             <p className="text-muted-foreground">
-              Crea una nueva aplicacion para comenzar tu integracion
+              Crea una nueva aplicación para comenzar tu integración
             </p>
           </div>
         </div>
@@ -99,9 +99,9 @@ export default function NewApplicationPage() {
         <form onSubmit={handleSubmit}>
           <Card>
             <CardHeader>
-              <CardTitle>Informacion Basica</CardTitle>
+              <CardTitle>Información Básica</CardTitle>
               <CardDescription>
-                Define el nombre y descripcion de tu aplicacion
+                Define el nombre y descripción de tu aplicación
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -114,7 +114,7 @@ export default function NewApplicationPage() {
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="name">Nombre de la Aplicacion *</Label>
+                  <Label htmlFor="name">Nombre de la Aplicación *</Label>
                   <span className={cn(
                     "text-[10px] transition-colors",
                     formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
@@ -124,7 +124,7 @@ export default function NewApplicationPage() {
                 </div>
                 <Input
                   id="name"
-                  placeholder="Mi Aplicacion"
+                  placeholder="Mi Aplicación"
                   value={formData.name}
                   onChange={(e) => handleChange("name", e.target.value)}
                   disabled={isLoading}
@@ -134,7 +134,7 @@ export default function NewApplicationPage() {
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="description">Descripcion</Label>
+                  <Label htmlFor="description">Descripción</Label>
                   <span className={cn(
                     "text-[10px] transition-colors",
                     formData.description.length >= 500 ? "text-destructive font-semibold" : formData.description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
@@ -144,7 +144,7 @@ export default function NewApplicationPage() {
                 </div>
                 <Textarea
                   id="description"
-                  placeholder="Describe brevemente tu aplicacion..."
+                  placeholder="Describe brevemente tu aplicación..."
                   value={formData.description}
                   onChange={(e) => handleChange("description", e.target.value)}
                   disabled={isLoading}
@@ -159,7 +159,7 @@ export default function NewApplicationPage() {
             <CardHeader>
               <CardTitle>Ambientes</CardTitle>
               <CardDescription>
-                Selecciona los ambientes que deseas configurar. Podras agregar mas
+                Selecciona los ambientes que deseas configurar. Podrás agregar más
                 ambientes posteriormente.
               </CardDescription>
             </CardHeader>
@@ -210,7 +210,7 @@ export default function NewApplicationPage() {
                       </span>
                     </label>
                     <p className="text-xs text-muted-foreground">
-                      Ambiente de pre-produccion para pruebas finales
+                      Ambiente de pre-producción para pruebas finales
                     </p>
                   </div>
                 </div>
@@ -235,7 +235,7 @@ export default function NewApplicationPage() {
                       </span>
                     </label>
                     <p className="text-xs text-muted-foreground">
-                      Ambiente productivo con trafico real de usuarios
+                      Ambiente productivo con tráfico real de usuarios
                     </p>
                   </div>
                 </div>
@@ -256,7 +256,7 @@ export default function NewApplicationPage() {
                   Creando...
                 </>
               ) : (
-                "Crear Aplicacion"
+                "Crear Aplicación"
               )}
             </Button>
           </div>

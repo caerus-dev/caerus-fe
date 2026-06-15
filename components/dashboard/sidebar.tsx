@@ -156,7 +156,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
       <div className="flex h-16 items-center px-4 border-b border-border/50">
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <div className={cn("flex items-center gap-3 rounded-lg hover:bg-accent/50 p-1.5 transition-colors cursor-pointer w-full select-none outline-none", isCollapsed && "justify-center px-0")}>
+            <button className={cn("flex items-center gap-3 rounded-lg hover:bg-accent/50 p-1.5 transition-colors cursor-pointer w-full select-none outline-none border-0 bg-transparent text-left", isCollapsed && "justify-center px-0")}>
               {user ? (
                 <>
                   {user.picture ? (
@@ -201,7 +201,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                   )}
                 </>
               )}
-            </div>
+            </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56 bg-card border-border" align="start" sideOffset={8}>
             {user && (
@@ -272,10 +272,8 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
                 Aplicaciones
                </p>
-               <Link href="/dashboard/applications/new">
-                 <button className="text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                   <span className="text-xs font-medium">+ Nueva</span>
-                 </button>
+               <Link href="/dashboard/applications/new" className="text-muted-foreground hover:text-primary transition-colors">
+                 <span className="text-xs font-medium">+ Nueva</span>
                </Link>
             </div>
           )}
