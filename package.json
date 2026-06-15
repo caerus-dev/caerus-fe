@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "deploy:preview": "vercel",
-    "deploy:prod": "vercel --prod"
+    "deploy:prod": "node scripts/deploy-prod.js"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.22.0",
