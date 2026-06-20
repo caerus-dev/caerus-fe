@@ -19,9 +19,9 @@ export default function NewApplicationPage() {
     name: "",
     description: "",
     environments: {
-      development: true,
-      staging: false,
-      production: false,
+      dev: true,
+      stage: false,
+      prod: false,
     },
   })
 
@@ -53,6 +53,10 @@ export default function NewApplicationPage() {
 
     setIsLoading(true)
     try {
+      const selectedEnvNames = Object.entries(formData.environments)
+        .filter(([_, checked]) => checked)
+        .map(([env]) => env)
+
       const response = await fetch("/api/applications", {
         method: "POST",
         headers: {
@@ -61,6 +65,7 @@ export default function NewApplicationPage() {
         body: JSON.stringify({
           name: formData.name,
           description: formData.description,
+          environments: selectedEnvNames,
         }),
       });
 
@@ -167,16 +172,16 @@ export default function NewApplicationPage() {
               <div className="grid gap-4">
                 <div className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors">
                   <Checkbox
-                    id="development"
-                    checked={formData.environments.development}
+                    id="dev"
+                    checked={formData.environments.dev}
                     onCheckedChange={(checked) =>
-                      handleEnvironmentChange("development", checked as boolean)
+                      handleEnvironmentChange("dev", checked as boolean)
                     }
                     disabled={isLoading}
                   />
                   <div className="space-y-1">
                     <label
-                      htmlFor="development"
+                      htmlFor="dev"
                       className="text-sm font-medium cursor-pointer flex items-center gap-2"
                     >
                       Desarrollo
@@ -192,16 +197,16 @@ export default function NewApplicationPage() {
 
                 <div className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors">
                   <Checkbox
-                    id="staging"
-                    checked={formData.environments.staging}
+                    id="stage"
+                    checked={formData.environments.stage}
                     onCheckedChange={(checked) =>
-                      handleEnvironmentChange("staging", checked as boolean)
+                      handleEnvironmentChange("stage", checked as boolean)
                     }
                     disabled={isLoading}
                   />
                   <div className="space-y-1">
                     <label
-                      htmlFor="staging"
+                      htmlFor="stage"
                       className="text-sm font-medium cursor-pointer flex items-center gap-2"
                     >
                       Staging
@@ -217,16 +222,16 @@ export default function NewApplicationPage() {
 
                 <div className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors">
                   <Checkbox
-                    id="production"
-                    checked={formData.environments.production}
+                    id="prod"
+                    checked={formData.environments.prod}
                     onCheckedChange={(checked) =>
-                      handleEnvironmentChange("production", checked as boolean)
+                      handleEnvironmentChange("prod", checked as boolean)
                     }
                     disabled={isLoading}
                   />
                   <div className="space-y-1">
                     <label
-                      htmlFor="production"
+                      htmlFor="prod"
                       className="text-sm font-medium cursor-pointer flex items-center gap-2"
                     >
                       Producción

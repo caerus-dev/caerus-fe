@@ -96,20 +96,17 @@ export default function ApplicationsPage() {
           const data = await res.json();
           if (data && data.content) {
             const mapped = data.content.map((app: any, index: number) => {
-              let envs = ["development"];
+              const envs = app.environments ? app.environments.map((env: any) => env.name) : [];
               let collaborators = 1;
               let apiCalls = 0;
 
               if (index === 0) {
-                envs = ["production", "staging", "development"];
                 collaborators = 4;
                 apiCalls = 125430;
               } else if (index === 1) {
-                envs = ["staging", "development"];
                 collaborators = 2;
                 apiCalls = 89210;
               } else if (index === 2) {
-                envs = ["development"];
                 collaborators = 3;
                 apiCalls = 45600;
               }
@@ -327,9 +324,9 @@ export default function ApplicationsPage() {
                         key={env}
                         variant="outline"
                         className={`text-xs ${
-                          env === "production"
+                          env === "prod" || env === "production"
                             ? "border-green-500/30 text-green-700 bg-green-50/50 dark:border-green-500/50 dark:text-green-400 dark:bg-transparent"
-                            : env === "staging"
+                            : env === "stage" || env === "staging"
                             ? "border-amber-500/30 text-amber-700 bg-amber-50/50 dark:border-yellow-500/50 dark:text-yellow-400 dark:bg-transparent"
                             : "border-blue-500/30 text-blue-700 bg-blue-50/50 dark:border-blue-500/50 dark:text-blue-400 dark:bg-transparent"
                         }`}

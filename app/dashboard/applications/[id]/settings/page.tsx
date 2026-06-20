@@ -18,12 +18,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { ArrowLeft, Loader2, Plus, Trash2, AlertTriangle } from "lucide-react"
+import { ArrowLeft, Loader2, Plus, Trash2, AlertTriangle, Pencil } from "lucide-react"
 import { cn } from "@/lib/utils"
 interface Environment {
   id: string
   name: string
   label: string
+  description?: string
   enabled: boolean
 }
 
@@ -41,24 +42,51 @@ export default function ApplicationSettingsPage({
     name: "",
     description: "",
   })
-  const [environments, setEnvironments] = useState<Environment[]>([
-    { id: "dev", name: "development", label: "Development", enabled: true },
-    { id: "stg", name: "staging", label: "Staging", enabled: true },
-    { id: "prod", name: "production", label: "Production", enabled: true },
-  ])
+  const [environments, setEnvironments] = useState<Environment[]>([])
+
+  // States for environments CRUD
+  const [envDialogOpen, setEnvDialogOpen] = useState(false)
+  const [envDialogMode, setEnvDialogMode] = useState<"create" | "edit">("create")
+  const [selectedEnvForEdit, setSelectedEnvForEdit] = useState<Environment | null>(null)
+  const [envForm, setEnvForm] = useState({ name: "", description: "" })
+  const [envFormError, setEnvFormError] = useState("")
+  const [isSavingEnv, setIsSavingEnv] = useState(false)
+  const [confirmDeleteEnvOpen, setConfirmDeleteEnvOpen] = useState(false)
+  const [selectedEnvForDelete, setSelectedEnvForDelete] = useState<Environment | null>(null)
 
   useEffect(() => {
-    const fetchApp = async () => {
+    const fetchAppAndEnvs = async () => {
       try {
-        const res = await fetch(`/api/applications/${id}`)
-        if (res.ok) {
-          const data = await res.json()
+        const [appRes, envsRes] = await Promise.all([
+          fetch(`/api/applications/${id}`),
+          fetch(`/api/environments?applicationId=${id}`),
+        ])
+
+        if (appRes.ok) {
+          const appData = await appRes.json()
           setFormData({
-            name: data.name,
-            description: data.description || "",
+            name: appData.name,
+            description: appData.description || "",
           })
         } else {
-          console.error("Failed to load application settings")
+          console.error("Failed to load application details")
+        }
+
+        if (envsRes.ok) {
+          const envsData = await envsRes.json()
+          if (envsData && envsData.content) {
+            setEnvironments(
+              envsData.content.map((env: any) => ({
+                id: env.id,
+                name: env.name,
+                label: env.name.charAt(0).toUpperCase() + env.name.slice(1),
+                description: env.description || "",
+                enabled: true,
+              }))
+            )
+          }
+        } else {
+          console.error("Failed to load environments")
         }
       } catch (error) {
         console.error("Error loading application settings:", error)
@@ -66,19 +94,128 @@ export default function ApplicationSettingsPage({
         setIsLoading(false)
       }
     }
-    fetchApp()
+    fetchAppAndEnvs()
   }, [id])
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const toggleEnvironment = (id: string) => {
-    setEnvironments((prev) =>
-      prev.map((env) =>
-        env.id === id ? { ...env, enabled: !env.enabled } : env
-      )
-    )
+  const handleOpenCreateEnv = () => {
+    setEnvDialogMode("create")
+    setSelectedEnvForEdit(null)
+    setEnvForm({ name: "", description: "" })
+    setEnvFormError("")
+    setEnvDialogOpen(true)
+  }
+
+  const handleOpenEditEnv = (env: Environment) => {
+    setEnvDialogMode("edit")
+    setSelectedEnvForEdit(env)
+    setEnvForm({ name: env.name, description: env.description || "" })
+    setEnvFormError("")
+    setEnvDialogOpen(true)
+  }
+
+  const handleSaveEnv = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setEnvFormError("")
+
+    if (!envForm.name.trim()) {
+      setEnvFormError("El nombre del ambiente es requerido")
+      return
+    }
+
+    setIsSavingEnv(true)
+    try {
+      if (envDialogMode === "create") {
+        const res = await fetch("/api/environments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            applicationId: id,
+            name: envForm.name,
+            description: envForm.description,
+          }),
+        })
+        if (res.ok) {
+          const newEnv = await res.json()
+          setEnvironments((prev) => [
+            ...prev,
+            {
+              id: newEnv.id,
+              name: newEnv.name,
+              label: newEnv.name.charAt(0).toUpperCase() + newEnv.name.slice(1),
+              description: newEnv.description || "",
+              enabled: true,
+            },
+          ])
+          setEnvDialogOpen(false)
+        } else {
+          const errData = await res.json().catch(() => ({}))
+          setEnvFormError(errData.error || "Error al crear el ambiente")
+        }
+      } else if (envDialogMode === "edit" && selectedEnvForEdit) {
+        const res = await fetch(`/api/environments/${selectedEnvForEdit.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: envForm.name,
+            description: envForm.description,
+          }),
+        })
+        if (res.ok) {
+          const updatedEnv = await res.json()
+          setEnvironments((prev) =>
+            prev.map((e) =>
+              e.id === selectedEnvForEdit.id
+                ? {
+                    ...e,
+                    name: updatedEnv.name,
+                    label: updatedEnv.name.charAt(0).toUpperCase() + updatedEnv.name.slice(1),
+                    description: updatedEnv.description || "",
+                  }
+                : e
+            )
+          )
+          setEnvDialogOpen(false)
+        } else {
+          const errData = await res.json().catch(() => ({}))
+          setEnvFormError(errData.error || "Error al actualizar el ambiente")
+        }
+      }
+    } catch (error) {
+      console.error("Error saving environment:", error)
+      setEnvFormError("Ocurrió un error inesperado al guardar el ambiente")
+    } finally {
+      setIsSavingEnv(false)
+    }
+  }
+
+  const handleOpenDeleteEnv = (env: Environment) => {
+    setSelectedEnvForDelete(env)
+    setConfirmDeleteEnvOpen(true)
+  }
+
+  const handleDeleteEnvConfirm = async () => {
+    if (!selectedEnvForDelete) return
+    setIsSavingEnv(true)
+    try {
+      const res = await fetch(`/api/environments/${selectedEnvForDelete.id}`, {
+        method: "DELETE",
+      })
+      if (res.ok) {
+        setEnvironments((prev) => prev.filter((e) => e.id !== selectedEnvForDelete.id))
+        setConfirmDeleteEnvOpen(false)
+        setSelectedEnvForDelete(null)
+      } else {
+        console.error("Failed to delete environment")
+      }
+    } catch (error) {
+      console.error("Error deleting environment:", error)
+    } finally {
+      setIsSavingEnv(false)
+    }
   }
 
   const handleSave = async () => {
@@ -209,49 +346,70 @@ export default function ApplicationSettingsPage({
                   Gestiona los ambientes de tu aplicación
                 </CardDescription>
               </div>
-              <Button variant="outline" size="sm">
+              <Button type="button" variant="outline" size="sm" onClick={handleOpenCreateEnv}>
                 <Plus className="w-4 h-4 mr-2" />
                 Agregar Ambiente
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {environments.map((env) => (
-                <div
-                  key={env.id}
-                  className="flex items-center justify-between p-4 rounded-lg border border-border"
-                >
-                  <div className="flex items-center gap-3">
-                    <Badge
-                      variant="outline"
-                      className={`${
-                        env.name === "production"
-                          ? "border-green-500/50 text-green-400"
-                          : env.name === "staging"
-                          ? "border-yellow-500/50 text-yellow-400"
-                          : "border-blue-500/50 text-blue-400"
-                      }`}
-                    >
-                      {env.name}
-                    </Badge>
-                    <span className="text-sm text-foreground">{env.label}</span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">
-                        {env.enabled ? "Activo" : "Inactivo"}
-                      </span>
-                      <Switch
-                        checked={env.enabled}
-                        onCheckedChange={() => toggleEnvironment(env.id)}
-                        disabled={isSaving}
-                      />
+            {environments.length === 0 ? (
+              <div className="text-center py-6 text-muted-foreground text-sm">
+                No hay ambientes configurados. Agrega uno para empezar.
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {environments.map((env) => (
+                  <div
+                    key={env.id}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-border gap-4 hover:bg-accent/5 transition-colors"
+                  >
+                    <div className="space-y-1.5 min-w-0">
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <Badge
+                          variant="outline"
+                          className={`${
+                            env.name === "prod" || env.name === "production"
+                              ? "border-green-500/50 text-green-700 bg-green-50/50 dark:border-green-500/50 dark:text-green-400 dark:bg-transparent"
+                              : env.name === "stage" || env.name === "staging"
+                              ? "border-yellow-500/50 text-yellow-700 bg-yellow-50/50 dark:border-yellow-500/50 dark:text-yellow-400 dark:bg-transparent"
+                              : "border-blue-500/50 text-blue-700 bg-blue-50/50 dark:border-blue-500/50 dark:text-blue-400 dark:bg-transparent"
+                          }`}
+                        >
+                          {env.name}
+                        </Badge>
+                        <span className="text-sm font-semibold text-foreground font-mono">{env.label}</span>
+                      </div>
+                      {env.description && (
+                        <p className="text-xs text-muted-foreground line-clamp-2 pr-4 italic">
+                          {env.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-end gap-2 shrink-0 border-t border-border/50 sm:border-0 pt-2 sm:pt-0">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 hover:text-foreground text-muted-foreground"
+                        onClick={() => handleOpenEditEnv(env)}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 hover:text-destructive text-muted-foreground"
+                        onClick={() => handleOpenDeleteEnv(env)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -329,6 +487,107 @@ export default function ApplicationSettingsPage({
               </Button>
               <Button variant="destructive" onClick={handleDelete}>
                 Eliminar Permanentemente
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create/Edit Environment Dialog */}
+        <Dialog open={envDialogOpen} onOpenChange={setEnvDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {envDialogMode === "create" ? "Crear Ambiente" : "Editar Ambiente"}
+              </DialogTitle>
+              <DialogDescription>
+                Define el nombre y la descripción para el ambiente de tu aplicación.
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSaveEnv} className="space-y-4">
+              {envFormError && (
+                <div className="p-3 rounded bg-destructive/10 text-destructive text-xs border border-destructive/20">
+                  {envFormError}
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="envName">Nombre del Ambiente *</Label>
+                <Input
+                  id="envName"
+                  value={envForm.name}
+                  onChange={(e) => setEnvForm((prev) => ({ ...prev, name: e.target.value }))}
+                  placeholder="ej: dev, staging, prod, testing"
+                  maxLength={100}
+                  disabled={isSavingEnv}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="envDesc">Descripción</Label>
+                <Textarea
+                  id="envDesc"
+                  value={envForm.description}
+                  onChange={(e) => setEnvForm((prev) => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe brevemente el propósito de este ambiente..."
+                  maxLength={500}
+                  rows={3}
+                  disabled={isSavingEnv}
+                />
+              </div>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setEnvDialogOpen(false)}
+                  disabled={isSavingEnv}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={isSavingEnv}>
+                  {isSavingEnv ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Guardando...
+                    </>
+                  ) : (
+                    "Guardar"
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Environment Confirmation Dialog */}
+        <Dialog open={confirmDeleteEnvOpen} onOpenChange={setConfirmDeleteEnvOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Eliminar Ambiente</DialogTitle>
+              <DialogDescription>
+                ¿Estás seguro que deseas eliminar el ambiente{" "}
+                <span className="font-semibold text-foreground">{selectedEnvForDelete?.name}</span>?
+                Esta acción es irreversible y eliminará todos los recursos, locks y API keys asociados a este ambiente.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setConfirmDeleteEnvOpen(false)}
+                disabled={isSavingEnv}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteEnvConfirm}
+                disabled={isSavingEnv}
+              >
+                {isSavingEnv ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Eliminando...
+                  </>
+                ) : (
+                  "Eliminar"
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>

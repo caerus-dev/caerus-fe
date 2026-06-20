@@ -206,6 +206,27 @@ const generateMockDataForApp = (name: string): AppEnvironmentsData => {
   }
 }
 
+const getMockDataForEnv = (appName: string, envName: string): EnvData => {
+  const predefined = appEnvironmentsMock[appName];
+  if (predefined) {
+    if (envName === "dev" || envName === "development") return predefined.dev;
+    if (envName === "stage" || envName === "staging") return predefined.staging;
+    if (envName === "prod" || envName === "production") return predefined.prod;
+  }
+  
+  return {
+    resources: [
+      { id: `${envName}-res-1`, name: `${appName}_res_${envName}`, mode: "multiple", status: "active", activeReservations: 3 },
+    ],
+    locks: [
+      { id: `${envName}-lock-1`, name: `${appName}_lock_${envName}`, type: "exclusive", status: "active", activeLocks: 1 },
+    ],
+    apiKeys: [
+      { id: `${envName}-key-1`, name: `Key ${envName}`, prefix: "ck_live_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 5m" },
+    ],
+  };
+}
+
 export default function ApplicationDetailPage({
   params,
 }: {
@@ -214,10 +235,12 @@ export default function ApplicationDetailPage({
   const { id } = use(params)
   const [app, setApp] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedEnv, setSelectedEnv] = useState<"dev" | "staging" | "prod">("dev")
+  const [selectedEnv, setSelectedEnv] = useState<string>("")
+  const [currentEnvDetails, setCurrentEnvDetails] = useState<any>(null)
 
-  const envData = app ? (appEnvironmentsMock[app.name] || generateMockDataForApp(app.name)) : null
-  const currentEnvData = envData ? envData[selectedEnv] : { resources: [], locks: [], apiKeys: [] }
+  const currentEnvData = app && selectedEnv
+    ? getMockDataForEnv(app.name, selectedEnv)
+    : { resources: [], locks: [], apiKeys: [] }
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -225,11 +248,23 @@ export default function ApplicationDetailPage({
         const res = await fetch(`/api/applications/${id}`)
         if (res.ok) {
           const data = await res.json()
+          const envs = data.environments || []
+          
+          let initialEnv = ""
+          if (envs.length > 0) {
+            const pref = envs.find((e: any) => e.name === "dev" || e.name === "development") ||
+                         envs.find((e: any) => e.name === "stage" || e.name === "staging") ||
+                         envs.find((e: any) => e.name === "prod" || e.name === "production") ||
+                         envs[0];
+            initialEnv = pref.name;
+          }
+          setSelectedEnv(initialEnv)
+
           setApp({
             id: data.id.toString(),
             name: data.name,
             description: data.description || "",
-            environment: "dev",
+            environments: envs,
             status: "active",
             createdAt: data.createdAt || new Date().toISOString(),
             resources: [],
@@ -247,6 +282,25 @@ export default function ApplicationDetailPage({
     }
     fetchApp()
   }, [id])
+
+  useEffect(() => {
+    if (!app || !app.environments || !selectedEnv) return;
+    const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv);
+    if (!activeEnvObj) return;
+
+    const fetchEnvDetails = async () => {
+      try {
+        const res = await fetch(`/api/environments/${activeEnvObj.id}`);
+        if (res.ok) {
+          const envData = await res.json();
+          setCurrentEnvDetails(envData);
+        }
+      } catch (error) {
+        console.error("Error fetching environment details:", error);
+      }
+    };
+    fetchEnvDetails();
+  }, [selectedEnv, app])
 
   const getEnvironmentBadgeClass = (env: string) => {
     switch (env) {
@@ -331,24 +385,30 @@ export default function ApplicationDetailPage({
                 </span>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="dev">
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-chart-2 shrink-0" />
-                    Desarrollo
-                  </span>
-                </SelectItem>
-                <SelectItem value="staging">
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-chart-4 shrink-0" />
-                    Staging
-                  </span>
-                </SelectItem>
-                <SelectItem value="prod">
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-primary shrink-0 animate-pulse" />
-                    Producción
-                  </span>
-                </SelectItem>
+                {app?.environments && app.environments.length > 0 ? (
+                  app.environments.map((env: any) => (
+                    <SelectItem key={env.id} value={env.name}>
+                      <span className="flex items-center gap-1.5 font-mono">
+                        <span className={cn(
+                          "h-2 w-2 rounded-full shrink-0",
+                          env.name === "prod" || env.name === "production"
+                            ? "bg-primary shrink-0 animate-pulse"
+                            : env.name === "stage" || env.name === "staging"
+                            ? "bg-chart-4 shrink-0"
+                            : "bg-chart-2 shrink-0"
+                        )} />
+                        {env.name}
+                      </span>
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="dev">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-chart-2 shrink-0" />
+                      Desarrollo
+                    </span>
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
 
@@ -423,34 +483,51 @@ export default function ApplicationDetailPage({
           </div>
           <div>
             <div className="text-2xl font-bold text-chart-4">
-              {((selectedEnv === "dev" ? 4520300 : selectedEnv === "staging" ? 28920400 : 145230900) +
+              {((((selectedEnv === "prod" || selectedEnv === "production")
+                ? 145230900
+                : (selectedEnv === "stage" || selectedEnv === "staging")
+                ? 28920400
+                : 4520300) +
                 currentEnvData.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
                 currentEnvData.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)
-              ).toLocaleString("es-AR")}
+              ).toLocaleString("es-AR"))}
             </div>
           </div>
         </Card>
       </div>
 
       {/* Contextual Indicator Banner */}
-      <div className="flex items-center gap-2.5 text-xs text-muted-foreground bg-secondary/20 border border-border/40 rounded-lg p-3">
-        <span className="relative flex h-2 w-2 shrink-0">
-          <span className={cn(
-            "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-            selectedEnv === "dev" ? "bg-chart-2" : selectedEnv === "staging" ? "bg-chart-4" : "bg-primary"
-          )} />
-          <span className={cn(
-            "relative inline-flex rounded-full h-2 w-2",
-            selectedEnv === "dev" ? "bg-chart-2" : selectedEnv === "staging" ? "bg-chart-4" : "bg-primary"
-          )} />
-        </span>
-        <span>
-          Mostrando configuraciones y estadísticas para el ambiente de{" "}
-          <strong className="text-foreground">
-            {selectedEnv === "dev" ? "Desarrollo (dev)" : selectedEnv === "staging" ? "Staging (staging)" : "Producción (prod)"}
-          </strong>
-          . Todo cambio o consulta se aplicará únicamente sobre este entorno.
-        </span>
+      <div className="flex flex-col gap-1.5 text-xs text-muted-foreground bg-secondary/20 border border-border/40 rounded-lg p-3">
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className={cn(
+              "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+              selectedEnv === "prod" || selectedEnv === "production"
+                ? "bg-primary"
+                : selectedEnv === "stage" || selectedEnv === "staging"
+                ? "bg-chart-4"
+                : "bg-chart-2"
+            )} />
+            <span className={cn(
+              "relative inline-flex rounded-full h-2 w-2",
+              selectedEnv === "prod" || selectedEnv === "production"
+                ? "bg-primary"
+                : selectedEnv === "stage" || selectedEnv === "staging"
+                ? "bg-chart-4"
+                : "bg-chart-2"
+            )} />
+          </span>
+          <span>
+            Mostrando configuraciones y estadísticas para el ambiente:{" "}
+            <strong className="text-foreground font-mono">{selectedEnv}</strong>
+          </span>
+        </div>
+        {currentEnvDetails?.description && (
+          <p className="pl-[18px] text-muted-foreground/80 leading-relaxed">
+            <span className="font-semibold text-foreground/75 not-italic mr-1.5">Descripción:</span>
+            {currentEnvDetails.description}
+          </p>
+        )}
       </div>
 
       {/* Tabs for Resources, Locks, API Keys */}
