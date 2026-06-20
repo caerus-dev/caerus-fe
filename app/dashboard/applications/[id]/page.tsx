@@ -35,6 +35,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+
 
 interface EnvData {
   resources: Array<{
@@ -227,6 +236,20 @@ const getMockDataForEnv = (appName: string, envName: string): EnvData => {
   };
 }
 
+const formatTtl = (ms: any): string => {
+  const num = Number(ms)
+  if (isNaN(num)) return String(ms)
+  if (num < 1000) return `${num} ms`
+  const seconds = num / 1000
+  if (seconds < 60) return `${seconds.toFixed(seconds % 1 === 0 ? 0 : 1)} s`
+  const minutes = seconds / 60
+  if (minutes < 60) return `${minutes.toFixed(minutes % 1 === 0 ? 0 : 1)} min`
+  const hours = minutes / 60
+  if (hours < 24) return `${hours.toFixed(hours % 1 === 0 ? 0 : 1)} h`
+  const days = hours / 24
+  return `${days.toFixed(days % 1 === 0 ? 0 : 1)} d`
+}
+
 export default function ApplicationDetailPage({
   params,
 }: {
@@ -237,6 +260,10 @@ export default function ApplicationDetailPage({
   const [isLoading, setIsLoading] = useState(true)
   const [selectedEnv, setSelectedEnv] = useState<string>("")
   const [currentEnvDetails, setCurrentEnvDetails] = useState<any>(null)
+  const [templates, setTemplates] = useState<any[]>([])
+  const [isTemplatesLoading, setIsTemplatesLoading] = useState(false)
+  const [confirmDeleteTemplateOpen, setConfirmDeleteTemplateOpen] = useState(false)
+  const [templateToDelete, setTemplateToDelete] = useState<any>(null)
 
   const currentEnvData = app && selectedEnv
     ? getMockDataForEnv(app.name, selectedEnv)
@@ -288,19 +315,54 @@ export default function ApplicationDetailPage({
     const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv);
     if (!activeEnvObj) return;
 
-    const fetchEnvDetails = async () => {
+    const fetchEnvDetailsAndTemplates = async () => {
+      setIsTemplatesLoading(true);
       try {
-        const res = await fetch(`/api/environments/${activeEnvObj.id}`);
-        if (res.ok) {
-          const envData = await res.json();
+        const [envRes, templatesRes] = await Promise.all([
+          fetch(`/api/environments/${activeEnvObj.id}`),
+          fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`),
+        ]);
+
+        if (envRes.ok) {
+          const envData = await envRes.json();
           setCurrentEnvDetails(envData);
         }
+
+        if (templatesRes.ok) {
+          const templatesData = await templatesRes.json();
+          setTemplates(templatesData.content || []);
+        }
       } catch (error) {
-        console.error("Error fetching environment details:", error);
+        console.error("Error fetching environment details or templates:", error);
+      } finally {
+        setIsTemplatesLoading(false);
       }
     };
-    fetchEnvDetails();
+    fetchEnvDetailsAndTemplates();
   }, [selectedEnv, app])
+
+  const handleOpenDeleteTemplate = (template: any) => {
+    setTemplateToDelete(template)
+    setConfirmDeleteTemplateOpen(true)
+  }
+
+  const handleDeleteTemplateConfirm = async () => {
+    if (!templateToDelete) return
+    try {
+      const res = await fetch(`/api/shared-resource-templates/${templateToDelete.id}`, {
+        method: "DELETE",
+      })
+      if (res.ok) {
+        setTemplates((prev) => prev.filter((t) => t.id !== templateToDelete.id))
+        setConfirmDeleteTemplateOpen(false)
+        setTemplateToDelete(null)
+      } else {
+        console.error("Failed to delete template")
+      }
+    } catch (error) {
+      console.error("Error deleting template:", error)
+    }
+  }
 
   const getEnvironmentBadgeClass = (env: string) => {
     switch (env) {
@@ -449,7 +511,7 @@ export default function ApplicationDetailPage({
             </span>
           </div>
           <div>
-            <div className="text-2xl font-bold text-primary">{currentEnvData.resources.length}</div>
+            <div className="text-2xl font-bold text-primary">{templates.length}</div>
           </div>
         </Card>
         <Card className="bg-card/50 border-border p-4 shadow-sm">
@@ -497,34 +559,37 @@ export default function ApplicationDetailPage({
       </div>
 
       {/* Contextual Indicator Banner */}
-      <div className="flex flex-col gap-1.5 text-xs text-muted-foreground bg-secondary/20 border border-border/40 rounded-lg p-3">
-        <div className="flex items-center gap-2.5">
-          <span className="relative flex h-2 w-2 shrink-0">
-            <span className={cn(
-              "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-              selectedEnv === "prod" || selectedEnv === "production"
-                ? "bg-primary"
-                : selectedEnv === "stage" || selectedEnv === "staging"
-                ? "bg-chart-4"
-                : "bg-chart-2"
-            )} />
-            <span className={cn(
-              "relative inline-flex rounded-full h-2 w-2",
-              selectedEnv === "prod" || selectedEnv === "production"
-                ? "bg-primary"
-                : selectedEnv === "stage" || selectedEnv === "staging"
-                ? "bg-chart-4"
-                : "bg-chart-2"
-            )} />
-          </span>
-          <span>
-            Mostrando configuraciones y estadísticas para el ambiente:{" "}
-            <strong className="text-foreground font-mono">{selectedEnv}</strong>
-          </span>
+      <div className="flex flex-col gap-2.5 bg-secondary/20 border border-border/40 rounded-lg p-4">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className={cn(
+                "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                selectedEnv === "prod" || selectedEnv === "production"
+                  ? "bg-primary"
+                  : selectedEnv === "stage" || selectedEnv === "staging"
+                  ? "bg-chart-4"
+                  : "bg-chart-2"
+              )} />
+              <span className={cn(
+                "relative inline-flex rounded-full h-2 w-2",
+                selectedEnv === "prod" || selectedEnv === "production"
+                  ? "bg-primary"
+                  : selectedEnv === "stage" || selectedEnv === "staging"
+                  ? "bg-chart-4"
+                  : "bg-chart-2"
+              )} />
+            </span>
+            <span>
+              Mostrando configuraciones y estadísticas para el ambiente:
+            </span>
+          </div>
+          <h2 className="text-xl font-bold font-mono text-foreground pl-[18px] tracking-tight mt-0.5">
+            {selectedEnv}
+          </h2>
         </div>
         {currentEnvDetails?.description && (
-          <p className="pl-[18px] text-muted-foreground/80 leading-relaxed">
-            <span className="font-semibold text-foreground/75 not-italic mr-1.5">Descripción:</span>
+          <p className="pl-[18px] text-xs sm:text-sm text-muted-foreground/80 leading-relaxed">
             {currentEnvDetails.description}
           </p>
         )}
@@ -556,23 +621,23 @@ export default function ApplicationDetailPage({
         <TabsContent value="resources" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {currentEnvData.resources.length === 1 ? "1 recurso configurado" : `${currentEnvData.resources.length} recursos configurados`}
+              {templates.length === 1 ? "1 recurso configurado" : `${templates.length} recursos configurados`}
             </p>
-            <Link href={`/dashboard/applications/${id}/resources/new`}>
-              <Button className="gap-2">
+            <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
+              <Button className="gap-2" disabled={!currentEnvDetails?.id}>
                 <Plus className="h-4 w-4" />
                 Nuevo Recurso
               </Button>
             </Link>
           </div>
 
-          {currentEnvData.resources.length === 0 ? (
+          {templates.length === 0 ? (
             <Card className="bg-card/50 border-border">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Box className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground mb-4">Aún no hay recursos configurados</p>
-                <Link href={`/dashboard/applications/${id}/resources/new`}>
-                  <Button className="gap-2">
+                <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
+                  <Button className="gap-2" disabled={!currentEnvDetails?.id}>
                     <Plus className="h-4 w-4" />
                     Crear Primer Recurso
                   </Button>
@@ -581,26 +646,40 @@ export default function ApplicationDetailPage({
             </Card>
           ) : (
             <div className="space-y-3">
-              {currentEnvData.resources.map((resource: any) => (
-                <Card key={resource.id} className="bg-card/50 border-border">
-                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+              {templates.map((template: any) => (
+                <Card key={template.id} className="bg-card/50 border-border py-0">
+                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
                     <div className="flex items-start gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                         <Box className="h-5 w-5 text-primary" />
                       </div>
                       <div className="space-y-1 min-w-0">
-                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{resource.name}</p>
+                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{template.name}</p>
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">Modo {resource.mode === "unit" ? "unitario" : "múltiple"}</span>
+                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">
+                            Tipo {template.type === "UNITARY" ? "Unitario" : "Múltiple"}
+                          </span>
+                          {template.defaultTtlMs && (
+                            <>
+                              <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                              <span className="bg-secondary/50 px-2 py-0.5 rounded">
+                                TTL: {formatTtl(template.defaultTtlMs)}
+                              </span>
+                            </>
+                          )}
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span className="bg-secondary/50 px-2 py-0.5 rounded">{resource.activeReservations} reservas activas</span>
+                          <span className="bg-secondary/50 px-2 py-0.5 rounded">
+                            Res: {template.conflictResolution}
+                          </span>
                         </div>
+                        {template.description && (
+                          <p className="text-xs text-muted-foreground italic mt-1 pr-6 line-clamp-1">
+                            {template.description}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
-                      <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(resource.status)}`}>
-                        {resource.status}
-                      </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -608,18 +687,19 @@ export default function ApplicationDetailPage({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <Link href={`/dashboard/applications/${id}/resources/${resource.id}/edit`}>
-                            <DropdownMenuItem className="cursor-pointer">
-                              <Settings className="h-4 w-4 mr-2" />
-                              Configurar
-                            </DropdownMenuItem>
-                          </Link>
-                          <DropdownMenuItem>
-                            <Pause className="h-4 w-4 mr-2" />
-                            Pausar
+                          <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/applications/${id}/resources/${template.id}/edit`}>
+                              <span className="flex items-center w-full cursor-pointer">
+                                <Settings className="h-4 w-4 mr-2" />
+                                Configurar
+                              </span>
+                            </Link>
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive cursor-pointer"
+                            onClick={() => handleOpenDeleteTemplate(template)}
+                          >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Eliminar
                           </DropdownMenuItem>
@@ -662,8 +742,8 @@ export default function ApplicationDetailPage({
           ) : (
             <div className="space-y-3">
               {currentEnvData.locks.map((lock: any) => (
-                <Card key={lock.id} className="bg-card/50 border-border">
-                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+                <Card key={lock.id} className="bg-card/50 border-border py-0">
+                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
                     <div className="flex items-start gap-3">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-chart-2/10">
                         <Lock className="h-5 w-5 text-chart-2" />
@@ -726,8 +806,8 @@ export default function ApplicationDetailPage({
 
           <div className="space-y-3">
             {currentEnvData.apiKeys.map((key: any) => (
-              <Card key={key.id} className="bg-card/50 border-border">
-                <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
+              <Card key={key.id} className="bg-card/50 border-border py-0">
+                <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
                   <div className="flex items-start gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
                       <Key className="h-5 w-5 text-muted-foreground" />
@@ -766,6 +846,34 @@ export default function ApplicationDetailPage({
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Delete Shared Resource Template Confirmation Dialog */}
+      <Dialog open={confirmDeleteTemplateOpen} onOpenChange={setConfirmDeleteTemplateOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Eliminar Plantilla de Recurso</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas eliminar la plantilla de recurso{" "}
+              <span className="font-semibold text-foreground">{templateToDelete?.name}</span>?
+              Esta acción es irreversible y revocaría el acceso a este recurso en el motor SRE.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDeleteTemplateOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteTemplateConfirm}
+            >
+              Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

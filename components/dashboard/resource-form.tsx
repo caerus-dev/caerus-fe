@@ -37,25 +37,35 @@ const formSchema = z.object({
   }),
   description: z.string().optional(),
   mode: z.enum(["unit", "multiple"]),
-  ttl: z.coerce.number().min(1, { message: "El TTL debe ser de al menos 1 minuto." }),
+  ttl: z.coerce.number().min(1, { message: "El TTL debe ser de al menos 1 milisegundo." }),
   saveMetadata: z.boolean().default(false),
   conflictStrategy: z.enum(["fail", "retry", "queue"]),
   retryInterval: z.coerce.number().min(100).optional(),
   maxRetries: z.coerce.number().min(1).optional(),
   idempotency: z.boolean().default(false),
+  notificationWebhookUrl: z.string().max(1000).optional().or(z.literal("")),
 })
 
 export type ResourceFormValues = z.infer<typeof formSchema>
 
 interface ResourceFormProps {
   applicationId: string
+  environmentId?: string
+  templateId?: string
   initialData?: ResourceFormValues
   isEditing?: boolean
 }
 
-export function ResourceForm({ applicationId, initialData, isEditing = false }: ResourceFormProps) {
+export function ResourceForm({ 
+  applicationId, 
+  environmentId, 
+  templateId, 
+  initialData, 
+  isEditing = false 
+}: ResourceFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
 
   const form = useForm<ResourceFormValues>({
     resolver: zodResolver(formSchema),
@@ -63,25 +73,81 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
       name: "",
       description: "",
       mode: "unit",
-      ttl: 15,
+      ttl: 900000,
       saveMetadata: false,
       conflictStrategy: "fail",
       retryInterval: 500,
       maxRetries: 3,
       idempotency: false,
+      notificationWebhookUrl: "",
     },
   })
 
   const conflictStrategy = form.watch("conflictStrategy")
 
-  function onSubmit(values: ResourceFormValues) {
+  async function onSubmit(values: ResourceFormValues) {
     setIsSubmitting(true)
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Submitted:", values)
+    setErrorMsg("")
+
+    const payload = {
+      name: values.name,
+      description: values.description || "",
+      type: values.mode === "unit" ? "UNITARY" : "MULTIPLE",
+      defaultTtlMs: values.ttl,
+      conflictResolution: values.conflictStrategy.toUpperCase(),
+      retryIntervalMs: values.conflictStrategy === "retry" ? Number(values.retryInterval) : null,
+      maxRetryCount: values.conflictStrategy === "retry" ? Number(values.maxRetries) : null,
+      useIdempotency: values.idempotency,
+      saveMetadata: values.saveMetadata,
+      notificationWebhookUrl: values.notificationWebhookUrl || null,
+      ...(isEditing ? {} : { environmentId }),
+    }
+
+    try {
+      const url = isEditing
+        ? `/api/shared-resource-templates/${templateId}`
+        : `/api/shared-resource-templates`
+      
+      const res = await fetch(url, {
+        method: isEditing ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+
+      if (res.ok) {
+        router.push(`/dashboard/applications/${applicationId}`)
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        setErrorMsg(errData.error || "Ocurrió un error al guardar el recurso.")
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error)
+      setErrorMsg("Ocurrió un error inesperado al intentar guardar el recurso.")
+    } finally {
       setIsSubmitting(false)
-      router.push(`/dashboard/applications/${applicationId}`)
-    }, 1000)
+    }
+  }
+
+  async function handleDelete() {
+    if (!window.confirm("¿Estás seguro que deseas eliminar esta plantilla de recurso?")) return
+    setIsSubmitting(true)
+    setErrorMsg("")
+    try {
+      const res = await fetch(`/api/shared-resource-templates/${templateId}`, {
+        method: "DELETE",
+      })
+      if (res.ok) {
+        router.push(`/dashboard/applications/${applicationId}`)
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        setErrorMsg(errData.error || "Error al intentar eliminar el recurso.")
+        setIsSubmitting(false)
+      }
+    } catch (error) {
+      console.error("Error deleting template:", error)
+      setErrorMsg("Error inesperado al intentar eliminar el recurso.")
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -109,6 +175,11 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {errorMsg && (
+            <div className="p-4 rounded-lg bg-destructive/10 text-destructive text-sm border border-destructive/20 font-medium">
+              {errorMsg}
+            </div>
+          )}
           <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -183,7 +254,7 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                   name="ttl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>TTL por Defecto (minutos)</FormLabel>
+                      <FormLabel>TTL por Defecto (milisegundos)</FormLabel>
                       <FormControl>
                         <Input type="number" {...field} />
                       </FormControl>
@@ -216,6 +287,23 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="notificationWebhookUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL del Webhook de Notificación</FormLabel>
+                    <FormControl>
+                      <Input placeholder="ej. https://api.miempresa.com/webhooks/recursos" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      URL opcional donde se enviarán notificaciones sobre eventos de este recurso.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 
@@ -311,7 +399,7 @@ export function ResourceForm({ applicationId, initialData, isEditing = false }: 
 
           <div className="flex items-center justify-between pt-4">
             {isEditing ? (
-              <Button type="button" variant="destructive" className="gap-2">
+              <Button type="button" variant="destructive" className="gap-2" onClick={handleDelete} disabled={isSubmitting}>
                 <Trash2 className="h-4 w-4" />
                 Eliminar Plantilla
               </Button>
