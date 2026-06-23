@@ -26,7 +26,6 @@ cp .env.local.example .env.local
 Llena las siguientes variables en tu `.env.local`:
 
 ```ini
-APP_BASE_URL=http://localhost:3000
 AUTH0_DOMAIN=tu-dominio.auth0.com
 AUTH0_CLIENT_ID=tu-client-id
 AUTH0_CLIENT_SECRET=tu-client-secret

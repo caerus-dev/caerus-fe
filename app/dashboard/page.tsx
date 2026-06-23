@@ -68,15 +68,13 @@ export default function DashboardPage() {
   const usagePercentage = 68
 
   const getEnvironmentBadgeClass = (env: string) => {
-    switch (env) {
-      case "prod":
-        return "bg-primary/20 text-primary"
-      case "dev":
-        return "bg-chart-2/20 text-chart-2"
-      case "staging":
-        return "bg-chart-4/20 text-chart-4"
-      default:
-        return "bg-secondary text-muted-foreground"
+    const lower = env.toLowerCase()
+    if (lower === "prod" || lower === "production") {
+      return "bg-primary/20 text-primary"
+    } else if (lower === "stage" || lower === "staging") {
+      return "bg-chart-4/20 text-chart-4"
+    } else {
+      return "bg-chart-2/20 text-chart-2"
     }
   }
 
