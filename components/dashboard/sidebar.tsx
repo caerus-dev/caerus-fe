@@ -44,11 +44,6 @@ const navigation = [
     href: "/dashboard/api-keys",
     icon: Key,
   },
-  {
-    name: "Colaboradores",
-    href: "/dashboard/collaborators",
-    icon: Users,
-  },
 ]
 
 // Mock applications removed to fetch from API dynamically

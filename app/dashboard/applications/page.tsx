@@ -45,7 +45,33 @@ interface Application {
   apiCalls: number
   createdAt: string
   status: "active" | "inactive"
+  myRole?: string
 }
+
+const getRoleBadge = (role: string) => {
+  const normalized = role?.toUpperCase();
+  switch (normalized) {
+    case "OWNER":
+      return (
+        <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20 text-xs font-semibold">
+          Propietario
+        </Badge>
+      );
+    case "ADMIN":
+      return (
+        <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs font-semibold">
+          Administrador
+        </Badge>
+      );
+    case "VIEWER":
+    default:
+      return (
+        <Badge variant="outline" className="bg-zinc-500/10 text-zinc-400 border-zinc-500/20 text-xs font-semibold">
+          Visor
+        </Badge>
+      );
+  }
+};
 
 const mockApplications: Application[] = [
   {
@@ -120,6 +146,7 @@ export default function ApplicationsPage() {
                 apiCalls,
                 createdAt: app.createdAt || new Date().toISOString(),
                 status: "active",
+                myRole: app.myRole || "VIEWER",
               };
             });
             setApplications(mapped);
@@ -260,7 +287,7 @@ export default function ApplicationsPage() {
                 <CardHeader className="pb-0">
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
-                      <CardTitle className="text-lg flex items-center gap-2">
+                      <CardTitle className="text-lg flex flex-wrap items-center gap-2">
                         {app.name}
                         <Badge
                           variant={app.status === "active" ? "default" : "secondary"}
@@ -268,6 +295,7 @@ export default function ApplicationsPage() {
                         >
                           {app.status === "active" ? "Activa" : "Inactiva"}
                         </Badge>
+                        {getRoleBadge(app.myRole || "VIEWER")}
                       </CardTitle>
                       <CardDescription className={`line-clamp-2 ${!app.description ? "italic text-muted-foreground/50" : ""}`}>
                         {app.description || "Sin descripción configurada"}
@@ -286,12 +314,14 @@ export default function ApplicationsPage() {
                             Ver Detalles
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/applications/${app.id}/settings`}>
-                            <Settings className="w-4 h-4 mr-2" />
-                            Configuracion
-                          </Link>
-                        </DropdownMenuItem>
+                        {app.myRole !== "VIEWER" && (
+                          <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/applications/${app.id}/settings`}>
+                              <Settings className="w-4 h-4 mr-2" />
+                              Configuracion
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem asChild>
                           <Link href={`/dashboard/applications/${app.id}/team`}>
                             <Users className="w-4 h-4 mr-2" />
@@ -304,14 +334,18 @@ export default function ApplicationsPage() {
                             API Keys
                           </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => handleDeleteClick(app)}
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" />
-                          Eliminar
-                        </DropdownMenuItem>
+                        {app.myRole === "OWNER" && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => handleDeleteClick(app)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>

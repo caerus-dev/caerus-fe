@@ -297,6 +297,7 @@ export default function ApplicationDetailPage({
             resources: [],
             locks: [],
             apiKeys: [],
+            myRole: data.myRole || "VIEWER",
           })
         } else {
           console.error("Failed to fetch application details")
@@ -481,12 +482,14 @@ export default function ApplicationDetailPage({
                   Equipo
                 </Button>
               </Link>
-              <Link href={`/dashboard/applications/${id}/settings`} className="w-full sm:w-auto">
-                <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
-                  <Settings className="h-4 w-4" />
-                  Configuración
-                </Button>
-              </Link>
+              {app.myRole !== "VIEWER" && (
+                <Link href={`/dashboard/applications/${id}/settings`} className="w-full sm:w-auto">
+                  <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
+                    <Settings className="h-4 w-4" />
+                    Configuración
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -623,12 +626,14 @@ export default function ApplicationDetailPage({
             <p className="text-sm text-muted-foreground">
               {templates.length === 1 ? "1 recurso configurado" : `${templates.length} recursos configurados`}
             </p>
-            <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
-              <Button className="gap-2" disabled={!currentEnvDetails?.id}>
-                <Plus className="h-4 w-4" />
-                Nuevo Recurso
-              </Button>
-            </Link>
+            {app.myRole !== "VIEWER" && (
+              <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
+                <Button className="gap-2" disabled={!currentEnvDetails?.id}>
+                  <Plus className="h-4 w-4" />
+                  Nuevo Recurso
+                </Button>
+              </Link>
+            )}
           </div>
 
           {templates.length === 0 ? (
@@ -636,12 +641,14 @@ export default function ApplicationDetailPage({
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Box className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground mb-4">Aún no hay recursos configurados</p>
-                <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
-                  <Button className="gap-2" disabled={!currentEnvDetails?.id}>
-                    <Plus className="h-4 w-4" />
-                    Crear Primer Recurso
-                  </Button>
-                </Link>
+                {app.myRole !== "VIEWER" && (
+                  <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
+                    <Button className="gap-2" disabled={!currentEnvDetails?.id}>
+                      <Plus className="h-4 w-4" />
+                      Crear Primer Recurso
+                    </Button>
+                  </Link>
+                )}
               </CardContent>
             </Card>
           ) : (
@@ -680,31 +687,33 @@ export default function ApplicationDetailPage({
                       </div>
                     </div>
                     <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/applications/${id}/resources/${template.id}/edit`}>
-                              <span className="flex items-center w-full cursor-pointer">
-                                <Settings className="h-4 w-4 mr-2" />
-                                Configurar
-                              </span>
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive cursor-pointer"
-                            onClick={() => handleOpenDeleteTemplate(template)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Eliminar
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {app.myRole !== "VIEWER" && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/dashboard/applications/${id}/resources/${template.id}/edit`}>
+                                <span className="flex items-center w-full cursor-pointer">
+                                  <Settings className="h-4 w-4 mr-2" />
+                                  Configurar
+                                </span>
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive cursor-pointer"
+                              onClick={() => handleOpenDeleteTemplate(template)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -718,12 +727,14 @@ export default function ApplicationDetailPage({
             <p className="text-sm text-muted-foreground">
               {currentEnvData.locks.length === 1 ? "1 lock configurado" : `${currentEnvData.locks.length} locks configurados`}
             </p>
-            <Link href={`/dashboard/applications/${id}/locks/new`}>
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                Nuevo Lock
-              </Button>
-            </Link>
+            {app.myRole !== "VIEWER" && (
+              <Link href={`/dashboard/applications/${id}/locks/new`}>
+                <Button className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Nuevo Lock
+                </Button>
+              </Link>
+            )}
           </div>
 
           {currentEnvData.locks.length === 0 ? (
@@ -731,12 +742,14 @@ export default function ApplicationDetailPage({
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Lock className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground mb-4">Aún no hay configuraciones de locks</p>
-                <Link href={`/dashboard/applications/${id}/locks/new`}>
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Crear Primer Lock
-                  </Button>
-                </Link>
+                {app.myRole !== "VIEWER" && (
+                  <Link href={`/dashboard/applications/${id}/locks/new`}>
+                    <Button className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Crear Primer Lock
+                    </Button>
+                  </Link>
+                )}
               </CardContent>
             </Card>
           ) : (
@@ -761,30 +774,32 @@ export default function ApplicationDetailPage({
                       <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(lock.status)}`}>
                         {lock.status}
                       </span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <Link href={`/dashboard/applications/${id}/locks/${lock.id}/edit`}>
-                            <DropdownMenuItem className="cursor-pointer">
-                              <Settings className="h-4 w-4 mr-2" />
-                              Configurar
+                      {app.myRole !== "VIEWER" && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <Link href={`/dashboard/applications/${id}/locks/${lock.id}/edit`}>
+                              <DropdownMenuItem className="cursor-pointer">
+                                <Settings className="h-4 w-4 mr-2" />
+                                Configurar
+                              </DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuItem>
+                              <Play className="h-4 w-4 mr-2" />
+                              Liberar Todos
                             </DropdownMenuItem>
-                          </Link>
-                          <DropdownMenuItem>
-                            <Play className="h-4 w-4 mr-2" />
-                            Liberar Todos
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-destructive">
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Eliminar
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-destructive">
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
