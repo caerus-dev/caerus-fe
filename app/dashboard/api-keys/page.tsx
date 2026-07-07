@@ -1,68 +1,157 @@
 "use client"
 
-import { useState } from "react"
-import { Plus, Key, Copy, Check, Eye, EyeOff, Trash2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Plus, Key, Copy, Check, Trash2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
-// Mock data for API keys
-const initialApiKeys = [
-  {
-    id: "1",
-    name: "Production API Key",
-    key: "crs_prod_sk_1234567890abcdef",
-    environment: "production",
-    createdAt: "2024-01-15",
-    lastUsed: "hace 2 horas",
-  },
-  {
-    id: "2",
-    name: "Staging API Key",
-    key: "crs_stag_sk_abcdef1234567890",
-    environment: "staging",
-    createdAt: "2024-01-10",
-    lastUsed: "hace 1 día",
-  },
-  {
-    id: "3",
-    name: "Development Key",
-    key: "crs_dev_sk_test1234567890ab",
-    environment: "development",
-    createdAt: "2024-01-05",
-    lastUsed: "hace 5 min",
-  },
-]
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { cn } from "@/lib/utils"
 
 export default function ApiKeysPage() {
-  const [apiKeys] = useState(initialApiKeys)
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [newKeyName, setNewKeyName] = useState("")
-  const [newKeyEnv, setNewKeyEnv] = useState("development")
-  const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set())
+  const [apps, setApps] = useState<any[]>([])
+  const [selectedAppId, setSelectedAppId] = useState<string>("")
+  const [selectedEnvId, setSelectedEnvId] = useState<string>("")
+  const [apiKeys, setApiKeys] = useState<any[]>([])
+  const [isAppsLoading, setIsAppsLoading] = useState(true)
+  const [isKeysLoading, setIsKeysLoading] = useState(false)
 
-  const copyToClipboard = async (key: string, id: string) => {
-    await navigator.clipboard.writeText(key)
+  const [confirmRevokeKeyOpen, setConfirmRevokeKeyOpen] = useState(false)
+  const [keyToRevoke, setKeyToRevoke] = useState<any>(null)
+  const [showCreatedKeyDialog, setShowCreatedKeyDialog] = useState(false)
+  const [createdRawKey, setCreatedRawKey] = useState("")
+  const [copiedKey, setCopiedKey] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+
+  // Fetch all applications
+  useEffect(() => {
+    const fetchApps = async () => {
+      try {
+        const res = await fetch("/api/applications")
+        if (res.ok) {
+          const data = await res.json()
+          const content = data.content || []
+          setApps(content)
+          if (content.length > 0) {
+            setSelectedAppId(content[0].id)
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching applications:", error)
+      } finally {
+        setIsAppsLoading(false)
+      }
+    }
+    fetchApps()
+  }, [])
+
+  // Auto-select first environment of selected application
+  const selectedAppObj = apps.find((app) => app.id === selectedAppId)
+  const environments = selectedAppObj?.environments || []
+
+  useEffect(() => {
+    if (environments.length > 0) {
+      setSelectedEnvId(environments[0].id)
+    } else {
+      setSelectedEnvId("")
+      setApiKeys([])
+    }
+  }, [selectedAppId, environments])
+
+  // Fetch API keys for selected environment
+  useEffect(() => {
+    if (!selectedEnvId) return
+
+    const fetchKeys = async () => {
+      setIsKeysLoading(true)
+      try {
+        const res = await fetch(`/api/api-keys?environmentId=${selectedEnvId}`)
+        if (res.ok) {
+          const data = await res.json()
+          setApiKeys(data.content || [])
+        }
+      } catch (error) {
+        console.error("Error fetching API keys:", error)
+      } finally {
+        setIsKeysLoading(false)
+      }
+    }
+    fetchKeys()
+  }, [selectedEnvId])
+
+  const handleCreateApiKey = async () => {
+    if (!selectedEnvId) return
+    try {
+      const res = await fetch("/api/api-keys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ environmentId: selectedEnvId }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCreatedRawKey(data.rawKey)
+        setShowCreatedKeyDialog(true)
+        setApiKeys((prev) => [data, ...prev])
+      } else {
+        console.error("Failed to create API key")
+      }
+    } catch (error) {
+      console.error("Error creating API key:", error)
+    }
+  }
+
+  const handleOpenRevokeKey = (key: any) => {
+    setKeyToRevoke(key)
+    setConfirmRevokeKeyOpen(true)
+  }
+
+  const handleRevokeKeyConfirm = async () => {
+    if (!keyToRevoke) return
+    try {
+      const res = await fetch(`/api/api-keys/${keyToRevoke.id}/revoke`, {
+        method: "POST",
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setApiKeys((prev) =>
+          prev.map((k) => (k.id === keyToRevoke.id ? data : k))
+        )
+        setConfirmRevokeKeyOpen(false)
+        setKeyToRevoke(null)
+      } else {
+        console.error("Failed to revoke API key")
+      }
+    } catch (error) {
+      console.error("Error revoking API key:", error)
+    }
+  }
+
+  const copyRawKeyToClipboard = async () => {
+    if (!createdRawKey) return
+    await navigator.clipboard.writeText(createdRawKey)
+    setCopiedKey(true)
+    setTimeout(() => setCopiedKey(false), 2000)
+  }
+
+  const copyToClipboard = async (text: string, id: string) => {
+    await navigator.clipboard.writeText(text)
     setCopiedId(id)
     setTimeout(() => setCopiedId(null), 2000)
-  }
-
-  const toggleKeyVisibility = (id: string) => {
-    setVisibleKeys((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
-    })
-  }
-
-  const maskKey = (key: string) => {
-    return key.substring(0, 12) + "••••••••••••••••"
   }
 
   return (
@@ -75,138 +164,155 @@ export default function ApiKeysPage() {
             Gestiona las credenciales de acceso a la API de Caerus
           </p>
         </div>
-        <Button className="gap-2" onClick={() => setShowCreateModal(true)}>
-          <Plus className="h-4 w-4" />
-          Nueva API Key
-        </Button>
       </div>
 
-      {/* Create modal */}
-      {showCreateModal && (
-        <Card className="bg-card border-primary/50">
-          <CardHeader>
-            <CardTitle className="text-lg">Crear Nueva API Key</CardTitle>
-            <CardDescription>
-              Las API keys permiten autenticar requests a la API de Caerus
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+      {/* Selectors card */}
+      <Card className="bg-card/50 border-border">
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="keyName">Nombre de la Key</Label>
-              <Input
-                id="keyName"
-                placeholder="ej: Backend Production"
-                value={newKeyName}
-                onChange={(e) => setNewKeyName(e.target.value)}
-                className="bg-secondary/50"
-              />
+              <Label htmlFor="appSelect">Aplicación</Label>
+              {isAppsLoading ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  Cargando aplicaciones...
+                </div>
+              ) : apps.length === 0 ? (
+                <p className="text-sm text-muted-foreground pt-2">No tienes aplicaciones creadas.</p>
+              ) : (
+                <Select value={selectedAppId} onValueChange={setSelectedAppId}>
+                  <SelectTrigger id="appSelect" className="bg-secondary/40 border-border cursor-pointer">
+                    <SelectValue placeholder="Seleccionar Aplicación" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {apps.map((app) => (
+                      <SelectItem key={app.id} value={app.id}>
+                        {app.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
+
             <div className="space-y-2">
-              <Label>Environment</Label>
-              <div className="flex gap-2">
-                {["development", "staging", "production"].map((env) => (
-                  <button
-                    key={env}
-                    type="button"
-                    onClick={() => setNewKeyEnv(env)}
-                    className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${
-                      newKeyEnv === env
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-secondary/50 border-border hover:border-primary/50"
-                    }`}
-                  >
-                    {env.charAt(0).toUpperCase() + env.slice(1)}
-                  </button>
-                ))}
-              </div>
+              <Label htmlFor="envSelect">Ambiente</Label>
+              {environments.length === 0 ? (
+                <p className="text-sm text-muted-foreground pt-2">Selecciona una aplicación con ambientes.</p>
+              ) : (
+                <Select value={selectedEnvId} onValueChange={setSelectedEnvId}>
+                  <SelectTrigger id="envSelect" className="bg-secondary/40 border-border cursor-pointer">
+                    <SelectValue placeholder="Seleccionar Ambiente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {environments.map((env: any) => (
+                      <SelectItem key={env.id} value={env.id}>
+                        <span className="flex items-center gap-1.5 font-mono">
+                          <span className={cn(
+                            "h-2 w-2 rounded-full shrink-0",
+                            env.name === "prod" || env.name === "production"
+                              ? "bg-primary animate-pulse"
+                              : env.name === "stage" || env.name === "staging"
+                              ? "bg-chart-4"
+                              : "bg-chart-2"
+                          )} />
+                          {env.name}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowCreateModal(false)}
-              >
-                Cancelar
-              </Button>
-              <Button onClick={() => setShowCreateModal(false)}>
-                Crear Key
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* API Keys list */}
       <div className="space-y-4">
-        {apiKeys.map((apiKey) => (
-          <Card key={apiKey.id} className="bg-card/50 border-border">
-            <CardContent className="py-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
-                    <Key className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold">{apiKey.name}</h3>
-                      <span
-                        className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                          apiKey.environment === "production"
-                            ? "bg-primary/10 text-primary"
-                            : apiKey.environment === "staging"
-                            ? "bg-chart-3/10 text-chart-3"
-                            : "bg-chart-2/10 text-chart-2"
-                        }`}
-                      >
-                        {apiKey.environment}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <code className="text-sm font-mono text-muted-foreground bg-secondary/50 px-2 py-1 rounded">
-                        {visibleKeys.has(apiKey.id)
-                          ? apiKey.key
-                          : maskKey(apiKey.key)}
-                      </code>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => toggleKeyVisibility(apiKey.id)}
-                      >
-                        {visibleKeys.has(apiKey.id) ? (
-                          <EyeOff className="h-4 w-4 text-muted-foreground" />
-                        ) : (
-                          <Eye className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => copyToClipboard(apiKey.key, apiKey.id)}
-                      >
-                        {copiedId === apiKey.id ? (
-                          <Check className="h-4 w-4 text-primary" />
-                        ) : (
-                          <Copy className="h-4 w-4 text-muted-foreground" />
-                        )}
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Creada: {apiKey.createdAt} • Último uso: {apiKey.lastUsed}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">Claves en el ambiente</h2>
+          {selectedEnvId && selectedAppObj?.myRole !== "VIEWER" && (
+            <Button className="gap-2" onClick={handleCreateApiKey}>
+              <Plus className="h-4 w-4" />
+              Generar API Key
+            </Button>
+          )}
+        </div>
+
+        {isKeysLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+        ) : !selectedEnvId ? (
+          <Card className="bg-card/50 border-border">
+            <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+              <Key className="h-10 w-10 mb-3" />
+              <p>Selecciona una aplicación y ambiente para ver las API Keys.</p>
             </CardContent>
           </Card>
-        ))}
+        ) : apiKeys.length === 0 ? (
+          <Card className="bg-card/50 border-border">
+            <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground text-center">
+              <Key className="h-10 w-10 mb-3 text-muted-foreground" />
+              <p className="mb-4">No hay API Keys configuradas para este ambiente.</p>
+              {selectedAppObj?.myRole !== "VIEWER" && (
+                <Button className="gap-2" onClick={handleCreateApiKey}>
+                  <Plus className="h-4 w-4" />
+                  Crear API Key
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {apiKeys.map((key: any) => (
+              <Card key={key.id} className="bg-card/50 border-border py-0">
+                <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
+                  <div className="flex items-start gap-3">
+                    <div className={cn(
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border",
+                      key.state === "ACTIVE" 
+                        ? "bg-primary/10 border-primary/20 text-primary" 
+                        : "bg-secondary text-muted-foreground"
+                    )}>
+                      <Key className="h-5 w-5" />
+                    </div>
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-mono text-sm sm:text-base">{key.keyPrefix}••••••••••••</p>
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                          key.state === "ACTIVE"
+                            ? "bg-green-500/10 text-green-400 border border-green-500/20"
+                            : "bg-destructive/10 text-destructive border border-destructive/20"
+                        }`}>
+                          {key.state === "ACTIVE" ? "Activa" : "Revocada"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Creada el: {new Date(key.createdAt).toLocaleString()} 
+                        {key.revokedAt && ` • Revocada el: ${new Date(key.revokedAt).toLocaleString()}`}
+                      </p>
+                    </div>
+                  </div>
+                  {key.state === "ACTIVE" && selectedAppObj?.myRole !== "VIEWER" && (
+                    <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 gap-1 px-3"
+                        onClick={() => handleOpenRevokeKey(key)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Revocar
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Quick start code */}
@@ -263,6 +369,68 @@ export default function ApiKeysPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Revoke API Key Dialog */}
+      <Dialog open={confirmRevokeKeyOpen} onOpenChange={setConfirmRevokeKeyOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Revocar API Key</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas revocar la API Key con prefijo{" "}
+              <span className="font-mono font-semibold text-foreground">{keyToRevoke?.keyPrefix}••••</span>?
+              Esta acción es irreversible y los clientes que usen esta clave ya no podrán autenticarse.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmRevokeKeyOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRevokeKeyConfirm}
+            >
+              Revocar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Created API Key Details Dialog */}
+      <Dialog open={showCreatedKeyDialog} onOpenChange={setShowCreatedKeyDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>API Key Generada</DialogTitle>
+            <DialogDescription>
+              Copia esta API key ahora. Por motivos de seguridad, no se volverá a mostrar.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2 pt-2">
+            <div className="grid flex-1 gap-2">
+              <Input
+                readOnly
+                value={createdRawKey}
+                className="font-mono bg-secondary/50 border-primary/20"
+              />
+            </div>
+            <Button size="sm" className="px-3" onClick={copyRawKeyToClipboard}>
+              <span className="sr-only">Copiar</span>
+              {copiedKey ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            </Button>
+          </div>
+          <DialogFooter className="sm:justify-start pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setShowCreatedKeyDialog(false)}
+            >
+              Cerrar y Listo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
