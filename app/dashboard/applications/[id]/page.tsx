@@ -332,9 +332,9 @@ export default function ApplicationDetailPage({
       setIsApiKeysLoading(true);
       try {
         const [envRes, templatesRes, keysRes] = await Promise.all([
-          fetch(`/api/environments/${activeEnvObj.id}`),
+          fetch(`/api/applications/${id}/environments/${activeEnvObj.id}`),
           fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`),
-          fetch(`/api/api-keys?environmentId=${activeEnvObj.id}`),
+          fetch(`/api/environments/${activeEnvObj.id}/api-keys`),
         ]);
 
         if (envRes.ok) {
@@ -364,10 +364,8 @@ export default function ApplicationDetailPage({
   const handleCreateApiKey = async () => {
     if (!currentEnvDetails) return
     try {
-      const res = await fetch("/api/api-keys", {
+      const res = await fetch(`/api/environments/${currentEnvDetails.id}/api-keys`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ environmentId: currentEnvDetails.id }),
       })
       if (res.ok) {
         const data = await res.json()
@@ -390,7 +388,7 @@ export default function ApplicationDetailPage({
   const handleRevokeKeyConfirm = async () => {
     if (!keyToRevoke) return
     try {
-      const res = await fetch(`/api/api-keys/${keyToRevoke.id}/revoke`, {
+      const res = await fetch(`/api/environments/${currentEnvDetails.id}/api-keys/${keyToRevoke.id}/revoke`, {
         method: "POST",
       })
       if (res.ok) {

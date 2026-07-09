@@ -3,11 +3,11 @@ import { fetchBackend } from "@/lib/api";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string; envId: string }> }
 ) {
-  const { id } = await params;
+  const { id, envId } = await params;
   try {
-    const response = await fetchBackend(`/v1/environments/${id}`);
+    const response = await fetchBackend(`/v1/applications/${id}/environments/${envId}`);
     if (!response.ok) {
       const errorText = await response.text();
       return NextResponse.json(
@@ -19,7 +19,7 @@ export async function GET(
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error(`Error in GET /api/environments/${id}:`, error);
+    console.error(`Error in GET /api/applications/${id}/environments/${envId}:`, error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }
@@ -29,13 +29,16 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string; envId: string }> }
 ) {
-  const { id } = await params;
+  const { id, envId } = await params;
   try {
     const body = await request.json();
-    const response = await fetchBackend(`/v1/environments/${id}`, {
+    const response = await fetchBackend(`/v1/applications/${id}/environments/${envId}`, {
       method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(body),
     });
 
@@ -50,7 +53,7 @@ export async function PUT(
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error(`Error in PUT /api/environments/${id}:`, error);
+    console.error(`Error in PUT /api/applications/${id}/environments/${envId}:`, error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }
@@ -60,11 +63,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string; envId: string }> }
 ) {
-  const { id } = await params;
+  const { id, envId } = await params;
   try {
-    const response = await fetchBackend(`/v1/environments/${id}`, {
+    const response = await fetchBackend(`/v1/applications/${id}/environments/${envId}`, {
       method: "DELETE",
     });
 
@@ -78,7 +81,7 @@ export async function DELETE(
 
     return new NextResponse(null, { status: 204 });
   } catch (error: any) {
-    console.error(`Error in DELETE /api/environments/${id}:`, error);
+    console.error(`Error in DELETE /api/applications/${id}/environments/${envId}:`, error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }

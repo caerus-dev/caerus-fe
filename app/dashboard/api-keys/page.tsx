@@ -80,7 +80,7 @@ export default function ApiKeysPage() {
     const fetchKeys = async () => {
       setIsKeysLoading(true)
       try {
-        const res = await fetch(`/api/api-keys?environmentId=${selectedEnvId}`)
+        const res = await fetch(`/api/environments/${selectedEnvId}/api-keys`)
         if (res.ok) {
           const data = await res.json()
           setApiKeys(data.content || [])
@@ -97,10 +97,8 @@ export default function ApiKeysPage() {
   const handleCreateApiKey = async () => {
     if (!selectedEnvId) return
     try {
-      const res = await fetch("/api/api-keys", {
+      const res = await fetch(`/api/environments/${selectedEnvId}/api-keys`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ environmentId: selectedEnvId }),
       })
       if (res.ok) {
         const data = await res.json()
@@ -123,7 +121,7 @@ export default function ApiKeysPage() {
   const handleRevokeKeyConfirm = async () => {
     if (!keyToRevoke) return
     try {
-      const res = await fetch(`/api/api-keys/${keyToRevoke.id}/revoke`, {
+      const res = await fetch(`/api/environments/${selectedEnvId}/api-keys/${keyToRevoke.id}/revoke`, {
         method: "POST",
       })
       if (res.ok) {
