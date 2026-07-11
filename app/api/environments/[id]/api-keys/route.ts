@@ -1,22 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchBackend } from "@/lib/api";
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   try {
-    const { searchParams } = new URL(request.url);
-    const applicationId = searchParams.get("applicationId");
-    if (!applicationId) {
-      return NextResponse.json(
-        { error: "applicationId query parameter is required" },
-        { status: 400 }
-      );
-    }
-
-    const response = await fetchBackend(`/v1/environments?applicationId=${applicationId}&size=50`);
+    const response = await fetchBackend(`/v1/environments/${id}/api-keys?size=50`);
     if (!response.ok) {
       const errorText = await response.text();
       return NextResponse.json(
-        { error: errorText || "Failed to fetch environments" },
+        { error: errorText || "Failed to fetch API keys" },
         { status: response.status }
       );
     }
@@ -24,7 +19,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error("Error in GET /api/environments:", error);
+    console.error(`Error in GET /api/environments/${id}/api-keys:`, error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }
@@ -32,18 +27,20 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   try {
-    const body = await request.json();
-    const response = await fetchBackend("/v1/environments", {
+    const response = await fetchBackend(`/v1/environments/${id}/api-keys`, {
       method: "POST",
-      body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       return NextResponse.json(
-        { error: errorText || "Failed to create environment" },
+        { error: errorText || "Failed to create API key" },
         { status: response.status }
       );
     }
@@ -51,7 +48,7 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error("Error in POST /api/environments:", error);
+    console.error(`Error in POST /api/environments/${id}/api-keys:`, error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }

@@ -59,7 +59,7 @@ export default function ApplicationSettingsPage({
       try {
         const [appRes, envsRes] = await Promise.all([
           fetch(`/api/applications/${id}`),
-          fetch(`/api/environments?applicationId=${id}`),
+          fetch(`/api/applications/${id}/environments`),
         ])
 
         if (appRes.ok) {
@@ -129,11 +129,10 @@ export default function ApplicationSettingsPage({
     setIsSavingEnv(true)
     try {
       if (envDialogMode === "create") {
-        const res = await fetch("/api/environments", {
+        const res = await fetch(`/api/applications/${id}/environments`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            applicationId: id,
             name: envForm.name,
             description: envForm.description,
           }),
@@ -156,7 +155,7 @@ export default function ApplicationSettingsPage({
           setEnvFormError(errData.error || "Error al crear el ambiente")
         }
       } else if (envDialogMode === "edit" && selectedEnvForEdit) {
-        const res = await fetch(`/api/environments/${selectedEnvForEdit.id}`, {
+        const res = await fetch(`/api/applications/${id}/environments/${selectedEnvForEdit.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -201,7 +200,7 @@ export default function ApplicationSettingsPage({
     if (!selectedEnvForDelete) return
     setIsSavingEnv(true)
     try {
-      const res = await fetch(`/api/environments/${selectedEnvForDelete.id}`, {
+      const res = await fetch(`/api/applications/${id}/environments/${selectedEnvForDelete.id}`, {
         method: "DELETE",
       })
       if (res.ok) {

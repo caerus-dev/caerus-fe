@@ -16,8 +16,11 @@ import {
   Pause,
   Trash2,
   Loader2,
+  Copy,
+  Check,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
@@ -265,6 +268,14 @@ export default function ApplicationDetailPage({
   const [confirmDeleteTemplateOpen, setConfirmDeleteTemplateOpen] = useState(false)
   const [templateToDelete, setTemplateToDelete] = useState<any>(null)
 
+  const [apiKeys, setApiKeys] = useState<any[]>([])
+  const [isApiKeysLoading, setIsApiKeysLoading] = useState(false)
+  const [confirmRevokeKeyOpen, setConfirmRevokeKeyOpen] = useState(false)
+  const [keyToRevoke, setKeyToRevoke] = useState<any>(null)
+  const [showCreatedKeyDialog, setShowCreatedKeyDialog] = useState(false)
+  const [createdRawKey, setCreatedRawKey] = useState("")
+  const [copiedKey, setCopiedKey] = useState(false)
+
   const currentEnvData = app && selectedEnv
     ? getMockDataForEnv(app.name, selectedEnv)
     : { resources: [], locks: [], apiKeys: [] }
@@ -318,10 +329,12 @@ export default function ApplicationDetailPage({
 
     const fetchEnvDetailsAndTemplates = async () => {
       setIsTemplatesLoading(true);
+      setIsApiKeysLoading(true);
       try {
-        const [envRes, templatesRes] = await Promise.all([
-          fetch(`/api/environments/${activeEnvObj.id}`),
+        const [envRes, templatesRes, keysRes] = await Promise.all([
+          fetch(`/api/applications/${id}/environments/${activeEnvObj.id}`),
           fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`),
+          fetch(`/api/environments/${activeEnvObj.id}/api-keys`),
         ]);
 
         if (envRes.ok) {
@@ -333,14 +346,72 @@ export default function ApplicationDetailPage({
           const templatesData = await templatesRes.json();
           setTemplates(templatesData.content || []);
         }
+
+        if (keysRes.ok) {
+          const keysData = await keysRes.json();
+          setApiKeys(keysData.content || []);
+        }
       } catch (error) {
-        console.error("Error fetching environment details or templates:", error);
+        console.error("Error fetching environment details, templates or keys:", error);
       } finally {
         setIsTemplatesLoading(false);
+        setIsApiKeysLoading(false);
       }
     };
     fetchEnvDetailsAndTemplates();
   }, [selectedEnv, app])
+
+  const handleCreateApiKey = async () => {
+    if (!currentEnvDetails) return
+    try {
+      const res = await fetch(`/api/environments/${currentEnvDetails.id}/api-keys`, {
+        method: "POST",
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCreatedRawKey(data.rawKey)
+        setShowCreatedKeyDialog(true)
+        setApiKeys((prev) => [data, ...prev])
+      } else {
+        console.error("Failed to create API key")
+      }
+    } catch (error) {
+      console.error("Error creating API key:", error)
+    }
+  }
+
+  const handleOpenRevokeKey = (key: any) => {
+    setKeyToRevoke(key)
+    setConfirmRevokeKeyOpen(true)
+  }
+
+  const handleRevokeKeyConfirm = async () => {
+    if (!keyToRevoke) return
+    try {
+      const res = await fetch(`/api/environments/${currentEnvDetails.id}/api-keys/${keyToRevoke.id}/revoke`, {
+        method: "POST",
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setApiKeys((prev) =>
+          prev.map((k) => (k.id === keyToRevoke.id ? data : k))
+        )
+        setConfirmRevokeKeyOpen(false)
+        setKeyToRevoke(null)
+      } else {
+        console.error("Failed to revoke API key")
+      }
+    } catch (error) {
+      console.error("Error revoking API key:", error)
+    }
+  }
+
+  const copyRawKeyToClipboard = async () => {
+    if (!createdRawKey) return
+    await navigator.clipboard.writeText(createdRawKey)
+    setCopiedKey(true)
+    setTimeout(() => setCopiedKey(false), 2000)
+  }
 
   const handleOpenDeleteTemplate = (template: any) => {
     setTemplateToDelete(template)
@@ -536,7 +607,9 @@ export default function ApplicationDetailPage({
             </span>
           </div>
           <div>
-            <div className="text-2xl font-bold">{currentEnvData.apiKeys.length}</div>
+            <div className="text-2xl font-bold">
+              {apiKeys.filter((key: any) => key.state === "ACTIVE").length}
+            </div>
           </div>
         </Card>
         <Card className="bg-card/50 border-border p-4 shadow-sm">
@@ -811,54 +884,82 @@ export default function ApplicationDetailPage({
         <TabsContent value="keys" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {currentEnvData.apiKeys.length === 1 ? "1 API Key" : `${currentEnvData.apiKeys.length} API Keys`}
+              {apiKeys.length === 1 ? "1 API Key" : `${apiKeys.length} API Keys`}
             </p>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              Generar API Key
-            </Button>
+            {app.myRole !== "VIEWER" && (
+              <Button className="gap-2" onClick={handleCreateApiKey} disabled={!currentEnvDetails?.id}>
+                <Plus className="h-4 w-4" />
+                Generar API Key
+              </Button>
+            )}
           </div>
 
-          <div className="space-y-3">
-            {currentEnvData.apiKeys.map((key: any) => (
-              <Card key={key.id} className="bg-card/50 border-border py-0">
-                <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-secondary">
-                      <Key className="h-5 w-5 text-muted-foreground" />
+          {isApiKeysLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            </div>
+          ) : apiKeys.length === 0 ? (
+            <Card className="bg-card/50 border-border">
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <Key className="h-12 w-12 text-muted-foreground mb-4" />
+                <p className="text-muted-foreground mb-4">No hay API Keys configuradas para este ambiente</p>
+                {app.myRole !== "VIEWER" && (
+                  <Button className="gap-2" onClick={handleCreateApiKey} disabled={!currentEnvDetails?.id}>
+                    <Plus className="h-4 w-4" />
+                    Crear API Key
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {apiKeys.map((key: any) => (
+                <Card key={key.id} className="bg-card/50 border-border py-0">
+                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
+                    <div className="flex items-start gap-3">
+                      <div className={cn(
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border",
+                        key.state === "ACTIVE" 
+                          ? "bg-primary/10 border-primary/20 text-primary" 
+                          : "bg-secondary text-muted-foreground"
+                      )}>
+                        <Key className="h-5 w-5" />
+                      </div>
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-mono text-sm sm:text-base">{key.keyPrefix}••••••••••••</p>
+                          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
+                            key.state === "ACTIVE"
+                              ? "bg-green-500/10 text-green-400 border border-green-500/20"
+                              : "bg-destructive/10 text-destructive border border-destructive/20"
+                          }`}>
+                            {key.state === "ACTIVE" ? "Activa" : "Revocada"}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Creada el: {new Date(key.createdAt).toLocaleString()} 
+                          {key.revokedAt && ` • Revocada el: ${new Date(key.revokedAt).toLocaleString()}`}
+                        </p>
+                      </div>
                     </div>
-                    <div className="space-y-0.5 min-w-0">
-                      <p className="font-medium text-sm sm:text-base">{key.name}</p>
-                      <p className="text-xs sm:text-sm text-muted-foreground font-mono truncate">
-                        {key.prefix}••••••••••••
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
-                    <div className="text-left sm:text-right text-xs sm:text-sm">
-                      <span className="text-muted-foreground mr-1 sm:mr-0 sm:block">Último uso:</span>
-                      <span>{key.lastUsed === "30s ago" ? "Hace 30s" : key.lastUsed === "2m ago" ? "Hace 2m" : key.lastUsed === "5m ago" ? "Hace 5m" : key.lastUsed}</span>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="h-4 w-4" />
+                    {key.state === "ACTIVE" && app.myRole !== "VIEWER" && (
+                      <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 gap-1 px-3"
+                          onClick={() => handleOpenRevokeKey(key)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Revocar
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Revelar API Key</DropdownMenuItem>
-                        <DropdownMenuItem>Copiar API Key</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
-                          Revocar API Key
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
@@ -885,6 +986,68 @@ export default function ApplicationDetailPage({
               onClick={handleDeleteTemplateConfirm}
             >
               Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Revoke API Key Dialog */}
+      <Dialog open={confirmRevokeKeyOpen} onOpenChange={setConfirmRevokeKeyOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Revocar API Key</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas revocar la API Key con prefijo{" "}
+              <span className="font-mono font-semibold text-foreground">{keyToRevoke?.keyPrefix}••••</span>?
+              Esta acción es irreversible y los clientes que usen esta clave ya no podrán autenticarse.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmRevokeKeyOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRevokeKeyConfirm}
+            >
+              Revocar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Created API Key Details Dialog */}
+      <Dialog open={showCreatedKeyDialog} onOpenChange={setShowCreatedKeyDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>API Key Generada</DialogTitle>
+            <DialogDescription>
+              Copia esta API key ahora. Por motivos de seguridad, no se volverá a mostrar.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2 pt-2">
+            <div className="grid flex-1 gap-2">
+              <Input
+                readOnly
+                value={createdRawKey}
+                className="font-mono bg-secondary/50 border-primary/20"
+              />
+            </div>
+            <Button size="sm" className="px-3" onClick={copyRawKeyToClipboard}>
+              <span className="sr-only">Copiar</span>
+              {copiedKey ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            </Button>
+          </div>
+          <DialogFooter className="sm:justify-start pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setShowCreatedKeyDialog(false)}
+            >
+              Cerrar y Listo
             </Button>
           </DialogFooter>
         </DialogContent>
