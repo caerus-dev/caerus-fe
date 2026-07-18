@@ -739,11 +739,11 @@ export default function ApplicationDetailPage({
                           <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">
                             Tipo {template.type === "UNITARY" ? "Unitario" : "Múltiple"}
                           </span>
-                          {template.defaultTtlMs && (
+                          {template.defaultTtlSec && (
                             <>
                               <span className="hidden sm:inline text-muted-foreground/50">•</span>
                               <span className="bg-secondary/50 px-2 py-0.5 rounded">
-                                TTL: {formatTtl(template.defaultTtlMs)}
+                                TTL: {formatTtl(template.defaultTtlSec)}
                               </span>
                             </>
                           )}
