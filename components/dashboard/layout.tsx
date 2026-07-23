@@ -38,7 +38,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className={cn("transition-all duration-300 ease-in-out", isCollapsed ? "lg:pl-[80px]" : "lg:pl-64")}>
         <DashboardHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="px-4 sm:px-6 lg:px-8 py-6">{children}</main>
+        <main className="px-4 sm:px-6 lg:px-8 py-6">
+          <div className="max-w-7xl mx-auto">{children}</div>
+        </main>
       </div>
     </div>
   )
