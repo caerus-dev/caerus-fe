@@ -85,7 +85,7 @@ export default function NewApplicationPage() {
 
   return (
     
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
           <Link href="/dashboard/applications">
@@ -169,7 +169,7 @@ export default function NewApplicationPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors">
                   <Checkbox
                     id="dev"

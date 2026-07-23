@@ -275,7 +275,7 @@ export default function ApplicationsPage() {
             {filteredApps.map((app) => (
               <Card
                 key={app.id}
-                className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer flex flex-col h-[230px] py-4 gap-4"
+                className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer flex flex-col min-h-[230px] py-4 gap-4"
                 onClick={(e) => {
                   const target = e.target as HTMLElement;
                   if (target.closest('[role="menuitem"]') || target.closest('button') || target.closest('[role="button"]')) {

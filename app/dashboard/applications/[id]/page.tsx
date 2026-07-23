@@ -576,7 +576,7 @@ export default function ApplicationDetailPage({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-card/50 border-border p-4 shadow-sm">
           <div className="flex items-center justify-between space-y-0 pb-1.5">
             <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">

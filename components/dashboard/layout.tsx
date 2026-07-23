@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { DashboardSidebar } from "./sidebar"
 import { DashboardHeader } from "./header"
 import { cn } from "@/lib/utils"
@@ -8,6 +9,11 @@ import { cn } from "@/lib/utils"
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const pathname = usePathname()
+
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [pathname])
 
   return (
     <div className="min-h-screen bg-background">
@@ -32,7 +38,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className={cn("transition-all duration-300 ease-in-out", isCollapsed ? "lg:pl-[80px]" : "lg:pl-64")}>
         <DashboardHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="px-8 py-6">{children}</main>
+        <main className="px-4 sm:px-6 lg:px-8 py-6">{children}</main>
       </div>
     </div>
   )
