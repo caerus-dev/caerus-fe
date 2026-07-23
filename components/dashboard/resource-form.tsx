@@ -37,13 +37,23 @@ const formSchema = z.object({
   }),
   description: z.string().optional(),
   mode: z.enum(["unit", "multiple"]),
-  ttl: z.coerce.number().min(1, { message: "El TTL debe ser de al menos 1 milisegundo." }),
+  ttl: z.coerce.number().min(1, { message: "El TTL debe ser de al menos 1 segundo." }),
   saveMetadata: z.boolean().default(false),
   conflictStrategy: z.enum(["fail", "retry", "queue"]),
-  retryInterval: z.coerce.number().min(100).optional(),
-  maxRetries: z.coerce.number().min(1).optional(),
+  retryInterval: z.coerce.number().min(1, {
+    message: "El intervalo de reintento debe ser de al menos 1 segundo."
+  }).max(10, {
+    message: "El intervalo de reintento no puede superar los 10 segundos."
+  }).optional(),
+  maxRetries: z.coerce.number().min(1, {
+    message: "El número máximo de reintentos debe ser de al menos 1."
+  }).max(5, {
+    message: "El número máximo de reintentos no puede superar los 5."
+  }).optional(),
   idempotency: z.boolean().default(false),
-  notificationWebhookUrl: z.string().max(1000).optional().or(z.literal("")),
+  notificationWebhookUrl: z.string().max(255, {
+    message: "La URL del webhook de notificación no puede superar los 255 caracteres."
+  }).optional().or(z.literal("")),
 })
 
 export type ResourceFormValues = z.infer<typeof formSchema>
@@ -73,10 +83,10 @@ export function ResourceForm({
       name: "",
       description: "",
       mode: "unit",
-      ttl: 900000,
+      ttl: 300,
       saveMetadata: false,
       conflictStrategy: "fail",
-      retryInterval: 500,
+      retryInterval: 1,
       maxRetries: 3,
       idempotency: false,
       notificationWebhookUrl: "",
@@ -93,9 +103,9 @@ export function ResourceForm({
       name: values.name,
       description: values.description || "",
       type: values.mode === "unit" ? "UNITARY" : "MULTIPLE",
-      defaultTtlMs: values.ttl,
+      defaultTtlSec: values.ttl,
       conflictResolution: values.conflictStrategy.toUpperCase(),
-      retryIntervalMs: values.conflictStrategy === "retry" ? Number(values.retryInterval) : null,
+      retryIntervalSec: values.conflictStrategy === "retry" ? Number(values.retryInterval) : null,
       maxRetryCount: values.conflictStrategy === "retry" ? Number(values.maxRetries) : null,
       useIdempotency: values.idempotency,
       saveMetadata: values.saveMetadata,
@@ -254,12 +264,12 @@ export function ResourceForm({
                   name="ttl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>TTL por Defecto (milisegundos)</FormLabel>
+                      <FormLabel>TTL por Defecto (segundos)</FormLabel>
                       <FormControl>
                         <Input type="number" {...field} />
                       </FormControl>
                       <FormDescription>
-                        Tiempo máximo que una reserva permanece activa antes de liberarse automáticamente.
+                        Tiempo máximo en segundos que una reserva permanece activa antes de liberarse automáticamente.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -371,7 +381,7 @@ export function ResourceForm({
                     name="retryInterval"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Intervalo de Reintento (ms)</FormLabel>
+                        <FormLabel>Intervalo de Reintento (segundos)</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
