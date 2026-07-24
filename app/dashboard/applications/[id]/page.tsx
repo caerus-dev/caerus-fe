@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { cn } from "@/lib/utils"
+import { cn, getEnvColors } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -511,7 +511,11 @@ export default function ApplicationDetailPage({
             >
               <SelectTrigger
                 size="sm"
-                className="w-full sm:w-[190px] h-8 justify-between border border-border bg-secondary/40 shadow-xs hover:bg-secondary/80 hover:border-primary/40 text-xs font-semibold cursor-pointer"
+                className={cn(
+                  "w-full sm:w-[190px] h-8 justify-between border shadow-xs text-xs font-semibold cursor-pointer",
+                  getEnvColors(selectedEnv).bgSoft,
+                  getEnvColors(selectedEnv).border
+                )}
               >
                 <span className="flex items-center gap-1.5">
                   <span className="text-muted-foreground font-normal">Ambiente:</span>
@@ -525,11 +529,8 @@ export default function ApplicationDetailPage({
                       <span className="flex items-center gap-1.5 font-mono">
                         <span className={cn(
                           "h-2 w-2 rounded-full shrink-0",
-                          env.name === "prod" || env.name === "production"
-                            ? "bg-primary shrink-0 animate-pulse"
-                            : env.name === "stage" || env.name === "staging"
-                            ? "bg-chart-4 shrink-0"
-                            : "bg-chart-2 shrink-0"
+                          getEnvColors(env.name).dot,
+                          (env.name === "prod" || env.name === "production") && "animate-pulse"
                         )} />
                         {env.name}
                       </span>
@@ -538,7 +539,7 @@ export default function ApplicationDetailPage({
                 ) : (
                   <SelectItem value="dev">
                     <span className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-chart-2 shrink-0" />
+                      <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0" />
                       Desarrollo
                     </span>
                   </SelectItem>
@@ -576,7 +577,7 @@ export default function ApplicationDetailPage({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-card/50 border-border p-4 shadow-sm">
           <div className="flex items-center justify-between space-y-0 pb-1.5">
             <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
@@ -634,42 +635,27 @@ export default function ApplicationDetailPage({
         </Card>
       </div>
 
-      {/* Contextual Indicator Banner */}
-      <div className="flex flex-col gap-2.5 bg-secondary/20 border border-border/40 rounded-lg p-4">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
-            <span className="relative flex h-2 w-2 shrink-0">
-              <span className={cn(
-                "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                selectedEnv === "prod" || selectedEnv === "production"
-                  ? "bg-primary"
-                  : selectedEnv === "stage" || selectedEnv === "staging"
-                  ? "bg-chart-4"
-                  : "bg-chart-2"
-              )} />
-              <span className={cn(
-                "relative inline-flex rounded-full h-2 w-2",
-                selectedEnv === "prod" || selectedEnv === "production"
-                  ? "bg-primary"
-                  : selectedEnv === "stage" || selectedEnv === "staging"
-                  ? "bg-chart-4"
-                  : "bg-chart-2"
-              )} />
-            </span>
-            <span>
-              Mostrando configuraciones y estadísticas para el ambiente:
-            </span>
-          </div>
-          <h2 className="text-xl font-bold font-mono text-foreground pl-[18px] tracking-tight mt-0.5">
-            {selectedEnv}
-          </h2>
+      {/* Selected environment description — compact but color-coded so it's obvious at a glance which
+          environment's resources are being shown below (the env name itself is already in the selector above) */}
+      {currentEnvDetails?.description && (
+        <div className={cn(
+          "flex items-center gap-2.5 text-sm rounded-lg border-l-4 px-3 py-2",
+          getEnvColors(selectedEnv).borderStrong,
+          getEnvColors(selectedEnv).bgSoft
+        )}>
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className={cn(
+              "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+              getEnvColors(selectedEnv).dot
+            )} />
+            <span className={cn(
+              "relative inline-flex rounded-full h-2 w-2",
+              getEnvColors(selectedEnv).dot
+            )} />
+          </span>
+          <p className="text-foreground">{currentEnvDetails.description}</p>
         </div>
-        {currentEnvDetails?.description && (
-          <p className="pl-[18px] text-xs sm:text-sm text-muted-foreground/80 leading-relaxed">
-            {currentEnvDetails.description}
-          </p>
-        )}
-      </div>
+      )}
 
       {/* Tabs for Resources, Locks, API Keys */}
       <Tabs defaultValue="resources" className="space-y-4">
@@ -727,28 +713,28 @@ export default function ApplicationDetailPage({
           ) : (
             <div className="space-y-3">
               {templates.map((template: any) => (
-                <Card key={template.id} className="bg-card/50 border-border py-0">
+                <Card key={template.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
                   <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                        <Box className="h-5 w-5 text-primary" />
+                    <div className="flex items-center gap-3">
+                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", getEnvColors(selectedEnv).bg)}>
+                        <Box className={cn("h-5 w-5", getEnvColors(selectedEnv).text)} />
                       </div>
                       <div className="space-y-1 min-w-0">
                         <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{template.name}</p>
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">
+                          <span className="capitalize">
                             Tipo {template.type === "UNITARY" ? "Unitario" : "Múltiple"}
                           </span>
                           {template.defaultTtlSec && (
                             <>
                               <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                              <span className="bg-secondary/50 px-2 py-0.5 rounded">
+                              <span>
                                 TTL: {formatTtl(template.defaultTtlSec * 1000)}
                               </span>
                             </>
                           )}
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span className="bg-secondary/50 px-2 py-0.5 rounded">
+                          <span>
                             Res: {template.conflictResolution}
                           </span>
                         </div>
@@ -828,18 +814,18 @@ export default function ApplicationDetailPage({
           ) : (
             <div className="space-y-3">
               {currentEnvData.locks.map((lock: any) => (
-                <Card key={lock.id} className="bg-card/50 border-border py-0">
+                <Card key={lock.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
                   <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-chart-2/10">
-                        <Lock className="h-5 w-5 text-chart-2" />
+                    <div className="flex items-center gap-3">
+                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", getEnvColors(selectedEnv).bg)}>
+                        <Lock className={cn("h-5 w-5", getEnvColors(selectedEnv).text)} />
                       </div>
                       <div className="space-y-1 min-w-0">
                         <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.name}</p>
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
+                          <span className="capitalize">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span className="bg-secondary/50 px-2 py-0.5 rounded">{lock.activeLocks} activos</span>
+                          <span>{lock.activeLocks} activos</span>
                         </div>
                       </div>
                     </div>
@@ -914,14 +900,14 @@ export default function ApplicationDetailPage({
           ) : (
             <div className="space-y-3">
               {apiKeys.map((key: any) => (
-                <Card key={key.id} className="bg-card/50 border-border py-0">
+                <Card key={key.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
                   <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                    <div className="flex items-start gap-3">
+                    <div className="flex items-center gap-3">
                       <div className={cn(
                         "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border",
-                        key.state === "ACTIVE" 
-                          ? "bg-primary/10 border-primary/20 text-primary" 
-                          : "bg-secondary text-muted-foreground"
+                        key.state === "ACTIVE"
+                          ? cn(getEnvColors(selectedEnv).bg, getEnvColors(selectedEnv).border, getEnvColors(selectedEnv).text)
+                          : "bg-secondary text-muted-foreground border-border"
                       )}>
                         <Key className="h-5 w-5" />
                       </div>

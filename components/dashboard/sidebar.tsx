@@ -9,7 +9,6 @@ import {
   Key,
   Users,
   CreditCard,
-  Book,
   BarChart3,
   Settings,
   LogOut,
@@ -19,7 +18,7 @@ import {
   ChevronRight,
   ChevronDown,
 } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, getEnvColors } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,11 +52,6 @@ const accountNav = [
     name: "Uso y Facturación",
     href: "/dashboard/billing",
     icon: CreditCard,
-  },
-  {
-    name: "Documentación",
-    href: "/dashboard/docs",
-    icon: Book,
   },
   {
     name: "Configuración",
@@ -104,7 +98,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
             const mapped = data.content.map((app: any) => ({
               name: app.name,
               href: `/dashboard/applications/${app.id}`,
-              environment: "dev",
+              environments: (app.environments || []).map((env: any) => env.name),
               icon: Box,
             }))
             setApplications(mapped)
@@ -116,19 +110,6 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
     }
     loadApps()
   }, [pathname])
-
-  const getEnvironmentBadgeClass = (env: string) => {
-    switch (env) {
-      case "prod":
-        return "bg-primary/20 text-primary border border-primary/30"
-      case "dev":
-        return "bg-chart-2/20 text-chart-2 border border-chart-2/30"
-      case "staging":
-        return "bg-chart-4/20 text-chart-4 border border-chart-4/30"
-      default:
-        return "bg-secondary text-muted-foreground border border-border"
-    }
-  }
 
   return (
     <aside
@@ -208,13 +189,6 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                 <DropdownMenuSeparator className="bg-border" />
               </>
             )}
-            <DropdownMenuItem asChild className="cursor-pointer hover:bg-muted focus:bg-muted">
-              <Link href="/dashboard/settings" className="flex w-full items-center">
-                <Settings className="mr-2 h-4 w-4 text-muted-foreground" />
-                <span>Configuración</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator className="bg-border" />
             <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
               <a href="/auth/logout" className="flex w-full items-center">
                 <LogOut className="mr-2 h-4 w-4" />
@@ -279,7 +253,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                 <li key={app.name}>
                   <Link
                     href={app.href}
-                    title={isCollapsed ? `${app.name} (${app.environment})` : undefined}
+                    title={isCollapsed ? `${app.name} (${app.environments.join(", ") || "sin ambientes"})` : undefined}
                     className={cn(
                       "group flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200",
                       isActive
@@ -292,14 +266,15 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                       <app.icon className={cn("h-[18px] w-[18px] shrink-0 transition-transform duration-200", !isActive && "group-hover:scale-110")} />
                       {!isCollapsed && <span className="truncate">{app.name}</span>}
                     </div>
-                    {!isCollapsed && (
-                      <span
-                        className={cn(
-                          "shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest",
-                          getEnvironmentBadgeClass(app.environment)
-                        )}
-                      >
-                        {app.environment}
+                    {!isCollapsed && app.environments.length > 0 && (
+                      <span className="flex shrink-0 items-center gap-1">
+                        {app.environments.map((env: string) => (
+                          <span
+                            key={env}
+                            title={env}
+                            className={cn("h-1.5 w-1.5 rounded-full", getEnvColors(env).dot)}
+                          />
+                        ))}
                       </span>
                     )}
                   </Link>

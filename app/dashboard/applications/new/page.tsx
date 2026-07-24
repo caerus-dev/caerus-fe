@@ -85,7 +85,7 @@ export default function NewApplicationPage() {
 
   return (
     
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
           <Link href="/dashboard/applications">
@@ -169,8 +169,11 @@ export default function NewApplicationPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4">
-                <div className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <label
+                  htmlFor="dev"
+                  className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
+                >
                   <Checkbox
                     id="dev"
                     checked={formData.environments.dev}
@@ -180,22 +183,22 @@ export default function NewApplicationPage() {
                     disabled={isLoading}
                   />
                   <div className="space-y-1">
-                    <label
-                      htmlFor="dev"
-                      className="text-sm font-medium cursor-pointer flex items-center gap-2"
-                    >
+                    <span className="text-sm font-medium flex items-center gap-2">
                       Desarrollo
                       <span className="px-1.5 py-0.5 text-xs rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
                         dev
                       </span>
-                    </label>
+                    </span>
                     <p className="text-xs text-muted-foreground">
                       Ambiente para pruebas locales y desarrollo
                     </p>
                   </div>
-                </div>
+                </label>
 
-                <div className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors">
+                <label
+                  htmlFor="stage"
+                  className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
+                >
                   <Checkbox
                     id="stage"
                     checked={formData.environments.stage}
@@ -205,22 +208,22 @@ export default function NewApplicationPage() {
                     disabled={isLoading}
                   />
                   <div className="space-y-1">
-                    <label
-                      htmlFor="stage"
-                      className="text-sm font-medium cursor-pointer flex items-center gap-2"
-                    >
+                    <span className="text-sm font-medium flex items-center gap-2">
                       Staging
                       <span className="px-1.5 py-0.5 text-xs rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                         stg
                       </span>
-                    </label>
+                    </span>
                     <p className="text-xs text-muted-foreground">
                       Ambiente de pre-producción para pruebas finales
                     </p>
                   </div>
-                </div>
+                </label>
 
-                <div className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors">
+                <label
+                  htmlFor="prod"
+                  className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
+                >
                   <Checkbox
                     id="prod"
                     checked={formData.environments.prod}
@@ -230,20 +233,17 @@ export default function NewApplicationPage() {
                     disabled={isLoading}
                   />
                   <div className="space-y-1">
-                    <label
-                      htmlFor="prod"
-                      className="text-sm font-medium cursor-pointer flex items-center gap-2"
-                    >
+                    <span className="text-sm font-medium flex items-center gap-2">
                       Producción
                       <span className="px-1.5 py-0.5 text-xs rounded bg-green-500/20 text-green-400 border border-green-500/30">
                         prod
                       </span>
-                    </label>
+                    </span>
                     <p className="text-xs text-muted-foreground">
                       Ambiente productivo con tráfico real de usuarios
                     </p>
                   </div>
-                </div>
+                </label>
               </div>
             </CardContent>
           </Card>

@@ -161,7 +161,7 @@ export function ResourceForm({
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-10">
+    <div className="space-y-6 max-w-6xl mx-auto pb-10">
       <div className="flex items-center gap-4">
         <Button 
           variant="ghost" 
@@ -194,10 +194,10 @@ export function ResourceForm({
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Box className="h-5 w-5 text-primary" />
-                Configuración Básica
+                Identidad del Recurso
               </CardTitle>
               <CardDescription>
-                Define la identidad y el ciclo de vida de este recurso.
+                Define cómo se identifica y describe este recurso.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -257,8 +257,21 @@ export function ResourceForm({
                   </FormItem>
                 )}
               />
+            </CardContent>
+          </Card>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-card/50 border-border">
+            <CardHeader>
+              <CardTitle className="text-lg">Ciclo de Vida y Concurrencia</CardTitle>
+              <CardDescription>
+                Controla cuánto dura una reserva, cómo te avisamos de sus eventos, y cómo el motor maneja conflictos.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 items-start">
+                <p className="text-sm font-semibold text-muted-foreground">Ciclo de Vida y Notificaciones</p>
+                <p className="text-sm font-semibold text-muted-foreground">Concurrencia y Fiabilidad</p>
+
                 <FormField
                   control={form.control}
                   name="ttl"
@@ -275,57 +288,7 @@ export function ResourceForm({
                     </FormItem>
                   )}
                 />
-                
-                <FormField
-                  control={form.control}
-                  name="saveMetadata"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4 shadow-sm h-[76px] mt-2">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Guardar Metadatos</FormLabel>
-                        <FormDescription>
-                          Permitir almacenar datos JSON contextuales con las reservas.
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
 
-              <FormField
-                control={form.control}
-                name="notificationWebhookUrl"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>URL del Webhook de Notificación</FormLabel>
-                    <FormControl>
-                      <Input placeholder="ej. https://api.miempresa.com/webhooks/recursos" {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      URL opcional donde se enviarán notificaciones sobre eventos de este recurso.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
-          <Card className="bg-card/50 border-border">
-            <CardHeader>
-              <CardTitle className="text-lg">Concurrencia y Fiabilidad</CardTitle>
-              <CardDescription>
-                Configura cómo maneja el motor las solicitudes concurrentes y problemas de red.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="conflictStrategy"
@@ -351,12 +314,29 @@ export function ResourceForm({
                     </FormItem>
                   )}
                 />
-                
+
+                <FormField
+                  control={form.control}
+                  name="notificationWebhookUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>URL del Webhook de Notificación</FormLabel>
+                      <FormControl>
+                        <Input placeholder="ej. https://api.miempresa.com/webhooks/recursos" {...field} />
+                      </FormControl>
+                      <FormDescription>
+                        URL opcional donde se enviarán notificaciones sobre eventos de este recurso.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="idempotency"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4 shadow-sm h-[76px] mt-2">
+                    <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4 shadow-sm">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base">Idempotencia</FormLabel>
                         <FormDescription>
@@ -372,38 +352,59 @@ export function ResourceForm({
                     </FormItem>
                   )}
                 />
+
+                {conflictStrategy === "retry" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 rounded-lg bg-secondary/30 border border-border md:col-start-2">
+                    <FormField
+                      control={form.control}
+                      name="retryInterval"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Intervalo de Reintento (segundos)</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="maxRetries"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Máximo de Reintentos</FormLabel>
+                          <FormControl>
+                            <Input type="number" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
               </div>
 
-              {conflictStrategy === "retry" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 rounded-lg bg-secondary/30 border border-border">
-                  <FormField
-                    control={form.control}
-                    name="retryInterval"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Intervalo de Reintento (segundos)</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="maxRetries"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Máximo de Reintentos</FormLabel>
-                        <FormControl>
-                          <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
+              <FormField
+                control={form.control}
+                name="saveMetadata"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4 shadow-sm">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">Guardar Metadatos</FormLabel>
+                      <FormDescription>
+                        Permitir almacenar datos JSON contextuales con las reservas.
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
 

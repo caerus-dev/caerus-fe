@@ -133,6 +133,7 @@ export default function ApplicationSettingsPage({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            applicationId: id,
             name: envForm.name,
             description: envForm.description,
           }),
@@ -267,10 +268,10 @@ export default function ApplicationSettingsPage({
 
   return (
     
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/applications">
+          <Link href={`/dashboard/applications/${id}`}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-4 h-4" />
             </Button>
@@ -285,6 +286,7 @@ export default function ApplicationSettingsPage({
           </div>
         </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Basic Info */}
         <Card>
           <CardHeader>
@@ -411,6 +413,7 @@ export default function ApplicationSettingsPage({
             )}
           </CardContent>
         </Card>
+      </div>
 
         {/* Danger Zone */}
         <Card className="border-destructive/50">
@@ -446,7 +449,7 @@ export default function ApplicationSettingsPage({
         </Card>
 
         <div className="flex justify-end gap-3">
-          <Link href="/dashboard/applications">
+          <Link href={`/dashboard/applications/${id}`}>
             <Button variant="outline" disabled={isSaving}>
               Cancelar
             </Button>

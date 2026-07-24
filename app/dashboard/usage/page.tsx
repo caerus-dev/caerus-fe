@@ -293,15 +293,15 @@ export default function UsagePage() {
           <CardContent>
             <div className="space-y-3 max-h-[280px] overflow-y-auto">
               {eventLog.map((event) => (
-                <div key={event.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                  <div className="flex items-center gap-3">
-                    <span className={`h-2 w-2 rounded-full ${getEventColor(event.event) === "text-primary" ? "bg-primary" : getEventColor(event.event) === "text-chart-4" ? "bg-chart-4" : "bg-muted-foreground"}`} />
-                    <div>
-                      <p className={`font-mono text-sm ${getEventColor(event.event)}`}>{event.event}</p>
-                      <p className="text-xs text-muted-foreground">{event.app}</p>
+                <div key={event.id} className="flex items-center justify-between gap-3 py-2 border-b border-border last:border-0">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className={`h-2 w-2 rounded-full shrink-0 ${getEventColor(event.event) === "text-primary" ? "bg-primary" : getEventColor(event.event) === "text-chart-4" ? "bg-chart-4" : "bg-muted-foreground"}`} />
+                    <div className="min-w-0">
+                      <p className={`font-mono text-sm truncate ${getEventColor(event.event)}`}>{event.event}</p>
+                      <p className="text-xs text-muted-foreground truncate">{event.app}</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <span className={`rounded px-2 py-0.5 text-xs font-medium ${getEnvironmentBadgeClass(event.env)}`}>
                       {event.env}
                     </span>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Plus, Key, Copy, Check, Trash2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -22,6 +22,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
+
+const EMPTY_ENVIRONMENTS: any[] = []
 
 export default function ApiKeysPage() {
   const [apps, setApps] = useState<any[]>([])
@@ -62,7 +64,10 @@ export default function ApiKeysPage() {
 
   // Auto-select first environment of selected application
   const selectedAppObj = apps.find((app) => app.id === selectedAppId)
-  const environments = selectedAppObj?.environments || []
+  const environments = useMemo(
+    () => selectedAppObj?.environments ?? EMPTY_ENVIRONMENTS,
+    [selectedAppObj?.id, selectedAppObj?.environments]
+  )
 
   useEffect(() => {
     if (environments.length > 0) {

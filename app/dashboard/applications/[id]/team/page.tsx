@@ -300,24 +300,26 @@ export default function TeamPage({
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link href={`/dashboard/applications/${id}`}>
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          <h1 className="text-2xl font-bold text-foreground">
-            Colaboradores
-          </h1>
-          <p className="text-muted-foreground">
-            Gestiona el equipo que tiene acceso a esta aplicación
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-4 min-w-0">
+          <Link href={`/dashboard/applications/${id}`}>
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+          </Link>
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl font-bold text-foreground">
+              Colaboradores
+            </h1>
+            <p className="text-muted-foreground">
+              Gestiona el equipo que tiene acceso a esta aplicación
+            </p>
+          </div>
         </div>
         {myRole === "OWNER" && (
           <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="w-full sm:w-auto">
                 <UserPlus className="w-4 h-4 mr-2" />
                 Invitar Colaborador
               </Button>
@@ -336,50 +338,52 @@ export default function TeamPage({
                     <span>{inviteError}</span>
                   </div>
                 )}
-                <div className="space-y-2">
-                  <Label htmlFor="invite-email">Correo Electrónico</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      id="invite-email"
-                      type="email"
-                      placeholder="colaborador@empresa.com"
-                      value={inviteEmail}
-                      onChange={(e) => setInviteEmail(e.target.value)}
-                      className="pl-10"
-                      disabled={isActionLoading}
-                    />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="invite-email">Correo Electrónico</Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="invite-email"
+                        type="email"
+                        placeholder="colaborador@empresa.com"
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
+                        className="pl-10"
+                        disabled={isActionLoading}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="invite-role">Rol asignado</Label>
-                  <Select
-                    value={inviteRole}
-                    onValueChange={(val: any) => setInviteRole(val)}
-                    disabled={isActionLoading}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="ADMIN">
-                        <div className="flex items-center gap-2">
-                          <Shield className="w-4 h-4 text-blue-400" />
-                          Administrador
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="VIEWER">
-                        <div className="flex items-center gap-2">
-                          <Users className="w-4 h-4 text-zinc-400" />
-                          Visor (Solo lectura)
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    {inviteRole === "ADMIN" && "Puede ver todo y crear/editar/eliminar ambientes y recursos compartidos."}
-                    {inviteRole === "VIEWER" && "Tiene acceso de solo lectura. No puede realizar modificaciones."}
-                  </p>
+                  <div className="space-y-2">
+                    <Label htmlFor="invite-role">Rol asignado</Label>
+                    <Select
+                      value={inviteRole}
+                      onValueChange={(val: any) => setInviteRole(val)}
+                      disabled={isActionLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ADMIN">
+                          <div className="flex items-center gap-2">
+                            <Shield className="w-4 h-4 text-blue-400" />
+                            Administrador
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="VIEWER">
+                          <div className="flex items-center gap-2">
+                            <Users className="w-4 h-4 text-zinc-400" />
+                            Visor (Solo lectura)
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      {inviteRole === "ADMIN" && "Puede ver todo y crear/editar/eliminar ambientes y recursos compartidos."}
+                      {inviteRole === "VIEWER" && "Tiene acceso de solo lectura. No puede realizar modificaciones."}
+                    </p>
+                  </div>
                 </div>
               </div>
               <DialogFooter>
@@ -422,21 +426,21 @@ export default function TeamPage({
             {collaborators.map((collaborator) => (
               <div
                 key={collaborator.id}
-                className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-border/80 transition-colors bg-background/20"
+                className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg border border-border hover:border-border/80 transition-colors bg-background/20"
               >
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-10 w-10">
+                <div className="flex items-center gap-4 min-w-0">
+                  <Avatar className="h-10 w-10 shrink-0">
                     <AvatarFallback className="bg-primary/10 text-primary">
                       {getInitials(collaborator.email)}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <p className="font-medium text-foreground">
+                  <div className="min-w-0">
+                    <p className="font-medium text-foreground truncate">
                       {collaborator.email}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
                   <Badge
                     variant="outline"
                     className={`${roleLabels[collaborator.role]?.color}`}
@@ -498,14 +502,14 @@ export default function TeamPage({
                 {invitations.map((invite) => (
                   <div
                     key={invite.id}
-                    className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-border/80 transition-colors bg-background/10"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 rounded-lg border border-border hover:border-border/80 transition-colors bg-background/10"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-400">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-400">
                         <Mail className="h-5 w-5" />
                       </div>
-                      <div>
-                        <p className="font-medium text-foreground">
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground truncate">
                           {invite.email}
                         </p>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
@@ -514,7 +518,7 @@ export default function TeamPage({
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
                       <Badge
                         variant="outline"
                         className={`${roleLabels[invite.role]?.color}`}
