@@ -722,19 +722,19 @@ export default function ApplicationDetailPage({
                       <div className="space-y-1 min-w-0">
                         <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{template.name}</p>
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">
+                          <span className="capitalize">
                             Tipo {template.type === "UNITARY" ? "Unitario" : "Múltiple"}
                           </span>
                           {template.defaultTtlSec && (
                             <>
                               <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                              <span className="bg-secondary/50 px-2 py-0.5 rounded">
+                              <span>
                                 TTL: {formatTtl(template.defaultTtlSec * 1000)}
                               </span>
                             </>
                           )}
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span className="bg-secondary/50 px-2 py-0.5 rounded">
+                          <span>
                             Res: {template.conflictResolution}
                           </span>
                         </div>
@@ -823,9 +823,9 @@ export default function ApplicationDetailPage({
                       <div className="space-y-1 min-w-0">
                         <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.name}</p>
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize bg-secondary/50 px-2 py-0.5 rounded">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
+                          <span className="capitalize">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span className="bg-secondary/50 px-2 py-0.5 rounded">{lock.activeLocks} activos</span>
+                          <span>{lock.activeLocks} activos</span>
                         </div>
                       </div>
                     </div>
