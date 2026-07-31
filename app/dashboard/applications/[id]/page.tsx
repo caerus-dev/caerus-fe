@@ -268,6 +268,10 @@ export default function ApplicationDetailPage({
   const [confirmDeleteTemplateOpen, setConfirmDeleteTemplateOpen] = useState(false)
   const [templateToDelete, setTemplateToDelete] = useState<any>(null)
 
+  const [locks, setLocks] = useState<any[]>([])
+  const [confirmDeleteLockOpen, setConfirmDeleteLockOpen] = useState(false)
+  const [lockToDelete, setLockToDelete] = useState<any>(null)
+
   const [apiKeys, setApiKeys] = useState<any[]>([])
   const [isApiKeysLoading, setIsApiKeysLoading] = useState(false)
   const [confirmRevokeKeyOpen, setConfirmRevokeKeyOpen] = useState(false)
@@ -331,9 +335,10 @@ export default function ApplicationDetailPage({
       setIsTemplatesLoading(true);
       setIsApiKeysLoading(true);
       try {
-        const [envRes, templatesRes, keysRes] = await Promise.all([
+        const [envRes, templatesRes, locksRes, keysRes] = await Promise.all([
           fetch(`/api/applications/${id}/environments/${activeEnvObj.id}`),
           fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`),
+          fetch(`/api/distributed-lock-templates?environmentId=${activeEnvObj.id}`),
           fetch(`/api/environments/${activeEnvObj.id}/api-keys`),
         ]);
 
@@ -345,6 +350,11 @@ export default function ApplicationDetailPage({
         if (templatesRes.ok) {
           const templatesData = await templatesRes.json();
           setTemplates(templatesData.content || []);
+        }
+
+        if (locksRes.ok) {
+          const locksData = await locksRes.json();
+          setLocks(locksData.content || []);
         }
 
         if (keysRes.ok) {
@@ -433,6 +443,29 @@ export default function ApplicationDetailPage({
       }
     } catch (error) {
       console.error("Error deleting template:", error)
+    }
+  }
+
+  const handleOpenDeleteLock = (lock: any) => {
+    setLockToDelete(lock)
+    setConfirmDeleteLockOpen(true)
+  }
+
+  const handleDeleteLockConfirm = async () => {
+    if (!lockToDelete) return
+    try {
+      const res = await fetch(`/api/distributed-lock-templates/${lockToDelete.id}`, {
+        method: "DELETE",
+      })
+      if (res.ok) {
+        setLocks((prev) => prev.filter((l) => l.id !== lockToDelete.id))
+        setConfirmDeleteLockOpen(false)
+        setLockToDelete(null)
+      } else {
+        console.error("Failed to delete lock")
+      }
+    } catch (error) {
+      console.error("Error deleting lock:", error)
     }
   }
 
@@ -597,7 +630,7 @@ export default function ApplicationDetailPage({
             </span>
           </div>
           <div>
-            <div className="text-2xl font-bold text-chart-2">{currentEnvData.locks.length}</div>
+            <div className="text-2xl font-bold text-chart-2">{locks.length}</div>
           </div>
         </Card>
         <Card className="bg-card/50 border-border p-4 shadow-sm">
@@ -628,7 +661,7 @@ export default function ApplicationDetailPage({
                 ? 28920400
                 : 4520300) +
                 currentEnvData.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
-                currentEnvData.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)
+                locks.reduce((sum: number, l: any) => sum + (l.activeLocks || 0), 0)
               ).toLocaleString("es-AR"))}
             </div>
           </div>
@@ -784,11 +817,11 @@ export default function ApplicationDetailPage({
         <TabsContent value="locks" className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              {currentEnvData.locks.length === 1 ? "1 lock configurado" : `${currentEnvData.locks.length} locks configurados`}
+              {locks.length === 1 ? "1 lock configurado" : `${locks.length} locks configurados`}
             </p>
             {app.myRole !== "VIEWER" && (
-              <Link href={`/dashboard/applications/${id}/locks/new`}>
-                <Button className="gap-2">
+              <Link href={`/dashboard/applications/${id}/locks/new?envId=${currentEnvDetails?.id}`}>
+                <Button className="gap-2" disabled={!currentEnvDetails?.id}>
                   <Plus className="h-4 w-4" />
                   Nuevo Lock
                 </Button>
@@ -796,14 +829,14 @@ export default function ApplicationDetailPage({
             )}
           </div>
 
-          {currentEnvData.locks.length === 0 ? (
+          {locks.length === 0 ? (
             <Card className="bg-card/50 border-border">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Lock className="h-12 w-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground mb-4">Aún no hay configuraciones de locks</p>
                 {app.myRole !== "VIEWER" && (
-                  <Link href={`/dashboard/applications/${id}/locks/new`}>
-                    <Button className="gap-2">
+                  <Link href={`/dashboard/applications/${id}/locks/new?envId=${currentEnvDetails?.id}`}>
+                    <Button className="gap-2" disabled={!currentEnvDetails?.id}>
                       <Plus className="h-4 w-4" />
                       Crear Primer Lock
                     </Button>
@@ -813,7 +846,7 @@ export default function ApplicationDetailPage({
             </Card>
           ) : (
             <div className="space-y-3">
-              {currentEnvData.locks.map((lock: any) => (
+              {locks.map((lock: any) => (
                 <Card key={lock.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
                   <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
                     <div className="flex items-center gap-3">
@@ -821,18 +854,24 @@ export default function ApplicationDetailPage({
                         <Lock className={cn("h-5 w-5", getEnvColors(selectedEnv).text)} />
                       </div>
                       <div className="space-y-1 min-w-0">
-                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.name}</p>
+                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.namespace}</p>
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
+                          <span className="capitalize">Tipo {lock.lockType === "EXCLUSIVE" ? "exclusivo" : "lectura-escritura"}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span>{lock.activeLocks} activos</span>
+                          <span>Tipo de Adquisicion: {lock.conflictResolution}</span>
+                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                          <span>Deadlocks: {lock.deadlockResolutionStrategy}</span>
+                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                          <span>Fencing Tokens: {lock.fencingTokenRequired ? "Activado" : "Desactivado"}</span>
                         </div>
+                        {lock.description && (
+                          <p className="text-xs text-muted-foreground italic mt-1 pr-6 line-clamp-1">
+                            {lock.description}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
-                      <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(lock.status)}`}>
-                        {lock.status}
-                      </span>
                       {app.myRole !== "VIEWER" && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -847,12 +886,8 @@ export default function ApplicationDetailPage({
                                 Configurar
                               </DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem>
-                              <Play className="h-4 w-4 mr-2" />
-                              Liberar Todos
-                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => handleOpenDeleteLock(lock)}>
                               <Trash2 className="h-4 w-4 mr-2" />
                               Eliminar
                             </DropdownMenuItem>
@@ -1034,6 +1069,32 @@ export default function ApplicationDetailPage({
               onClick={() => setShowCreatedKeyDialog(false)}
             >
               Cerrar y Listo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={confirmDeleteLockOpen} onOpenChange={setConfirmDeleteLockOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Eliminar Plantilla de Lock</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas eliminar la plantilla de lock{" "}
+              <span className="font-semibold text-foreground">{lockToDelete?.namespace}</span>?
+              Esta acción es irreversible.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDeleteLockOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteLockConfirm}
+            >
+              Eliminar
             </Button>
           </DialogFooter>
         </DialogContent>
