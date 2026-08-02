@@ -19,7 +19,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Loader2, Plus, Trash2, AlertTriangle, Pencil } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, ENV_COLOR_PRESETS, getEnvColors } from "@/lib/utils"
 interface Environment {
   id: string
   name: string
