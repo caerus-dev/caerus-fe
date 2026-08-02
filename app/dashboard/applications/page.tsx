@@ -82,35 +82,22 @@ export default function ApplicationsPage() {
   const [appToDelete, setAppToDelete] = useState<Application | null>(null)
 
   useEffect(() => {
+    let isMounted = true;
     const fetchApps = async () => {
       try {
         const res = await fetch("/api/applications");
         if (res.ok) {
           const data = await res.json();
-          if (data && data.content) {
-            const mapped = data.content.map((app: any, index: number) => {
+          if (isMounted && data && Array.isArray(data.content)) {
+            const mapped = data.content.map((app: any) => {
               const envs = app.environments ? app.environments.map((env: any) => env.name) : [];
-              let collaborators = 1;
-              let apiCalls = 0;
-
-              if (index === 0) {
-                collaborators = 4;
-                apiCalls = 125430;
-              } else if (index === 1) {
-                collaborators = 2;
-                apiCalls = 89210;
-              } else if (index === 2) {
-                collaborators = 3;
-                apiCalls = 45600;
-              }
-
               return {
                 id: app.id.toString(),
                 name: app.name,
                 description: app.description || "",
                 environments: envs,
-                collaborators,
-                apiCalls,
+                collaborators: app.collaboratorsCount || 1,
+                apiCalls: app.apiCallsCount || 0,
                 createdAt: app.createdAt || new Date().toISOString(),
                 status: "active",
                 myRole: app.myRole || "VIEWER",
@@ -124,10 +111,11 @@ export default function ApplicationsPage() {
       } catch (error) {
         console.error("Error fetching applications:", error);
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
     fetchApps();
+    return () => { isMounted = false; };
   }, []);
 
   const filteredApps = applications.filter(
@@ -150,7 +138,7 @@ export default function ApplicationsPage() {
         if (response.ok) {
           setApplications((prev) => prev.filter((app) => app.id !== appToDelete.id))
         } else {
-          console.error("Failed to delete application");
+          console.error("Failed to delete application from backend");
         }
       } catch (error) {
         console.error("Error deleting application:", error);
@@ -285,7 +273,7 @@ export default function ApplicationsPage() {
                         <DropdownMenuItem asChild>
                           <Link href={`/dashboard/applications/${app.id}/settings`}>
                             <Settings className="w-4 h-4 mr-2" />
-                            Configuracion
+                            Configuración
                           </Link>
                         </DropdownMenuItem>
                       )}

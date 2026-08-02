@@ -35,7 +35,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-import { getMockDataForEnv } from "@/lib/mocks/applications"
 import { ResourcesTab } from "@/components/dashboard/applications/tabs/resources-tab"
 import { LocksTab } from "@/components/dashboard/applications/tabs/locks-tab"
 import { ApiKeysTab } from "@/components/dashboard/applications/tabs/api-keys-tab"
@@ -51,6 +50,7 @@ export default function ApplicationDetailPage({
   const [selectedEnv, setSelectedEnv] = useState<string>("")
   const [currentEnvDetails, setCurrentEnvDetails] = useState<any>(null)
   const [templates, setTemplates] = useState<any[]>([])
+  const [locks, setLocks] = useState<any[]>([])
   const [isTemplatesLoading, setIsTemplatesLoading] = useState(false)
   const [confirmDeleteTemplateOpen, setConfirmDeleteTemplateOpen] = useState(false)
   const [templateToDelete, setTemplateToDelete] = useState<any>(null)
@@ -62,10 +62,6 @@ export default function ApplicationDetailPage({
   const [showCreatedKeyDialog, setShowCreatedKeyDialog] = useState(false)
   const [createdRawKey, setCreatedRawKey] = useState("")
   const [copiedKey, setCopiedKey] = useState(false)
-
-  const currentEnvData = app && selectedEnv
-    ? getMockDataForEnv(app.name, selectedEnv)
-    : { resources: [], locks: [], apiKeys: [] }
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -83,7 +79,7 @@ export default function ApplicationDetailPage({
                          envs[0];
             initialEnv = pref.name;
           }
-          setSelectedEnv(initialEnv)
+          setSelectedEnv(initialEnv || "dev")
 
           setApp({
             id: data.id.toString(),
@@ -98,7 +94,7 @@ export default function ApplicationDetailPage({
             myRole: data.myRole || "VIEWER",
           })
         } else {
-          console.error("Failed to fetch application details")
+          console.error("Failed to fetch application details from backend")
         }
       } catch (error) {
         console.error("Error fetching application details:", error)
@@ -127,6 +123,7 @@ export default function ApplicationDetailPage({
         if (envRes.ok) {
           const envData = await envRes.json();
           setCurrentEnvDetails(envData);
+          setLocks(envData.locks || []);
         }
 
         if (templatesRes.ok) {
@@ -139,7 +136,7 @@ export default function ApplicationDetailPage({
           setApiKeys(keysData.content || []);
         }
       } catch (error) {
-        console.error("Error fetching environment details, templates or keys:", error);
+        console.error("Error fetching environment details from backend:", error);
       } finally {
         setIsTemplatesLoading(false);
         setIsApiKeysLoading(false);
@@ -369,7 +366,7 @@ export default function ApplicationDetailPage({
             </span>
           </div>
           <div>
-            <div className="text-2xl font-bold text-chart-2">{currentEnvData.locks.length}</div>
+            <div className="text-2xl font-bold text-chart-2">{locks.length}</div>
           </div>
         </Card>
         <Card className="bg-card/50 border-border p-4 shadow-sm">
@@ -394,14 +391,7 @@ export default function ApplicationDetailPage({
           </div>
           <div>
             <div className="text-2xl font-bold text-chart-4">
-              {((((selectedEnv === "prod" || selectedEnv === "production")
-                ? 145230900
-                : (selectedEnv === "stage" || selectedEnv === "staging")
-                ? 28920400
-                : 4520300) +
-                currentEnvData.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
-                currentEnvData.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)
-              ).toLocaleString("es-AR"))}
+              0
             </div>
           </div>
         </Card>
@@ -464,7 +454,7 @@ export default function ApplicationDetailPage({
         <TabsContent value="locks" className="space-y-4">
           <LocksTab
             appId={id}
-            locks={currentEnvData.locks}
+            locks={locks}
             selectedEnv={selectedEnv}
             myRole={app.myRole}
           />
