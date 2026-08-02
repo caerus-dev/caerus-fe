@@ -35,6 +35,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApplicationDetailSkeleton } from "@/components/dashboard/applications/application-detail-skeleton"
 import { ResourcesTab } from "@/components/dashboard/applications/tabs/resources-tab"
 import { LocksTab } from "@/components/dashboard/applications/tabs/locks-tab"
 import { ApiKeysTab } from "@/components/dashboard/applications/tabs/api-keys-tab"
@@ -232,11 +234,7 @@ export default function ApplicationDetailPage({
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
-    )
+    return <ApplicationDetailSkeleton />
   }
 
   if (!app) {
@@ -397,25 +395,28 @@ export default function ApplicationDetailPage({
         </Card>
       </div>
 
-      {currentEnvDetails?.description && (
+      {isTemplatesLoading && !currentEnvDetails ? (
+        <Skeleton className="h-[38px] w-full rounded-lg" />
+      ) : currentEnvDetails?.description ? (
         <div className={cn(
-          "flex items-center gap-2.5 text-sm rounded-lg border-l-4 px-3 py-2",
-          getEnvColors(selectedEnv).borderStrong,
-          getEnvColors(selectedEnv).bgSoft
+          "flex items-center gap-2.5 text-sm rounded-lg border-l-4 px-3 py-2 transition-all duration-200",
+          getEnvColors(currentEnvDetails.name || selectedEnv).borderStrong,
+          getEnvColors(currentEnvDetails.name || selectedEnv).bgSoft,
+          isTemplatesLoading && "opacity-50 pointer-events-none"
         )}>
           <span className="relative flex h-2 w-2 shrink-0">
             <span className={cn(
               "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-              getEnvColors(selectedEnv).dot
+              getEnvColors(currentEnvDetails.name || selectedEnv).dot
             )} />
             <span className={cn(
               "relative inline-flex rounded-full h-2 w-2",
-              getEnvColors(selectedEnv).dot
+              getEnvColors(currentEnvDetails.name || selectedEnv).dot
             )} />
           </span>
           <p className="text-foreground">{currentEnvDetails.description}</p>
         </div>
-      )}
+      ) : null}
 
       {/* Tabs */}
       <Tabs defaultValue="resources" className="space-y-4">

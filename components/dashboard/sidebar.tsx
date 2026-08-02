@@ -18,7 +18,7 @@ import {
   ChevronRight,
   ChevronDown,
 } from "lucide-react"
-import { cn, getEnvColors } from "@/lib/utils"
+import { cn, getEnvColors, getUniqueEnvDots } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -268,11 +268,11 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                     </div>
                     {!isCollapsed && app.environments.length > 0 && (
                       <span className="flex shrink-0 items-center gap-1">
-                        {app.environments.map((env: string) => (
+                        {getUniqueEnvDots(app.environments).map(({ kind, colors }) => (
                           <span
-                            key={env}
-                            title={env}
-                            className={cn("h-1.5 w-1.5 rounded-full", getEnvColors(env).dot)}
+                            key={kind}
+                            title={kind}
+                            className={cn("h-1.5 w-1.5 rounded-full", colors.dot)}
                           />
                         ))}
                       </span>

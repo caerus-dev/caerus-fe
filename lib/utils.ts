@@ -50,3 +50,29 @@ export function getEnvColors(envName?: string | null) {
   } as const
   return map[kind]
 }
+
+export function getUniqueEnvDots(environments?: (string | { name: string })[] | null) {
+  if (!environments || environments.length === 0) return []
+
+  const seenKinds = new Set<EnvKind>()
+  const order: EnvKind[] = ['dev', 'staging', 'prod']
+  const result: { kind: EnvKind; colors: ReturnType<typeof getEnvColors> }[] = []
+
+  const names = environments.map(e => (typeof e === 'string' ? e : e.name))
+
+  for (const name of names) {
+    seenKinds.add(envKind(name))
+  }
+
+  for (const kind of order) {
+    if (seenKinds.has(kind)) {
+      result.push({
+        kind,
+        colors: getEnvColors(kind),
+      })
+    }
+  }
+
+  return result
+}
+
