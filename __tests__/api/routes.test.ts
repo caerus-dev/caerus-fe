@@ -15,6 +15,8 @@ vi.mock('@/lib/api', () => ({
 import { GET as getDevToken } from '@/app/api/dev-token/route'
 import { GET as getUser } from '@/app/api/user/route'
 import { GET as getApplications, POST as createApplication } from '@/app/api/applications/route'
+import { GET as getAppById, PUT as updateAppById, DELETE as deleteAppById } from '@/app/api/applications/[id]/route'
+import { POST as acceptInvitation } from '@/app/api/invitations/[token]/accept/route'
 import { auth0 } from '@/lib/auth0'
 import { fetchBackend } from '@/lib/api'
 
@@ -116,6 +118,69 @@ describe('app/api Routes (Endpoints Internos)', () => {
       })
       const body = await res.json()
       expect(body.id).toBe('app-99')
+    })
+  })
+
+  describe('/api/applications/[id]', () => {
+    it('GET /api/applications/[id] should fetch specific application', async () => {
+      const mockBackendResponse = new Response(
+        JSON.stringify({ id: 'app-123', name: 'my-app' }),
+        { status: 200 }
+      )
+      vi.mocked(fetchBackend).mockResolvedValueOnce(mockBackendResponse)
+
+      const req = new NextRequest('http://localhost:3000/api/applications/app-123')
+      const res = await getAppById(req, { params: Promise.resolve({ id: 'app-123' }) })
+
+      expect(res.status).toBe(200)
+      expect(fetchBackend).toHaveBeenCalledWith('/v1/applications/app-123')
+      const body = await res.json()
+      expect(body.id).toBe('app-123')
+    })
+
+    it('PUT /api/applications/[id] should update application', async () => {
+      const updateData = { name: 'updated-name' }
+      const mockBackendResponse = new Response(
+        JSON.stringify({ id: 'app-123', ...updateData }),
+        { status: 200 }
+      )
+      vi.mocked(fetchBackend).mockResolvedValueOnce(mockBackendResponse)
+
+      const req = new NextRequest('http://localhost:3000/api/applications/app-123', {
+        method: 'PUT',
+        body: JSON.stringify(updateData),
+      })
+      const res = await updateAppById(req, { params: Promise.resolve({ id: 'app-123' }) })
+
+      expect(res.status).toBe(200)
+      expect(fetchBackend).toHaveBeenCalledWith('/v1/applications/app-123', {
+        method: 'PUT',
+        body: JSON.stringify(updateData),
+      })
+    })
+
+    it('DELETE /api/applications/[id] should delete application and return 204', async () => {
+      const mockBackendResponse = new Response(null, { status: 204 })
+      vi.mocked(fetchBackend).mockResolvedValueOnce(mockBackendResponse)
+
+      const req = new NextRequest('http://localhost:3000/api/applications/app-123', { method: 'DELETE' })
+      const res = await deleteAppById(req, { params: Promise.resolve({ id: 'app-123' }) })
+
+      expect(res.status).toBe(204)
+      expect(fetchBackend).toHaveBeenCalledWith('/v1/applications/app-123', { method: 'DELETE' })
+    })
+  })
+
+  describe('/api/invitations/[token]/accept', () => {
+    it('POST /api/invitations/[token]/accept should call backend accept endpoint', async () => {
+      const mockBackendResponse = new Response(null, { status: 200 })
+      vi.mocked(fetchBackend).mockResolvedValueOnce(mockBackendResponse)
+
+      const req = new NextRequest('http://localhost:3000/api/invitations/token-abc/accept', { method: 'POST' })
+      const res = await acceptInvitation(req, { params: Promise.resolve({ token: 'token-abc' }) })
+
+      expect(res.status).toBe(200)
+      expect(fetchBackend).toHaveBeenCalledWith('/v1/invitations/token-abc/accept', { method: 'POST' })
     })
   })
 })
