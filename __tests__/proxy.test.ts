@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 vi.mock('@/lib/auth0', () => ({
   auth0: {
-    middleware: vi.fn((req: any) => NextResponse.next()),
+    middleware: vi.fn((req: any) => Promise.resolve(NextResponse.next())),
     getSession: vi.fn(),
   },
 }))

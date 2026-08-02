@@ -31,10 +31,10 @@ import {
   Users,
   Key,
   Layers,
-  Calendar,
   ExternalLink,
   Loader2
 } from "lucide-react"
+import { EnvBadge } from "@/components/dashboard/shared/env-badge"
 
 interface Application {
   id: string
@@ -72,39 +72,6 @@ const getRoleBadge = (role: string) => {
       );
   }
 };
-
-const mockApplications: Application[] = [
-  {
-    id: "app_1",
-    name: "E-Commerce Platform",
-    description: "Sistema de reservas para inventario de productos",
-    environments: ["production", "staging", "development"],
-    collaborators: 4,
-    apiCalls: 125430,
-    createdAt: "2024-01-15",
-    status: "active",
-  },
-  {
-    id: "app_2",
-    name: "Cinema Booking",
-    description: "Reserva de asientos para cadena de cines",
-    environments: ["production", "development"],
-    collaborators: 2,
-    apiCalls: 89210,
-    createdAt: "2024-02-20",
-    status: "active",
-  },
-  {
-    id: "app_3",
-    name: "Medical Appointments",
-    description: "Sistema de turnos para clinica medica",
-    environments: ["staging", "development"],
-    collaborators: 3,
-    apiCalls: 45600,
-    createdAt: "2024-03-10",
-    status: "active",
-  },
-]
 
 export default function ApplicationsPage() {
   const router = useRouter()
@@ -214,216 +181,204 @@ export default function ApplicationsPage() {
 
   return (
     <div className="space-y-6">
-        {/* Header */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Aplicaciones</h1>
-            <p className="text-muted-foreground">
-              Gestiona tus aplicaciones y sus configuraciones
-            </p>
-          </div>
-          <Link href="/dashboard/applications/new">
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Nueva Aplicación
-            </Button>
-          </Link>
+      {/* Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Aplicaciones</h1>
+          <p className="text-muted-foreground">
+            Gestiona tus aplicaciones y sus configuraciones
+          </p>
         </div>
-
-        {/* Search */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar aplicaciones..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        {/* Applications Grid */}
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 text-primary animate-spin" />
-          </div>
-        ) : filteredApps.length === 0 ? (
-          <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Layers className="w-6 h-6 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-medium text-foreground mb-1">
-                No hay aplicaciones
-              </h3>
-              <p className="text-muted-foreground text-sm text-center mb-4">
-                {searchQuery
-                  ? "No se encontraron aplicaciones con ese criterio"
-                  : "Crea tu primera aplicación para comenzar"}
-              </p>
-              {!searchQuery && (
-                <Link href="/dashboard/applications/new">
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nueva Aplicación
-                  </Button>
-                </Link>
-              )}
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredApps.map((app) => (
-              <Card
-                key={app.id}
-                className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer flex flex-col min-h-[230px] py-4 gap-4"
-                onClick={(e) => {
-                  const target = e.target as HTMLElement;
-                  if (target.closest('[role="menuitem"]') || target.closest('button') || target.closest('[role="button"]')) {
-                    return;
-                  }
-                  router.push(`/dashboard/applications/${app.id}`);
-                }}
-              >
-                <CardHeader className="pb-0">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <CardTitle className="text-lg flex flex-wrap items-center gap-2">
-                        {app.name}
-                        <Badge
-                          variant={app.status === "active" ? "default" : "secondary"}
-                          className="text-xs"
-                        >
-                          {app.status === "active" ? "Activa" : "Inactiva"}
-                        </Badge>
-                        {getRoleBadge(app.myRole || "VIEWER")}
-                      </CardTitle>
-                      <CardDescription className={`line-clamp-2 ${!app.description ? "italic text-muted-foreground/50" : ""}`}>
-                        {app.description || "Sin descripción configurada"}
-                      </CardDescription>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/applications/${app.id}`}>
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            Ver Detalles
-                          </Link>
-                        </DropdownMenuItem>
-                        {app.myRole !== "VIEWER" && (
-                          <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/applications/${app.id}/settings`}>
-                              <Settings className="w-4 h-4 mr-2" />
-                              Configuracion
-                            </Link>
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/applications/${app.id}/team`}>
-                            <Users className="w-4 h-4 mr-2" />
-                            Colaboradores
-                          </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/applications/${app.id}/api-keys`}>
-                            <Key className="w-4 h-4 mr-2" />
-                            API Keys
-                          </Link>
-                        </DropdownMenuItem>
-                        {app.myRole === "OWNER" && (
-                          <>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => handleDeleteClick(app)}
-                            >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              Eliminar
-                            </DropdownMenuItem>
-                          </>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex flex-col flex-1 gap-4">
-                  {/* Environments */}
-                  <div className="flex flex-wrap gap-1.5 mt-auto">
-                    {app.environments.map((env) => (
-                      <Badge
-                        key={env}
-                        variant="outline"
-                        className={`text-xs ${
-                          env === "prod" || env === "production"
-                            ? "border-green-500/30 text-green-700 bg-green-50/50 dark:border-green-500/50 dark:text-green-400 dark:bg-transparent"
-                            : env === "stage" || env === "staging"
-                            ? "border-amber-500/30 text-amber-700 bg-amber-50/50 dark:border-yellow-500/50 dark:text-yellow-400 dark:bg-transparent"
-                            : "border-blue-500/30 text-blue-700 bg-blue-50/50 dark:border-blue-500/50 dark:text-blue-400 dark:bg-transparent"
-                        }`}
-                      >
-                        {env}
-                      </Badge>
-                    ))}
-                  </div>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-4 pt-2 border-t border-border">
-                    <div className="text-center">
-                      <p className="text-lg font-semibold text-foreground">
-                        {app.collaborators}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Colaboradores</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-semibold text-foreground">
-                        {formatNumber(app.apiCalls)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Llamadas API</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm font-semibold text-foreground h-7 flex items-center justify-center whitespace-nowrap">
-                        {formatDate(app.createdAt)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">Creado</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* Delete Confirmation Dialog */}
-        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Eliminar Aplicación</DialogTitle>
-              <DialogDescription>
-                ¿Estás seguro que deseas eliminar la aplicación{" "}
-                <span className="font-medium text-foreground">
-                  {appToDelete?.name}
-                </span>
-                ? Esta acción no se puede deshacer y eliminará todas las
-                configuraciones, API keys y datos asociados.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setDeleteDialogOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button variant="destructive" onClick={handleDeleteConfirm}>
-                Eliminar
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Link href="/dashboard/applications/new">
+          <Button>
+            <Plus className="w-4 h-4 mr-2" />
+            Nueva Aplicación
+          </Button>
+        </Link>
       </div>
+
+      {/* Search */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input
+          placeholder="Buscar aplicaciones..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10"
+        />
+      </div>
+
+      {/* Applications Grid */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      ) : filteredApps.length === 0 ? (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+              <Layers className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-medium text-foreground mb-1">
+              No hay aplicaciones
+            </h3>
+            <p className="text-muted-foreground text-sm text-center mb-4">
+              {searchQuery
+                ? "No se encontraron aplicaciones con ese criterio"
+                : "Crea tu primera aplicación para comenzar"}
+            </p>
+            {!searchQuery && (
+              <Link href="/dashboard/applications/new">
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nueva Aplicación
+                </Button>
+              </Link>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredApps.map((app) => (
+            <Card
+              key={app.id}
+              className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer flex flex-col min-h-[230px] py-4 gap-4"
+              onClick={(e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest('[role="menuitem"]') || target.closest('button') || target.closest('[role="button"]')) {
+                  return;
+                }
+                router.push(`/dashboard/applications/${app.id}`);
+              }}
+            >
+              <CardHeader className="pb-0">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-1">
+                    <CardTitle className="text-lg flex flex-wrap items-center gap-2">
+                      {app.name}
+                      <Badge
+                        variant={app.status === "active" ? "default" : "secondary"}
+                        className="text-xs"
+                      >
+                        {app.status === "active" ? "Activa" : "Inactiva"}
+                      </Badge>
+                      {getRoleBadge(app.myRole || "VIEWER")}
+                    </CardTitle>
+                    <CardDescription className={`line-clamp-2 ${!app.description ? "italic text-muted-foreground/50" : ""}`}>
+                      {app.description || "Sin descripción configurada"}
+                    </CardDescription>
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreVertical className="w-4 h-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/applications/${app.id}`}>
+                          <ExternalLink className="w-4 h-4 mr-2" />
+                          Ver Detalles
+                        </Link>
+                      </DropdownMenuItem>
+                      {app.myRole !== "VIEWER" && (
+                        <DropdownMenuItem asChild>
+                          <Link href={`/dashboard/applications/${app.id}/settings`}>
+                            <Settings className="w-4 h-4 mr-2" />
+                            Configuracion
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/applications/${app.id}/team`}>
+                          <Users className="w-4 h-4 mr-2" />
+                          Colaboradores
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href={`/dashboard/applications/${app.id}/api-keys`}>
+                          <Key className="w-4 h-4 mr-2" />
+                          API Keys
+                        </Link>
+                      </DropdownMenuItem>
+                      {app.myRole === "OWNER" && (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => handleDeleteClick(app)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardHeader>
+              <CardContent className="flex flex-col flex-1 gap-4">
+                {/* Environments */}
+                <div className="flex flex-wrap gap-1.5 mt-auto">
+                  {app.environments.map((env) => (
+                    <EnvBadge key={env} environment={env} />
+                  ))}
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-4 pt-2 border-t border-border">
+                  <div className="text-center">
+                    <p className="text-lg font-semibold text-foreground">
+                      {app.collaborators}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Colaboradores</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-lg font-semibold text-foreground">
+                      {formatNumber(app.apiCalls)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Llamadas API</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold text-foreground h-7 flex items-center justify-center whitespace-nowrap">
+                      {formatDate(app.createdAt)}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Creado</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Eliminar Aplicación</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas eliminar la aplicación{" "}
+              <span className="font-medium text-foreground">
+                {appToDelete?.name}
+              </span>
+              ? Esta acción no se puede deshacer y eliminará todas las
+              configuraciones, API keys y datos asociados.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm}>
+              Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   )
 }

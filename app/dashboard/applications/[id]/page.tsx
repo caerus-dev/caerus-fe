@@ -10,27 +10,15 @@ import {
   Settings,
   Activity,
   ArrowLeft,
-  Plus,
-  MoreVertical,
-  Play,
-  Pause,
-  Trash2,
   Loader2,
   Copy,
   Check,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn, getEnvColors } from "@/lib/utils"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   Select,
   SelectContent,
@@ -47,211 +35,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-
-interface EnvData {
-  resources: Array<{
-    id: string
-    name: string
-    mode: string
-    status: string
-    activeReservations: number
-  }>
-  locks: Array<{
-    id: string
-    name: string
-    type: string
-    status: string
-    activeLocks: number
-  }>
-  apiKeys: Array<{
-    id: string
-    name: string
-    prefix: string
-    createdAt: string
-    lastUsed: string
-  }>
-}
-
-type AppEnvironmentsData = Record<"dev" | "staging" | "prod", EnvData>
-
-const appEnvironmentsMock: Record<string, AppEnvironmentsData> = {
-  "reserva-engine": {
-    dev: {
-      resources: [
-        { id: "1-dev", name: "seat_reservation_dev", mode: "multiple", status: "active", activeReservations: 12 },
-        { id: "2-dev", name: "test_lounge_dev", mode: "unit", status: "active", activeReservations: 0 },
-      ],
-      locks: [
-        { id: "1-dev", name: "payment_mock_lock", type: "exclusive", status: "active", activeLocks: 1 },
-      ],
-      apiKeys: [
-        { id: "1-dev", name: "Clave Desarrollo", prefix: "ck_test_", createdAt: "2024-01-15", lastUsed: "Hace 5m" },
-      ],
-    },
-    staging: {
-      resources: [
-        { id: "1-stage", name: "seat_reservation_staging", mode: "multiple", status: "active", activeReservations: 5 },
-      ],
-      locks: [
-        { id: "1-stage", name: "payment_stage_lock", type: "exclusive", status: "paused", activeLocks: 0 },
-      ],
-      apiKeys: [
-        { id: "1-stage", name: "Clave Staging", prefix: "ck_stage_", createdAt: "2024-01-15", lastUsed: "Hace 2h" },
-      ],
-    },
-    prod: {
-      resources: [
-        { id: "1-prod", name: "seat_reservation", mode: "multiple", status: "active", activeReservations: 45 },
-        { id: "2-prod", name: "vip_lounge", mode: "unit", status: "active", activeReservations: 2 },
-      ],
-      locks: [
-        { id: "1-prod", name: "payment_processor", type: "exclusive", status: "active", activeLocks: 3 },
-      ],
-      apiKeys: [
-        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-01-15", lastUsed: "Hace 2m" },
-      ],
-    },
-  },
-  "lock-service": {
-    dev: {
-      resources: [],
-      locks: [
-        { id: "1-dev", name: "order_processing_dev", type: "exclusive", status: "active", activeLocks: 1 },
-        { id: "2-dev", name: "inventory_sync_dev", type: "read-write", status: "active", activeLocks: 2 },
-      ],
-      apiKeys: [
-        { id: "1-dev", name: "Development Key", prefix: "ck_test_", createdAt: "2024-02-20", lastUsed: "Hace 5m" },
-      ],
-    },
-    staging: {
-      resources: [],
-      locks: [
-        { id: "1-stage", name: "inventory_sync_staging", type: "read-write", status: "active", activeLocks: 0 },
-      ],
-      apiKeys: [
-        { id: "1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: "2024-02-20", lastUsed: "Hace 1d" },
-      ],
-    },
-    prod: {
-      resources: [],
-      locks: [
-        { id: "1-prod", name: "order_processing", type: "exclusive", status: "active", activeLocks: 1 },
-        { id: "2-prod", name: "inventory_sync", type: "read-write", status: "active", activeLocks: 5 },
-      ],
-      apiKeys: [
-        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-02-20", lastUsed: "Hace 10m" },
-      ],
-    },
-  },
-  "payment-sync": {
-    dev: {
-      resources: [
-        { id: "1-dev", name: "transaction_slot_dev", mode: "unit", status: "active", activeReservations: 1 },
-      ],
-      locks: [
-        { id: "1-dev", name: "payment_gateway_dev", type: "exclusive", status: "active", activeLocks: 0 },
-      ],
-      apiKeys: [
-        { id: "1-dev", name: "Dev Key", prefix: "ck_test_", createdAt: "2024-03-10", lastUsed: "Hace 1h" },
-      ],
-    },
-    staging: {
-      resources: [
-        { id: "1-stage", name: "transaction_slot_staging", mode: "unit", status: "active", activeReservations: 2 },
-      ],
-      locks: [
-        { id: "1-stage", name: "payment_gateway_staging", type: "exclusive", status: "active", activeLocks: 1 },
-      ],
-      apiKeys: [
-        { id: "1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: "2024-03-10", lastUsed: "Hace 30m" },
-      ],
-    },
-    prod: {
-      resources: [
-        { id: "1-prod", name: "transaction_slot", mode: "unit", status: "active", activeReservations: 12 },
-      ],
-      locks: [
-        { id: "1-prod", name: "payment_gateway", type: "exclusive", status: "active", activeLocks: 8 },
-      ],
-      apiKeys: [
-        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-03-10", lastUsed: "Hace 30s" },
-      ],
-    },
-  },
-}
-
-const generateMockDataForApp = (name: string): AppEnvironmentsData => {
-  return {
-    dev: {
-      resources: [
-        { id: "custom-1-dev", name: `${name}_resource_dev`, mode: "multiple", status: "active", activeReservations: 1 },
-      ],
-      locks: [
-        { id: "custom-lock-1-dev", name: `${name}_lock_dev`, type: "exclusive", status: "active", activeLocks: 0 },
-      ],
-      apiKeys: [
-        { id: "custom-key-1-dev", name: "Development Key", prefix: "ck_test_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 10m" },
-      ],
-    },
-    staging: {
-      resources: [
-        { id: "custom-1-stage", name: `${name}_resource_staging`, mode: "multiple", status: "active", activeReservations: 2 },
-      ],
-      locks: [
-        { id: "custom-lock-1-stage", name: `${name}_lock_staging`, type: "exclusive", status: "active", activeLocks: 1 },
-      ],
-      apiKeys: [
-        { id: "custom-key-1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 1d" },
-      ],
-    },
-    prod: {
-      resources: [
-        { id: "custom-1-prod", name: `${name}_resource`, mode: "multiple", status: "active", activeReservations: 5 },
-      ],
-      locks: [
-        { id: "custom-lock-1-prod", name: `${name}_lock`, type: "exclusive", status: "active", activeLocks: 2 },
-      ],
-      apiKeys: [
-        { id: "custom-key-1-prod", name: "Production Key", prefix: "ck_live_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 30s" },
-      ],
-    },
-  }
-}
-
-const getMockDataForEnv = (appName: string, envName: string): EnvData => {
-  const predefined = appEnvironmentsMock[appName];
-  if (predefined) {
-    if (envName === "dev" || envName === "development") return predefined.dev;
-    if (envName === "stage" || envName === "staging") return predefined.staging;
-    if (envName === "prod" || envName === "production") return predefined.prod;
-  }
-  
-  return {
-    resources: [
-      { id: `${envName}-res-1`, name: `${appName}_res_${envName}`, mode: "multiple", status: "active", activeReservations: 3 },
-    ],
-    locks: [
-      { id: `${envName}-lock-1`, name: `${appName}_lock_${envName}`, type: "exclusive", status: "active", activeLocks: 1 },
-    ],
-    apiKeys: [
-      { id: `${envName}-key-1`, name: `Key ${envName}`, prefix: "ck_live_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 5m" },
-    ],
-  };
-}
-
-const formatTtl = (ms: any): string => {
-  const num = Number(ms)
-  if (isNaN(num)) return String(ms)
-  if (num < 1000) return `${num} ms`
-  const seconds = num / 1000
-  if (seconds < 60) return `${seconds.toFixed(seconds % 1 === 0 ? 0 : 1)} s`
-  const minutes = seconds / 60
-  if (minutes < 60) return `${minutes.toFixed(minutes % 1 === 0 ? 0 : 1)} min`
-  const hours = minutes / 60
-  if (hours < 24) return `${hours.toFixed(hours % 1 === 0 ? 0 : 1)} h`
-  const days = hours / 24
-  return `${days.toFixed(days % 1 === 0 ? 0 : 1)} d`
-}
+import { getMockDataForEnv } from "@/lib/mocks/applications"
+import { ResourcesTab } from "@/components/dashboard/applications/tabs/resources-tab"
+import { LocksTab } from "@/components/dashboard/applications/tabs/locks-tab"
+import { ApiKeysTab } from "@/components/dashboard/applications/tabs/api-keys-tab"
 
 export default function ApplicationDetailPage({
   params,
@@ -436,19 +223,6 @@ export default function ApplicationDetailPage({
     }
   }
 
-  const getEnvironmentBadgeClass = (env: string) => {
-    switch (env) {
-      case "prod":
-        return "bg-primary/20 text-primary"
-      case "dev":
-        return "bg-chart-2/20 text-chart-2"
-      case "staging":
-        return "bg-chart-4/20 text-chart-4"
-      default:
-        return "bg-secondary text-muted-foreground"
-    }
-  }
-
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "active":
@@ -490,7 +264,6 @@ export default function ApplicationDetailPage({
           <ArrowLeft className="h-4 w-4" />
           Volver a Aplicaciones
         </Link>
-        {/* Row 1: Title and Controls */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/20">
@@ -566,7 +339,6 @@ export default function ApplicationDetailPage({
           </div>
         </div>
 
-        {/* Row 2: Description */}
         {app.description && (
           <div className="md:pl-16">
             <p className="text-muted-foreground max-w-2xl text-sm line-clamp-3 md:line-clamp-none">
@@ -635,8 +407,6 @@ export default function ApplicationDetailPage({
         </Card>
       </div>
 
-      {/* Selected environment description — compact but color-coded so it's obvious at a glance which
-          environment's resources are being shown below (the env name itself is already in the selector above) */}
       {currentEnvDetails?.description && (
         <div className={cn(
           "flex items-center gap-2.5 text-sm rounded-lg border-l-4 px-3 py-2",
@@ -657,7 +427,7 @@ export default function ApplicationDetailPage({
         </div>
       )}
 
-      {/* Tabs for Resources, Locks, API Keys */}
+      {/* Tabs */}
       <Tabs defaultValue="resources" className="space-y-4">
         <div className="w-full pb-1">
           <TabsList className="bg-secondary flex w-full sm:w-fit">
@@ -681,271 +451,35 @@ export default function ApplicationDetailPage({
         </div>
 
         <TabsContent value="resources" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {templates.length === 1 ? "1 recurso configurado" : `${templates.length} recursos configurados`}
-            </p>
-            {app.myRole !== "VIEWER" && (
-              <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
-                <Button className="gap-2" disabled={!currentEnvDetails?.id}>
-                  <Plus className="h-4 w-4" />
-                  Nuevo Recurso
-                </Button>
-              </Link>
-            )}
-          </div>
-
-          {templates.length === 0 ? (
-            <Card className="bg-card/50 border-border">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Box className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">Aún no hay recursos configurados</p>
-                {app.myRole !== "VIEWER" && (
-                  <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
-                    <Button className="gap-2" disabled={!currentEnvDetails?.id}>
-                      <Plus className="h-4 w-4" />
-                      Crear Primer Recurso
-                    </Button>
-                  </Link>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {templates.map((template: any) => (
-                <Card key={template.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
-                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", getEnvColors(selectedEnv).bg)}>
-                        <Box className={cn("h-5 w-5", getEnvColors(selectedEnv).text)} />
-                      </div>
-                      <div className="space-y-1 min-w-0">
-                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{template.name}</p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize">
-                            Tipo {template.type === "UNITARY" ? "Unitario" : "Múltiple"}
-                          </span>
-                          {template.defaultTtlSec && (
-                            <>
-                              <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                              <span>
-                                TTL: {formatTtl(template.defaultTtlSec * 1000)}
-                              </span>
-                            </>
-                          )}
-                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span>
-                            Res: {template.conflictResolution}
-                          </span>
-                        </div>
-                        {template.description && (
-                          <p className="text-xs text-muted-foreground italic mt-1 pr-6 line-clamp-1">
-                            {template.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
-                      {app.myRole !== "VIEWER" && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/dashboard/applications/${id}/resources/${template.id}/edit`}>
-                                <span className="flex items-center w-full cursor-pointer">
-                                  <Settings className="h-4 w-4 mr-2" />
-                                  Configurar
-                                </span>
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive cursor-pointer"
-                              onClick={() => handleOpenDeleteTemplate(template)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Eliminar
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <ResourcesTab
+            appId={id}
+            templates={templates}
+            selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
+            myRole={app.myRole}
+            onOpenDeleteTemplate={handleOpenDeleteTemplate}
+          />
         </TabsContent>
 
         <TabsContent value="locks" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {currentEnvData.locks.length === 1 ? "1 lock configurado" : `${currentEnvData.locks.length} locks configurados`}
-            </p>
-            {app.myRole !== "VIEWER" && (
-              <Link href={`/dashboard/applications/${id}/locks/new`}>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Nuevo Lock
-                </Button>
-              </Link>
-            )}
-          </div>
-
-          {currentEnvData.locks.length === 0 ? (
-            <Card className="bg-card/50 border-border">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Lock className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">Aún no hay configuraciones de locks</p>
-                {app.myRole !== "VIEWER" && (
-                  <Link href={`/dashboard/applications/${id}/locks/new`}>
-                    <Button className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Crear Primer Lock
-                    </Button>
-                  </Link>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {currentEnvData.locks.map((lock: any) => (
-                <Card key={lock.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
-                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", getEnvColors(selectedEnv).bg)}>
-                        <Lock className={cn("h-5 w-5", getEnvColors(selectedEnv).text)} />
-                      </div>
-                      <div className="space-y-1 min-w-0">
-                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.name}</p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
-                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span>{lock.activeLocks} activos</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
-                      <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(lock.status)}`}>
-                        {lock.status}
-                      </span>
-                      {app.myRole !== "VIEWER" && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <Link href={`/dashboard/applications/${id}/locks/${lock.id}/edit`}>
-                              <DropdownMenuItem className="cursor-pointer">
-                                <Settings className="h-4 w-4 mr-2" />
-                                Configurar
-                              </DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuItem>
-                              <Play className="h-4 w-4 mr-2" />
-                              Liberar Todos
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive">
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Eliminar
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <LocksTab
+            appId={id}
+            locks={currentEnvData.locks}
+            selectedEnv={selectedEnv}
+            myRole={app.myRole}
+          />
         </TabsContent>
 
         <TabsContent value="keys" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {apiKeys.length === 1 ? "1 API Key" : `${apiKeys.length} API Keys`}
-            </p>
-            {app.myRole !== "VIEWER" && (
-              <Button className="gap-2" onClick={handleCreateApiKey} disabled={!currentEnvDetails?.id}>
-                <Plus className="h-4 w-4" />
-                Generar API Key
-              </Button>
-            )}
-          </div>
-
-          {isApiKeysLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            </div>
-          ) : apiKeys.length === 0 ? (
-            <Card className="bg-card/50 border-border">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Key className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">No hay API Keys configuradas para este ambiente</p>
-                {app.myRole !== "VIEWER" && (
-                  <Button className="gap-2" onClick={handleCreateApiKey} disabled={!currentEnvDetails?.id}>
-                    <Plus className="h-4 w-4" />
-                    Crear API Key
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {apiKeys.map((key: any) => (
-                <Card key={key.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
-                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border",
-                        key.state === "ACTIVE"
-                          ? cn(getEnvColors(selectedEnv).bg, getEnvColors(selectedEnv).border, getEnvColors(selectedEnv).text)
-                          : "bg-secondary text-muted-foreground border-border"
-                      )}>
-                        <Key className="h-5 w-5" />
-                      </div>
-                      <div className="space-y-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-mono text-sm sm:text-base">{key.keyPrefix}••••••••••••</p>
-                          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                            key.state === "ACTIVE"
-                              ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                              : "bg-destructive/10 text-destructive border border-destructive/20"
-                          }`}>
-                            {key.state === "ACTIVE" ? "Activa" : "Revocada"}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Creada el: {new Date(key.createdAt).toLocaleString()} 
-                          {key.revokedAt && ` • Revocada el: ${new Date(key.revokedAt).toLocaleString()}`}
-                        </p>
-                      </div>
-                    </div>
-                    {key.state === "ACTIVE" && app.myRole !== "VIEWER" && (
-                      <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 gap-1 px-3"
-                          onClick={() => handleOpenRevokeKey(key)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Revocar
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <ApiKeysTab
+            apiKeys={apiKeys}
+            isApiKeysLoading={isApiKeysLoading}
+            selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
+            myRole={app.myRole}
+            onCreateApiKey={handleCreateApiKey}
+            onOpenRevokeKey={handleOpenRevokeKey}
+          />
         </TabsContent>
       </Tabs>
 
