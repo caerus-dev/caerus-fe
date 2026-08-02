@@ -1,7 +1,7 @@
 "use client"
 
 import { use, useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -35,6 +35,9 @@ export default function ApplicationSettingsPage({
 }) {
   const { id } = use(params)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const envParam = searchParams.get("env")
+  const backUrl = envParam ? `/dashboard/applications/${id}?env=${encodeURIComponent(envParam)}` : `/dashboard/applications/${id}`
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -271,7 +274,7 @@ export default function ApplicationSettingsPage({
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href={`/dashboard/applications/${id}`}>
+          <Link href={backUrl}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-4 h-4" />
             </Button>
@@ -449,7 +452,7 @@ export default function ApplicationSettingsPage({
         </Card>
 
         <div className="flex justify-end gap-3">
-          <Link href={`/dashboard/applications/${id}`}>
+          <Link href={backUrl}>
             <Button variant="outline" disabled={isSaving}>
               Cancelar
             </Button>
@@ -521,6 +524,26 @@ export default function ApplicationSettingsPage({
                   maxLength={100}
                   disabled={isSavingEnv}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">Sugerencia de Nombre / Tema Visual</Label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-0.5">
+                  {ENV_COLOR_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => setEnvForm((prev) => ({ 
+                        ...prev, 
+                        name: prev.name || preset.id,
+                        description: prev.description || `Entorno de ${preset.id} para ${formData.name}`
+                      }))}
+                      className="flex items-center gap-2 p-2 rounded-lg border border-border/70 bg-secondary/30 hover:bg-secondary/80 text-xs font-medium transition-all cursor-pointer text-left"
+                    >
+                      <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", preset.dot)} />
+                      <span className="truncate capitalize">{preset.id}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="envDesc">Descripción</Label>

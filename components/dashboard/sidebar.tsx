@@ -266,17 +266,24 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                       <app.icon className={cn("h-[18px] w-[18px] shrink-0 transition-transform duration-200", !isActive && "group-hover:scale-110")} />
                       {!isCollapsed && <span className="truncate">{app.name}</span>}
                     </div>
-                    {!isCollapsed && app.environments.length > 0 && (
-                      <span className="flex shrink-0 items-center gap-1">
-                        {getUniqueEnvDots(app.environments).map(({ kind, colors }) => (
-                          <span
-                            key={kind}
-                            title={kind}
-                            className={cn("h-1.5 w-1.5 rounded-full", colors.dot)}
-                          />
-                        ))}
-                      </span>
-                    )}
+                    {!isCollapsed && app.environments.length > 0 && (() => {
+                      const { visibleDots, overflowCount, allNames } = getUniqueEnvDots(app.environments, 3);
+                      return (
+                        <span className="flex shrink-0 items-center gap-1" title={allNames.join(", ")}>
+                          {visibleDots.map(({ kind, colors }) => (
+                            <span
+                              key={kind}
+                              className={cn("h-1.5 w-1.5 rounded-full", colors.dot)}
+                            />
+                          ))}
+                          {overflowCount > 0 && (
+                            <span className="text-[10px] font-mono font-medium text-muted-foreground/80 leading-none">
+                              +{overflowCount}
+                            </span>
+                          )}
+                        </span>
+                      );
+                    })()}
                   </Link>
                 </li>
               )

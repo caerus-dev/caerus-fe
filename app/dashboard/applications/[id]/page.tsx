@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { use, useState, useEffect } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import {
   Box,
   Lock,
@@ -40,6 +41,7 @@ import { ApplicationDetailSkeleton } from "@/components/dashboard/applications/a
 import { ResourcesTab } from "@/components/dashboard/applications/tabs/resources-tab"
 import { LocksTab } from "@/components/dashboard/applications/tabs/locks-tab"
 import { ApiKeysTab } from "@/components/dashboard/applications/tabs/api-keys-tab"
+import { DuplicateTemplateDialog } from "@/components/dashboard/applications/duplicate-template-dialog"
 
 export default function ApplicationDetailPage({
   params,
@@ -47,6 +49,9 @@ export default function ApplicationDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
   const [app, setApp] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedEnv, setSelectedEnv] = useState<string>("")
@@ -56,6 +61,9 @@ export default function ApplicationDetailPage({
   const [isTemplatesLoading, setIsTemplatesLoading] = useState(false)
   const [confirmDeleteTemplateOpen, setConfirmDeleteTemplateOpen] = useState(false)
   const [templateToDelete, setTemplateToDelete] = useState<any>(null)
+
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false)
+  const [templateToDuplicate, setTemplateToDuplicate] = useState<any>(null)
 
   const [apiKeys, setApiKeys] = useState<any[]>([])
   const [isApiKeysLoading, setIsApiKeysLoading] = useState(false)
@@ -72,15 +80,20 @@ export default function ApplicationDetailPage({
         if (res.ok) {
           const data = await res.json()
           const envs = data.environments || []
+
+          const queryEnv = searchParams.get("env") || searchParams.get("envName")
+          const savedEnv = typeof window !== "undefined" ? localStorage.getItem(`caerus_env_${id}`) : null
           
-          let initialEnv = ""
-          if (envs.length > 0) {
+          let initialEnv = queryEnv || savedEnv || ""
+
+          if (!initialEnv || !envs.some((e: any) => e.name === initialEnv)) {
             const pref = envs.find((e: any) => e.name === "dev" || e.name === "development") ||
                          envs.find((e: any) => e.name === "stage" || e.name === "staging") ||
                          envs.find((e: any) => e.name === "prod" || e.name === "production") ||
-                         envs[0];
-            initialEnv = pref.name;
+                         envs[0]
+            initialEnv = pref ? pref.name : ""
           }
+
           setSelectedEnv(initialEnv || "dev")
 
           setApp({
@@ -105,47 +118,55 @@ export default function ApplicationDetailPage({
       }
     }
     fetchApp()
-  }, [id])
+  }, [id, searchParams])
 
   useEffect(() => {
-    if (!app || !app.environments || !selectedEnv) return;
-    const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv);
-    if (!activeEnvObj) return;
+    if (!app || !app.environments || !selectedEnv) return
+    const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv)
+    if (!activeEnvObj) return
 
     const fetchEnvDetailsAndTemplates = async () => {
-      setIsTemplatesLoading(true);
-      setIsApiKeysLoading(true);
+      setIsTemplatesLoading(true)
+      setIsApiKeysLoading(true)
       try {
         const [envRes, templatesRes, keysRes] = await Promise.all([
           fetch(`/api/applications/${id}/environments/${activeEnvObj.id}`),
           fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`),
           fetch(`/api/environments/${activeEnvObj.id}/api-keys`),
-        ]);
+        ])
 
         if (envRes.ok) {
-          const envData = await envRes.json();
-          setCurrentEnvDetails(envData);
-          setLocks(envData.locks || []);
+          const envData = await envRes.json()
+          setCurrentEnvDetails(envData)
+          setLocks(envData.locks || [])
         }
 
         if (templatesRes.ok) {
-          const templatesData = await templatesRes.json();
-          setTemplates(templatesData.content || []);
+          const templatesData = await templatesRes.json()
+          setTemplates(templatesData.content || [])
         }
 
         if (keysRes.ok) {
-          const keysData = await keysRes.json();
-          setApiKeys(keysData.content || []);
+          const keysData = await keysRes.json()
+          setApiKeys(keysData.content || [])
         }
       } catch (error) {
-        console.error("Error fetching environment details from backend:", error);
+        console.error("Error fetching environment details from backend:", error)
       } finally {
-        setIsTemplatesLoading(false);
-        setIsApiKeysLoading(false);
+        setIsTemplatesLoading(false)
+        setIsApiKeysLoading(false)
       }
-    };
-    fetchEnvDetailsAndTemplates();
+    }
+    fetchEnvDetailsAndTemplates()
   }, [selectedEnv, app])
+
+  const handleEnvChange = (val: string) => {
+    setSelectedEnv(val)
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`caerus_env_${id}`, val)
+    }
+    router.replace(`/dashboard/applications/${id}?env=${encodeURIComponent(val)}`, { scroll: false })
+  }
 
   const handleCreateApiKey = async () => {
     if (!currentEnvDetails) return
@@ -159,7 +180,7 @@ export default function ApplicationDetailPage({
         setShowCreatedKeyDialog(true)
         setApiKeys((prev) => [data, ...prev])
       } else {
-        console.error("Failed to create API key")
+        console.error("Failed to create API Key")
       }
     } catch (error) {
       console.error("Error creating API key:", error)
@@ -172,15 +193,15 @@ export default function ApplicationDetailPage({
   }
 
   const handleRevokeKeyConfirm = async () => {
-    if (!keyToRevoke) return
+    if (!keyToRevoke || !currentEnvDetails) return
     try {
-      const res = await fetch(`/api/environments/${currentEnvDetails.id}/api-keys/${keyToRevoke.id}/revoke`, {
-        method: "POST",
-      })
+      const res = await fetch(
+        `/api/environments/${currentEnvDetails.id}/api-keys/${keyToRevoke.id}/revoke`,
+        { method: "POST" }
+      )
       if (res.ok) {
-        const data = await res.json()
         setApiKeys((prev) =>
-          prev.map((k) => (k.id === keyToRevoke.id ? data : k))
+          prev.map((k) => (k.id === keyToRevoke.id ? { ...k, state: "REVOKED" } : k))
         )
         setConfirmRevokeKeyOpen(false)
         setKeyToRevoke(null)
@@ -192,11 +213,12 @@ export default function ApplicationDetailPage({
     }
   }
 
-  const copyRawKeyToClipboard = async () => {
-    if (!createdRawKey) return
-    await navigator.clipboard.writeText(createdRawKey)
-    setCopiedKey(true)
-    setTimeout(() => setCopiedKey(false), 2000)
+  const copyRawKeyToClipboard = () => {
+    if (createdRawKey) {
+      navigator.clipboard.writeText(createdRawKey)
+      setCopiedKey(true)
+      setTimeout(() => setCopiedKey(false), 2000)
+    }
   }
 
   const handleOpenDeleteTemplate = (template: any) => {
@@ -219,6 +241,22 @@ export default function ApplicationDetailPage({
       }
     } catch (error) {
       console.error("Error deleting template:", error)
+    }
+  }
+
+  const handleOpenDuplicateTemplate = (template: any) => {
+    setTemplateToDuplicate(template)
+    setDuplicateDialogOpen(true)
+  }
+
+  const handleDuplicateSuccess = () => {
+    if (app && selectedEnv) {
+      const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv)
+      if (activeEnvObj) {
+        fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`)
+          .then((res) => res.json())
+          .then((data) => setTemplates(data.content || []))
+      }
     }
   }
 
@@ -248,6 +286,8 @@ export default function ApplicationDetailPage({
     )
   }
 
+  const descriptionText = currentEnvDetails?.description || (currentEnvDetails?.name && app?.name ? `Entorno de ${currentEnvDetails.name} para ${app.name}` : null)
+
   return (
     <div className="space-y-8">
       {/* Breadcrumb and header */}
@@ -260,11 +300,8 @@ export default function ApplicationDetailPage({
           Volver a Aplicaciones
         </Link>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/20">
-              <Box className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
               <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(app.status)}`}>
                 {app.status}
@@ -275,7 +312,7 @@ export default function ApplicationDetailPage({
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
             <Select
               value={selectedEnv}
-              onValueChange={(val: any) => setSelectedEnv(val)}
+              onValueChange={handleEnvChange}
             >
               <SelectTrigger
                 size="sm"
@@ -316,14 +353,14 @@ export default function ApplicationDetailPage({
             </Select>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Link href={`/dashboard/applications/${id}/team`} className="w-full sm:w-auto">
+              <Link href={`/dashboard/applications/${id}/team?env=${encodeURIComponent(selectedEnv)}`} className="w-full sm:w-auto">
                 <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
                   <Users className="h-4 w-4" />
                   Equipo
                 </Button>
               </Link>
               {app.myRole !== "VIEWER" && (
-                <Link href={`/dashboard/applications/${id}/settings`} className="w-full sm:w-auto">
+                <Link href={`/dashboard/applications/${id}/settings?env=${encodeURIComponent(selectedEnv)}`} className="w-full sm:w-auto">
                   <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
                     <Settings className="h-4 w-4" />
                     Configuración
@@ -335,7 +372,7 @@ export default function ApplicationDetailPage({
         </div>
 
         {app.description && (
-          <div className="md:pl-16">
+          <div className="md:pl-0">
             <p className="text-muted-foreground max-w-2xl text-sm line-clamp-3 md:line-clamp-none">
               {app.description}
             </p>
@@ -397,24 +434,24 @@ export default function ApplicationDetailPage({
 
       {isTemplatesLoading && !currentEnvDetails ? (
         <Skeleton className="h-[38px] w-full rounded-lg" />
-      ) : currentEnvDetails?.description ? (
+      ) : descriptionText ? (
         <div className={cn(
           "flex items-center gap-2.5 text-sm rounded-lg border-l-4 px-3 py-2 transition-all duration-200",
-          getEnvColors(currentEnvDetails.name || selectedEnv).borderStrong,
-          getEnvColors(currentEnvDetails.name || selectedEnv).bgSoft,
+          getEnvColors(currentEnvDetails?.name || selectedEnv).borderStrong,
+          getEnvColors(currentEnvDetails?.name || selectedEnv).bgSoft,
           isTemplatesLoading && "opacity-50 pointer-events-none"
         )}>
           <span className="relative flex h-2 w-2 shrink-0">
             <span className={cn(
               "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-              getEnvColors(currentEnvDetails.name || selectedEnv).dot
+              getEnvColors(currentEnvDetails?.name || selectedEnv).dot
             )} />
             <span className={cn(
               "relative inline-flex rounded-full h-2 w-2",
-              getEnvColors(currentEnvDetails.name || selectedEnv).dot
+              getEnvColors(currentEnvDetails?.name || selectedEnv).dot
             )} />
           </span>
-          <p className="text-foreground">{currentEnvDetails.description}</p>
+          <p className="text-foreground">{descriptionText}</p>
         </div>
       ) : null}
 
@@ -449,6 +486,7 @@ export default function ApplicationDetailPage({
             currentEnvDetails={currentEnvDetails}
             myRole={app.myRole}
             onOpenDeleteTemplate={handleOpenDeleteTemplate}
+            onOpenDuplicateTemplate={handleOpenDuplicateTemplate}
           />
         </TabsContent>
 
@@ -473,6 +511,16 @@ export default function ApplicationDetailPage({
           />
         </TabsContent>
       </Tabs>
+
+      {/* Duplicate Shared Resource Template Dialog */}
+      <DuplicateTemplateDialog
+        open={duplicateDialogOpen}
+        onOpenChange={setDuplicateDialogOpen}
+        template={templateToDuplicate}
+        environments={app?.environments || []}
+        currentEnvId={currentEnvDetails?.id}
+        onSuccess={handleDuplicateSuccess}
+      />
 
       {/* Delete Shared Resource Template Confirmation Dialog */}
       <Dialog open={confirmDeleteTemplateOpen} onOpenChange={setConfirmDeleteTemplateOpen}>

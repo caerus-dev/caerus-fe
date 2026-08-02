@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { Box, Plus, MoreVertical, Settings, Trash2 } from 'lucide-react'
+import { Box, Plus, MoreVertical, Settings, Trash2, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -20,6 +20,7 @@ interface ResourcesTabProps {
   currentEnvDetails?: any
   myRole?: string
   onOpenDeleteTemplate: (template: any) => void
+  onOpenDuplicateTemplate?: (template: any) => void
 }
 
 export function ResourcesTab({
@@ -29,6 +30,7 @@ export function ResourcesTab({
   currentEnvDetails,
   myRole,
   onOpenDeleteTemplate,
+  onOpenDuplicateTemplate,
 }: ResourcesTabProps) {
   const isViewer = myRole === 'VIEWER'
 
@@ -39,7 +41,7 @@ export function ResourcesTab({
           {templates.length === 1 ? '1 recurso configurado' : `${templates.length} recursos configurados`}
         </p>
         {!isViewer && (
-          <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}`}>
+          <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
             <Button className="gap-2" disabled={!currentEnvDetails?.id}>
               <Plus className="h-4 w-4" />
               Nuevo Recurso
@@ -54,7 +56,7 @@ export function ResourcesTab({
             <Box className="h-12 w-12 text-muted-foreground mb-4" />
             <p className="text-muted-foreground mb-4">Aún no hay recursos configurados</p>
             {!isViewer && (
-              <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}`}>
+              <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
                 <Button className="gap-2" disabled={!currentEnvDetails?.id}>
                   <Plus className="h-4 w-4" />
                   Crear Primer Recurso
@@ -117,13 +119,22 @@ export function ResourcesTab({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/applications/${appId}/resources/${template.id}/edit`}>
+                          <Link href={`/dashboard/applications/${appId}/resources/${template.id}/edit?env=${selectedEnv}`}>
                             <span className="flex items-center w-full cursor-pointer">
                               <Settings className="h-4 w-4 mr-2" />
                               Configurar
                             </span>
                           </Link>
                         </DropdownMenuItem>
+                        {onOpenDuplicateTemplate && (
+                          <DropdownMenuItem
+                            className="cursor-pointer"
+                            onClick={() => onOpenDuplicateTemplate(template)}
+                          >
+                            <Copy className="h-4 w-4 mr-2" />
+                            Duplicar a otro ambiente...
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="text-destructive focus:text-destructive cursor-pointer"
