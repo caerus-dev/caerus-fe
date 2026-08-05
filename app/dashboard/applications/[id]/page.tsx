@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn, getEnvColors } from "@/lib/utils"
 import {
@@ -318,8 +319,8 @@ export default function ApplicationDetailPage({
                 size="sm"
                 className={cn(
                   "w-full sm:w-[190px] h-8 justify-between border shadow-xs text-xs font-semibold cursor-pointer",
-                  getEnvColors(selectedEnv).bgSoft,
-                  getEnvColors(selectedEnv).border
+                  getEnvColors(selectedEnv, null, currentEnvDetails?.id).bgSoft,
+                  getEnvColors(selectedEnv, null, currentEnvDetails?.id).border
                 )}
               >
                 <span className="flex items-center gap-1.5">
@@ -334,7 +335,7 @@ export default function ApplicationDetailPage({
                       <span className="flex items-center gap-1.5 font-mono">
                         <span className={cn(
                           "h-2 w-2 rounded-full shrink-0",
-                          getEnvColors(env.name).dot,
+                          getEnvColors(env.name, null, env.id).dot,
                           (env.name === "prod" || env.name === "production") && "animate-pulse"
                         )} />
                         {env.name}
@@ -434,24 +435,50 @@ export default function ApplicationDetailPage({
 
       {isTemplatesLoading && !currentEnvDetails ? (
         <Skeleton className="h-[38px] w-full rounded-lg" />
-      ) : descriptionText ? (
+      ) : (currentEnvDetails || selectedEnv) ? (
         <div className={cn(
-          "flex items-center gap-2.5 text-sm rounded-lg border-l-4 px-3 py-2 transition-all duration-200",
-          getEnvColors(currentEnvDetails?.name || selectedEnv).borderStrong,
-          getEnvColors(currentEnvDetails?.name || selectedEnv).bgSoft,
+          "flex items-center gap-2.5 text-sm rounded-lg border-l-4 px-3.5 py-2.5 transition-all duration-200 shadow-xs",
+          getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id).borderStrong,
+          getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id).bgSoft,
           isTemplatesLoading && "opacity-50 pointer-events-none"
         )}>
           <span className="relative flex h-2 w-2 shrink-0">
             <span className={cn(
               "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-              getEnvColors(currentEnvDetails?.name || selectedEnv).dot
+              getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id).dot
             )} />
             <span className={cn(
               "relative inline-flex rounded-full h-2 w-2",
-              getEnvColors(currentEnvDetails?.name || selectedEnv).dot
+              getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id).dot
             )} />
           </span>
-          <p className="text-foreground">{descriptionText}</p>
+          <div className="text-foreground text-xs sm:text-sm flex items-center gap-1.5 flex-wrap">
+            {(() => {
+              const colors = getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id);
+              const envName = currentEnvDetails?.name || selectedEnv;
+              const appName = app?.name;
+
+              return (
+                <span className="inline-flex items-center gap-1.5 flex-wrap">
+                  <span className="text-muted-foreground font-medium">Entorno de</span>
+                  <Badge variant="outline" className={cn("font-mono text-xs capitalize gap-1 py-0.5 px-2 inline-flex items-center font-semibold", colors.badge)}>
+                    <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", colors.dot)} />
+                    {envName}
+                  </Badge>
+                  {appName && (
+                    <>
+                      <span className="text-muted-foreground font-medium">para</span>
+                      <strong className="font-semibold text-foreground">{appName}</strong>
+                    </>
+                  )}
+                  {currentEnvDetails?.description && 
+                   !currentEnvDetails.description.startsWith("Entorno de ") && (
+                    <span className="text-muted-foreground/80 text-xs italic ml-1">— {currentEnvDetails.description}</span>
+                  )}
+                </span>
+              );
+            })()}
+          </div>
         </div>
       ) : null}
 

@@ -31,7 +31,7 @@ export const ENV_COLOR_PRESETS = [
   { id: 'slate', label: 'Gris (Otro)', dot: 'bg-slate-400' },
 ] as const
 
-export function getEnvColors(envName?: string | null, customPresetId?: string | null) {
+export function getEnvColors(envName?: string | null, customPresetId?: string | null, envId?: string | null) {
   const map = {
     dev: {
       dot: 'bg-blue-500',
@@ -108,8 +108,19 @@ export function getEnvColors(envName?: string | null, customPresetId?: string | 
   } as const
 
   let kind: EnvKind = envKind(envName)
-  if (customPresetId && customPresetId in map) {
-    kind = customPresetId as EnvKind
+
+  let savedColor: string | null = customPresetId || null
+  if (!savedColor && typeof window !== "undefined") {
+    if (envId) {
+      savedColor = localStorage.getItem(`caerus_env_color_${envId}`)
+    }
+    if (!savedColor && envName) {
+      savedColor = localStorage.getItem(`caerus_env_color_name_${envName.toLowerCase()}`)
+    }
+  }
+
+  if (savedColor && savedColor in map) {
+    kind = savedColor as EnvKind
   }
 
   return map[kind] || map.slate

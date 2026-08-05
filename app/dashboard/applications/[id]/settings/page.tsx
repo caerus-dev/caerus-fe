@@ -107,15 +107,18 @@ export default function ApplicationSettingsPage({
   const handleOpenCreateEnv = () => {
     setEnvDialogMode("create")
     setSelectedEnvForEdit(null)
-    setEnvForm({ name: "", description: "" })
+    setEnvForm({ name: "", description: "", color: "blue" })
     setEnvFormError("")
     setEnvDialogOpen(true)
   }
 
   const handleOpenEditEnv = (env: Environment) => {
     setEnvDialogMode("edit")
-    setSelectedEnvForEdit(env)
-    setEnvForm({ name: env.name, description: env.description || "" })
+    const savedColor = typeof window !== "undefined"
+      ? (localStorage.getItem(`caerus_env_color_${env.id}`) || localStorage.getItem(`caerus_env_color_name_${env.name.toLowerCase()}`))
+      : null
+    const defaultColor = (env.name === "prod" || env.name === "production") ? "green" : (env.name === "stage" || env.name === "staging" || env.name === "qa") ? "yellow" : "blue"
+    setEnvForm({ name: env.name, description: env.description || "", color: savedColor || defaultColor })
     setEnvFormError("")
     setEnvDialogOpen(true)
   }
@@ -143,6 +146,10 @@ export default function ApplicationSettingsPage({
         })
         if (res.ok) {
           const newEnv = await res.json()
+          if (typeof window !== "undefined") {
+            localStorage.setItem(`caerus_env_color_${newEnv.id}`, envForm.color)
+            localStorage.setItem(`caerus_env_color_name_${newEnv.name.toLowerCase()}`, envForm.color)
+          }
           setEnvironments((prev) => [
             ...prev,
             {
@@ -169,6 +176,10 @@ export default function ApplicationSettingsPage({
         })
         if (res.ok) {
           const updatedEnv = await res.json()
+          if (typeof window !== "undefined") {
+            localStorage.setItem(`caerus_env_color_${selectedEnvForEdit.id}`, envForm.color)
+            localStorage.setItem(`caerus_env_color_name_${updatedEnv.name.toLowerCase()}`, envForm.color)
+          }
           setEnvironments((prev) =>
             prev.map((e) =>
               e.id === selectedEnvForEdit.id
@@ -252,7 +263,8 @@ export default function ApplicationSettingsPage({
       if (response.ok) {
         router.push("/dashboard/applications")
       } else {
-        console.error("Failed to delete application")
+        const errorData = await response.json().catch(() => ({}))
+        console.error("Failed to delete application:", errorData.error || response.statusText)
       }
     } catch (error) {
       console.error("Error deleting application:", error)
@@ -270,152 +282,148 @@ export default function ApplicationSettingsPage({
   }
 
   return (
-    
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
-          <Link href={backUrl}>
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Configuración de Aplicación
-            </h1>
-            <p className="text-muted-foreground">
-              Modifica la configuración de tu aplicación
-            </p>
-          </div>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Link href={backUrl}>
+          <Button variant="ghost" size="icon">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Configuración de Aplicación
+          </h1>
+          <p className="text-muted-foreground">
+            Modifica la configuración de tu aplicación
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        {/* Basic Info */}
+        <div className="w-full lg:w-[340px] shrink-0">
+          <Card>
+            <CardHeader>
+              <CardTitle>Información General</CardTitle>
+              <CardDescription>
+                Actualiza el nombre y descripción de tu aplicación
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="name">Nombre de la Aplicación</Label>
+                  <span className={cn(
+                    "text-[10px] transition-colors",
+                    formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                  )}>
+                    {formData.name.length} / 100
+                  </span>
+                </div>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => handleChange("name", e.target.value)}
+                  disabled={isSaving}
+                  maxLength={100}
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="description">Descripción</Label>
+                  <span className={cn(
+                    "text-[10px] transition-colors",
+                    formData.description.length >= 500 ? "text-destructive font-semibold" : formData.description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                  )}>
+                    {formData.description.length} / 500
+                  </span>
+                </div>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => handleChange("description", e.target.value)}
+                  disabled={isSaving}
+                  maxLength={500}
+                  rows={3}
+                />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {/* Basic Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Información General</CardTitle>
-            <CardDescription>
-              Actualiza el nombre y descripción de tu aplicación
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label htmlFor="name">Nombre de la Aplicación</Label>
-                <span className={cn(
-                  "text-[10px] transition-colors",
-                  formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
-                )}>
-                  {formData.name.length} / 100
-                </span>
-              </div>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                disabled={isSaving}
-                maxLength={100}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label htmlFor="description">Descripción</Label>
-                <span className={cn(
-                  "text-[10px] transition-colors",
-                  formData.description.length >= 500 ? "text-destructive font-semibold" : formData.description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
-                )}>
-                  {formData.description.length} / 500
-                </span>
-              </div>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => handleChange("description", e.target.value)}
-                disabled={isSaving}
-                maxLength={500}
-                rows={3}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Environments */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Ambientes</CardTitle>
-                <CardDescription>
-                  Gestiona los ambientes de tu aplicación
-                </CardDescription>
+        <div className="flex-1 min-w-0">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Ambientes</CardTitle>
+                  <CardDescription>
+                    Gestiona los ambientes de tu aplicación
+                  </CardDescription>
+                </div>
+                <Button type="button" variant="outline" size="sm" onClick={handleOpenCreateEnv}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Agregar Ambiente
+                </Button>
               </div>
-              <Button type="button" variant="outline" size="sm" onClick={handleOpenCreateEnv}>
-                <Plus className="w-4 h-4 mr-2" />
-                Agregar Ambiente
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {environments.length === 0 ? (
-              <div className="text-center py-6 text-muted-foreground text-sm">
-                No hay ambientes configurados. Agrega uno para empezar.
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {environments.map((env) => (
-                  <div
-                    key={env.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border border-border gap-4 hover:bg-accent/5 transition-colors"
-                  >
-                    <div className="space-y-1.5 min-w-0">
-                      <div className="flex items-center gap-2.5 flex-wrap">
-                        <Badge
-                          variant="outline"
-                          className={`${
-                            env.name === "prod" || env.name === "production"
-                              ? "border-green-500/50 text-green-700 bg-green-50/50 dark:border-green-500/50 dark:text-green-400 dark:bg-transparent"
-                              : env.name === "stage" || env.name === "staging"
-                              ? "border-yellow-500/50 text-yellow-700 bg-yellow-50/50 dark:border-yellow-500/50 dark:text-yellow-400 dark:bg-transparent"
-                              : "border-blue-500/50 text-blue-700 bg-blue-50/50 dark:border-blue-500/50 dark:text-blue-400 dark:bg-transparent"
-                          }`}
-                        >
-                          {env.name}
-                        </Badge>
-                        <span className="text-sm font-semibold text-foreground font-mono">{env.label}</span>
+            </CardHeader>
+            <CardContent>
+              {environments.length === 0 ? (
+                <div className="text-center py-6 text-muted-foreground text-sm">
+                  No hay ambientes configurados. Agrega uno para empezar.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {environments.map((env) => {
+                    const envColors = getEnvColors(env.name, null, env.id)
+                    return (
+                      <div
+                        key={env.id}
+                        className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent/5 transition-colors gap-3"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <Badge
+                            variant="outline"
+                            className={cn("capitalize gap-1.5 px-2.5 py-0.5 shrink-0", envColors.badge)}
+                          >
+                            <span className={cn("h-2 w-2 rounded-full shrink-0", envColors.dot)} />
+                            {env.name}
+                          </Badge>
+                          {env.description && (
+                            <p className="text-xs text-muted-foreground truncate italic">
+                              {env.description}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 hover:text-foreground text-muted-foreground"
+                            onClick={() => handleOpenEditEnv(env)}
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 hover:text-destructive text-muted-foreground"
+                            onClick={() => handleOpenDeleteEnv(env)}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
                       </div>
-                      {env.description && (
-                        <p className="text-xs text-muted-foreground line-clamp-2 pr-4 italic">
-                          {env.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-end gap-2 shrink-0 border-t border-border/50 sm:border-0 pt-2 sm:pt-0">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 hover:text-foreground text-muted-foreground"
-                        onClick={() => handleOpenEditEnv(env)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 hover:text-destructive text-muted-foreground"
-                        onClick={() => handleOpenDeleteEnv(env)}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                    )
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
         {/* Danger Zone */}
@@ -526,23 +534,24 @@ export default function ApplicationSettingsPage({
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">Sugerencia de Nombre / Tema Visual</Label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-0.5">
-                  {ENV_COLOR_PRESETS.map((preset) => (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      onClick={() => setEnvForm((prev) => ({ 
-                        ...prev, 
-                        name: prev.name || preset.id,
-                        description: prev.description || `Entorno de ${preset.id} para ${formData.name}`
-                      }))}
-                      className="flex items-center gap-2 p-2 rounded-lg border border-border/70 bg-secondary/30 hover:bg-secondary/80 text-xs font-medium transition-all cursor-pointer text-left"
-                    >
-                      <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", preset.dot)} />
-                      <span className="truncate capitalize">{preset.id}</span>
-                    </button>
-                  ))}
+                <Label className="text-xs text-muted-foreground">Color del Ambiente</Label>
+                <div className="flex items-center gap-3 pt-1 flex-wrap">
+                  {ENV_COLOR_PRESETS.map((preset) => {
+                    const isSelected = envForm.color === preset.id
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => setEnvForm((prev) => ({ ...prev, color: preset.id }))}
+                        className={cn(
+                          "h-7 w-7 rounded-full transition-all flex items-center justify-center cursor-pointer border border-border/40 hover:scale-110",
+                          preset.dot,
+                          isSelected && "ring-2 ring-primary ring-offset-2 ring-offset-background scale-110"
+                        )}
+                        title={preset.label}
+                      />
+                    )
+                  })}
                 </div>
               </div>
               <div className="space-y-2">

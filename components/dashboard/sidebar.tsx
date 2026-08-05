@@ -268,17 +268,22 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                     </div>
                     {!isCollapsed && app.environments.length > 0 && (() => {
                       const { visibleDots, overflowCount, allNames } = getUniqueEnvDots(app.environments, 3);
+                      const extraCount = app.environments.length - visibleDots.length;
                       return (
-                        <span className="flex shrink-0 items-center gap-1" title={allNames.join(", ")}>
+                        <span className="flex shrink-0 items-center gap-1">
                           {visibleDots.map(({ kind, colors }) => (
                             <span
                               key={kind}
                               className={cn("h-1.5 w-1.5 rounded-full", colors.dot)}
+                              title={allNames.join(", ")}
                             />
                           ))}
-                          {overflowCount > 0 && (
-                            <span className="text-[10px] font-mono font-medium text-muted-foreground/80 leading-none">
-                              +{overflowCount}
+                          {extraCount > 0 && (
+                            <span
+                              className="text-[10px] font-mono font-medium text-muted-foreground/80 leading-none"
+                              title={allNames.join(", ")}
+                            >
+                              +{extraCount}
                             </span>
                           )}
                         </span>
