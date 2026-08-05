@@ -31,6 +31,7 @@ export async function fetchBackend(path: string, options: RequestInit = {}) {
   }
 
   const response = await fetch(url, {
+    cache: "no-store",
     ...options,
     headers: mergedHeaders,
   });
