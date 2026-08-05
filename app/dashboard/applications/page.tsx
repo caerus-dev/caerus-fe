@@ -113,11 +113,12 @@ export default function ApplicationsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [appToDelete, setAppToDelete] = useState<Application | null>(null)
+  const [deleteAppError, setDeleteAppError] = useState<{ message: string, details?: string[] } | null>(null)
 
   useEffect(() => {
     const fetchApps = async () => {
       try {
-        const res = await fetch("/api/applications");
+        const res = await fetch("/api/applications", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
           if (data && data.content) {
@@ -176,20 +177,25 @@ export default function ApplicationsPage() {
 
   const handleDeleteConfirm = async () => {
     if (appToDelete) {
+      setDeleteAppError(null)
       try {
         const response = await fetch(`/api/applications/${appToDelete.id}`, {
           method: "DELETE",
         });
         if (response.ok) {
           setApplications((prev) => prev.filter((app) => app.id !== appToDelete.id))
+          setDeleteDialogOpen(false)
+          setAppToDelete(null)
         } else {
-          console.error("Failed to delete application");
+          const errData = await response.json().catch(() => ({ message: "Error al eliminar la aplicación" }))
+          setDeleteAppError({
+            message: errData.message || errData.error || "Error al eliminar la aplicación",
+            details: errData.details
+          })
         }
       } catch (error) {
         console.error("Error deleting application:", error);
-      } finally {
-        setDeleteDialogOpen(false)
-        setAppToDelete(null)
+        setDeleteAppError({ message: "Ocurrió un error inesperado al eliminar la aplicación" })
       }
     }
   }
@@ -398,7 +404,13 @@ export default function ApplicationsPage() {
         )}
 
         {/* Delete Confirmation Dialog */}
-        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <Dialog open={deleteDialogOpen} onOpenChange={(open) => {
+          setDeleteDialogOpen(open)
+          if (!open) {
+            setAppToDelete(null)
+            setDeleteAppError(null)
+          }
+        }}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Eliminar Aplicación</DialogTitle>
@@ -411,6 +423,18 @@ export default function ApplicationsPage() {
                 configuraciones, API keys y datos asociados.
               </DialogDescription>
             </DialogHeader>
+            {deleteAppError && (
+              <div className="bg-destructive/15 border border-destructive/30 text-destructive text-sm rounded-md p-3 space-y-2 mt-2">
+                <div className="font-semibold">{deleteAppError.message}</div>
+                {deleteAppError.details && deleteAppError.details.length > 0 && (
+                  <ul className="list-disc list-inside space-y-1 ml-1">
+                    {deleteAppError.details.map((detail, idx) => (
+                      <li key={idx}>{detail}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
             <DialogFooter>
               <Button
                 variant="outline"
