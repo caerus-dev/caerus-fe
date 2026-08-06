@@ -149,13 +149,13 @@ export function CodeExamplesSection() {
         </div>
 
         {/* SDK badges */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-8 text-sm text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-8 text-xs sm:text-sm text-muted-foreground">
           <span>SDKs disponibles:</span>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             {["TypeScript", "Python", "Go", "REST API"].map((sdk) => (
               <span
                 key={sdk}
-                className="px-3 py-1 rounded-full bg-secondary border border-border text-foreground"
+                className="px-3 py-1 rounded-full bg-secondary border border-border text-foreground text-xs sm:text-sm"
               >
                 {sdk}
               </span>
