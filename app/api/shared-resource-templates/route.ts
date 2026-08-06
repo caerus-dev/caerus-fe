@@ -42,8 +42,13 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
+      let errorMsg = errorText;
+      try {
+        const parsed = JSON.parse(errorText);
+        errorMsg = parsed.message || parsed.error || errorText;
+      } catch {}
       return NextResponse.json(
-        { error: errorText || "Failed to create resource template" },
+        { error: errorMsg || "Failed to create resource template" },
         { status: response.status }
       );
     }

@@ -93,7 +93,7 @@ export function ResourcesTab({
               key={template.id}
               className={cn(
                 'bg-card/50 border-border py-0 border-l-2',
-                getEnvColors(selectedEnv).borderStrong
+                envColors.borderStrong
               )}
             >
               <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
@@ -101,10 +101,10 @@ export function ResourcesTab({
                   <div
                     className={cn(
                       'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
-                      getEnvColors(selectedEnv).bg
+                      envColors.bg
                     )}
                   >
-                    <Box className={cn('h-5 w-5', getEnvColors(selectedEnv).text)} />
+                    <Box className={cn('h-5 w-5', envColors.text)} />
                   </div>
                   <div className="space-y-1 min-w-0">
                     <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">
@@ -138,31 +138,29 @@ export function ResourcesTab({
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem asChild>
-                          <Link href={`/dashboard/applications/${appId}/resources/${template.id}/edit?env=${selectedEnv}`}>
-                            <span className="flex items-center w-full cursor-pointer">
-                              <Settings className="h-4 w-4 mr-2" />
-                              Configurar
-                            </span>
+                          <Link href={`/dashboard/applications/${appId}/resources/${template.id}/edit?env=${selectedEnv}`} className="flex items-center w-full cursor-pointer">
+                            <Settings className="h-4 w-4 mr-2 shrink-0" />
+                            <span>Configurar</span>
                           </Link>
                         </DropdownMenuItem>
                         {onOpenDuplicateTemplate && (
                           <DropdownMenuItem
-                            className="cursor-pointer"
+                            className="cursor-pointer flex items-center"
                             onClick={() => onOpenDuplicateTemplate(template)}
                           >
-                            <Copy className="h-4 w-4 mr-2" />
-                            Duplicar a otro ambiente...
+                            <Copy className="h-4 w-4 mr-2 shrink-0" />
+                            <span>Duplicar a otro ambiente...</span>
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          className="text-destructive focus:text-destructive cursor-pointer"
+                          className="text-destructive focus:text-destructive cursor-pointer flex items-center"
                           onClick={() => onOpenDeleteTemplate(template)}
                         >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Eliminar
+                          <Trash2 className="h-4 w-4 mr-2 shrink-0" />
+                          <span>Eliminar</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
