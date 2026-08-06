@@ -2,7 +2,9 @@
 
 import Link from "next/link"
 import { use, useState, useEffect } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import {
+  ChevronDown,
   Box,
   Lock,
   Key,
@@ -10,20 +12,16 @@ import {
   Settings,
   Activity,
   ArrowLeft,
-  Plus,
-  MoreVertical,
-  Play,
-  Pause,
-  Trash2,
   Loader2,
   Copy,
   Check,
+  Plus,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { cn, getEnvColors } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +29,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { cn, getEnvColors } from "@/lib/utils"
 import {
   Select,
   SelectContent,
@@ -47,211 +46,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-
-interface EnvData {
-  resources: Array<{
-    id: string
-    name: string
-    mode: string
-    status: string
-    activeReservations: number
-  }>
-  locks: Array<{
-    id: string
-    name: string
-    type: string
-    status: string
-    activeLocks: number
-  }>
-  apiKeys: Array<{
-    id: string
-    name: string
-    prefix: string
-    createdAt: string
-    lastUsed: string
-  }>
-}
-
-type AppEnvironmentsData = Record<"dev" | "staging" | "prod", EnvData>
-
-const appEnvironmentsMock: Record<string, AppEnvironmentsData> = {
-  "reserva-engine": {
-    dev: {
-      resources: [
-        { id: "1-dev", name: "seat_reservation_dev", mode: "multiple", status: "active", activeReservations: 12 },
-        { id: "2-dev", name: "test_lounge_dev", mode: "unit", status: "active", activeReservations: 0 },
-      ],
-      locks: [
-        { id: "1-dev", name: "payment_mock_lock", type: "exclusive", status: "active", activeLocks: 1 },
-      ],
-      apiKeys: [
-        { id: "1-dev", name: "Clave Desarrollo", prefix: "ck_test_", createdAt: "2024-01-15", lastUsed: "Hace 5m" },
-      ],
-    },
-    staging: {
-      resources: [
-        { id: "1-stage", name: "seat_reservation_staging", mode: "multiple", status: "active", activeReservations: 5 },
-      ],
-      locks: [
-        { id: "1-stage", name: "payment_stage_lock", type: "exclusive", status: "paused", activeLocks: 0 },
-      ],
-      apiKeys: [
-        { id: "1-stage", name: "Clave Staging", prefix: "ck_stage_", createdAt: "2024-01-15", lastUsed: "Hace 2h" },
-      ],
-    },
-    prod: {
-      resources: [
-        { id: "1-prod", name: "seat_reservation", mode: "multiple", status: "active", activeReservations: 45 },
-        { id: "2-prod", name: "vip_lounge", mode: "unit", status: "active", activeReservations: 2 },
-      ],
-      locks: [
-        { id: "1-prod", name: "payment_processor", type: "exclusive", status: "active", activeLocks: 3 },
-      ],
-      apiKeys: [
-        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-01-15", lastUsed: "Hace 2m" },
-      ],
-    },
-  },
-  "lock-service": {
-    dev: {
-      resources: [],
-      locks: [
-        { id: "1-dev", name: "order_processing_dev", type: "exclusive", status: "active", activeLocks: 1 },
-        { id: "2-dev", name: "inventory_sync_dev", type: "read-write", status: "active", activeLocks: 2 },
-      ],
-      apiKeys: [
-        { id: "1-dev", name: "Development Key", prefix: "ck_test_", createdAt: "2024-02-20", lastUsed: "Hace 5m" },
-      ],
-    },
-    staging: {
-      resources: [],
-      locks: [
-        { id: "1-stage", name: "inventory_sync_staging", type: "read-write", status: "active", activeLocks: 0 },
-      ],
-      apiKeys: [
-        { id: "1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: "2024-02-20", lastUsed: "Hace 1d" },
-      ],
-    },
-    prod: {
-      resources: [],
-      locks: [
-        { id: "1-prod", name: "order_processing", type: "exclusive", status: "active", activeLocks: 1 },
-        { id: "2-prod", name: "inventory_sync", type: "read-write", status: "active", activeLocks: 5 },
-      ],
-      apiKeys: [
-        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-02-20", lastUsed: "Hace 10m" },
-      ],
-    },
-  },
-  "payment-sync": {
-    dev: {
-      resources: [
-        { id: "1-dev", name: "transaction_slot_dev", mode: "unit", status: "active", activeReservations: 1 },
-      ],
-      locks: [
-        { id: "1-dev", name: "payment_gateway_dev", type: "exclusive", status: "active", activeLocks: 0 },
-      ],
-      apiKeys: [
-        { id: "1-dev", name: "Dev Key", prefix: "ck_test_", createdAt: "2024-03-10", lastUsed: "Hace 1h" },
-      ],
-    },
-    staging: {
-      resources: [
-        { id: "1-stage", name: "transaction_slot_staging", mode: "unit", status: "active", activeReservations: 2 },
-      ],
-      locks: [
-        { id: "1-stage", name: "payment_gateway_staging", type: "exclusive", status: "active", activeLocks: 1 },
-      ],
-      apiKeys: [
-        { id: "1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: "2024-03-10", lastUsed: "Hace 30m" },
-      ],
-    },
-    prod: {
-      resources: [
-        { id: "1-prod", name: "transaction_slot", mode: "unit", status: "active", activeReservations: 12 },
-      ],
-      locks: [
-        { id: "1-prod", name: "payment_gateway", type: "exclusive", status: "active", activeLocks: 8 },
-      ],
-      apiKeys: [
-        { id: "1-prod", name: "Production Key", prefix: "ck_live_", createdAt: "2024-03-10", lastUsed: "Hace 30s" },
-      ],
-    },
-  },
-}
-
-const generateMockDataForApp = (name: string): AppEnvironmentsData => {
-  return {
-    dev: {
-      resources: [
-        { id: "custom-1-dev", name: `${name}_resource_dev`, mode: "multiple", status: "active", activeReservations: 1 },
-      ],
-      locks: [
-        { id: "custom-lock-1-dev", name: `${name}_lock_dev`, type: "exclusive", status: "active", activeLocks: 0 },
-      ],
-      apiKeys: [
-        { id: "custom-key-1-dev", name: "Development Key", prefix: "ck_test_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 10m" },
-      ],
-    },
-    staging: {
-      resources: [
-        { id: "custom-1-stage", name: `${name}_resource_staging`, mode: "multiple", status: "active", activeReservations: 2 },
-      ],
-      locks: [
-        { id: "custom-lock-1-stage", name: `${name}_lock_staging`, type: "exclusive", status: "active", activeLocks: 1 },
-      ],
-      apiKeys: [
-        { id: "custom-key-1-stage", name: "Staging Key", prefix: "ck_stage_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 1d" },
-      ],
-    },
-    prod: {
-      resources: [
-        { id: "custom-1-prod", name: `${name}_resource`, mode: "multiple", status: "active", activeReservations: 5 },
-      ],
-      locks: [
-        { id: "custom-lock-1-prod", name: `${name}_lock`, type: "exclusive", status: "active", activeLocks: 2 },
-      ],
-      apiKeys: [
-        { id: "custom-key-1-prod", name: "Production Key", prefix: "ck_live_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 30s" },
-      ],
-    },
-  }
-}
-
-const getMockDataForEnv = (appName: string, envName: string): EnvData => {
-  const predefined = appEnvironmentsMock[appName];
-  if (predefined) {
-    if (envName === "dev" || envName === "development") return predefined.dev;
-    if (envName === "stage" || envName === "staging") return predefined.staging;
-    if (envName === "prod" || envName === "production") return predefined.prod;
-  }
-  
-  return {
-    resources: [
-      { id: `${envName}-res-1`, name: `${appName}_res_${envName}`, mode: "multiple", status: "active", activeReservations: 3 },
-    ],
-    locks: [
-      { id: `${envName}-lock-1`, name: `${appName}_lock_${envName}`, type: "exclusive", status: "active", activeLocks: 1 },
-    ],
-    apiKeys: [
-      { id: `${envName}-key-1`, name: `Key ${envName}`, prefix: "ck_live_", createdAt: new Date().toISOString().split('T')[0], lastUsed: "Hace 5m" },
-    ],
-  };
-}
-
-const formatTtl = (ms: any): string => {
-  const num = Number(ms)
-  if (isNaN(num)) return String(ms)
-  if (num < 1000) return `${num} ms`
-  const seconds = num / 1000
-  if (seconds < 60) return `${seconds.toFixed(seconds % 1 === 0 ? 0 : 1)} s`
-  const minutes = seconds / 60
-  if (minutes < 60) return `${minutes.toFixed(minutes % 1 === 0 ? 0 : 1)} min`
-  const hours = minutes / 60
-  if (hours < 24) return `${hours.toFixed(hours % 1 === 0 ? 0 : 1)} h`
-  const days = hours / 24
-  return `${days.toFixed(days % 1 === 0 ? 0 : 1)} d`
-}
+import { Skeleton } from "@/components/ui/skeleton"
+import { ApplicationDetailSkeleton } from "@/components/dashboard/applications/application-detail-skeleton"
+import { ResourcesTab } from "@/components/dashboard/applications/tabs/resources-tab"
+import { LocksTab } from "@/components/dashboard/applications/tabs/locks-tab"
+import { ApiKeysTab } from "@/components/dashboard/applications/tabs/api-keys-tab"
+import { DuplicateTemplateDialog } from "@/components/dashboard/applications/duplicate-template-dialog"
 
 export default function ApplicationDetailPage({
   params,
@@ -259,26 +59,29 @@ export default function ApplicationDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
   const [app, setApp] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [selectedEnv, setSelectedEnv] = useState<string>("")
   const [currentEnvDetails, setCurrentEnvDetails] = useState<any>(null)
   const [templates, setTemplates] = useState<any[]>([])
-  const [isTemplatesLoading, setIsTemplatesLoading] = useState(false)
+  const [locks, setLocks] = useState<any[]>([])
+  const [isTemplatesLoading, setIsTemplatesLoading] = useState(true)
   const [confirmDeleteTemplateOpen, setConfirmDeleteTemplateOpen] = useState(false)
   const [templateToDelete, setTemplateToDelete] = useState<any>(null)
 
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false)
+  const [templateToDuplicate, setTemplateToDuplicate] = useState<any>(null)
+
   const [apiKeys, setApiKeys] = useState<any[]>([])
-  const [isApiKeysLoading, setIsApiKeysLoading] = useState(false)
+  const [isApiKeysLoading, setIsApiKeysLoading] = useState(true)
   const [confirmRevokeKeyOpen, setConfirmRevokeKeyOpen] = useState(false)
   const [keyToRevoke, setKeyToRevoke] = useState<any>(null)
   const [showCreatedKeyDialog, setShowCreatedKeyDialog] = useState(false)
   const [createdRawKey, setCreatedRawKey] = useState("")
   const [copiedKey, setCopiedKey] = useState(false)
-
-  const currentEnvData = app && selectedEnv
-    ? getMockDataForEnv(app.name, selectedEnv)
-    : { resources: [], locks: [], apiKeys: [] }
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -287,16 +90,21 @@ export default function ApplicationDetailPage({
         if (res.ok) {
           const data = await res.json()
           const envs = data.environments || []
+
+          const queryEnv = searchParams.get("env") || searchParams.get("envName")
+          const savedEnv = typeof window !== "undefined" ? localStorage.getItem(`caerus_env_${id}`) : null
           
-          let initialEnv = ""
-          if (envs.length > 0) {
+          let initialEnv = queryEnv || savedEnv || ""
+
+          if (!initialEnv || !envs.some((e: any) => e.name === initialEnv)) {
             const pref = envs.find((e: any) => e.name === "dev" || e.name === "development") ||
                          envs.find((e: any) => e.name === "stage" || e.name === "staging") ||
                          envs.find((e: any) => e.name === "prod" || e.name === "production") ||
-                         envs[0];
-            initialEnv = pref.name;
+                         envs[0]
+            initialEnv = pref ? pref.name : ""
           }
-          setSelectedEnv(initialEnv)
+
+          setSelectedEnv(initialEnv || "dev")
 
           setApp({
             id: data.id.toString(),
@@ -311,7 +119,7 @@ export default function ApplicationDetailPage({
             myRole: data.myRole || "VIEWER",
           })
         } else {
-          console.error("Failed to fetch application details")
+          console.error("Failed to fetch application details from backend")
         }
       } catch (error) {
         console.error("Error fetching application details:", error)
@@ -320,46 +128,69 @@ export default function ApplicationDetailPage({
       }
     }
     fetchApp()
-  }, [id])
+  }, [id, searchParams])
 
   useEffect(() => {
-    if (!app || !app.environments || !selectedEnv) return;
-    const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv);
-    if (!activeEnvObj) return;
+    if (!app || !app.environments || !selectedEnv) return
+    const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv)
+    if (!activeEnvObj) return
+
+    let isSubscribed = true
 
     const fetchEnvDetailsAndTemplates = async () => {
-      setIsTemplatesLoading(true);
-      setIsApiKeysLoading(true);
+      setIsTemplatesLoading(true)
+      setIsApiKeysLoading(true)
       try {
         const [envRes, templatesRes, keysRes] = await Promise.all([
           fetch(`/api/applications/${id}/environments/${activeEnvObj.id}`),
           fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`),
           fetch(`/api/environments/${activeEnvObj.id}/api-keys`),
-        ]);
+          new Promise((resolve) => setTimeout(resolve, 300)),
+        ])
+
+        if (!isSubscribed) return
 
         if (envRes.ok) {
-          const envData = await envRes.json();
-          setCurrentEnvDetails(envData);
+          const envData = await envRes.json()
+          setCurrentEnvDetails(envData)
+          setLocks(envData.locks || [])
         }
 
         if (templatesRes.ok) {
-          const templatesData = await templatesRes.json();
-          setTemplates(templatesData.content || []);
+          const templatesData = await templatesRes.json()
+          setTemplates(templatesData.content || [])
         }
 
         if (keysRes.ok) {
-          const keysData = await keysRes.json();
-          setApiKeys(keysData.content || []);
+          const keysData = await keysRes.json()
+          setApiKeys(keysData.content || [])
         }
       } catch (error) {
-        console.error("Error fetching environment details, templates or keys:", error);
+        console.error("Error fetching environment details from backend:", error)
       } finally {
-        setIsTemplatesLoading(false);
-        setIsApiKeysLoading(false);
+        if (isSubscribed) {
+          setIsTemplatesLoading(false)
+          setIsApiKeysLoading(false)
+        }
       }
-    };
-    fetchEnvDetailsAndTemplates();
-  }, [selectedEnv, app])
+    }
+    fetchEnvDetailsAndTemplates()
+
+    return () => {
+      isSubscribed = false
+    }
+  }, [selectedEnv, app?.id])
+
+  const handleEnvChange = (val: string) => {
+    if (val === selectedEnv) return
+    setIsTemplatesLoading(true)
+    setIsApiKeysLoading(true)
+    setSelectedEnv(val)
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`caerus_env_${id}`, val)
+    }
+    router.replace(`/dashboard/applications/${id}?env=${encodeURIComponent(val)}`, { scroll: false })
+  }
 
   const handleCreateApiKey = async () => {
     if (!currentEnvDetails) return
@@ -373,7 +204,7 @@ export default function ApplicationDetailPage({
         setShowCreatedKeyDialog(true)
         setApiKeys((prev) => [data, ...prev])
       } else {
-        console.error("Failed to create API key")
+        console.error("Failed to create API Key")
       }
     } catch (error) {
       console.error("Error creating API key:", error)
@@ -386,15 +217,15 @@ export default function ApplicationDetailPage({
   }
 
   const handleRevokeKeyConfirm = async () => {
-    if (!keyToRevoke) return
+    if (!keyToRevoke || !currentEnvDetails) return
     try {
-      const res = await fetch(`/api/environments/${currentEnvDetails.id}/api-keys/${keyToRevoke.id}/revoke`, {
-        method: "POST",
-      })
+      const res = await fetch(
+        `/api/environments/${currentEnvDetails.id}/api-keys/${keyToRevoke.id}/revoke`,
+        { method: "POST" }
+      )
       if (res.ok) {
-        const data = await res.json()
         setApiKeys((prev) =>
-          prev.map((k) => (k.id === keyToRevoke.id ? data : k))
+          prev.map((k) => (k.id === keyToRevoke.id ? { ...k, state: "REVOKED" } : k))
         )
         setConfirmRevokeKeyOpen(false)
         setKeyToRevoke(null)
@@ -406,11 +237,12 @@ export default function ApplicationDetailPage({
     }
   }
 
-  const copyRawKeyToClipboard = async () => {
-    if (!createdRawKey) return
-    await navigator.clipboard.writeText(createdRawKey)
-    setCopiedKey(true)
-    setTimeout(() => setCopiedKey(false), 2000)
+  const copyRawKeyToClipboard = () => {
+    if (createdRawKey) {
+      navigator.clipboard.writeText(createdRawKey)
+      setCopiedKey(true)
+      setTimeout(() => setCopiedKey(false), 2000)
+    }
   }
 
   const handleOpenDeleteTemplate = (template: any) => {
@@ -436,16 +268,19 @@ export default function ApplicationDetailPage({
     }
   }
 
-  const getEnvironmentBadgeClass = (env: string) => {
-    switch (env) {
-      case "prod":
-        return "bg-primary/20 text-primary"
-      case "dev":
-        return "bg-chart-2/20 text-chart-2"
-      case "staging":
-        return "bg-chart-4/20 text-chart-4"
-      default:
-        return "bg-secondary text-muted-foreground"
+  const handleOpenDuplicateTemplate = (template: any) => {
+    setTemplateToDuplicate(template)
+    setDuplicateDialogOpen(true)
+  }
+
+  const handleDuplicateSuccess = () => {
+    if (app && selectedEnv) {
+      const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv)
+      if (activeEnvObj) {
+        fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`)
+          .then((res) => res.json())
+          .then((data) => setTemplates(data.content || []))
+      }
     }
   }
 
@@ -461,11 +296,7 @@ export default function ApplicationDetailPage({
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
-    )
+    return <ApplicationDetailSkeleton />
   }
 
   if (!app) {
@@ -479,6 +310,8 @@ export default function ApplicationDetailPage({
     )
   }
 
+  const descriptionText = currentEnvDetails?.description || (currentEnvDetails?.name && app?.name ? `Entorno de ${currentEnvDetails.name} para ${app.name}` : null)
+
   return (
     <div className="space-y-8">
       {/* Breadcrumb and header */}
@@ -490,89 +323,77 @@ export default function ApplicationDetailPage({
           <ArrowLeft className="h-4 w-4" />
           Volver a Aplicaciones
         </Link>
-        {/* Row 1: Title and Controls */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/20">
-              <Box className="h-6 w-6 text-primary" />
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
-              <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(app.status)}`}>
-                {app.status}
-              </span>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
-            <Select
-              value={selectedEnv}
-              onValueChange={(val: any) => setSelectedEnv(val)}
-            >
-              <SelectTrigger
-                size="sm"
-                className={cn(
-                  "w-full sm:w-[190px] h-8 justify-between border shadow-xs text-xs font-semibold cursor-pointer",
-                  getEnvColors(selectedEnv).bgSoft,
-                  getEnvColors(selectedEnv).border
-                )}
-              >
-                <span className="flex items-center gap-1.5">
-                  <span className="text-muted-foreground font-normal">Ambiente:</span>
-                  <SelectValue placeholder="Ambiente" />
-                </span>
-              </SelectTrigger>
-              <SelectContent>
-                {app?.environments && app.environments.length > 0 ? (
-                  app.environments.map((env: any) => (
-                    <SelectItem key={env.id} value={env.name}>
-                      <span className="flex items-center gap-1.5 font-mono">
-                        <span className={cn(
-                          "h-2 w-2 rounded-full shrink-0",
-                          getEnvColors(env.name).dot,
-                          (env.name === "prod" || env.name === "production") && "animate-pulse"
-                        )} />
-                        {env.name}
+          <div className="flex items-center gap-2">
+            {/* Environment Dropdown Pill in Top Right Toolbar */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 h-9 text-sm font-semibold cursor-pointer border-border/80 px-3">
+                  <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", getEnvColors(selectedEnv, null, currentEnvDetails?.id).dot)} />
+                  <span className="capitalize">{selectedEnv}</span>
+                  <ChevronDown className="h-4 w-4 opacity-60 ml-0.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52 bg-card border-border p-1.5">
+                {app?.environments && app.environments.map((env: any) => {
+                  const isSelected = selectedEnv === env.name
+                  const colors = getEnvColors(env.name, null, env.id)
+                  return (
+                    <DropdownMenuItem
+                      key={env.id}
+                      onClick={() => handleEnvChange(env.name)}
+                      className={cn(
+                        "flex items-center justify-between cursor-pointer text-sm py-2 px-2.5 rounded-md transition-colors",
+                        isSelected ? "font-semibold bg-accent/60 text-foreground" : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", colors.dot)} />
+                        <span className="capitalize">{env.name}</span>
                       </span>
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="dev">
-                    <span className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0" />
-                      Desarrollo
-                    </span>
-                  </SelectItem>
+                      {isSelected && <span className="text-xs text-primary font-medium">Activo</span>}
+                    </DropdownMenuItem>
+                  )
+                })}
+                {app?.myRole !== "VIEWER" && (
+                  <>
+                    <DropdownMenuSeparator className="my-1" />
+                    <DropdownMenuItem asChild className="cursor-pointer text-sm py-2 px-2.5 text-muted-foreground hover:text-primary">
+                      <Link href={`/dashboard/applications/${id}/settings?action=create_env&env=${encodeURIComponent(selectedEnv)}`} className="flex items-center gap-2.5 w-full">
+                        <Plus className="h-4 w-4" />
+                        <span>Nuevo Ambiente</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
                 )}
-              </SelectContent>
-            </Select>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Link href={`/dashboard/applications/${id}/team`} className="w-full sm:w-auto">
-                <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
-                  <Users className="h-4 w-4" />
-                  Equipo
+            <Link href={`/dashboard/applications/${id}/team?env=${encodeURIComponent(selectedEnv)}`}>
+              <Button variant="outline" size="sm" className="gap-2 h-8">
+                <Users className="h-4 w-4" />
+                Equipo
+              </Button>
+            </Link>
+            {app.myRole !== "VIEWER" && (
+              <Link href={`/dashboard/applications/${id}/settings?env=${encodeURIComponent(selectedEnv)}`}>
+                <Button variant="outline" size="sm" className="gap-2 h-8">
+                  <Settings className="h-4 w-4" />
+                  Configuración
                 </Button>
               </Link>
-              {app.myRole !== "VIEWER" && (
-                <Link href={`/dashboard/applications/${id}/settings`} className="w-full sm:w-auto">
-                  <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
-                    <Settings className="h-4 w-4" />
-                    Configuración
-                  </Button>
-                </Link>
-              )}
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Row 2: Description */}
         {app.description && (
-          <div className="md:pl-16">
-            <p className="text-muted-foreground max-w-2xl text-sm line-clamp-3 md:line-clamp-none">
-              {app.description}
-            </p>
-          </div>
+          <p className="text-muted-foreground max-w-2xl text-sm line-clamp-3 md:line-clamp-none">
+            {app.description}
+          </p>
         )}
       </div>
 
@@ -597,7 +418,7 @@ export default function ApplicationDetailPage({
             </span>
           </div>
           <div>
-            <div className="text-2xl font-bold text-chart-2">{currentEnvData.locks.length}</div>
+            <div className="text-2xl font-bold text-chart-2">{locks.length}</div>
           </div>
         </Card>
         <Card className="bg-card/50 border-border p-4 shadow-sm">
@@ -622,44 +443,15 @@ export default function ApplicationDetailPage({
           </div>
           <div>
             <div className="text-2xl font-bold text-chart-4">
-              {((((selectedEnv === "prod" || selectedEnv === "production")
-                ? 145230900
-                : (selectedEnv === "stage" || selectedEnv === "staging")
-                ? 28920400
-                : 4520300) +
-                currentEnvData.resources.reduce((sum: number, r: any) => sum + r.activeReservations, 0) +
-                currentEnvData.locks.reduce((sum: number, l: any) => sum + l.activeLocks, 0)
-              ).toLocaleString("es-AR"))}
+              0
             </div>
           </div>
         </Card>
       </div>
 
-      {/* Selected environment description — compact but color-coded so it's obvious at a glance which
-          environment's resources are being shown below (the env name itself is already in the selector above) */}
-      {currentEnvDetails?.description && (
-        <div className={cn(
-          "flex items-center gap-2.5 text-sm rounded-lg border-l-4 px-3 py-2",
-          getEnvColors(selectedEnv).borderStrong,
-          getEnvColors(selectedEnv).bgSoft
-        )}>
-          <span className="relative flex h-2 w-2 shrink-0">
-            <span className={cn(
-              "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-              getEnvColors(selectedEnv).dot
-            )} />
-            <span className={cn(
-              "relative inline-flex rounded-full h-2 w-2",
-              getEnvColors(selectedEnv).dot
-            )} />
-          </span>
-          <p className="text-foreground">{currentEnvDetails.description}</p>
-        </div>
-      )}
-
-      {/* Tabs for Resources, Locks, API Keys */}
-      <Tabs defaultValue="resources" className="space-y-4">
-        <div className="w-full pb-1">
+      {/* Tabs */}
+      <Tabs defaultValue="resources" className="space-y-3">
+        <div className="w-full">
           <TabsList className="bg-secondary flex w-full sm:w-fit">
             <TabsTrigger value="resources" className="gap-1.5 px-3">
               <Box className="h-4 w-4" />
@@ -680,274 +472,52 @@ export default function ApplicationDetailPage({
           </TabsList>
         </div>
 
-        <TabsContent value="resources" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {templates.length === 1 ? "1 recurso configurado" : `${templates.length} recursos configurados`}
-            </p>
-            {app.myRole !== "VIEWER" && (
-              <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
-                <Button className="gap-2" disabled={!currentEnvDetails?.id}>
-                  <Plus className="h-4 w-4" />
-                  Nuevo Recurso
-                </Button>
-              </Link>
-            )}
-          </div>
-
-          {templates.length === 0 ? (
-            <Card className="bg-card/50 border-border">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Box className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">Aún no hay recursos configurados</p>
-                {app.myRole !== "VIEWER" && (
-                  <Link href={`/dashboard/applications/${id}/resources/new?envId=${currentEnvDetails?.id}`}>
-                    <Button className="gap-2" disabled={!currentEnvDetails?.id}>
-                      <Plus className="h-4 w-4" />
-                      Crear Primer Recurso
-                    </Button>
-                  </Link>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {templates.map((template: any) => (
-                <Card key={template.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
-                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", getEnvColors(selectedEnv).bg)}>
-                        <Box className={cn("h-5 w-5", getEnvColors(selectedEnv).text)} />
-                      </div>
-                      <div className="space-y-1 min-w-0">
-                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{template.name}</p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize">
-                            Tipo {template.type === "UNITARY" ? "Unitario" : "Múltiple"}
-                          </span>
-                          {template.defaultTtlSec && (
-                            <>
-                              <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                              <span>
-                                TTL: {formatTtl(template.defaultTtlSec * 1000)}
-                              </span>
-                            </>
-                          )}
-                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span>
-                            Res: {template.conflictResolution}
-                          </span>
-                        </div>
-                        {template.description && (
-                          <p className="text-xs text-muted-foreground italic mt-1 pr-6 line-clamp-1">
-                            {template.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
-                      {app.myRole !== "VIEWER" && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/dashboard/applications/${id}/resources/${template.id}/edit`}>
-                                <span className="flex items-center w-full cursor-pointer">
-                                  <Settings className="h-4 w-4 mr-2" />
-                                  Configurar
-                                </span>
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive cursor-pointer"
-                              onClick={() => handleOpenDeleteTemplate(template)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Eliminar
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+        <TabsContent value="resources" className="space-y-3">
+          <ResourcesTab
+            appId={id}
+            templates={templates}
+            selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
+            myRole={app.myRole}
+            isLoading={isTemplatesLoading}
+            onOpenDeleteTemplate={handleOpenDeleteTemplate}
+            onOpenDuplicateTemplate={handleOpenDuplicateTemplate}
+          />
         </TabsContent>
 
-        <TabsContent value="locks" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {currentEnvData.locks.length === 1 ? "1 lock configurado" : `${currentEnvData.locks.length} locks configurados`}
-            </p>
-            {app.myRole !== "VIEWER" && (
-              <Link href={`/dashboard/applications/${id}/locks/new`}>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  Nuevo Lock
-                </Button>
-              </Link>
-            )}
-          </div>
-
-          {currentEnvData.locks.length === 0 ? (
-            <Card className="bg-card/50 border-border">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Lock className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">Aún no hay configuraciones de locks</p>
-                {app.myRole !== "VIEWER" && (
-                  <Link href={`/dashboard/applications/${id}/locks/new`}>
-                    <Button className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Crear Primer Lock
-                    </Button>
-                  </Link>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {currentEnvData.locks.map((lock: any) => (
-                <Card key={lock.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
-                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", getEnvColors(selectedEnv).bg)}>
-                        <Lock className={cn("h-5 w-5", getEnvColors(selectedEnv).text)} />
-                      </div>
-                      <div className="space-y-1 min-w-0">
-                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.name}</p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                          <span className="capitalize">Tipo {lock.type === "exclusive" ? "exclusivo" : "lectura-escritura"}</span>
-                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span>{lock.activeLocks} activos</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
-                      <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(lock.status)}`}>
-                        {lock.status}
-                      </span>
-                      {app.myRole !== "VIEWER" && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <Link href={`/dashboard/applications/${id}/locks/${lock.id}/edit`}>
-                              <DropdownMenuItem className="cursor-pointer">
-                                <Settings className="h-4 w-4 mr-2" />
-                                Configurar
-                              </DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuItem>
-                              <Play className="h-4 w-4 mr-2" />
-                              Liberar Todos
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive">
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Eliminar
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+        <TabsContent value="locks" className="space-y-3">
+          <LocksTab
+            appId={id}
+            locks={locks}
+            selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
+            myRole={app.myRole}
+            isLoading={isTemplatesLoading}
+          />
         </TabsContent>
 
         <TabsContent value="keys" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              {apiKeys.length === 1 ? "1 API Key" : `${apiKeys.length} API Keys`}
-            </p>
-            {app.myRole !== "VIEWER" && (
-              <Button className="gap-2" onClick={handleCreateApiKey} disabled={!currentEnvDetails?.id}>
-                <Plus className="h-4 w-4" />
-                Generar API Key
-              </Button>
-            )}
-          </div>
-
-          {isApiKeysLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
-            </div>
-          ) : apiKeys.length === 0 ? (
-            <Card className="bg-card/50 border-border">
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Key className="h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-muted-foreground mb-4">No hay API Keys configuradas para este ambiente</p>
-                {app.myRole !== "VIEWER" && (
-                  <Button className="gap-2" onClick={handleCreateApiKey} disabled={!currentEnvDetails?.id}>
-                    <Plus className="h-4 w-4" />
-                    Crear API Key
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {apiKeys.map((key: any) => (
-                <Card key={key.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
-                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border",
-                        key.state === "ACTIVE"
-                          ? cn(getEnvColors(selectedEnv).bg, getEnvColors(selectedEnv).border, getEnvColors(selectedEnv).text)
-                          : "bg-secondary text-muted-foreground border-border"
-                      )}>
-                        <Key className="h-5 w-5" />
-                      </div>
-                      <div className="space-y-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-mono text-sm sm:text-base">{key.keyPrefix}••••••••••••</p>
-                          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${
-                            key.state === "ACTIVE"
-                              ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                              : "bg-destructive/10 text-destructive border border-destructive/20"
-                          }`}>
-                            {key.state === "ACTIVE" ? "Activa" : "Revocada"}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Creada el: {new Date(key.createdAt).toLocaleString()} 
-                          {key.revokedAt && ` • Revocada el: ${new Date(key.revokedAt).toLocaleString()}`}
-                        </p>
-                      </div>
-                    </div>
-                    {key.state === "ACTIVE" && app.myRole !== "VIEWER" && (
-                      <div className="flex items-center justify-end gap-2 w-full sm:w-auto">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 gap-1 px-3"
-                          onClick={() => handleOpenRevokeKey(key)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Revocar
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <ApiKeysTab
+            apiKeys={apiKeys}
+            isApiKeysLoading={isApiKeysLoading}
+            selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
+            myRole={app.myRole}
+            onCreateApiKey={handleCreateApiKey}
+            onOpenRevokeKey={handleOpenRevokeKey}
+          />
         </TabsContent>
       </Tabs>
+
+      {/* Duplicate Shared Resource Template Dialog */}
+      <DuplicateTemplateDialog
+        open={duplicateDialogOpen}
+        onOpenChange={setDuplicateDialogOpen}
+        template={templateToDuplicate}
+        environments={app?.environments || []}
+        currentEnvId={currentEnvDetails?.id}
+        onSuccess={handleDuplicateSuccess}
+      />
 
       {/* Delete Shared Resource Template Confirmation Dialog */}
       <Dialog open={confirmDeleteTemplateOpen} onOpenChange={setConfirmDeleteTemplateOpen}>
