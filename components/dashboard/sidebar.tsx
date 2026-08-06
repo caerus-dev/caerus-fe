@@ -27,6 +27,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+import { Skeleton } from "@/components/ui/skeleton"
+
 const navigation = [
   {
     name: "Inicio",
@@ -69,6 +71,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
   const pathname = usePathname()
   const router = useRouter()
   const [applications, setApplications] = useState<any[]>([])
+  const [isAppsLoading, setIsAppsLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
@@ -90,6 +93,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
 
   useEffect(() => {
     const loadApps = async () => {
+      setIsAppsLoading(true)
       try {
         const res = await fetch("/api/applications")
         if (res.ok) {
@@ -106,10 +110,12 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
         }
       } catch (error) {
         console.error("Error loading sidebar applications:", error)
+      } finally {
+        setIsAppsLoading(false)
       }
     }
     loadApps()
-  }, [pathname])
+  }, [])
 
   return (
     <aside
@@ -247,7 +253,14 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
             </div>
           )}
           <ul className="space-y-1">
-            {applications.map((app) => {
+            {isAppsLoading ? (
+              <div className="space-y-1 px-1">
+                <Skeleton className={cn("h-8 w-full rounded-md bg-secondary/80 dark:bg-muted/50 border border-border/40", isCollapsed && "w-8 mx-auto")} />
+                <Skeleton className={cn("h-8 w-full rounded-md bg-secondary/80 dark:bg-muted/50 border border-border/40", isCollapsed && "w-8 mx-auto")} />
+                <Skeleton className={cn("h-8 w-full rounded-md bg-secondary/80 dark:bg-muted/50 border border-border/40", isCollapsed && "w-8 mx-auto")} />
+              </div>
+            ) : (
+              applications.map((app) => {
               const isActive = pathname === app.href || pathname.startsWith(app.href + "/")
               return (
                 <li key={app.name}>
@@ -292,7 +305,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                   </Link>
                 </li>
               )
-            })}
+            }))}
           </ul>
         </div>
 

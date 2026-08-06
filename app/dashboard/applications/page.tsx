@@ -35,6 +35,7 @@ import {
   Loader2
 } from "lucide-react"
 import { EnvBadge } from "@/components/dashboard/shared/env-badge"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Application {
   id: string
@@ -198,8 +199,10 @@ export default function ApplicationsPage() {
 
       {/* Applications Grid */}
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Skeleton key={i} className="h-[230px] w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+          ))}
         </div>
       ) : filteredApps.length === 0 ? (
         <Card className="border-dashed">
