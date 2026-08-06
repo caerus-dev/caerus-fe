@@ -36,6 +36,7 @@ export default function ApplicationSettingsPage({
   const { id } = use(params)
   const router = useRouter()
   const searchParams = useSearchParams()
+  const actionParam = searchParams.get("action")
   const envParam = searchParams.get("env")
   const backUrl = envParam ? `/dashboard/applications/${id}?env=${encodeURIComponent(envParam)}` : `/dashboard/applications/${id}`
   const [isLoading, setIsLoading] = useState(true)
@@ -56,6 +57,15 @@ export default function ApplicationSettingsPage({
   const [isSavingEnv, setIsSavingEnv] = useState(false)
   const [confirmDeleteEnvOpen, setConfirmDeleteEnvOpen] = useState(false)
   const [selectedEnvForDelete, setSelectedEnvForDelete] = useState<Environment | null>(null)
+
+  useEffect(() => {
+    if (actionParam === "create_env") {
+      setEnvDialogMode("create")
+      setEnvForm({ name: "", description: "" })
+      setEnvFormError("")
+      setEnvDialogOpen(true)
+    }
+  }, [actionParam])
 
   useEffect(() => {
     const fetchAppAndEnvs = async () => {

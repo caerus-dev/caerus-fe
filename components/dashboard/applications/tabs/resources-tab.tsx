@@ -13,12 +13,15 @@ import {
 import { cn, getEnvColors } from '@/lib/utils'
 import { formatTtl } from '@/lib/mocks/applications'
 
+import { Skeleton } from '@/components/ui/skeleton'
+
 interface ResourcesTabProps {
   appId: string
   templates: any[]
   selectedEnv: string
   currentEnvDetails?: any
   myRole?: string
+  isLoading?: boolean
   onOpenDeleteTemplate: (template: any) => void
   onOpenDuplicateTemplate?: (template: any) => void
 }
@@ -29,16 +32,22 @@ export function ResourcesTab({
   selectedEnv,
   currentEnvDetails,
   myRole,
+  isLoading,
   onOpenDeleteTemplate,
   onOpenDuplicateTemplate,
 }: ResourcesTabProps) {
   const isViewer = myRole === 'VIEWER'
+  const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {templates.length === 1 ? '1 recurso configurado' : `${templates.length} recursos configurados`}
+        <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+          <span>{templates.length === 1 ? '1 recurso configurado' : `${templates.length} recursos configurados`} en</span>
+          <span className={cn("font-mono font-semibold px-2 py-0.5 rounded-md text-xs gap-1.5 inline-flex items-center border", envColors.badge)}>
+            <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", envColors.dot)} />
+            {selectedEnv}
+          </span>
         </p>
         {!isViewer && (
           <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
@@ -50,11 +59,23 @@ export function ResourcesTab({
         )}
       </div>
 
-      {templates.length === 0 ? (
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+        </div>
+      ) : templates.length === 0 ? (
         <Card className="bg-card/50 border-border">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Box className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">Aún no hay recursos configurados</p>
+            <p className="text-muted-foreground mb-4 flex items-center gap-1.5 flex-wrap justify-center">
+              <span>Aún no hay recursos configurados en</span>
+              <span className={cn("font-mono font-semibold px-2 py-0.5 rounded-md text-xs gap-1.5 inline-flex items-center border", envColors.badge)}>
+                <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", envColors.dot)} />
+                {selectedEnv}
+              </span>
+            </p>
             {!isViewer && (
               <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
                 <Button className="gap-2" disabled={!currentEnvDetails?.id}>

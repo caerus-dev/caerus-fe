@@ -3,6 +3,7 @@ import { Key, Plus, Trash2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn, getEnvColors } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface ApiKeysTabProps {
   apiKeys: any[]
@@ -24,12 +25,17 @@ export function ApiKeysTab({
   onOpenRevokeKey,
 }: ApiKeysTabProps) {
   const isViewer = myRole === 'VIEWER'
+  const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {apiKeys.length === 1 ? '1 API Key' : `${apiKeys.length} API Keys`}
+        <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+          <span>{apiKeys.length === 1 ? '1 API Key configurada' : `${apiKeys.length} API Keys configuradas`} en</span>
+          <span className={cn("font-mono font-semibold px-2 py-0.5 rounded-md text-xs gap-1.5 inline-flex items-center border", envColors.badge)}>
+            <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", envColors.dot)} />
+            {selectedEnv}
+          </span>
         </p>
         {!isViewer && (
           <Button className="gap-2" onClick={onCreateApiKey} disabled={!currentEnvDetails?.id}>
@@ -40,14 +46,22 @@ export function ApiKeysTab({
       </div>
 
       {isApiKeysLoading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <div className="space-y-3">
+          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
         </div>
       ) : apiKeys.length === 0 ? (
         <Card className="bg-card/50 border-border">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Key className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">No hay API Keys configuradas para este ambiente</p>
+            <p className="text-muted-foreground mb-4 flex items-center gap-1.5 flex-wrap justify-center">
+              <span>No hay API Keys configuradas en</span>
+              <span className={cn("font-mono font-semibold px-2 py-0.5 rounded-md text-xs gap-1.5 inline-flex items-center border", envColors.badge)}>
+                <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", envColors.dot)} />
+                {selectedEnv}
+              </span>
+            </p>
             {!isViewer && (
               <Button className="gap-2" onClick={onCreateApiKey} disabled={!currentEnvDetails?.id}>
                 <Plus className="h-4 w-4" />

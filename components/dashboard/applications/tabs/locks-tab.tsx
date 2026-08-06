@@ -11,16 +11,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn, getEnvColors } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface LocksTabProps {
   appId: string
   locks: any[]
   selectedEnv: string
+  currentEnvDetails?: any
   myRole?: string
+  isLoading?: boolean
 }
 
-export function LocksTab({ appId, locks, selectedEnv, myRole }: LocksTabProps) {
+export function LocksTab({ appId, locks, selectedEnv, currentEnvDetails, myRole, isLoading }: LocksTabProps) {
   const isViewer = myRole === 'VIEWER'
+  const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
 
   const getStatusBadgeClass = (status: string) => {
     switch (status) {
@@ -34,10 +38,14 @@ export function LocksTab({ appId, locks, selectedEnv, myRole }: LocksTabProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {locks.length === 1 ? '1 lock configurado' : `${locks.length} locks configurados`}
+        <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+          <span>{locks.length === 1 ? '1 lock configurado' : `${locks.length} locks configurados`} en</span>
+          <span className={cn("font-mono font-semibold px-2 py-0.5 rounded-md text-xs gap-1.5 inline-flex items-center border", envColors.badge)}>
+            <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", envColors.dot)} />
+            {selectedEnv}
+          </span>
         </p>
         {!isViewer && (
           <Link href={`/dashboard/applications/${appId}/locks/new`}>
@@ -49,11 +57,23 @@ export function LocksTab({ appId, locks, selectedEnv, myRole }: LocksTabProps) {
         )}
       </div>
 
-      {locks.length === 0 ? (
+      {isLoading ? (
+        <div className="space-y-3">
+          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+        </div>
+      ) : locks.length === 0 ? (
         <Card className="bg-card/50 border-border">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Lock className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">Aún no hay configuraciones de locks</p>
+            <p className="text-muted-foreground mb-4 flex items-center gap-1.5 flex-wrap justify-center">
+              <span>Aún no hay configuraciones de locks en</span>
+              <span className={cn("font-mono font-semibold px-2 py-0.5 rounded-md text-xs gap-1.5 inline-flex items-center border", envColors.badge)}>
+                <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", envColors.dot)} />
+                {selectedEnv}
+              </span>
+            </p>
             {!isViewer && (
               <Link href={`/dashboard/applications/${appId}/locks/new`}>
                 <Button className="gap-2">

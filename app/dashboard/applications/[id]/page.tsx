@@ -4,6 +4,7 @@ import Link from "next/link"
 import { use, useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import {
+  ChevronDown,
   Box,
   Lock,
   Key,
@@ -14,12 +15,20 @@ import {
   Loader2,
   Copy,
   Check,
+  Plus,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { cn, getEnvColors } from "@/lib/utils"
 import {
   Select,
@@ -59,7 +68,7 @@ export default function ApplicationDetailPage({
   const [currentEnvDetails, setCurrentEnvDetails] = useState<any>(null)
   const [templates, setTemplates] = useState<any[]>([])
   const [locks, setLocks] = useState<any[]>([])
-  const [isTemplatesLoading, setIsTemplatesLoading] = useState(false)
+  const [isTemplatesLoading, setIsTemplatesLoading] = useState(true)
   const [confirmDeleteTemplateOpen, setConfirmDeleteTemplateOpen] = useState(false)
   const [templateToDelete, setTemplateToDelete] = useState<any>(null)
 
@@ -67,7 +76,7 @@ export default function ApplicationDetailPage({
   const [templateToDuplicate, setTemplateToDuplicate] = useState<any>(null)
 
   const [apiKeys, setApiKeys] = useState<any[]>([])
-  const [isApiKeysLoading, setIsApiKeysLoading] = useState(false)
+  const [isApiKeysLoading, setIsApiKeysLoading] = useState(true)
   const [confirmRevokeKeyOpen, setConfirmRevokeKeyOpen] = useState(false)
   const [keyToRevoke, setKeyToRevoke] = useState<any>(null)
   const [showCreatedKeyDialog, setShowCreatedKeyDialog] = useState(false)
@@ -126,6 +135,8 @@ export default function ApplicationDetailPage({
     const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv)
     if (!activeEnvObj) return
 
+    let isSubscribed = true
+
     const fetchEnvDetailsAndTemplates = async () => {
       setIsTemplatesLoading(true)
       setIsApiKeysLoading(true)
@@ -134,7 +145,10 @@ export default function ApplicationDetailPage({
           fetch(`/api/applications/${id}/environments/${activeEnvObj.id}`),
           fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`),
           fetch(`/api/environments/${activeEnvObj.id}/api-keys`),
+          new Promise((resolve) => setTimeout(resolve, 300)),
         ])
+
+        if (!isSubscribed) return
 
         if (envRes.ok) {
           const envData = await envRes.json()
@@ -154,14 +168,23 @@ export default function ApplicationDetailPage({
       } catch (error) {
         console.error("Error fetching environment details from backend:", error)
       } finally {
-        setIsTemplatesLoading(false)
-        setIsApiKeysLoading(false)
+        if (isSubscribed) {
+          setIsTemplatesLoading(false)
+          setIsApiKeysLoading(false)
+        }
       }
     }
     fetchEnvDetailsAndTemplates()
-  }, [selectedEnv, app])
+
+    return () => {
+      isSubscribed = false
+    }
+  }, [selectedEnv, app?.id])
 
   const handleEnvChange = (val: string) => {
+    if (val === selectedEnv) return
+    setIsTemplatesLoading(true)
+    setIsApiKeysLoading(true)
     setSelectedEnv(val)
     if (typeof window !== "undefined") {
       localStorage.setItem(`caerus_env_${id}`, val)
@@ -300,84 +323,77 @@ export default function ApplicationDetailPage({
           <ArrowLeft className="h-4 w-4" />
           Volver a Aplicaciones
         </Link>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
-              <span className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(app.status)}`}>
-                {app.status}
-              </span>
-            </div>
+            <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
-            <Select
-              value={selectedEnv}
-              onValueChange={handleEnvChange}
-            >
-              <SelectTrigger
-                size="sm"
-                className={cn(
-                  "w-full sm:w-[190px] h-8 justify-between border shadow-xs text-xs font-semibold cursor-pointer",
-                  getEnvColors(selectedEnv, null, currentEnvDetails?.id).bgSoft,
-                  getEnvColors(selectedEnv, null, currentEnvDetails?.id).border
-                )}
-              >
-                <span className="flex items-center gap-1.5">
-                  <span className="text-muted-foreground font-normal">Ambiente:</span>
-                  <SelectValue placeholder="Ambiente" />
-                </span>
-              </SelectTrigger>
-              <SelectContent>
-                {app?.environments && app.environments.length > 0 ? (
-                  app.environments.map((env: any) => (
-                    <SelectItem key={env.id} value={env.name}>
-                      <span className="flex items-center gap-1.5 font-mono">
-                        <span className={cn(
-                          "h-2 w-2 rounded-full shrink-0",
-                          getEnvColors(env.name, null, env.id).dot,
-                          (env.name === "prod" || env.name === "production") && "animate-pulse"
-                        )} />
-                        {env.name}
+          <div className="flex items-center gap-2">
+            {/* Environment Dropdown Pill in Top Right Toolbar */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2 h-9 text-sm font-semibold cursor-pointer border-border/80 px-3">
+                  <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", getEnvColors(selectedEnv, null, currentEnvDetails?.id).dot)} />
+                  <span className="capitalize">{selectedEnv}</span>
+                  <ChevronDown className="h-4 w-4 opacity-60 ml-0.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52 bg-card border-border p-1.5">
+                {app?.environments && app.environments.map((env: any) => {
+                  const isSelected = selectedEnv === env.name
+                  const colors = getEnvColors(env.name, null, env.id)
+                  return (
+                    <DropdownMenuItem
+                      key={env.id}
+                      onClick={() => handleEnvChange(env.name)}
+                      className={cn(
+                        "flex items-center justify-between cursor-pointer text-sm py-2 px-2.5 rounded-md transition-colors",
+                        isSelected ? "font-semibold bg-accent/60 text-foreground" : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <span className="flex items-center gap-2.5">
+                        <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", colors.dot)} />
+                        <span className="capitalize">{env.name}</span>
                       </span>
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="dev">
-                    <span className="flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-blue-500 shrink-0" />
-                      Desarrollo
-                    </span>
-                  </SelectItem>
+                      {isSelected && <span className="text-xs text-primary font-medium">Activo</span>}
+                    </DropdownMenuItem>
+                  )
+                })}
+                {app?.myRole !== "VIEWER" && (
+                  <>
+                    <DropdownMenuSeparator className="my-1" />
+                    <DropdownMenuItem asChild className="cursor-pointer text-sm py-2 px-2.5 text-muted-foreground hover:text-primary">
+                      <Link href={`/dashboard/applications/${id}/settings?action=create_env&env=${encodeURIComponent(selectedEnv)}`} className="flex items-center gap-2.5 w-full">
+                        <Plus className="h-4 w-4" />
+                        <span>Nuevo Ambiente</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
                 )}
-              </SelectContent>
-            </Select>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Link href={`/dashboard/applications/${id}/team?env=${encodeURIComponent(selectedEnv)}`} className="w-full sm:w-auto">
-                <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
-                  <Users className="h-4 w-4" />
-                  Equipo
+            <Link href={`/dashboard/applications/${id}/team?env=${encodeURIComponent(selectedEnv)}`}>
+              <Button variant="outline" size="sm" className="gap-2 h-8">
+                <Users className="h-4 w-4" />
+                Equipo
+              </Button>
+            </Link>
+            {app.myRole !== "VIEWER" && (
+              <Link href={`/dashboard/applications/${id}/settings?env=${encodeURIComponent(selectedEnv)}`}>
+                <Button variant="outline" size="sm" className="gap-2 h-8">
+                  <Settings className="h-4 w-4" />
+                  Configuración
                 </Button>
               </Link>
-              {app.myRole !== "VIEWER" && (
-                <Link href={`/dashboard/applications/${id}/settings?env=${encodeURIComponent(selectedEnv)}`} className="w-full sm:w-auto">
-                  <Button variant="outline" size="sm" className="gap-2 h-8 w-full sm:w-auto">
-                    <Settings className="h-4 w-4" />
-                    Configuración
-                  </Button>
-                </Link>
-              )}
-            </div>
+            )}
           </div>
         </div>
 
         {app.description && (
-          <div className="md:pl-0">
-            <p className="text-muted-foreground max-w-2xl text-sm line-clamp-3 md:line-clamp-none">
-              {app.description}
-            </p>
-          </div>
+          <p className="text-muted-foreground max-w-2xl text-sm line-clamp-3 md:line-clamp-none">
+            {app.description}
+          </p>
         )}
       </div>
 
@@ -433,58 +449,9 @@ export default function ApplicationDetailPage({
         </Card>
       </div>
 
-      {isTemplatesLoading && !currentEnvDetails ? (
-        <Skeleton className="h-[38px] w-full rounded-lg" />
-      ) : (currentEnvDetails || selectedEnv) ? (
-        <div className={cn(
-          "flex items-center gap-2.5 text-sm rounded-lg border-l-4 px-3.5 py-2.5 transition-all duration-200 shadow-xs",
-          getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id).borderStrong,
-          getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id).bgSoft,
-          isTemplatesLoading && "opacity-50 pointer-events-none"
-        )}>
-          <span className="relative flex h-2 w-2 shrink-0">
-            <span className={cn(
-              "animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-              getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id).dot
-            )} />
-            <span className={cn(
-              "relative inline-flex rounded-full h-2 w-2",
-              getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id).dot
-            )} />
-          </span>
-          <div className="text-foreground text-xs sm:text-sm flex items-center gap-1.5 flex-wrap">
-            {(() => {
-              const colors = getEnvColors(currentEnvDetails?.name || selectedEnv, null, currentEnvDetails?.id);
-              const envName = currentEnvDetails?.name || selectedEnv;
-              const appName = app?.name;
-
-              return (
-                <span className="inline-flex items-center gap-1.5 flex-wrap">
-                  <span className="text-muted-foreground font-medium">Entorno de</span>
-                  <Badge variant="outline" className={cn("font-mono text-xs capitalize gap-1 py-0.5 px-2 inline-flex items-center font-semibold", colors.badge)}>
-                    <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", colors.dot)} />
-                    {envName}
-                  </Badge>
-                  {appName && (
-                    <>
-                      <span className="text-muted-foreground font-medium">para</span>
-                      <strong className="font-semibold text-foreground">{appName}</strong>
-                    </>
-                  )}
-                  {currentEnvDetails?.description && 
-                   !currentEnvDetails.description.startsWith("Entorno de ") && (
-                    <span className="text-muted-foreground/80 text-xs italic ml-1">— {currentEnvDetails.description}</span>
-                  )}
-                </span>
-              );
-            })()}
-          </div>
-        </div>
-      ) : null}
-
       {/* Tabs */}
-      <Tabs defaultValue="resources" className="space-y-4">
-        <div className="w-full pb-1">
+      <Tabs defaultValue="resources" className="space-y-3">
+        <div className="w-full">
           <TabsList className="bg-secondary flex w-full sm:w-fit">
             <TabsTrigger value="resources" className="gap-1.5 px-3">
               <Box className="h-4 w-4" />
@@ -505,24 +472,27 @@ export default function ApplicationDetailPage({
           </TabsList>
         </div>
 
-        <TabsContent value="resources" className="space-y-4">
+        <TabsContent value="resources" className="space-y-3">
           <ResourcesTab
             appId={id}
             templates={templates}
             selectedEnv={selectedEnv}
             currentEnvDetails={currentEnvDetails}
             myRole={app.myRole}
+            isLoading={isTemplatesLoading}
             onOpenDeleteTemplate={handleOpenDeleteTemplate}
             onOpenDuplicateTemplate={handleOpenDuplicateTemplate}
           />
         </TabsContent>
 
-        <TabsContent value="locks" className="space-y-4">
+        <TabsContent value="locks" className="space-y-3">
           <LocksTab
             appId={id}
             locks={locks}
             selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
             myRole={app.myRole}
+            isLoading={isTemplatesLoading}
           />
         </TabsContent>
 
