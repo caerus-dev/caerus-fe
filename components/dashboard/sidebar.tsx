@@ -254,10 +254,25 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
           )}
           <ul className="space-y-1">
             {isAppsLoading ? (
-              <div className="space-y-1 px-1">
-                <Skeleton className={cn("h-8 w-full rounded-md bg-secondary/80 dark:bg-muted/50 border border-border/40", isCollapsed && "w-8 mx-auto")} />
-                <Skeleton className={cn("h-8 w-full rounded-md bg-secondary/80 dark:bg-muted/50 border border-border/40", isCollapsed && "w-8 mx-auto")} />
-                <Skeleton className={cn("h-8 w-full rounded-md bg-secondary/80 dark:bg-muted/50 border border-border/40", isCollapsed && "w-8 mx-auto")} />
+              <div className="space-y-1.5 px-1">
+                {[1, 2, 3].map((i) => (
+                  isCollapsed ? (
+                    <div key={i} className="flex items-center justify-center h-8 w-8 mx-auto rounded-md border border-border/40 bg-card/40 animate-pulse">
+                      <Skeleton className="h-4 w-4 rounded bg-primary/25" />
+                    </div>
+                  ) : (
+                    <div key={i} className="flex items-center justify-between gap-2 px-3 py-2 rounded-md border border-border/40 bg-card/40 animate-pulse">
+                      <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                        <Skeleton className="h-4 w-4 rounded shrink-0 bg-primary/25" />
+                        <Skeleton className="h-3 w-24 rounded bg-muted-foreground/25" />
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Skeleton className="h-1.5 w-1.5 rounded-full bg-purple-400/50" />
+                        <Skeleton className="h-1.5 w-1.5 rounded-full bg-blue-400/50" />
+                      </div>
+                    </div>
+                  )
+                ))}
               </div>
             ) : (
               applications.map((app) => {

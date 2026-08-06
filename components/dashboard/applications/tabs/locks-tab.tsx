@@ -59,9 +59,21 @@ export function LocksTab({ appId, locks, selectedEnv, currentEnvDetails, myRole,
 
       {isLoading ? (
         <div className="space-y-3">
-          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
-          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
-          <Skeleton className="h-16 w-full rounded-xl bg-secondary/80 dark:bg-muted/50 border border-border/60" />
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="p-4 rounded-xl border border-border/70 bg-card/70 dark:bg-card/50 flex items-center justify-between gap-4 animate-pulse"
+            >
+              <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                <Skeleton className="h-10 w-10 rounded-lg shrink-0 bg-primary/20 dark:bg-primary/15 border border-primary/20" />
+                <div className="space-y-2 flex-1 min-w-0">
+                  <Skeleton className="h-4 w-36 sm:w-48 rounded bg-muted-foreground/30 dark:bg-muted-foreground/20" />
+                  <Skeleton className="h-3 w-56 sm:w-64 rounded bg-muted-foreground/20 dark:bg-muted-foreground/15" />
+                </div>
+              </div>
+              <Skeleton className="h-8 w-8 rounded-lg shrink-0 bg-muted-foreground/20 dark:bg-muted-foreground/15" />
+            </div>
+          ))}
         </div>
       ) : locks.length === 0 ? (
         <Card className="bg-card/50 border-border">
