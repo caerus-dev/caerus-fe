@@ -155,7 +155,7 @@ export default function ApplicationSettingsPage({
           setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
-          setEnvFormError(errData.error || "Error al crear el ambiente")
+          setEnvFormError(errData.message || errData.error || "Error al crear el ambiente")
         }
       } else if (envDialogMode === "edit" && selectedEnvForEdit) {
         const res = await fetch(`/api/applications/${id}/environments/${selectedEnvForEdit.id}`, {
@@ -183,7 +183,7 @@ export default function ApplicationSettingsPage({
           setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
-          setEnvFormError(errData.error || "Error al actualizar el ambiente")
+          setEnvFormError(errData.message || errData.error || "Error al actualizar el ambiente")
         }
       }
     } catch (error) {
@@ -196,14 +196,17 @@ export default function ApplicationSettingsPage({
 
   const handleOpenDeleteEnv = (env: Environment) => {
     setSelectedEnvForDelete(env)
+    setDeleteEnvError(null)
     setConfirmDeleteEnvOpen(true)
   }
 
   const handleDeleteEnvConfirm = async () => {
     if (!selectedEnvForDelete) return
+    console.log("INTENTANDO ELIMINAR ENTORNO:", selectedEnvForDelete.name, "CON ID:", selectedEnvForDelete.id)
     setIsSavingEnv(true)
     setDeleteEnvError(null)
     try {
+      console.log("URL DE FETCH:", `/api/applications/${id}/environments/${selectedEnvForDelete.id}`)
       const res = await fetch(`/api/applications/${id}/environments/${selectedEnvForDelete.id}`, {
         method: "DELETE",
       })
@@ -512,7 +515,10 @@ export default function ApplicationSettingsPage({
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => setDeleteDialogOpen(false)}
+                onClick={() => {
+                  setDeleteDialogOpen(false)
+                  setDeleteAppError(null)
+                }}
               >
                 Cancelar
               </Button>
@@ -616,7 +622,10 @@ export default function ApplicationSettingsPage({
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => setConfirmDeleteEnvOpen(false)}
+                onClick={() => {
+                  setConfirmDeleteEnvOpen(false)
+                  setDeleteEnvError(null)
+                }}
                 disabled={isSavingEnv}
               >
                 Cancelar
