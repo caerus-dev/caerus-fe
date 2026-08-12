@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useTheme } from "next-themes"
+import { useTheme } from "@/components/theme-provider"
 import { Bell, Menu, Sun, Moon, Check, X, BookOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"

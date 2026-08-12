@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -74,6 +74,7 @@ export function ResourceForm({
   isEditing = false 
 }: ResourceFormProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
 
@@ -125,7 +126,11 @@ export function ResourceForm({
       })
 
       if (res.ok) {
-        router.push(`/dashboard/applications/${applicationId}`)
+        const envParam = searchParams.get("env")
+        const targetUrl = envParam
+          ? `/dashboard/applications/${applicationId}?env=${encodeURIComponent(envParam)}`
+          : `/dashboard/applications/${applicationId}`
+        router.push(targetUrl)
       } else {
         const errData = await res.json().catch(() => ({}))
         setErrorMsg(errData.error || "Ocurrió un error al guardar el recurso.")

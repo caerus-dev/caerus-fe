@@ -1,82 +1,13 @@
 import Link from "next/link"
-import { Layers, Activity, Lock, Gauge, AlertTriangle, ArrowUpRight } from "lucide-react"
+import { AlertTriangle, ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-const stats = [
-  {
-    name: "Aplicaciones",
-    value: "3",
-    icon: Layers,
-  },
-  {
-    name: "Llamadas de API (30d)",
-    value: "84.2k",
-    icon: Activity,
-  },
-  {
-    name: "Bloqueos activos",
-    value: "12",
-    icon: Lock,
-  },
-  {
-    name: "Uso del plan",
-    value: "68%",
-    icon: Gauge,
-  },
-]
-
-const recentActivity = [
-  {
-    id: 1,
-    event: "lock.acquired",
-    application: "payment-sync",
-    environment: "prod",
-    time: "Hace 2s",
-  },
-  {
-    id: 2,
-    event: "reserve.confirmed",
-    application: "reserva-engine",
-    environment: "prod",
-    time: "Hace 15s",
-  },
-  {
-    id: 3,
-    event: "lock.released",
-    application: "lock-service",
-    environment: "dev",
-    time: "Hace 32s",
-  },
-  {
-    id: 4,
-    event: "reserve.expired",
-    application: "reserva-engine",
-    environment: "prod",
-    time: "Hace 1m",
-  },
-  {
-    id: 5,
-    event: "api_key.created",
-    application: "payment-sync",
-    environment: "prod",
-    time: "Hace 5m",
-  },
-]
+import { Card } from "@/components/ui/card"
+import { StatCard } from "@/components/dashboard/shared/stat-card"
+import { EnvBadge } from "@/components/dashboard/shared/env-badge"
+import { dashboardStatsMock, recentActivityMock } from "@/lib/mocks/dashboard"
 
 export default function DashboardPage() {
   const usagePercentage = 68
-
-  const getEnvironmentBadgeClass = (env: string) => {
-    const lower = env.toLowerCase()
-    if (lower === "prod" || lower === "production") {
-      return "bg-primary/20 text-primary"
-    } else if (lower === "stage" || lower === "staging") {
-      return "bg-chart-4/20 text-chart-4"
-    } else {
-      return "bg-chart-2/20 text-chart-2"
-    }
-  }
 
   const getEventColor = (event: string) => {
     if (event.includes("acquired") || event.includes("confirmed") || event.includes("created")) {
@@ -103,21 +34,14 @@ export default function DashboardPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat) => (
-          <Card key={stat.name} className="bg-card/50 border-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-normal text-muted-foreground">
-                {stat.name}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-baseline justify-between">
-                <span className={`text-3xl font-bold ${stat.name === "Uso del plan" ? "text-chart-4" : "text-primary"}`}>
-                  {stat.value}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+        {dashboardStatsMock.map((stat) => (
+          <StatCard
+            key={stat.name}
+            title={stat.name}
+            value={stat.value}
+            icon={stat.icon}
+            valueColor={stat.name === "Uso del plan" ? "text-chart-4" : "text-primary"}
+          />
         ))}
       </div>
 
@@ -169,7 +93,7 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {recentActivity.map((activity) => (
+                {recentActivityMock.map((activity) => (
                   <tr key={activity.id} className="border-b border-border last:border-0 hover:bg-sidebar-accent/30 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -183,9 +107,7 @@ export default function DashboardPage() {
                       <span className="text-sm text-muted-foreground">{activity.application}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`rounded px-2 py-0.5 text-xs font-medium ${getEnvironmentBadgeClass(activity.environment)}`}>
-                        {activity.environment}
-                      </span>
+                      <EnvBadge environment={activity.environment} />
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-muted-foreground">{activity.time}</span>
