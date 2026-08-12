@@ -72,6 +72,8 @@ export default function ApplicationDetailPage({
   const [confirmDeleteTemplateOpen, setConfirmDeleteTemplateOpen] = useState(false)
   const [templateToDelete, setTemplateToDelete] = useState<any>(null)
 
+  const [confirmDeleteLockOpen, setConfirmDeleteLockOpen] = useState(false)
+  const [lockToDelete, setLockToDelete] = useState<any>(null)
   const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false)
   const [templateToDuplicate, setTemplateToDuplicate] = useState<any>(null)
 
@@ -141,9 +143,10 @@ export default function ApplicationDetailPage({
       setIsTemplatesLoading(true)
       setIsApiKeysLoading(true)
       try {
-        const [envRes, templatesRes, keysRes] = await Promise.all([
+        const [envRes, templatesRes, locksRes, keysRes] = await Promise.all([
           fetch(`/api/applications/${id}/environments/${activeEnvObj.id}`),
           fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`),
+          fetch(`/api/distributed-lock-templates?environmentId=${activeEnvObj.id}`),
           fetch(`/api/environments/${activeEnvObj.id}/api-keys`),
           new Promise((resolve) => setTimeout(resolve, 300)),
         ])
@@ -159,6 +162,11 @@ export default function ApplicationDetailPage({
         if (templatesRes.ok) {
           const templatesData = await templatesRes.json()
           setTemplates(templatesData.content || [])
+        }
+
+        if (locksRes.ok) {
+          const locksData = await locksRes.json();
+          setLocks(locksData.content || []);
         }
 
         if (keysRes.ok) {
@@ -250,6 +258,11 @@ export default function ApplicationDetailPage({
     setConfirmDeleteTemplateOpen(true)
   }
 
+  const handleOpenDeleteLock = (lock: any) => {
+    setLockToDelete(lock)
+    setConfirmDeleteLockOpen(true)
+  }
+
   const handleDeleteTemplateConfirm = async () => {
     if (!templateToDelete) return
     try {
@@ -268,9 +281,31 @@ export default function ApplicationDetailPage({
     }
   }
 
+  const handleDeleteLockConfirm = async () => {
+    if (!lockToDelete) return
+    try {
+      const res = await fetch(`/api/distributed-lock-templates/${lockToDelete.id}`, {
+        method: "DELETE",
+      })
+      if (res.ok) {
+        setLocks((prev) => prev.filter((l) => l.id !== lockToDelete.id))
+        setConfirmDeleteLockOpen(false)
+        setLockToDelete(null)
+      } else {
+        console.error("Failed to delete lock")
+      }
+    } catch (error) {
+      console.error("Error deleting lock:", error)
+    }
+  }
+
   const handleOpenDuplicateTemplate = (template: any) => {
     setTemplateToDuplicate(template)
     setDuplicateDialogOpen(true)
+  }
+  
+  const handleOpenDuplicateLock = (template: any) => {
+    // TODO
   }
 
   const handleDuplicateSuccess = () => {
@@ -281,17 +316,6 @@ export default function ApplicationDetailPage({
           .then((res) => res.json())
           .then((data) => setTemplates(data.content || []))
       }
-    }
-  }
-
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-primary/20 text-primary"
-      case "paused":
-        return "bg-chart-4/20 text-chart-4"
-      default:
-        return "bg-secondary text-muted-foreground"
     }
   }
 
@@ -493,6 +517,8 @@ export default function ApplicationDetailPage({
             currentEnvDetails={currentEnvDetails}
             myRole={app.myRole}
             isLoading={isTemplatesLoading}
+            onOpenDeleteLock={handleOpenDeleteLock}
+            onOpenDuplicateLock={handleOpenDuplicateLock}
           />
         </TabsContent>
 
@@ -604,6 +630,32 @@ export default function ApplicationDetailPage({
               onClick={() => setShowCreatedKeyDialog(false)}
             >
               Cerrar y Listo
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={confirmDeleteLockOpen} onOpenChange={setConfirmDeleteLockOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Eliminar Plantilla de Lock</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas eliminar la plantilla de lock{" "}
+              <span className="font-semibold text-foreground">{lockToDelete?.namespace}</span>?
+              Esta acción es irreversible.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDeleteLockOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteLockConfirm}
+            >
+              Eliminar
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { Lock, Plus, MoreVertical, Settings, Play, Trash2 } from 'lucide-react'
+import { Lock, Plus, MoreVertical, Settings, Play, Trash2, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -20,22 +20,22 @@ interface LocksTabProps {
   currentEnvDetails?: any
   myRole?: string
   isLoading?: boolean
+  onOpenDeleteLock: (template: any) => void
+  onOpenDuplicateLock: (template: any) => void
 }
 
-export function LocksTab({ appId, locks, selectedEnv, currentEnvDetails, myRole, isLoading }: LocksTabProps) {
+export function LocksTab({
+  appId,
+  locks,
+  selectedEnv,
+  currentEnvDetails,
+  myRole,
+  isLoading,
+  onOpenDeleteLock,
+  onOpenDuplicateLock
+}: LocksTabProps) {
   const isViewer = myRole === 'VIEWER'
   const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
-
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-primary/20 text-primary'
-      case 'paused':
-        return 'bg-chart-4/20 text-chart-4'
-      default:
-        return 'bg-secondary text-muted-foreground'
-    }
-  }
 
   return (
     <div className="space-y-3">
@@ -48,7 +48,7 @@ export function LocksTab({ appId, locks, selectedEnv, currentEnvDetails, myRole,
           </span>
         </p>
         {!isViewer && (
-          <Link href={`/dashboard/applications/${appId}/locks/new`}>
+          <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
               Nuevo Lock
@@ -87,7 +87,7 @@ export function LocksTab({ appId, locks, selectedEnv, currentEnvDetails, myRole,
               </span>
             </p>
             {!isViewer && (
-              <Link href={`/dashboard/applications/${appId}/locks/new`}>
+              <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
                 <Button className="gap-2">
                   <Plus className="h-4 w-4" />
                   Crear Primer Lock
@@ -99,74 +99,66 @@ export function LocksTab({ appId, locks, selectedEnv, currentEnvDetails, myRole,
       ) : (
         <div className="space-y-3">
           {locks.map((lock: any) => (
-            <Card
-              key={lock.id}
-              className={cn(
-                'bg-card/50 border-border py-0 border-l-2',
-                getEnvColors(selectedEnv).borderStrong
-              )}
-            >
-              <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={cn(
-                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
-                      getEnvColors(selectedEnv).bg
-                    )}
-                  >
-                    <Lock className={cn('h-5 w-5', getEnvColors(selectedEnv).text)} />
-                  </div>
-                  <div className="space-y-1 min-w-0">
-                    <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">
-                      {lock.name}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
-                      <span className="capitalize">
-                        Tipo {lock.type === 'exclusive' ? 'exclusivo' : 'lectura-escritura'}
-                      </span>
-                      <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                      <span>{lock.activeLocks} activos</span>
+                <Card key={lock.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
+                  <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
+                    <div className="flex items-center gap-3">
+                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", getEnvColors(selectedEnv).bg)}>
+                        <Lock className={cn("h-5 w-5", getEnvColors(selectedEnv).text)} />
+                      </div>
+                      <div className="space-y-1 min-w-0">
+                        <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.namespace}</p>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
+                          <span className="capitalize">Tipo {lock.lockType === "EXCLUSIVE" ? "exclusivo" : "lectura-escritura"}</span>
+                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                          <span>Tipo de Adquisicion: {lock.conflictResolution}</span>
+                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                          <span>Deadlocks: {lock.deadlockResolutionStrategy}</span>
+                          <span className="hidden sm:inline text-muted-foreground/50">•</span>
+                          <span>Fencing Tokens: {lock.fencingTokenRequired ? "Activado" : "Desactivado"}</span>
+                        </div>
+                        {lock.description && (
+                          <p className="text-xs text-muted-foreground italic mt-1 pr-6 line-clamp-1">
+                            {lock.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
-                  <span
-                    className={`rounded px-2 py-0.5 text-xs font-medium ${getStatusBadgeClass(
-                      lock.status
-                    )}`}
-                  >
-                    {lock.status}
-                  </span>
-                  {!isViewer && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <Link href={`/dashboard/applications/${appId}/locks/${lock.id}/edit`}>
-                          <DropdownMenuItem className="cursor-pointer">
-                            <Settings className="h-4 w-4 mr-2" />
-                            Configurar
-                          </DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuItem>
-                          <Play className="h-4 w-4 mr-2" />
-                          Liberar Todos
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                    <div className="flex items-center justify-between sm:justify-end gap-2 w-full sm:w-auto border-t border-border/50 sm:border-0 pt-2.5 sm:pt-0">
+                      {!isViewer && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <Link href={`/dashboard/applications/${appId}/locks/${lock.id}/edit`}>
+                              <DropdownMenuItem className="cursor-pointer">
+                                <Settings className="h-4 w-4 mr-2" />
+                                Configurar
+                              </DropdownMenuItem>
+                            </Link>
+                            {onOpenDuplicateLock && (
+                              <DropdownMenuItem
+                                className="cursor-pointer flex items-center"
+                                onClick={() => onOpenDuplicateLock(lock)}
+                              >
+                                <Copy className="h-4 w-4 mr-2 shrink-0" />
+                                <span>Duplicar a otro ambiente...</span>
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-destructive cursor-pointer" onClick={() => onOpenDeleteLock(lock)}>
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
         </div>
       )}
     </div>

@@ -37,26 +37,27 @@ const formSchema = z.object({
   }),
   description: z.string().optional(),
   type: z.enum(["exclusive", "read-write"]),
-  ttl: z.coerce.number().min(1, { message: "El TTL debe ser de al menos 1 segundo." }),
   deadlockStrategy: z.enum(["alert", "kill"]),
-  webhookUrl: z.string().url({ message: "Por favor, ingresa una URL válida." }).optional().or(z.literal('')),
   acquisitionStrategy: z.enum(["fail", "retry", "blocking"]),
   retryInterval: z.coerce.number().min(10).optional(),
   maxRetries: z.coerce.number().min(1).optional(),
-  requireFencingToken: z.boolean().default(false),
+  requireFencingToken: z.boolean().default(true),
 })
 
 export type LockFormValues = z.infer<typeof formSchema>
 
 interface LockFormProps {
   applicationId: string
+  environmentId?: string
+  lockId?: string
   initialData?: LockFormValues
   isEditing?: boolean
 }
 
-export function LockForm({ applicationId, initialData, isEditing = false }: LockFormProps) {
+export function LockForm({ applicationId, environmentId, lockId, initialData, isEditing = false }: LockFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const form = useForm<LockFormValues>({
     resolver: zodResolver(formSchema),
@@ -64,27 +65,68 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
       namespace: "",
       description: "",
       type: "exclusive",
-      ttl: 30, // seconds
       deadlockStrategy: "alert",
-      webhookUrl: "",
       acquisitionStrategy: "fail",
       retryInterval: 100,
       maxRetries: 5,
-      requireFencingToken: false,
+      requireFencingToken: true,
     },
   })
 
   const acquisitionStrategy = form.watch("acquisitionStrategy")
   const deadlockStrategy = form.watch("deadlockStrategy")
 
-  function onSubmit(values: LockFormValues) {
+  async function onSubmit(values: LockFormValues) {
     setIsSubmitting(true)
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Submitted:", values)
-      setIsSubmitting(false)
+    setApiError(null)
+
+    try {
+      const payload = {
+        environmentId: environmentId,
+        namespace: values.namespace,
+        description: values.description,
+        lockType: values.type === "exclusive" ? "EXCLUSIVE" : "READ_WRITE",
+        conflictResolution: values.acquisitionStrategy === "fail" ? "FAIL" : values.acquisitionStrategy === "retry" ? "RETRY" : "BLOCKING",
+        retryIntervalMs: values.acquisitionStrategy === "retry" ? values.retryInterval : 0,
+        maxRetryCount: values.acquisitionStrategy === "retry" ? values.maxRetries : 0,
+        fencingTokenRequired: values.requireFencingToken,
+        deadlockResolutionStrategy: values.deadlockStrategy === "alert" ? "ALERT" : "KILL_PRIORITY"
+      }
+
+      const url = isEditing ? `/api/distributed-lock-templates/${lockId}` : "/api/distributed-lock-templates"
+      const method = isEditing ? "PUT" : "POST"
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || "Hubo un error al guardar el lock")
+      }
+
       router.push(`/dashboard/applications/${applicationId}`)
-    }, 1000)
+    } catch (error: any) {
+      console.error(error)
+      setApiError(error.message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  async function handleDelete() {
+    if (!confirm("¿Estás seguro de que deseas eliminar este lock?")) return
+    setIsSubmitting(true)
+    try {
+      const res = await fetch(`/api/distributed-lock-templates/${lockId}`, { method: "DELETE" })
+      if (!res.ok) throw new Error("Error eliminando el lock")
+      router.push(`/dashboard/applications/${applicationId}`)
+    } catch (e: any) {
+      setApiError(e.message)
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -112,6 +154,11 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {apiError && (
+            <div className="bg-destructive/15 text-destructive p-3 rounded-md text-sm font-medium">
+              {apiError}
+            </div>
+          )}
           <Card className="bg-card/50 border-border">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -183,30 +230,13 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
-                  name="ttl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>TTL por Defecto (segundos)</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Tiempo de expiración de seguridad para evitar bloqueos infinitos.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
                   name="requireFencingToken"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4 shadow-sm h-[76px] mt-2 bg-chart-2/5 border-chart-2/20">
                       <div className="space-y-0.5">
                         <FormLabel className="text-base text-chart-2 font-semibold">Fencing Tokens</FormLabel>
                         <FormDescription>
-                          Genera tokens estrictamente incrementales para prevenir inconsistencias (split-brain).
+                          Genera tokens estrictamente incrementales para prevenir inconsistencias (RECOMENDADO)
                         </FormDescription>
                       </div>
                       <FormControl>
@@ -307,31 +337,12 @@ export function LockForm({ applicationId, initialData, isEditing = false }: Lock
                   />
                 </div>
               )}
-
-              {deadlockStrategy === "alert" && (
-                <FormField
-                  control={form.control}
-                  name="webhookUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>URL de Webhook para Alerta de Deadlocks</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://api.tudominio.com/webhooks/deadlocks" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Enviaremos una petición POST a esta URL si ocurre un deadlock insalvable.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
             </CardContent>
           </Card>
 
           <div className="flex items-center justify-between pt-4">
             {isEditing ? (
-              <Button type="button" variant="destructive" className="gap-2">
+              <Button type="button" variant="destructive" className="gap-2" onClick={handleDelete} disabled={isSubmitting}>
                 <Trash2 className="h-4 w-4" />
                 Eliminar Plantilla
               </Button>
