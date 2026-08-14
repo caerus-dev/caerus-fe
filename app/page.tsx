@@ -10,9 +10,9 @@ export default async function HomePage() {
   const session = await auth0.getSession();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen overflow-x-hidden w-full">
       <Navbar user={session?.user} />
-      <main>
+      <main className="w-full overflow-x-hidden">
         <HeroSection />
         <FeaturesSection />
         <CodeExamplesSection />

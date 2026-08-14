@@ -18,7 +18,7 @@ import {
   ChevronRight,
   ChevronDown,
 } from "lucide-react"
-import { cn, getEnvColors } from "@/lib/utils"
+import { cn, getEnvColors, getUniqueEnvDots } from "@/lib/utils"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +26,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+import { Skeleton } from "@/components/ui/skeleton"
 
 const navigation = [
   {
@@ -69,6 +71,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
   const pathname = usePathname()
   const router = useRouter()
   const [applications, setApplications] = useState<any[]>([])
+  const [isAppsLoading, setIsAppsLoading] = useState(true)
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
@@ -90,6 +93,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
 
   useEffect(() => {
     const loadApps = async () => {
+      setIsAppsLoading(true)
       try {
         const res = await fetch("/api/applications")
         if (res.ok) {
@@ -106,10 +110,12 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
         }
       } catch (error) {
         console.error("Error loading sidebar applications:", error)
+      } finally {
+        setIsAppsLoading(false)
       }
     }
     loadApps()
-  }, [pathname])
+  }, [])
 
   return (
     <aside
@@ -247,7 +253,29 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
             </div>
           )}
           <ul className="space-y-1">
-            {applications.map((app) => {
+            {isAppsLoading ? (
+              <div className="space-y-1.5 px-1">
+                {[1, 2, 3].map((i) => (
+                  isCollapsed ? (
+                    <div key={i} className="flex items-center justify-center h-8 w-8 mx-auto rounded-md border border-border/40 bg-card/40 animate-pulse">
+                      <Skeleton className="h-4 w-4 rounded bg-primary/25" />
+                    </div>
+                  ) : (
+                    <div key={i} className="flex items-center justify-between gap-2 px-3 py-2 rounded-md border border-border/40 bg-card/40 animate-pulse">
+                      <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                        <Skeleton className="h-4 w-4 rounded shrink-0 bg-primary/25" />
+                        <Skeleton className="h-3 w-24 rounded bg-muted-foreground/25" />
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <Skeleton className="h-1.5 w-1.5 rounded-full bg-purple-400/50" />
+                        <Skeleton className="h-1.5 w-1.5 rounded-full bg-blue-400/50" />
+                      </div>
+                    </div>
+                  )
+                ))}
+              </div>
+            ) : (
+              applications.map((app) => {
               const isActive = pathname === app.href || pathname.startsWith(app.href + "/")
               return (
                 <li key={app.name}>
@@ -266,21 +294,33 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                       <app.icon className={cn("h-[18px] w-[18px] shrink-0 transition-transform duration-200", !isActive && "group-hover:scale-110")} />
                       {!isCollapsed && <span className="truncate">{app.name}</span>}
                     </div>
-                    {!isCollapsed && app.environments.length > 0 && (
-                      <span className="flex shrink-0 items-center gap-1">
-                        {app.environments.map((env: string) => (
-                          <span
-                            key={env}
-                            title={env}
-                            className={cn("h-1.5 w-1.5 rounded-full", getEnvColors(env).dot)}
-                          />
-                        ))}
-                      </span>
-                    )}
+                    {!isCollapsed && app.environments.length > 0 && (() => {
+                      const { visibleDots, overflowCount, allNames } = getUniqueEnvDots(app.environments, 3);
+                      const extraCount = app.environments.length - visibleDots.length;
+                      return (
+                        <span className="flex shrink-0 items-center gap-1">
+                          {visibleDots.map(({ kind, colors }) => (
+                            <span
+                              key={kind}
+                              className={cn("h-1.5 w-1.5 rounded-full", colors.dot)}
+                              title={allNames.join(", ")}
+                            />
+                          ))}
+                          {extraCount > 0 && (
+                            <span
+                              className="text-[10px] font-mono font-medium text-muted-foreground/80 leading-none"
+                              title={allNames.join(", ")}
+                            >
+                              +{extraCount}
+                            </span>
+                          )}
+                        </span>
+                      );
+                    })()}
                   </Link>
                 </li>
               )
-            })}
+            }))}
           </ul>
         </div>
 

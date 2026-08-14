@@ -12,11 +12,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const response = await fetchBackend(`/v1/shared-resource-templates?environmentId=${environmentId}&size=25`);
+    const response = await fetchBackend(`/v1/distributed-lock-templates?environmentId=${environmentId}&size=25`);
     if (!response.ok) {
       const errorText = await response.text();
       return NextResponse.json(
-        { error: errorText || "Failed to fetch resource templates" },
+        { error: errorText || "Failed to fetch distributed lock templates" },
         { status: response.status }
       );
     }
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error("Error in GET /api/shared-resource-templates:", error);
+    console.error("Error in GET /api/distributed-lock-templates:", error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }
@@ -35,20 +35,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const response = await fetchBackend("/v1/shared-resource-templates", {
+    const response = await fetchBackend("/v1/distributed-lock-templates", {
       method: "POST",
       body: JSON.stringify(body),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      let errorMsg = errorText;
-      try {
-        const parsed = JSON.parse(errorText);
-        errorMsg = parsed.message || parsed.error || errorText;
-      } catch {}
       return NextResponse.json(
-        { error: errorMsg || "Failed to create resource template" },
+        { error: errorText || "Failed to create distributed lock template" },
         { status: response.status }
       );
     }
@@ -56,7 +51,7 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
-    console.error("Error in POST /api/shared-resource-templates:", error);
+    console.error("Error in POST /api/distributed-lock-templates:", error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
       { status: 500 }
