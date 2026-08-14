@@ -10,10 +10,13 @@ export async function GET(
     const response = await fetchBackend(`/v1/applications/${id}/environments?size=50`);
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json(
-        { error: errorText || "Failed to fetch environments" },
-        { status: response.status }
-      );
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = { error: errorText || "Failed to fetch environments" };
+      }
+      return NextResponse.json(errorData, { status: response.status });
     }
 
     const data = await response.json();
@@ -44,10 +47,13 @@ export async function POST(
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json(
-        { error: errorText || "Failed to create environment" },
-        { status: response.status }
-      );
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = { error: errorText || "Failed to create environment" };
+      }
+      return NextResponse.json(errorData, { status: response.status });
     }
 
     const data = await response.json();

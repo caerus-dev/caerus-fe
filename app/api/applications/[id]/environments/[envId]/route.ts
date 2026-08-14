@@ -44,10 +44,13 @@ export async function PUT(
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json(
-        { error: errorText || "Failed to update environment" },
-        { status: response.status }
-      );
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = { error: errorText || "Failed to update environment" };
+      }
+      return NextResponse.json(errorData, { status: response.status });
     }
 
     const data = await response.json();
@@ -73,10 +76,13 @@ export async function DELETE(
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json(
-        { error: errorText || "Failed to delete environment" },
-        { status: response.status }
-      );
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        errorData = { error: errorText || "Failed to delete environment" };
+      }
+      return NextResponse.json(errorData, { status: response.status });
     }
 
     return new NextResponse(null, { status: 204 });

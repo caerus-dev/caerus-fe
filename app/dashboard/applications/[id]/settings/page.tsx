@@ -42,6 +42,7 @@ export default function ApplicationSettingsPage({
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deleteAppError, setDeleteAppError] = useState<{ message: string, details?: string[] } | null>(null)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -57,6 +58,7 @@ export default function ApplicationSettingsPage({
   const [isSavingEnv, setIsSavingEnv] = useState(false)
   const [confirmDeleteEnvOpen, setConfirmDeleteEnvOpen] = useState(false)
   const [selectedEnvForDelete, setSelectedEnvForDelete] = useState<Environment | null>(null)
+  const [deleteEnvError, setDeleteEnvError] = useState<{ message: string, details?: string[] } | null>(null)
 
   useEffect(() => {
     if (actionParam === "create_env") {
@@ -173,7 +175,7 @@ export default function ApplicationSettingsPage({
           setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
-          setEnvFormError(errData.error || "Error al crear el ambiente")
+          setEnvFormError(errData.message || errData.error || "Error al crear el ambiente")
         }
       } else if (envDialogMode === "edit" && selectedEnvForEdit) {
         const res = await fetch(`/api/applications/${id}/environments/${selectedEnvForEdit.id}`, {
@@ -205,7 +207,7 @@ export default function ApplicationSettingsPage({
           setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
-          setEnvFormError(errData.error || "Error al actualizar el ambiente")
+          setEnvFormError(errData.message || errData.error || "Error al actualizar el ambiente")
         }
       }
     } catch (error) {
@@ -218,13 +220,17 @@ export default function ApplicationSettingsPage({
 
   const handleOpenDeleteEnv = (env: Environment) => {
     setSelectedEnvForDelete(env)
+    setDeleteEnvError(null)
     setConfirmDeleteEnvOpen(true)
   }
 
   const handleDeleteEnvConfirm = async () => {
     if (!selectedEnvForDelete) return
+    console.log("INTENTANDO ELIMINAR ENTORNO:", selectedEnvForDelete.name, "CON ID:", selectedEnvForDelete.id)
     setIsSavingEnv(true)
+    setDeleteEnvError(null)
     try {
+      console.log("URL DE FETCH:", `/api/applications/${id}/environments/${selectedEnvForDelete.id}`)
       const res = await fetch(`/api/applications/${id}/environments/${selectedEnvForDelete.id}`, {
         method: "DELETE",
       })
@@ -233,10 +239,15 @@ export default function ApplicationSettingsPage({
         setConfirmDeleteEnvOpen(false)
         setSelectedEnvForDelete(null)
       } else {
-        console.error("Failed to delete environment")
+        const errData = await res.json().catch(() => ({ message: "Error al eliminar el ambiente" }))
+        setDeleteEnvError({
+          message: errData.message || errData.error || "Error al eliminar el ambiente",
+          details: errData.details
+        })
       }
     } catch (error) {
       console.error("Error deleting environment:", error)
+      setDeleteEnvError({ message: "Ocurrió un error inesperado al eliminar el ambiente" })
     } finally {
       setIsSavingEnv(false)
     }
@@ -266,6 +277,7 @@ export default function ApplicationSettingsPage({
 
   const handleDelete = async () => {
     setIsSaving(true)
+    setDeleteAppError(null)
     try {
       const response = await fetch(`/api/applications/${id}`, {
         method: "DELETE",
@@ -273,11 +285,15 @@ export default function ApplicationSettingsPage({
       if (response.ok) {
         router.push("/dashboard/applications")
       } else {
-        const errorData = await response.json().catch(() => ({}))
-        console.error("Failed to delete application:", errorData.error || response.statusText)
+        const errData = await response.json().catch(() => ({ message: "Error al eliminar la aplicación" }))
+        setDeleteAppError({
+          message: errData.message || errData.error || "Error al eliminar la aplicación",
+          details: errData.details
+        })
       }
     } catch (error) {
       console.error("Error deleting application:", error)
+      setDeleteAppError({ message: "Ocurrió un error inesperado al eliminar la aplicación" })
     } finally {
       setIsSaving(false)
     }
@@ -488,7 +504,10 @@ export default function ApplicationSettingsPage({
         </div>
 
         {/* Delete Dialog */}
-        <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <Dialog open={deleteDialogOpen} onOpenChange={(open) => {
+          setDeleteDialogOpen(open)
+          if (!open) setDeleteAppError(null)
+        }}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Eliminar Aplicación</DialogTitle>
@@ -501,10 +520,25 @@ export default function ApplicationSettingsPage({
                 Esta acción no se puede deshacer.
               </DialogDescription>
             </DialogHeader>
+            {deleteAppError && (
+              <div className="bg-destructive/15 border border-destructive/30 text-destructive text-sm rounded-md p-3 space-y-2 mt-2">
+                <div className="font-semibold">{deleteAppError.message}</div>
+                {deleteAppError.details && deleteAppError.details.length > 0 && (
+                  <ul className="list-disc list-inside space-y-1 ml-1">
+                    {deleteAppError.details.map((detail, idx) => (
+                      <li key={idx}>{detail}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => setDeleteDialogOpen(false)}
+                onClick={() => {
+                  setDeleteDialogOpen(false)
+                  setDeleteAppError(null)
+                }}
               >
                 Cancelar
               </Button>
@@ -601,7 +635,10 @@ export default function ApplicationSettingsPage({
         </Dialog>
 
         {/* Delete Environment Confirmation Dialog */}
-        <Dialog open={confirmDeleteEnvOpen} onOpenChange={setConfirmDeleteEnvOpen}>
+        <Dialog open={confirmDeleteEnvOpen} onOpenChange={(open) => {
+          setConfirmDeleteEnvOpen(open)
+          if (!open) setDeleteEnvError(null)
+        }}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Eliminar Ambiente</DialogTitle>
@@ -611,10 +648,25 @@ export default function ApplicationSettingsPage({
                 Esta acción es irreversible y eliminará todos los recursos, locks y API keys asociados a este ambiente.
               </DialogDescription>
             </DialogHeader>
+            {deleteEnvError && (
+              <div className="bg-destructive/15 border border-destructive/30 text-destructive text-sm rounded-md p-3 space-y-2 mt-2">
+                <div className="font-semibold">{deleteEnvError.message}</div>
+                {deleteEnvError.details && deleteEnvError.details.length > 0 && (
+                  <ul className="list-disc list-inside space-y-1 ml-1">
+                    {deleteEnvError.details.map((detail, idx) => (
+                      <li key={idx}>{detail}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => setConfirmDeleteEnvOpen(false)}
+                onClick={() => {
+                  setConfirmDeleteEnvOpen(false)
+                  setDeleteEnvError(null)
+                }}
                 disabled={isSavingEnv}
               >
                 Cancelar
