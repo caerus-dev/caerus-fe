@@ -26,7 +26,7 @@ export default function EditLockPage({
           description: data.description || "",
           type: data.lockType === "EXCLUSIVE" ? "exclusive" : "read-write",
           deadlockStrategy: data.deadlockResolutionStrategy === "ALERT" ? "alert" : "kill",
-          acquisitionStrategy: data.conflictResolution === "FAIL" ? "fail" : data.conflictResolution === "RETRY" ? "retry" : "blocking",
+          acquisitionStrategy: data.conflictResolution === "FAIL" ? "fail" : data.conflictResolution === "RETRY" ? "retry" : "queue",
           retryInterval: data.retryIntervalMs || 100,
           maxRetries: data.maxRetryCount || 5,
           requireFencingToken: data.fencingTokenRequired || false,

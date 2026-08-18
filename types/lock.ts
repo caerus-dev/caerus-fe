@@ -6,7 +6,7 @@ export interface Lock {
   ttl: number
   deadlockStrategy: 'alert' | 'kill'
   webhookUrl?: string
-  acquisitionStrategy: 'fail' | 'retry' | 'blocking'
+  acquisitionStrategy: 'fail' | 'retry' | 'queue'
   retryInterval?: number
   maxRetries?: number
   requireFencingToken: boolean

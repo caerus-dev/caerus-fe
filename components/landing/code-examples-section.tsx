@@ -39,7 +39,7 @@ const client = new Caerus({ apiKey: process.env.CAERUS_API_KEY })
 const lock = await client.locks.acquire({
   key: 'payment_user_123',
   ttl: 10000, // 10 segundos
-  strategy: 'fail' // o 'retry' | 'blocking'
+  strategy: 'fail' // o 'retry' | 'queue'
 })
 
 if (lock.acquired) {

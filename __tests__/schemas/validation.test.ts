@@ -23,7 +23,7 @@ const lockSchema = z.object({
   ttl: z.coerce.number().min(1),
   deadlockStrategy: z.enum(["alert", "kill"]),
   webhookUrl: z.string().url().optional().or(z.literal('')),
-  acquisitionStrategy: z.enum(["fail", "retry", "blocking"]),
+  acquisitionStrategy: z.enum(["fail", "retry", "queue"]),
   retryInterval: z.coerce.number().min(10).optional(),
   maxRetries: z.coerce.number().min(1).optional(),
   requireFencingToken: z.boolean().default(false),

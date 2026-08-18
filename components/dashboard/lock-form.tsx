@@ -38,7 +38,7 @@ const formSchema = z.object({
   description: z.string().optional(),
   type: z.enum(["exclusive", "read-write"]),
   deadlockStrategy: z.enum(["alert", "kill"]),
-  acquisitionStrategy: z.enum(["fail", "retry", "blocking"]),
+  acquisitionStrategy: z.enum(["fail", "retry", "queue"]),
   retryInterval: z.coerce.number().min(10).optional(),
   maxRetries: z.coerce.number().min(1).optional(),
   requireFencingToken: z.boolean().default(true),
@@ -86,7 +86,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
         namespace: values.namespace,
         description: values.description,
         lockType: values.type === "exclusive" ? "EXCLUSIVE" : "READ_WRITE",
-        conflictResolution: values.acquisitionStrategy === "fail" ? "FAIL" : values.acquisitionStrategy === "retry" ? "RETRY" : "BLOCKING",
+        conflictResolution: values.acquisitionStrategy === "fail" ? "FAIL" : values.acquisitionStrategy === "retry" ? "RETRY" : "QUEUE",
         retryIntervalMs: values.acquisitionStrategy === "retry" ? values.retryInterval : 0,
         maxRetryCount: values.acquisitionStrategy === "retry" ? values.maxRetries : 0,
         fencingTokenRequired: values.requireFencingToken,
@@ -276,7 +276,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                         <SelectContent>
                           <SelectItem value="fail">Fallo inmediato</SelectItem>
                           <SelectItem value="retry">Reintento automático</SelectItem>
-                          <SelectItem value="blocking">Bloqueante (esperar)</SelectItem>
+                          <SelectItem value="queue">Encolar (Queue / FIFO)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
