@@ -128,10 +128,10 @@ export function Navbar({ user }: { user?: NavbarUser }) {
             </>
           ) : (
             <>
-              <a href="/auth/login" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+              <a href="/auth/login?returnTo=/dashboard" className={buttonVariants({ variant: "ghost", size: "sm" })}>
                 Iniciar Sesión
               </a>
-              <a href="/auth/login?screen_hint=signup" className={cn(buttonVariants({ size: "sm" }), "glow-primary")}>
+              <a href="/auth/login?screen_hint=signup&returnTo=/dashboard" className={cn(buttonVariants({ size: "sm" }), "glow-primary")}>
                 Comenzar Gratis
               </a>
             </>
@@ -199,10 +199,10 @@ export function Navbar({ user }: { user?: NavbarUser }) {
                 </>
               ) : (
                 <>
-                  <a href="/auth/login" className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start")}>
+                  <a href="/auth/login?returnTo=/dashboard" className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start")}>
                     Iniciar Sesión
                   </a>
-                  <a href="/auth/login?screen_hint=signup" className={cn(buttonVariants(), "w-full justify-start glow-primary")}>
+                  <a href="/auth/login?screen_hint=signup&returnTo=/dashboard" className={cn(buttonVariants(), "w-full justify-start glow-primary")}>
                     Comenzar Gratis
                   </a>
                 </>
