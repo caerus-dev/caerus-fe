@@ -11,7 +11,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox"
 import { ArrowLeft, Loader2, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useApps } from "@/components/dashboard/apps-context"
+
 export default function NewApplicationPage() {
+  const { refreshApps } = useApps()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
@@ -70,6 +73,7 @@ export default function NewApplicationPage() {
       });
 
       if (response.ok) {
+        refreshApps();
         router.push("/dashboard/applications");
       } else {
         const errData = await response.json().catch(() => ({}));
@@ -84,189 +88,161 @@ export default function NewApplicationPage() {
   }
 
   return (
-    
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-4">
+    <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex items-center gap-4">
+        <Link href="/dashboard/applications">
+          <Button variant="ghost" size="icon">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+        </Link>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Nueva Aplicación</h1>
+          <p className="text-muted-foreground">
+            Configura una nueva aplicación para empezar a gestionar sus recursos.
+          </p>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Información Básica</CardTitle>
+            <CardDescription>
+              Define el nombre y descripción de tu aplicación
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {error && (
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+                <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="name">Nombre de la Aplicación *</Label>
+                <span className={cn(
+                  "text-[10px] transition-colors",
+                  formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                )}>
+                  {formData.name.length} / 100
+                </span>
+              </div>
+              <Input
+                id="name"
+                placeholder="Mi Aplicación"
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                disabled={isLoading}
+                maxLength={100}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label htmlFor="description">Descripción</Label>
+                <span className={cn(
+                  "text-[10px] transition-colors",
+                  formData.description.length >= 500 ? "text-destructive font-semibold" : formData.description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                )}>
+                  {formData.description.length} / 500
+                </span>
+              </div>
+              <Textarea
+                id="description"
+                placeholder="Breve descripción de la aplicación..."
+                value={formData.description}
+                onChange={(e) => handleChange("description", e.target.value)}
+                disabled={isLoading}
+                maxLength={500}
+                className="resize-none"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Ambientes Iniciales</CardTitle>
+            <CardDescription>
+              Selecciona los ambientes que deseas crear inicialmente. Podrás añadir o remover ambientes posteriormente.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <label className={cn(
+                "flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors",
+                formData.environments.dev ? "bg-primary/5 border-primary" : "hover:bg-accent/50",
+                isLoading && "opacity-50 cursor-not-allowed"
+              )}>
+                <Checkbox
+                  checked={formData.environments.dev}
+                  onCheckedChange={(checked) => handleEnvironmentChange("dev", checked as boolean)}
+                  disabled={isLoading}
+                  className="mt-1"
+                />
+                <div className="space-y-1">
+                  <p className="font-medium text-sm leading-none">Development</p>
+                  <p className="text-xs text-muted-foreground">Ambiente de desarrollo y pruebas locales.</p>
+                </div>
+              </label>
+
+              <label className={cn(
+                "flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors",
+                formData.environments.stage ? "bg-primary/5 border-primary" : "hover:bg-accent/50",
+                isLoading && "opacity-50 cursor-not-allowed"
+              )}>
+                <Checkbox
+                  checked={formData.environments.stage}
+                  onCheckedChange={(checked) => handleEnvironmentChange("stage", checked as boolean)}
+                  disabled={isLoading}
+                  className="mt-1"
+                />
+                <div className="space-y-1">
+                  <p className="font-medium text-sm leading-none">Staging</p>
+                  <p className="text-xs text-muted-foreground">Ambiente de pruebas pre-producción.</p>
+                </div>
+              </label>
+
+              <label className={cn(
+                "flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors",
+                formData.environments.prod ? "bg-primary/5 border-primary" : "hover:bg-accent/50",
+                isLoading && "opacity-50 cursor-not-allowed"
+              )}>
+                <Checkbox
+                  checked={formData.environments.prod}
+                  onCheckedChange={(checked) => handleEnvironmentChange("prod", checked as boolean)}
+                  disabled={isLoading}
+                  className="mt-1"
+                />
+                <div className="space-y-1">
+                  <p className="font-medium text-sm leading-none">Production</p>
+                  <p className="text-xs text-muted-foreground">Ambiente productivo para usuarios finales.</p>
+                </div>
+              </label>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex justify-end gap-4">
           <Link href="/dashboard/applications">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-4 h-4" />
+            <Button variant="outline" type="button" disabled={isLoading}>
+              Cancelar
             </Button>
           </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Nueva Aplicación</h1>
-            <p className="text-muted-foreground">
-              Crea una nueva aplicación para comenzar tu integración
-            </p>
-          </div>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creando...
+              </>
+            ) : (
+              "Crear Aplicación"
+            )}
+          </Button>
         </div>
-
-        <form onSubmit={handleSubmit}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Información Básica</CardTitle>
-              <CardDescription>
-                Define el nombre y descripción de tu aplicación
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {error && (
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
-                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="name">Nombre de la Aplicación *</Label>
-                  <span className={cn(
-                    "text-[10px] transition-colors",
-                    formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
-                  )}>
-                    {formData.name.length} / 100
-                  </span>
-                </div>
-                <Input
-                  id="name"
-                  placeholder="Mi Aplicación"
-                  value={formData.name}
-                  onChange={(e) => handleChange("name", e.target.value)}
-                  disabled={isLoading}
-                  maxLength={100}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="description">Descripción</Label>
-                  <span className={cn(
-                    "text-[10px] transition-colors",
-                    formData.description.length >= 500 ? "text-destructive font-semibold" : formData.description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
-                  )}>
-                    {formData.description.length} / 500
-                  </span>
-                </div>
-                <Textarea
-                  id="description"
-                  placeholder="Describe brevemente tu aplicación..."
-                  value={formData.description}
-                  onChange={(e) => handleChange("description", e.target.value)}
-                  disabled={isLoading}
-                  maxLength={500}
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Ambientes</CardTitle>
-              <CardDescription>
-                Selecciona los ambientes que deseas configurar. Podrás agregar más
-                ambientes posteriormente.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <label
-                  htmlFor="dev"
-                  className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                >
-                  <Checkbox
-                    id="dev"
-                    checked={formData.environments.dev}
-                    onCheckedChange={(checked) =>
-                      handleEnvironmentChange("dev", checked as boolean)
-                    }
-                    disabled={isLoading}
-                  />
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium flex items-center gap-2">
-                      Desarrollo
-                      <span className="px-1.5 py-0.5 text-xs rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                        dev
-                      </span>
-                    </span>
-                    <p className="text-xs text-muted-foreground">
-                      Ambiente para pruebas locales y desarrollo
-                    </p>
-                  </div>
-                </label>
-
-                <label
-                  htmlFor="stage"
-                  className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                >
-                  <Checkbox
-                    id="stage"
-                    checked={formData.environments.stage}
-                    onCheckedChange={(checked) =>
-                      handleEnvironmentChange("stage", checked as boolean)
-                    }
-                    disabled={isLoading}
-                  />
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium flex items-center gap-2">
-                      Staging
-                      <span className="px-1.5 py-0.5 text-xs rounded bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
-                        stg
-                      </span>
-                    </span>
-                    <p className="text-xs text-muted-foreground">
-                      Ambiente de pre-producción para pruebas finales
-                    </p>
-                  </div>
-                </label>
-
-                <label
-                  htmlFor="prod"
-                  className="flex items-start space-x-3 p-4 rounded-lg border border-border hover:border-primary/50 transition-colors cursor-pointer"
-                >
-                  <Checkbox
-                    id="prod"
-                    checked={formData.environments.prod}
-                    onCheckedChange={(checked) =>
-                      handleEnvironmentChange("prod", checked as boolean)
-                    }
-                    disabled={isLoading}
-                  />
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium flex items-center gap-2">
-                      Producción
-                      <span className="px-1.5 py-0.5 text-xs rounded bg-green-500/20 text-green-400 border border-green-500/30">
-                        prod
-                      </span>
-                    </span>
-                    <p className="text-xs text-muted-foreground">
-                      Ambiente productivo con tráfico real de usuarios
-                    </p>
-                  </div>
-                </label>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="flex justify-end gap-3 mt-6">
-            <Link href="/dashboard/applications">
-              <Button variant="outline" disabled={isLoading}>
-                Cancelar
-              </Button>
-            </Link>
-            <Button type="submit" disabled={isLoading || formData.name.length > 100 || formData.description.length > 500}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creando...
-                </>
-              ) : (
-                "Crear Aplicación"
-              )}
-            </Button>
-          </div>
-        </form>
-      </div>
-    
+      </form>
+    </div>
   )
 }

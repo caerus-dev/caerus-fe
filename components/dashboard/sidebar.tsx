@@ -19,6 +19,7 @@ import {
   ChevronDown,
 } from "lucide-react"
 import { cn, getEnvColors, getUniqueEnvDots } from "@/lib/utils"
+import { useApps } from "./apps-context"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -70,8 +71,7 @@ export interface DashboardSidebarProps {
 export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: DashboardSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const [applications, setApplications] = useState<any[]>([])
-  const [isAppsLoading, setIsAppsLoading] = useState(true)
+  const { applications, isAppsLoading } = useApps()
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
@@ -89,32 +89,6 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
       }
     }
     fetchUser()
-  }, [])
-
-  useEffect(() => {
-    const loadApps = async () => {
-      setIsAppsLoading(true)
-      try {
-        const res = await fetch("/api/applications")
-        if (res.ok) {
-          const data = await res.json()
-          if (data && data.content) {
-            const mapped = data.content.map((app: any) => ({
-              name: app.name,
-              href: `/dashboard/applications/${app.id}`,
-              environments: (app.environments || []).map((env: any) => env.name),
-              icon: Box,
-            }))
-            setApplications(mapped)
-          }
-        }
-      } catch (error) {
-        console.error("Error loading sidebar applications:", error)
-      } finally {
-        setIsAppsLoading(false)
-      }
-    }
-    loadApps()
   }, [])
 
   return (

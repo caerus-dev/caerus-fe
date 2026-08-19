@@ -36,6 +36,7 @@ import {
 } from "lucide-react"
 import { EnvBadge } from "@/components/dashboard/shared/env-badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useApps } from "@/components/dashboard/apps-context"
 
 interface Application {
   id: string
@@ -76,6 +77,7 @@ const getRoleBadge = (role: string) => {
 
 export default function ApplicationsPage() {
   const router = useRouter()
+  const { refreshApps } = useApps()
   const [applications, setApplications] = useState<Application[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
@@ -142,6 +144,7 @@ export default function ApplicationsPage() {
           setApplications((prev) => prev.filter((app) => app.id !== appToDelete.id))
           setDeleteDialogOpen(false)
           setAppToDelete(null)
+          refreshApps()
         } else {
           const errData = await response.json().catch(() => ({ message: "Error al eliminar la aplicación" }))
           setDeleteAppError({

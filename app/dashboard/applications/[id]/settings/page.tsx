@@ -4,6 +4,7 @@ import { use, useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useApps } from "@/components/dashboard/apps-context"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -34,6 +35,7 @@ export default function ApplicationSettingsPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
+  const { refreshApps } = useApps()
   const router = useRouter()
   const searchParams = useSearchParams()
   const actionParam = searchParams.get("action")
@@ -172,7 +174,7 @@ export default function ApplicationSettingsPage({
               enabled: true,
             },
           ])
-          setEnvDialogOpen(false)
+          refreshApps(); setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
           setEnvFormError(errData.message || errData.error || "Error al crear el ambiente")
@@ -204,7 +206,7 @@ export default function ApplicationSettingsPage({
                 : e
             )
           )
-          setEnvDialogOpen(false)
+          refreshApps(); setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
           setEnvFormError(errData.message || errData.error || "Error al actualizar el ambiente")
@@ -236,7 +238,7 @@ export default function ApplicationSettingsPage({
       })
       if (res.ok) {
         setEnvironments((prev) => prev.filter((e) => e.id !== selectedEnvForDelete.id))
-        setConfirmDeleteEnvOpen(false)
+        refreshApps(); setConfirmDeleteEnvOpen(false)
         setSelectedEnvForDelete(null)
       } else {
         const errData = await res.json().catch(() => ({ message: "Error al eliminar el ambiente" }))
@@ -283,7 +285,7 @@ export default function ApplicationSettingsPage({
         method: "DELETE",
       })
       if (response.ok) {
-        router.push("/dashboard/applications")
+        refreshApps(); router.push("/dashboard/applications")
       } else {
         const errData = await response.json().catch(() => ({ message: "Error al eliminar la aplicación" }))
         setDeleteAppError({
@@ -614,7 +616,7 @@ export default function ApplicationSettingsPage({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setEnvDialogOpen(false)}
+                  onClick={() => { refreshApps(); setEnvDialogOpen(false); }}
                   disabled={isSavingEnv}
                 >
                   Cancelar
@@ -664,7 +666,7 @@ export default function ApplicationSettingsPage({
               <Button
                 variant="outline"
                 onClick={() => {
-                  setConfirmDeleteEnvOpen(false)
+                  refreshApps(); setConfirmDeleteEnvOpen(false)
                   setDeleteEnvError(null)
                 }}
                 disabled={isSavingEnv}
