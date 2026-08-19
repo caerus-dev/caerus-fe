@@ -13,8 +13,10 @@ export async function getBackendHeaders() {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${accessToken}`,
     };
-  } catch (error) {
-    console.error("Error getting Auth0 access token:", error);
+  } catch (error: any) {
+    if (error?.code !== "expired") {
+      console.error("Error getting Auth0 access token:", error);
+    }
     throw new Error("Unauthorized: Could not retrieve access token");
   }
 }

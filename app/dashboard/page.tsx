@@ -7,8 +7,14 @@ import { EnvBadge } from "@/components/dashboard/shared/env-badge"
 import { fetchBackend } from "@/lib/api"
 import { auth0 } from "@/lib/auth0"
 
+import { redirect } from "next/navigation"
+
 export default async function DashboardPage() {
   const session = await auth0.getSession()
+  if (!session) {
+    redirect("/api/auth/login")
+  }
+
   const user = session?.user
   
   // Extraemos un nombre para la organización (o el nombre del usuario como fallback)
@@ -21,7 +27,10 @@ export default async function DashboardPage() {
       const data = await res.json()
       appsCount = data.totalElements ?? data.content?.length ?? 0
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.message?.includes("Unauthorized")) {
+      redirect("/api/auth/login")
+    }
     console.error("Error fetching applications:", error)
   }
 
