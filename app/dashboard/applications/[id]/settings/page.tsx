@@ -53,7 +53,7 @@ export default function ApplicationSettingsPage({
   const [envDialogOpen, setEnvDialogOpen] = useState(false)
   const [envDialogMode, setEnvDialogMode] = useState<"create" | "edit">("create")
   const [selectedEnvForEdit, setSelectedEnvForEdit] = useState<Environment | null>(null)
-  const [envForm, setEnvForm] = useState({ name: "", description: "" })
+  const [envForm, setEnvForm] = useState({ name: "", description: "", color: "slate" })
   const [envFormError, setEnvFormError] = useState("")
   const [isSavingEnv, setIsSavingEnv] = useState(false)
   const [confirmDeleteEnvOpen, setConfirmDeleteEnvOpen] = useState(false)
@@ -63,7 +63,7 @@ export default function ApplicationSettingsPage({
   useEffect(() => {
     if (actionParam === "create_env") {
       setEnvDialogMode("create")
-      setEnvForm({ name: "", description: "" })
+      setEnvForm({ name: "", description: "", color: "slate" })
       setEnvFormError("")
       setEnvDialogOpen(true)
     }
