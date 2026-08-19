@@ -99,26 +99,33 @@ const plans: Plan[] = [
   },
 ]
 
-const usageData = [
-  { date: "1 Ene", calls: 2400 },
-  { date: "5 Ene", calls: 4500 },
-  { date: "10 Ene", calls: 8200 },
-  { date: "15 Ene", calls: 12800 },
-  { date: "20 Ene", calls: 18500 },
-  { date: "25 Ene", calls: 28300 },
-  { date: "30 Ene", calls: 41200 },
-]
-
 export default function BillingPage() {
   const [currentPlan] = useState("pro")
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null)
   
-  // Simulated usage data
-  const currentUsage = 41200
+  // Real usage will be 0 since we have no backend endpoint yet
+  const currentUsage = 0
   const planLimit = 50000
-  const usagePercentage = (currentUsage / planLimit) * 100
-  const isNearLimit = usagePercentage >= 80
+  const usagePercentage = 0
+  const isNearLimit = false
+
+  // Generate empty usage data for billing chart dynamically
+  const generateUsageData = () => {
+    const data = []
+    const now = new Date()
+    for (let i = 30; i >= 0; i -= 5) {
+      const d = new Date(now)
+      d.setDate(d.getDate() - i)
+      data.push({
+        date: d.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }),
+        calls: 0
+      })
+    }
+    return data
+  }
+  
+  const usageData = generateUsageData()
 
   const handleSelectPlan = (plan: Plan) => {
     if (plan.id !== currentPlan) {
