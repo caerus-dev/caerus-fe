@@ -1,13 +1,57 @@
 import Link from "next/link"
-import { AlertTriangle, ArrowUpRight } from "lucide-react"
+import { AlertTriangle, ArrowUpRight, Layers, Activity, Lock, Gauge } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { StatCard } from "@/components/dashboard/shared/stat-card"
 import { EnvBadge } from "@/components/dashboard/shared/env-badge"
-import { dashboardStatsMock, recentActivityMock } from "@/lib/mocks/dashboard"
+import { fetchBackend } from "@/lib/api"
+import { auth0 } from "@/lib/auth0"
 
-export default function DashboardPage() {
-  const usagePercentage = 68
+export default async function DashboardPage() {
+  const session = await auth0.getSession()
+  const user = session?.user
+  
+  // Extraemos un nombre para la organización (o el nombre del usuario como fallback)
+  const orgName = user?.org_name || user?.name || "usuario"
+
+  let appsCount = 0
+  try {
+    const res = await fetchBackend("/v1/applications?page=0&size=10")
+    if (res.ok) {
+      const data = await res.json()
+      appsCount = data.totalElements ?? data.content?.length ?? 0
+    }
+  } catch (error) {
+    console.error("Error fetching applications:", error)
+  }
+
+  // Al no tener endpoints de uso y actividad, inicializamos en 0
+  const usagePercentage = 0
+  
+  const dashboardStats = [
+    {
+      name: "Aplicaciones",
+      value: appsCount.toString(),
+      icon: Layers,
+    },
+    {
+      name: "Llamadas de API (30d)",
+      value: "0",
+      icon: Activity,
+    },
+    {
+      name: "Bloqueos activos",
+      value: "0",
+      icon: Lock,
+    },
+    {
+      name: "Uso del plan",
+      value: "0%",
+      icon: Gauge,
+    },
+  ]
+
+  const recentActivity: any[] = []
 
   const getEventColor = (event: string) => {
     if (event.includes("acquired") || event.includes("confirmed") || event.includes("created")) {
@@ -28,13 +72,13 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Vista General</h1>
         <p className="text-muted-foreground font-mono text-sm mt-1">
-          $ caerus status --org acme-corp
+          $ caerus status --org {orgName}
         </p>
       </div>
 
       {/* Stats grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {dashboardStatsMock.map((stat) => (
+        {dashboardStats.map((stat) => (
           <StatCard
             key={stat.name}
             title={stat.name}
@@ -93,11 +137,18 @@ export default function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {recentActivityMock.map((activity) => (
-                  <tr key={activity.id} className="border-b border-border last:border-0 hover:bg-sidebar-accent/30 transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className={`h-2 w-2 rounded-full ${getEventColor(activity.event) === "text-primary" ? "bg-primary" : getEventColor(activity.event) === "text-chart-4" ? "bg-chart-4" : "bg-muted-foreground"}`} />
+                {recentActivity.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">
+                      No hay actividad reciente.
+                    </td>
+                  </tr>
+                ) : (
+                  recentActivity.map((activity) => (
+                    <tr key={activity.id} className="border-b border-border last:border-0 hover:bg-sidebar-accent/30 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <span className={`h-2 w-2 rounded-full ${getEventColor(activity.event) === "text-primary" ? "bg-primary" : getEventColor(activity.event) === "text-chart-4" ? "bg-chart-4" : "bg-muted-foreground"}`} />
                         <span className={`font-mono text-sm font-medium ${getEventColor(activity.event)}`}>
                           {activity.event}
                         </span>
@@ -113,7 +164,8 @@ export default function DashboardPage() {
                       <span className="text-sm text-muted-foreground">{activity.time}</span>
                     </td>
                   </tr>
-                ))}
+                ))
+              )}
               </tbody>
             </table>
           </div>
