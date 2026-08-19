@@ -165,16 +165,3 @@ export const getMockDataForEnv = (appName: string, envName: string): EnvData => 
   }
 }
 
-export const formatTtl = (ms: any): string => {
-  const num = Number(ms)
-  if (isNaN(num)) return String(ms)
-  if (num < 1000) return `${num} ms`
-  const seconds = num / 1000
-  if (seconds < 60) return `${seconds.toFixed(seconds % 1 === 0 ? 0 : 1)} s`
-  const minutes = seconds / 60
-  if (minutes < 60) return `${minutes.toFixed(minutes % 1 === 0 ? 0 : 1)} min`
-  const hours = minutes / 60
-  if (hours < 24) return `${hours.toFixed(hours % 1 === 0 ? 0 : 1)} h`
-  const days = hours / 24
-  return `${days.toFixed(days % 1 === 0 ? 0 : 1)} d`
-}

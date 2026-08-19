@@ -158,3 +158,17 @@ export function getUniqueEnvDots(
 
   return { visibleDots, overflowCount, allNames: names }
 }
+
+export const formatTtl = (ms: any): string => {
+  const num = Number(ms)
+  if (isNaN(num)) return String(ms)
+  if (num < 1000) return \\ ms\
+  const seconds = num / 1000
+  if (seconds < 60) return \\ s\
+  const minutes = seconds / 60
+  if (minutes < 60) return \\ min\
+  const hours = minutes / 60
+  if (hours < 24) return \\ h\
+  const days = hours / 24
+  return \\ d\
+}

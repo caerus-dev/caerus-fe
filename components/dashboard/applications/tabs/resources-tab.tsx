@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { cn, getEnvColors } from '@/lib/utils'
-import { formatTtl } from '@/lib/mocks/applications'
+import { formatTtl } from '@/lib/utils'
 
 import { Skeleton } from '@/components/ui/skeleton'
 
