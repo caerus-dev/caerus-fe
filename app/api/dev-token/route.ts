@@ -2,7 +2,7 @@ import { auth0 } from '@/lib/auth0';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  if (process.env.VERCEL_ENV) {
+  if (process.env.NODE_ENV !== "development") {
     return new NextResponse(null, { status: 404 });
   }
 
