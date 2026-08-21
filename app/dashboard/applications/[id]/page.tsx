@@ -158,7 +158,7 @@ export default function ApplicationDetailPage({
 
         if (envRes.ok) {
           const envData = await envRes.json()
-          setCurrentEnvDetails(envData)
+          setCurrentEnvDetails({ ...envData, id: activeEnvObj.id })
           setLocks(envData.locks || [])
         }
 
