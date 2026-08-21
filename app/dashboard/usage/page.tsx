@@ -23,40 +23,34 @@ import {
   Bar,
 } from "recharts"
 
-const usageData = [
-  { date: "May 1", calls: 2400, locks: 120 },
-  { date: "May 5", calls: 3200, locks: 180 },
-  { date: "May 10", calls: 2800, locks: 150 },
-  { date: "May 15", calls: 4100, locks: 220 },
-  { date: "May 20", calls: 3600, locks: 190 },
-  { date: "May 25", calls: 4800, locks: 280 },
-  { date: "May 30", calls: 5200, locks: 310 },
-]
-
-const applicationBreakdown = [
-  { name: "reserva-engine", calls: 45200, percentage: 54 },
-  { name: "payment-sync", calls: 28400, percentage: 34 },
-  { name: "lock-service", calls: 10600, percentage: 12 },
-]
-
-const eventLog = [
-  { id: 1, event: "lock.acquired", app: "payment-sync", env: "prod", time: "2s ago" },
-  { id: 2, event: "reserve.confirmed", app: "reserva-engine", env: "prod", time: "15s ago" },
-  { id: 3, event: "lock.released", app: "lock-service", env: "dev", time: "32s ago" },
-  { id: 4, event: "reserve.expired", app: "reserva-engine", env: "prod", time: "1m ago" },
-  { id: 5, event: "api_key.created", app: "payment-sync", env: "prod", time: "5m ago" },
-  { id: 6, event: "lock.timeout", app: "lock-service", env: "dev", time: "8m ago" },
-  { id: 7, event: "reserve.confirmed", app: "reserva-engine", env: "prod", time: "12m ago" },
-  { id: 8, event: "lock.acquired", app: "payment-sync", env: "prod", time: "15m ago" },
-]
-
 export default function UsagePage() {
   const [timeRange, setTimeRange] = useState("30d")
 
-  const totalCalls = 84200
+  const totalCalls = 0
   const planLimit = 125000
-  const usagePercentage = Math.round((totalCalls / planLimit) * 100)
-  const isNearLimit = usagePercentage >= 80
+  const usagePercentage = 0
+  const isNearLimit = false
+
+  // Generamos datos vacíos de manera dinámica basados en timeRange
+  const generateData = () => {
+    const data = []
+    const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90
+    const now = new Date()
+    for (let i = days; i >= 0; i--) {
+      const d = new Date(now)
+      d.setDate(d.getDate() - i)
+      data.push({
+        date: d.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }),
+        calls: 0,
+        locks: 0
+      })
+    }
+    return data
+  }
+  
+  const usageData = generateData()
+  const applicationBreakdown: any[] = []
+  const eventLog: any[] = []
 
   const getEnvironmentBadgeClass = (env: string) => {
     switch (env) {
@@ -265,14 +259,18 @@ export default function UsagePage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="space-y-2">
-              {applicationBreakdown.map((app) => (
-                <div key={app.name} className="flex items-center justify-between text-sm">
-                  <span className="font-mono">{app.name}</span>
-                  <span className="text-muted-foreground">{app.percentage}%</span>
-                </div>
-              ))}
-            </div>
+              <div className="space-y-2">
+                {applicationBreakdown.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">No hay datos de aplicaciones.</p>
+                ) : (
+                  applicationBreakdown.map((app) => (
+                    <div key={app.name} className="flex items-center justify-between text-sm">
+                      <span className="font-mono">{app.name}</span>
+                      <span className="text-muted-foreground">{app.percentage}%</span>
+                    </div>
+                  ))
+                )}
+              </div>
           </CardContent>
         </Card>
 
@@ -292,23 +290,27 @@ export default function UsagePage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3 max-h-[280px] overflow-y-auto">
-              {eventLog.map((event) => (
-                <div key={event.id} className="flex items-center justify-between gap-3 py-2 border-b border-border last:border-0">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span className={`h-2 w-2 rounded-full shrink-0 ${getEventColor(event.event) === "text-primary" ? "bg-primary" : getEventColor(event.event) === "text-chart-4" ? "bg-chart-4" : "bg-muted-foreground"}`} />
-                    <div className="min-w-0">
-                      <p className={`font-mono text-sm truncate ${getEventColor(event.event)}`}>{event.event}</p>
-                      <p className="text-xs text-muted-foreground truncate">{event.app}</p>
+              {eventLog.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">No hay actividad reciente.</p>
+              ) : (
+                eventLog.map((event) => (
+                  <div key={event.id} className="flex items-center justify-between gap-3 py-2 border-b border-border last:border-0">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className={`h-2 w-2 rounded-full shrink-0 ${getEventColor(event.event) === "text-primary" ? "bg-primary" : getEventColor(event.event) === "text-chart-4" ? "bg-chart-4" : "bg-muted-foreground"}`} />
+                      <div className="min-w-0">
+                        <p className={`font-mono text-sm truncate ${getEventColor(event.event)}`}>{event.event}</p>
+                        <p className="text-xs text-muted-foreground truncate">{event.app}</p>
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className={`rounded px-2 py-0.5 text-xs font-medium ${getEnvironmentBadgeClass(event.env)}`}>
+                        {event.env}
+                      </span>
+                      <p className="text-xs text-muted-foreground mt-1">{event.time}</p>
                     </div>
                   </div>
-                  <div className="text-right shrink-0">
-                    <span className={`rounded px-2 py-0.5 text-xs font-medium ${getEnvironmentBadgeClass(event.env)}`}>
-                      {event.env}
-                    </span>
-                    <p className="text-xs text-muted-foreground mt-1">{event.time}</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>

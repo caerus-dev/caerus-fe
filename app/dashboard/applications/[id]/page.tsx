@@ -52,6 +52,7 @@ import { ResourcesTab } from "@/components/dashboard/applications/tabs/resources
 import { LocksTab } from "@/components/dashboard/applications/tabs/locks-tab"
 import { ApiKeysTab } from "@/components/dashboard/applications/tabs/api-keys-tab"
 import { DuplicateTemplateDialog } from "@/components/dashboard/applications/duplicate-template-dialog"
+import { DuplicateLockDialog } from "@/components/dashboard/applications/duplicate-lock-dialog"
 
 export default function ApplicationDetailPage({
   params,
@@ -76,6 +77,8 @@ export default function ApplicationDetailPage({
   const [lockToDelete, setLockToDelete] = useState<any>(null)
   const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false)
   const [templateToDuplicate, setTemplateToDuplicate] = useState<any>(null)
+  const [duplicateLockDialogOpen, setDuplicateLockDialogOpen] = useState(false)
+  const [lockToDuplicate, setLockToDuplicate] = useState<any>(null)
 
   const [apiKeys, setApiKeys] = useState<any[]>([])
   const [isApiKeysLoading, setIsApiKeysLoading] = useState(true)
@@ -304,8 +307,9 @@ export default function ApplicationDetailPage({
     setDuplicateDialogOpen(true)
   }
   
-  const handleOpenDuplicateLock = (template: any) => {
-    // TODO
+  const handleOpenDuplicateLock = (lock: any) => {
+    setLockToDuplicate(lock)
+    setDuplicateLockDialogOpen(true)
   }
 
   const handleDuplicateSuccess = () => {
@@ -315,6 +319,17 @@ export default function ApplicationDetailPage({
         fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`)
           .then((res) => res.json())
           .then((data) => setTemplates(data.content || []))
+      }
+    }
+  }
+
+  const handleDuplicateLockSuccess = () => {
+    if (app && selectedEnv) {
+      const activeEnvObj = app.environments.find((env: any) => env.name === selectedEnv)
+      if (activeEnvObj) {
+        fetch(`/api/distributed-lock-templates?environmentId=${activeEnvObj.id}`)
+          .then((res) => res.json())
+          .then((data) => setLocks(data.content || []))
       }
     }
   }
@@ -660,6 +675,15 @@ export default function ApplicationDetailPage({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <DuplicateLockDialog
+        open={duplicateLockDialogOpen}
+        onOpenChange={setDuplicateLockDialogOpen}
+        template={lockToDuplicate}
+        environments={app.environments}
+        currentEnvId={currentEnvDetails?.id?.toString()}
+        onSuccess={handleDuplicateLockSuccess}
+      />
     </div>
   )
 }

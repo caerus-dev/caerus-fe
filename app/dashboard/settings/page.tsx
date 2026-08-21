@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Settings, User, Building, Bell, Shield, Palette, Globe, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -28,7 +28,29 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export default function SettingsPage() {
+  const [activeTab, setActiveTab] = useState("profile")
+  const [user, setUser] = useState<any>(null)
   const [isSaving, setIsSaving] = useState(false)
+  
+  // We'll fetch the user data in this client component to replace the mock.
+  // In the future this could be supplied by a global context.
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/user")
+        if (res.ok) {
+          const data = await res.json()
+          if (data && data.user) {
+            setUser(data.user)
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch user", err)
+      }
+    }
+    fetchUser()
+  }, [])
 
   const handleSave = async () => {
     setIsSaving(true)
@@ -60,7 +82,7 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary font-bold text-xl">
-              JM
+              {user?.name?.substring(0, 2)?.toUpperCase() || "US"}
             </div>
             <div>
               <Button variant="outline" size="sm">
@@ -71,11 +93,11 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" defaultValue="Juan Martinez" />
+              <Input id="name" defaultValue={user?.name || ""} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue="juan@acme-corp.com" />
+              <Input id="email" type="email" defaultValue={user?.email || ""} readOnly className="bg-secondary text-muted-foreground" />
             </div>
           </div>
         </CardContent>
@@ -94,14 +116,14 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="org-name">Organization Name</Label>
-              <Input id="org-name" defaultValue="acme-corp" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="org-slug">Organization Slug</Label>
-              <Input id="org-slug" defaultValue="acme-corp" disabled className="bg-secondary" />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="org-name">Organization Name</Label>
+                <Input id="org-name" defaultValue={user?.org_name || user?.name || ""} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="org-slug">Organization Slug</Label>
+                <Input id="org-slug" defaultValue={user?.org_name || user?.name || ""} disabled className="bg-secondary" />
+              </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="timezone">Timezone</Label>
