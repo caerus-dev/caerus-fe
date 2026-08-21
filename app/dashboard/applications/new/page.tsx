@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Loader2, AlertCircle } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { cn, getEnvColors } from "@/lib/utils"
 import { useApps } from "@/components/dashboard/apps-context"
 
 export default function NewApplicationPage() {
@@ -136,6 +137,7 @@ export default function NewApplicationPage() {
                 onChange={(e) => handleChange("name", e.target.value)}
                 disabled={isLoading}
                 maxLength={100}
+                autoComplete="off"
               />
             </div>
 
@@ -183,7 +185,12 @@ export default function NewApplicationPage() {
                   className="mt-1"
                 />
                 <div className="space-y-1">
-                  <p className="font-medium text-sm leading-none">Development</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-sm leading-none">Desarrollo</p>
+                    <Badge variant="outline" className={cn("text-[10px] h-5 px-1.5 font-mono", getEnvColors("dev").badge)}>
+                      dev
+                    </Badge>
+                  </div>
                   <p className="text-xs text-muted-foreground">Ambiente de desarrollo y pruebas locales.</p>
                 </div>
               </label>
@@ -200,7 +207,12 @@ export default function NewApplicationPage() {
                   className="mt-1"
                 />
                 <div className="space-y-1">
-                  <p className="font-medium text-sm leading-none">Staging</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-sm leading-none">Staging</p>
+                    <Badge variant="outline" className={cn("text-[10px] h-5 px-1.5 font-mono", getEnvColors("staging").badge)}>
+                      stg
+                    </Badge>
+                  </div>
                   <p className="text-xs text-muted-foreground">Ambiente de pruebas pre-producción.</p>
                 </div>
               </label>
@@ -217,7 +229,12 @@ export default function NewApplicationPage() {
                   className="mt-1"
                 />
                 <div className="space-y-1">
-                  <p className="font-medium text-sm leading-none">Production</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-sm leading-none">Producción</p>
+                    <Badge variant="outline" className={cn("text-[10px] h-5 px-1.5 font-mono", getEnvColors("prod").badge)}>
+                      prod
+                    </Badge>
+                  </div>
                   <p className="text-xs text-muted-foreground">Ambiente productivo para usuarios finales.</p>
                 </div>
               </label>
