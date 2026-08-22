@@ -12,7 +12,7 @@ import { redirect } from "next/navigation"
 export default async function DashboardPage() {
   const session = await auth0.getSession()
   if (!session) {
-    redirect("/api/auth/login")
+    redirect("/auth/login")
   }
 
   const user = session?.user
@@ -29,7 +29,7 @@ export default async function DashboardPage() {
     }
   } catch (error: any) {
     if (error?.message?.includes("Unauthorized")) {
-      redirect("/api/auth/login")
+      redirect("/auth/login")
     }
     console.error("Error fetching applications:", error)
   }

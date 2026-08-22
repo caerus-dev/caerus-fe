@@ -37,8 +37,18 @@ describe('app/api Routes (Endpoints Internos)', () => {
   })
 
   describe('GET /api/dev-token', () => {
-    it('should return 404 if running on Vercel environment', async () => {
-      process.env.VERCEL_ENV = 'production'
+    const originalNodeEnv = process.env.NODE_ENV
+
+    beforeEach(() => {
+      process.env.NODE_ENV = 'development'
+    })
+
+    afterEach(() => {
+      process.env.NODE_ENV = originalNodeEnv
+    })
+
+    it('should return 404 if running outside development mode', async () => {
+      process.env.NODE_ENV = 'production'
       const res = await getDevToken()
       expect(res.status).toBe(404)
     })
