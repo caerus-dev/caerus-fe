@@ -38,14 +38,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { toast } from "sonner"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { ApplicationDetailSkeleton } from "@/components/dashboard/applications/application-detail-skeleton"
@@ -58,14 +52,15 @@ import { WebhookSecretDialog } from "@/components/dashboard/applications/tabs/we
 import { DuplicateTemplateDialog } from "@/components/dashboard/applications/duplicate-template-dialog"
 import { DuplicateLockDialog } from "@/components/dashboard/applications/duplicate-lock-dialog"
 
-export default function ApplicationDetailPage({
+export default function ApplicationDashboard({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const searchParams = useSearchParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const envParam = searchParams.get("env")
 
   const [app, setApp] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -104,6 +99,7 @@ export default function ApplicationDetailPage({
   const [confirmDeleteWebhookOpen, setConfirmDeleteWebhookOpen] = useState(false)
   const [webhookToRotate, setWebhookToRotate] = useState<any>(null)
   const [confirmRotateWebhookOpen, setConfirmRotateWebhookOpen] = useState(false)
+  const [webhookActionError, setWebhookActionError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -274,6 +270,25 @@ export default function ApplicationDetailPage({
     }
   }
 
+  const parseApiError = (errData: any, defaultMsg: string) => {
+    let errorMsg = errData?.error || errData?.message || defaultMsg
+    
+    if (typeof errorMsg === 'string' && (errorMsg.includes('fieldErrors') || errorMsg.includes('"message"'))) {
+      try {
+        const parsed = JSON.parse(errorMsg)
+        if (parsed.fieldErrors && parsed.fieldErrors.length > 0) {
+          errorMsg = parsed.fieldErrors.map((f: any) => f.message).join(". ")
+        } else if (parsed.message) {
+          errorMsg = parsed.message
+        }
+      } catch (e) {}
+    } else if (errData?.fieldErrors && errData.fieldErrors.length > 0) {
+      errorMsg = errData.fieldErrors.map((f: any) => f.message).join(". ")
+    }
+    
+    return errorMsg
+  }
+
   const handleCreateOrUpdateWebhook = async (data: { url: string; description: string; eventTypes: string[] }) => {
     setIsSubmittingWebhook(true)
     try {
@@ -287,6 +302,9 @@ export default function ApplicationDetailPage({
           const updated = await res.json()
           setWebhooks(prev => prev.map(w => w.id === updated.id ? updated : w))
           setWebhookFormOpen(false)
+        } else {
+          const errData = await res.json().catch(() => ({}))
+          throw new Error(parseApiError(errData, "Error al actualizar el webhook"))
         }
       } else {
         const res = await fetch(`/api/environments/${currentEnvDetails.id}/webhooks`, {
@@ -307,22 +325,28 @@ export default function ApplicationDetailPage({
             setCreatedWebhookSecret(JSON.stringify(created))
             setWebhookSecretOpen(true)
           }
+        } else {
+          const errData = await res.json().catch(() => ({}))
+          throw new Error(parseApiError(errData, "Error al crear el webhook"))
         }
       }
     } catch (error) {
-      console.error("Error saving webhook:", error)
+      console.error("Error creating/updating webhook:", error)
+      throw error
     } finally {
       setIsSubmittingWebhook(false)
     }
   }
 
   const handleOpenDeleteWebhook = async (webhookId: string) => {
+    setWebhookActionError(null)
     setWebhookToDelete(webhooks.find(w => w.id === webhookId) || null)
     setConfirmDeleteWebhookOpen(true)
   }
 
   const handleDeleteWebhookConfirm = async () => {
     if (!webhookToDelete) return
+    setWebhookActionError(null)
     try {
       const res = await fetch(`/api/environments/${currentEnvDetails.id}/webhooks/${webhookToDelete.id}`, {
         method: "DELETE",
@@ -331,9 +355,13 @@ export default function ApplicationDetailPage({
         setWebhooks(prev => prev.filter(w => w.id !== webhookToDelete.id))
         setConfirmDeleteWebhookOpen(false)
         setWebhookToDelete(null)
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        setWebhookActionError(parseApiError(errData, "Error al eliminar el webhook"))
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting webhook:", error)
+      setWebhookActionError(error.message || "Error inesperado al eliminar")
     }
   }
 
@@ -348,19 +376,25 @@ export default function ApplicationDetailPage({
       if (res.ok) {
         const updated = await res.json()
         setWebhooks(prev => prev.map(w => w.id === webhookId ? updated : w))
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        toast.error(parseApiError(errData, "Error al cambiar estado del webhook"))
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error toggling webhook:", error)
+      toast.error(error.message || "Error inesperado")
     }
   }
 
   const handleOpenRotateWebhook = async (webhookId: string) => {
+    setWebhookActionError(null)
     setWebhookToRotate(webhooks.find(w => w.id === webhookId) || null)
     setConfirmRotateWebhookOpen(true)
   }
 
   const handleRotateWebhookConfirm = async () => {
     if (!webhookToRotate) return
+    setWebhookActionError(null)
     try {
       const res = await fetch(`/api/environments/${currentEnvDetails.id}/webhooks/${webhookToRotate.id}/rotate-secret`, {
         method: "POST",
@@ -379,9 +413,13 @@ export default function ApplicationDetailPage({
           setCreatedWebhookSecret(JSON.stringify(updated))
           setWebhookSecretOpen(true)
         }
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        setWebhookActionError(parseApiError(errData, "Error al rotar el secreto del webhook"))
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error rotating webhook secret:", error)
+      setWebhookActionError(error.message || "Error inesperado al rotar secreto")
     }
   }
 
@@ -869,6 +907,11 @@ export default function ApplicationDetailPage({
               Esta acción es irreversible.
             </DialogDescription>
           </DialogHeader>
+          {webhookActionError && (
+            <div className="bg-destructive/15 text-destructive p-3 rounded-md text-sm font-medium mx-6 mt-2">
+              {webhookActionError}
+            </div>
+          )}
           <DialogFooter>
             <Button
               variant="outline"
@@ -896,6 +939,11 @@ export default function ApplicationDetailPage({
               El secreto anterior se invalidará inmediatamente y las nuevas peticiones se firmarán con el nuevo.
             </DialogDescription>
           </DialogHeader>
+          {webhookActionError && (
+            <div className="bg-destructive/15 text-destructive p-3 rounded-md text-sm font-medium mx-6 mt-2">
+              {webhookActionError}
+            </div>
+          )}
           <DialogFooter>
             <Button
               variant="outline"

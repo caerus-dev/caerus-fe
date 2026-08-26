@@ -34,12 +34,15 @@ export function WebhookFormDialog({
   const [isLoadingEvents, setIsLoadingEvents] = useState(false)
   const [urlError, setUrlError] = useState('')
 
+  const [apiError, setApiError] = useState<string | null>(null)
+
   useEffect(() => {
     if (open) {
       setUrl(initialData?.url || '')
       setDescription(initialData?.description || '')
       setSelectedEventTypes(initialData?.eventTypes || [])
       setUrlError('')
+      setApiError(null)
       
       if (eventTypes.length === 0) {
         fetchEvents()
@@ -65,7 +68,13 @@ export function WebhookFormDialog({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setUrlError('')
-    await onSubmit({ url, description, eventTypes: selectedEventTypes })
+    setApiError(null)
+    
+    try {
+      await onSubmit({ url, description, eventTypes: selectedEventTypes })
+    } catch (err: any) {
+      setApiError(err.message || 'Error inesperado al guardar el webhook')
+    }
   }
 
   const groupedEvents = eventTypes.reduce((acc, event) => {
@@ -122,6 +131,11 @@ export function WebhookFormDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 overflow-hidden">
+          {apiError && (
+            <div className="bg-destructive/15 text-destructive p-3 rounded-md text-sm font-medium">
+              {apiError}
+            </div>
+          )}
           <div className="space-y-4 shrink-0">
             <div className="space-y-2">
               <label className="text-sm font-medium">URL del Endpoint</label>
