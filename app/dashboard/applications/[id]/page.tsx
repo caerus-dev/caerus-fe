@@ -16,6 +16,7 @@ import {
   Copy,
   Check,
   Plus,
+  Webhook,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -51,6 +52,9 @@ import { ApplicationDetailSkeleton } from "@/components/dashboard/applications/a
 import { ResourcesTab } from "@/components/dashboard/applications/tabs/resources-tab"
 import { LocksTab } from "@/components/dashboard/applications/tabs/locks-tab"
 import { ApiKeysTab } from "@/components/dashboard/applications/tabs/api-keys-tab"
+import { WebhooksTab } from "@/components/dashboard/applications/tabs/webhooks-tab"
+import { WebhookFormDialog } from "@/components/dashboard/applications/tabs/webhook-form-dialog"
+import { WebhookSecretDialog } from "@/components/dashboard/applications/tabs/webhook-secret-dialog"
 import { DuplicateTemplateDialog } from "@/components/dashboard/applications/duplicate-template-dialog"
 import { DuplicateLockDialog } from "@/components/dashboard/applications/duplicate-lock-dialog"
 
@@ -87,6 +91,19 @@ export default function ApplicationDetailPage({
   const [showCreatedKeyDialog, setShowCreatedKeyDialog] = useState(false)
   const [createdRawKey, setCreatedRawKey] = useState("")
   const [copiedKey, setCopiedKey] = useState(false)
+
+  const [webhooks, setWebhooks] = useState<any[]>([])
+  const [isWebhooksLoading, setIsWebhooksLoading] = useState(true)
+  const [webhookFormOpen, setWebhookFormOpen] = useState(false)
+  const [editingWebhook, setEditingWebhook] = useState<any>(null)
+  const [isSubmittingWebhook, setIsSubmittingWebhook] = useState(false)
+  const [webhookSecretOpen, setWebhookSecretOpen] = useState(false)
+  const [createdWebhookSecret, setCreatedWebhookSecret] = useState("")
+
+  const [webhookToDelete, setWebhookToDelete] = useState<any>(null)
+  const [confirmDeleteWebhookOpen, setConfirmDeleteWebhookOpen] = useState(false)
+  const [webhookToRotate, setWebhookToRotate] = useState<any>(null)
+  const [confirmRotateWebhookOpen, setConfirmRotateWebhookOpen] = useState(false)
 
   useEffect(() => {
     const fetchApp = async () => {
@@ -145,12 +162,14 @@ export default function ApplicationDetailPage({
     const fetchEnvDetailsAndTemplates = async () => {
       setIsTemplatesLoading(true)
       setIsApiKeysLoading(true)
+      setIsWebhooksLoading(true)
       try {
-        const [envRes, templatesRes, locksRes, keysRes] = await Promise.all([
+        const [envRes, templatesRes, locksRes, keysRes, webhooksRes] = await Promise.all([
           fetch(`/api/applications/${id}/environments/${activeEnvObj.id}`),
           fetch(`/api/shared-resource-templates?environmentId=${activeEnvObj.id}`),
           fetch(`/api/distributed-lock-templates?environmentId=${activeEnvObj.id}`),
           fetch(`/api/environments/${activeEnvObj.id}/api-keys`),
+          fetch(`/api/environments/${activeEnvObj.id}/webhooks`),
           new Promise((resolve) => setTimeout(resolve, 300)),
         ])
 
@@ -176,12 +195,18 @@ export default function ApplicationDetailPage({
           const keysData = await keysRes.json()
           setApiKeys(keysData.content || [])
         }
+
+        if (webhooksRes.ok) {
+          const webhooksData = await webhooksRes.json()
+          setWebhooks(webhooksData.content || [])
+        }
       } catch (error) {
         console.error("Error fetching environment details from backend:", error)
       } finally {
         if (isSubscribed) {
           setIsTemplatesLoading(false)
           setIsApiKeysLoading(false)
+          setIsWebhooksLoading(false)
         }
       }
     }
@@ -196,6 +221,7 @@ export default function ApplicationDetailPage({
     if (val === selectedEnv) return
     setIsTemplatesLoading(true)
     setIsApiKeysLoading(true)
+    setIsWebhooksLoading(true)
     setSelectedEnv(val)
     if (typeof window !== "undefined") {
       localStorage.setItem(`caerus_env_${id}`, val)
@@ -246,6 +272,122 @@ export default function ApplicationDetailPage({
     } catch (error) {
       console.error("Error revoking API key:", error)
     }
+  }
+
+  const handleCreateOrUpdateWebhook = async (data: { url: string; description: string; eventTypes: string[] }) => {
+    setIsSubmittingWebhook(true)
+    try {
+      if (editingWebhook) {
+        const res = await fetch(`/api/environments/${currentEnvDetails.id}/webhooks/${editingWebhook.id}`, {
+          method: "PUT",
+          body: JSON.stringify({ ...editingWebhook, url: data.url, description: data.description, eventTypes: data.eventTypes }),
+          headers: { "Content-Type": "application/json" },
+        })
+        if (res.ok) {
+          const updated = await res.json()
+          setWebhooks(prev => prev.map(w => w.id === updated.id ? updated : w))
+          setWebhookFormOpen(false)
+        }
+      } else {
+        const res = await fetch(`/api/environments/${currentEnvDetails.id}/webhooks`, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" },
+        })
+        if (res.ok) {
+          const created = await res.json()
+          setWebhooks(prev => [created, ...prev])
+          setWebhookFormOpen(false)
+          
+          const secretValue = created.secret || created.webhookSecret || created.secretKey || created.rawSecret
+          if (secretValue) {
+            setCreatedWebhookSecret(secretValue)
+            setWebhookSecretOpen(true)
+          } else {
+            setCreatedWebhookSecret(JSON.stringify(created))
+            setWebhookSecretOpen(true)
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error saving webhook:", error)
+    } finally {
+      setIsSubmittingWebhook(false)
+    }
+  }
+
+  const handleOpenDeleteWebhook = async (webhookId: string) => {
+    setWebhookToDelete(webhooks.find(w => w.id === webhookId) || null)
+    setConfirmDeleteWebhookOpen(true)
+  }
+
+  const handleDeleteWebhookConfirm = async () => {
+    if (!webhookToDelete) return
+    try {
+      const res = await fetch(`/api/environments/${currentEnvDetails.id}/webhooks/${webhookToDelete.id}`, {
+        method: "DELETE",
+      })
+      if (res.ok) {
+        setWebhooks(prev => prev.filter(w => w.id !== webhookToDelete.id))
+        setConfirmDeleteWebhookOpen(false)
+        setWebhookToDelete(null)
+      }
+    } catch (error) {
+      console.error("Error deleting webhook:", error)
+    }
+  }
+
+  const handleToggleWebhook = async (webhookId: string, isActive: boolean) => {
+    try {
+      const webhook = webhooks.find(w => w.id === webhookId)
+      const res = await fetch(`/api/environments/${currentEnvDetails.id}/webhooks/${webhookId}`, {
+        method: "PUT",
+        body: JSON.stringify({ ...webhook, isActive }),
+        headers: { "Content-Type": "application/json" },
+      })
+      if (res.ok) {
+        const updated = await res.json()
+        setWebhooks(prev => prev.map(w => w.id === webhookId ? updated : w))
+      }
+    } catch (error) {
+      console.error("Error toggling webhook:", error)
+    }
+  }
+
+  const handleOpenRotateWebhook = async (webhookId: string) => {
+    setWebhookToRotate(webhooks.find(w => w.id === webhookId) || null)
+    setConfirmRotateWebhookOpen(true)
+  }
+
+  const handleRotateWebhookConfirm = async () => {
+    if (!webhookToRotate) return
+    try {
+      const res = await fetch(`/api/environments/${currentEnvDetails.id}/webhooks/${webhookToRotate.id}/rotate-secret`, {
+        method: "POST",
+      })
+      if (res.ok) {
+        const updated = await res.json()
+        setWebhooks(prev => prev.map(w => w.id === (updated.id || webhookToRotate.id) ? { ...w, ...updated } : w))
+        setConfirmRotateWebhookOpen(false)
+        setWebhookToRotate(null)
+        
+        const secretValue = updated.secret || updated.webhookSecret || updated.secretKey || updated.rawSecret || (typeof updated === 'string' ? updated : null)
+        if (secretValue) {
+          setCreatedWebhookSecret(secretValue)
+          setWebhookSecretOpen(true)
+        } else {
+          setCreatedWebhookSecret(JSON.stringify(updated))
+          setWebhookSecretOpen(true)
+        }
+      }
+    } catch (error) {
+      console.error("Error rotating webhook secret:", error)
+    }
+  }
+
+  const openWebhookFormDialog = (webhook?: any) => {
+    setEditingWebhook(webhook || null)
+    setWebhookFormOpen(true)
   }
 
   const copyRawKeyToClipboard = () => {
@@ -508,6 +650,10 @@ export default function ApplicationDetailPage({
               <Key className="h-4 w-4" />
               <span>API Keys</span>
             </TabsTrigger>
+            <TabsTrigger value="webhooks" className="gap-1.5 px-3">
+              <Webhook className="h-4 w-4" />
+              <span>Notificaciones</span>
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -546,6 +692,20 @@ export default function ApplicationDetailPage({
             myRole={app.myRole}
             onCreateApiKey={handleCreateApiKey}
             onOpenRevokeKey={handleOpenRevokeKey}
+          />
+        </TabsContent>
+
+        <TabsContent value="webhooks" className="space-y-4">
+          <WebhooksTab
+            webhooks={webhooks}
+            isWebhooksLoading={isWebhooksLoading}
+            selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
+            myRole={app.myRole}
+            onDeleteWebhook={handleOpenDeleteWebhook}
+            onToggleWebhook={handleToggleWebhook}
+            onRotateSecret={handleOpenRotateWebhook}
+            openFormDialog={openWebhookFormDialog}
           />
         </TabsContent>
       </Tabs>
@@ -684,6 +844,74 @@ export default function ApplicationDetailPage({
         currentEnvId={currentEnvDetails?.id?.toString()}
         onSuccess={handleDuplicateLockSuccess}
       />
+
+      <WebhookFormDialog
+        open={webhookFormOpen}
+        onOpenChange={setWebhookFormOpen}
+        initialData={editingWebhook}
+        onSubmit={handleCreateOrUpdateWebhook}
+        isSubmitting={isSubmittingWebhook}
+      />
+
+      <WebhookSecretDialog
+        open={webhookSecretOpen}
+        onOpenChange={setWebhookSecretOpen}
+        secret={createdWebhookSecret}
+      />
+
+      <Dialog open={confirmDeleteWebhookOpen} onOpenChange={setConfirmDeleteWebhookOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Eliminar Webhook</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas eliminar el webhook con URL{" "}
+              <span className="font-semibold text-foreground">{webhookToDelete?.url}</span>?
+              Esta acción es irreversible.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDeleteWebhookOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteWebhookConfirm}
+            >
+              Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={confirmRotateWebhookOpen} onOpenChange={setConfirmRotateWebhookOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rotar Secreto de Webhook</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que deseas rotar el secreto del webhook con URL{" "}
+              <span className="font-semibold text-foreground">{webhookToRotate?.url}</span>?
+              El secreto anterior se invalidará inmediatamente y las nuevas peticiones se firmarán con el nuevo.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmRotateWebhookOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="default"
+              onClick={handleRotateWebhookConfirm}
+            >
+              Rotar Secreto
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

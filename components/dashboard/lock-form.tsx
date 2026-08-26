@@ -297,7 +297,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="alert">Solo alertar vía Webhook</SelectItem>
+                          <SelectItem value="alert">Solo alertar (Generar evento)</SelectItem>
                           <SelectItem value="kill">Terminar proceso automáticamente</SelectItem>
                         </SelectContent>
                       </Select>

@@ -51,9 +51,6 @@ const formSchema = z.object({
     message: "El número máximo de reintentos no puede superar los 5."
   }).optional(),
   idempotency: z.boolean().default(false),
-  notificationWebhookUrl: z.string().max(255, {
-    message: "La URL del webhook de notificación no puede superar los 255 caracteres."
-  }).optional().or(z.literal("")),
 })
 
 export type ResourceFormValues = z.infer<typeof formSchema>
@@ -90,7 +87,6 @@ export function ResourceForm({
       retryInterval: 1,
       maxRetries: 3,
       idempotency: false,
-      notificationWebhookUrl: "",
     },
   })
 
@@ -110,7 +106,6 @@ export function ResourceForm({
       maxRetryCount: values.conflictStrategy === "retry" ? Number(values.maxRetries) : null,
       useIdempotency: values.idempotency,
       saveMetadata: values.saveMetadata,
-      notificationWebhookUrl: values.notificationWebhookUrl || null,
       ...(isEditing ? {} : { environmentId }),
     }
 
@@ -314,23 +309,6 @@ export function ResourceForm({
                       </Select>
                       <FormDescription>
                         Comportamiento cuando el recurso no está disponible actualmente.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="notificationWebhookUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>URL del Webhook de Notificación</FormLabel>
-                      <FormControl>
-                        <Input placeholder="ej. https://api.miempresa.com/webhooks/recursos" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        URL opcional donde se enviarán notificaciones sobre eventos de este recurso.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
