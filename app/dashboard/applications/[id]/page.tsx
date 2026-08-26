@@ -670,8 +670,8 @@ export default function ApplicationDashboard({
 
       {/* Tabs */}
       <Tabs defaultValue="resources" className="space-y-3">
-        <div className="w-full">
-          <TabsList className="bg-secondary flex w-full sm:w-fit">
+        <div className="w-full overflow-x-auto pb-1 -mb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <TabsList className="bg-secondary flex w-max min-w-full sm:min-w-0 sm:w-fit">
             <TabsTrigger value="resources" className="gap-1.5 px-3">
               <Box className="h-4 w-4" />
               <span>
