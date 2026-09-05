@@ -51,6 +51,8 @@ import { WebhookFormDialog } from "@/components/dashboard/applications/tabs/webh
 import { WebhookSecretDialog } from "@/components/dashboard/applications/tabs/webhook-secret-dialog"
 import { DuplicateTemplateDialog } from "@/components/dashboard/applications/duplicate-template-dialog"
 import { DuplicateLockDialog } from "@/components/dashboard/applications/duplicate-lock-dialog"
+import { MetricsTab } from "@/components/dashboard/applications/tabs/metrics-tab"
+import { LineChart } from "lucide-react"
 
 export default function ApplicationDashboard({
   params,
@@ -692,6 +694,10 @@ export default function ApplicationDashboard({
               <Webhook className="h-4 w-4" />
               <span>Notificaciones</span>
             </TabsTrigger>
+            <TabsTrigger value="metrics" className="gap-1.5 px-3">
+              <LineChart className="h-4 w-4" />
+              <span>Métricas</span>
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -744,6 +750,14 @@ export default function ApplicationDashboard({
             onToggleWebhook={handleToggleWebhook}
             onRotateSecret={handleOpenRotateWebhook}
             openFormDialog={openWebhookFormDialog}
+          />
+        </TabsContent>
+
+        <TabsContent value="metrics" className="space-y-4">
+          <MetricsTab
+            appId={id}
+            selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
           />
         </TabsContent>
       </Tabs>
