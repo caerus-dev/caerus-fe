@@ -52,7 +52,8 @@ import { WebhookSecretDialog } from "@/components/dashboard/applications/tabs/we
 import { DuplicateTemplateDialog } from "@/components/dashboard/applications/duplicate-template-dialog"
 import { DuplicateLockDialog } from "@/components/dashboard/applications/duplicate-lock-dialog"
 import { MetricsTab } from "@/components/dashboard/applications/tabs/metrics-tab"
-import { LineChart } from "lucide-react"
+import { EventsTab } from "@/components/dashboard/applications/tabs/events-tab"
+import { LineChart, History } from "lucide-react"
 
 export default function ApplicationDashboard({
   params,
@@ -698,6 +699,10 @@ export default function ApplicationDashboard({
               <LineChart className="h-4 w-4" />
               <span>Métricas</span>
             </TabsTrigger>
+            <TabsTrigger value="events" className="gap-1.5 px-3">
+              <History className="h-4 w-4" />
+              <span>Eventos</span>
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -758,6 +763,15 @@ export default function ApplicationDashboard({
             appId={id}
             selectedEnv={selectedEnv}
             currentEnvDetails={currentEnvDetails}
+          />
+        </TabsContent>
+
+        <TabsContent value="events" className="space-y-4">
+          <EventsTab
+            appId={id}
+            selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
+            myRole={app.myRole}
           />
         </TabsContent>
       </Tabs>
