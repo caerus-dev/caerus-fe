@@ -10,15 +10,19 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Loader2, AlertCircle } from "lucide-react"
+import { ArrowLeft, Loader2, AlertCircle, CreditCard, Lock } from "lucide-react"
 import { cn, getEnvColors } from "@/lib/utils"
 import { useApps } from "@/components/dashboard/apps-context"
+import { useUser } from "@/hooks/use-user"
+import { SetupPaymentMethodModal } from "@/components/billing/SetupPaymentMethodModal"
 
 export default function NewApplicationPage() {
   const { refreshApps } = useApps()
+  const { hasValidPaymentMethod, refreshUser } = useUser()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [setupModalOpen, setSetupModalOpen] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -43,6 +47,11 @@ export default function NewApplicationPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+
+    if (!hasValidPaymentMethod) {
+      setSetupModalOpen(true)
+      return
+    }
 
     if (!formData.name.trim()) {
       setError("El nombre de la aplicación es requerido")
@@ -78,7 +87,10 @@ export default function NewApplicationPage() {
         router.push("/dashboard/applications");
       } else {
         const errData = await response.json().catch(() => ({}));
-        setError(errData.error || "Error al crear la aplicación");
+        if (response.status === 402) {
+          setSetupModalOpen(true);
+        }
+        setError(errData.message || errData.error || "Error al crear la aplicación");
       }
     } catch (error) {
       console.error("Error creating application:", error);
@@ -103,6 +115,26 @@ export default function NewApplicationPage() {
           </p>
         </div>
       </div>
+
+      {!hasValidPaymentMethod && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-amber-500/40 bg-amber-500/10">
+          <div className="flex items-center gap-3">
+            <CreditCard className="h-5 w-5 text-amber-500 shrink-0" />
+            <p className="text-xs text-foreground">
+              <strong>Método de pago requerido:</strong> Para registrar aplicaciones en Caerus debes vincular una tarjeta a tu cuenta ($0/mes en Plan Developer).
+            </p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => setSetupModalOpen(true)}
+            className="shrink-0 text-xs gap-1.5 font-medium"
+          >
+            <CreditCard className="h-3.5 w-3.5" />
+            Vincular Tarjeta ($0/mes)
+          </Button>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
@@ -260,6 +292,17 @@ export default function NewApplicationPage() {
           </Button>
         </div>
       </form>
+
+      <SetupPaymentMethodModal
+        open={setupModalOpen}
+        onOpenChange={setSetupModalOpen}
+        title="Método de pago requerido"
+        description="Para crear aplicaciones propias en Caerus necesitas vincular una tarjeta. No se realizará ningún cobro inicial ($0/mes en Plan Developer)."
+        onSuccess={() => {
+          refreshUser();
+          setSetupModalOpen(false);
+        }}
+      />
     </div>
   )
 }

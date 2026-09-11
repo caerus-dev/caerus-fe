@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cn, getEnvColors } from '@/lib/utils'
+import { cn, getEnvColors, formatPercentage } from '@/lib/utils'
 
 describe('lib/utils', () => {
   describe('cn', () => {
@@ -46,6 +46,28 @@ describe('lib/utils', () => {
 
       const productionColors = getEnvColors('PRODUCTION')
       expect(productionColors.dot).toBe('bg-green-500')
+    })
+  })
+
+  describe('formatPercentage', () => {
+    it('should format numbers >= 100 as integers', () => {
+      expect(formatPercentage(100)).toBe('100')
+      expect(formatPercentage(324.458)).toBe('324')
+      expect(formatPercentage(100.2)).toBe('100')
+      expect(formatPercentage(100.8)).toBe('101')
+    })
+
+    it('should format numbers < 100 with at most 1 decimal without trailing zeroes', () => {
+      expect(formatPercentage(0)).toBe('0')
+      expect(formatPercentage(3.24458)).toBe('3.2')
+      expect(formatPercentage(80)).toBe('80')
+      expect(formatPercentage(80.56)).toBe('80.6')
+      expect(formatPercentage(99.94)).toBe('99.9')
+    })
+
+    it('should handle falsy and NaN values gracefully', () => {
+      expect(formatPercentage(0)).toBe('0')
+      expect(formatPercentage(NaN)).toBe('0')
     })
   })
 })

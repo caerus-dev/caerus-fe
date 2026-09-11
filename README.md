@@ -32,6 +32,7 @@ AUTH0_CLIENT_SECRET=tu-client-secret
 AUTH0_SECRET=una-clave-secreta-larga-y-segura
 AUTH0_AUDIENCE=https://caerus.dev.ar/api/v1/
 BACKEND_URL=http://localhost:8080
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
 ```
 
 ---

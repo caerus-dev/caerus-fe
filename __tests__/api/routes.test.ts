@@ -40,15 +40,15 @@ describe('app/api Routes (Endpoints Internos)', () => {
     const originalNodeEnv = process.env.NODE_ENV
 
     beforeEach(() => {
-      process.env.NODE_ENV = 'development'
+      (process.env as any).NODE_ENV = 'development'
     })
 
     afterEach(() => {
-      process.env.NODE_ENV = originalNodeEnv
+      (process.env as any).NODE_ENV = originalNodeEnv
     })
 
     it('should return 404 if running outside development mode', async () => {
-      process.env.NODE_ENV = 'production'
+      (process.env as any).NODE_ENV = 'production'
       const res = await getDevToken()
       expect(res.status).toBe(404)
     })
