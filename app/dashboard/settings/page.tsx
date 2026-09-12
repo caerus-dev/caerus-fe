@@ -103,45 +103,7 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Organization Settings */}
-      <Card className="bg-card/50 border-border">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building className="h-5 w-5" />
-            Organization
-          </CardTitle>
-          <CardDescription>
-            Manage your organization settings
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="org-name">Organization Name</Label>
-                <Input id="org-name" defaultValue={user?.org_name || user?.name || ""} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="org-slug">Organization Slug</Label>
-                <Input id="org-slug" defaultValue={user?.org_name || user?.name || ""} disabled className="bg-secondary" />
-              </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="timezone">Timezone</Label>
-            <Select defaultValue="america-buenos_aires">
-              <SelectTrigger id="timezone" className="max-w-xs">
-                <Globe className="h-4 w-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="america-buenos_aires">America/Buenos_Aires (GMT-3)</SelectItem>
-                <SelectItem value="america-new_york">America/New_York (GMT-4)</SelectItem>
-                <SelectItem value="europe-london">Europe/London (GMT+1)</SelectItem>
-                <SelectItem value="asia-tokyo">Asia/Tokyo (GMT+9)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+
 
       {/* Notifications */}
       <Card className="bg-card/50 border-border">
