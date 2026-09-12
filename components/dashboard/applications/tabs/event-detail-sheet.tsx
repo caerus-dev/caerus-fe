@@ -81,7 +81,7 @@ export function EventDetailSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full sm:w-[450px] sm:max-w-[450px] max-w-full p-0 flex flex-col gap-0 border-l border-border bg-card shadow-2xl overflow-hidden min-w-0"
+        className="w-full sm:max-w-full md:w-1/2 md:max-w-[50vw] lg:w-1/3 lg:max-w-[33.333vw] p-0 flex flex-col gap-0 border-l border-border bg-card shadow-2xl overflow-hidden min-w-0"
       >
         {/* Encabezado con padding adecuado y espacio para el botón de cierre */}
         <SheetHeader className="p-5 sm:p-6 pb-4 border-b border-border bg-muted/20 pr-12">
