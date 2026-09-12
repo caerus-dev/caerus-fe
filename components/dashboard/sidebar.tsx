@@ -53,7 +53,7 @@ const navigation = [
 const accountNav = [
   {
     name: "Uso y Facturación",
-    href: "/dashboard/billing",
+    href: "/settings/billing",
     icon: CreditCard,
   },
   {
@@ -306,7 +306,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
           )}
           <ul className="space-y-1">
             {accountNav.map((item) => {
-              const isActive = pathname === item.href
+              const isActive = pathname === item.href || pathname.startsWith(item.href + "/") || (item.href === "/settings/billing" && pathname.startsWith("/dashboard/billing"))
               return (
                 <li key={item.name}>
                   <Link

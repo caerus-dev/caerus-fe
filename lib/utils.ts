@@ -172,3 +172,9 @@ export const formatTtl = (ms: any): string => {
   const days = hours / 24
   return `${days.toFixed(days % 1 === 0 ? 0 : 1)} d`
 }
+
+export const formatPercentage = (val: number): string => {
+  if (!val || isNaN(val)) return '0'
+  if (val >= 100) return Math.round(val).toString()
+  return Number(val.toFixed(1)).toString()
+}

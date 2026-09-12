@@ -185,12 +185,20 @@ export default function TeamPage({
         setInviteDialogOpen(false)
         await loadData()
       } else {
-        setInviteError("Error al enviar la invitación")
+        const errorData = await response.json().catch(() => ({}));
+        if (response.status === 403) {
+          setInviteError(
+            errorData.message ||
+              "Has alcanzado el límite de colaboradores de tu plan actual. Mejora tu plan en Facturación para invitar más miembros."
+          );
+        } else {
+          setInviteError(errorData.message || errorData.error || "Error al enviar la invitación");
+        }
       }
     } catch (error) {
-      setInviteError("Hubo un error de conexión")
+      setInviteError("Hubo un error de conexión");
     } finally {
-      setIsActionLoading(false)
+      setIsActionLoading(false);
     }
   }
 
@@ -333,9 +341,21 @@ export default function TeamPage({
               </DialogHeader>
               <div className="space-y-4 py-4">
                 {inviteError && (
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm animate-in fade-in slide-in-from-top-1">
-                    <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <span>{inviteError}</span>
+                  <div className="flex flex-col gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm animate-in fade-in slide-in-from-top-1">
+                    <div className="flex items-start gap-2.5">
+                      <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      <span>{inviteError}</span>
+                    </div>
+                    {inviteError.toLowerCase().includes("límite de colaboradores") && (
+                      <div className="pl-6.5">
+                        <Link
+                          href="/settings/billing"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-primary underline hover:text-primary/80 transition-colors"
+                        >
+                          Ver Planes y Facturación →
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

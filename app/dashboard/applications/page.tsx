@@ -32,11 +32,14 @@ import {
   Key,
   Layers,
   ExternalLink,
-  Loader2
+  Loader2,
+  Info,
 } from "lucide-react"
 import { EnvBadge } from "@/components/dashboard/shared/env-badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useApps } from "@/components/dashboard/apps-context"
+import { CreateAppButton } from "@/components/applications/CreateAppButton"
+import { useUser } from "@/hooks/use-user"
 
 interface Application {
   id: string
@@ -78,6 +81,7 @@ const getRoleBadge = (role: string) => {
 export default function ApplicationsPage() {
   const router = useRouter()
   const { refreshApps } = useApps()
+  const { hasValidPaymentMethod, isLoading: isUserLoading } = useUser()
   const [applications, setApplications] = useState<Application[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
@@ -187,13 +191,23 @@ export default function ApplicationsPage() {
             Gestiona tus aplicaciones y sus configuraciones
           </p>
         </div>
-        <Link href="/dashboard/applications/new">
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Nueva Aplicación
-          </Button>
-        </Link>
+        <CreateAppButton />
       </div>
+
+      {/* Banner discreto para colaboradores sin tarjeta */}
+      {!hasValidPaymentMethod && !isUserLoading && applications.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-lg border border-border/80 bg-muted/40 p-3 text-xs">
+          <div className="flex items-center gap-2.5 text-muted-foreground">
+            <Info className="h-4 w-4 text-primary shrink-0" />
+            <span>
+              Tienes acceso como colaborador a aplicaciones compartidas. Para crear tus propias aplicaciones e infraestructura independiente, asocia un método de pago.
+            </span>
+          </div>
+          <CreateAppButton size="sm" variant="outline" className="h-7 text-xs shrink-0 font-medium">
+            Activar Cuenta ($0)
+          </CreateAppButton>
+        </div>
+      )}
 
       {/* Search */}
       <div className="relative max-w-md">
@@ -228,12 +242,7 @@ export default function ApplicationsPage() {
                 : "Crea tu primera aplicación para comenzar"}
             </p>
             {!searchQuery && (
-              <Link href="/dashboard/applications/new">
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Nueva Aplicación
-                </Button>
-              </Link>
+              <CreateAppButton />
             )}
           </CardContent>
         </Card>

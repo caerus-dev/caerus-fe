@@ -14,7 +14,7 @@ import { auth0 } from '@/lib/auth0'
 describe('proxy.ts (Middleware de Red y Seguridad)', () => {
   beforeEach(() => {
     vi.resetAllMocks()
-    vi.mocked(auth0.middleware).mockImplementation(() => NextResponse.next())
+    vi.mocked(auth0.middleware).mockImplementation(() => Promise.resolve(NextResponse.next()))
   })
 
   it('should redirect unauthenticated users accessing /dashboard to /auth/login', async () => {
