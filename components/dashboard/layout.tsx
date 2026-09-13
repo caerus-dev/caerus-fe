@@ -7,6 +7,7 @@ import { DashboardHeader } from "./header"
 import { cn } from "@/lib/utils"
 
 import { AppsProvider } from "./apps-context"
+import { UserProvider } from "./user-context"
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -18,8 +19,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   }, [pathname])
 
   return (
-    <AppsProvider>
-      <div className="min-h-screen bg-background">
+    <UserProvider>
+      <AppsProvider>
+        <div className="min-h-screen bg-background">
         {/* Sidebar for desktop */}
         <div className="hidden lg:block">
           <DashboardSidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
@@ -47,5 +49,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
     </AppsProvider>
+  </UserProvider>
   )
 }

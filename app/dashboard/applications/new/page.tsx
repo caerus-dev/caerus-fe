@@ -18,7 +18,7 @@ import { SetupPaymentMethodModal } from "@/components/billing/SetupPaymentMethod
 
 export default function NewApplicationPage() {
   const { refreshApps } = useApps()
-  const { hasValidPaymentMethod, refreshUser } = useUser()
+  const { user, hasValidPaymentMethod, isLoading: isUserLoading, refreshUser } = useUser()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
@@ -116,7 +116,7 @@ export default function NewApplicationPage() {
         </div>
       </div>
 
-      {!hasValidPaymentMethod && (
+      {user && !isUserLoading && !hasValidPaymentMethod && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 rounded-xl border border-amber-500/40 bg-amber-500/10">
           <div className="flex items-center gap-3">
             <CreditCard className="h-5 w-5 text-amber-500 shrink-0" />

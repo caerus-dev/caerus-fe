@@ -60,7 +60,7 @@ export function CreateAppButton({
 
   const buttonContent = children || (
     <>
-      {!hasPaymentMethod && showLockIcon ? (
+      {!hasPaymentMethod && !isLoading && showLockIcon ? (
         <Lock className="w-4 h-4 mr-2" />
       ) : (
         <Plus className="w-4 h-4 mr-2" />
@@ -80,14 +80,14 @@ export function CreateAppButton({
                 size={size}
                 className={className}
                 onClick={handleClick}
-                aria-label={!hasPaymentMethod ? "Creación bloqueada: Requiere método de pago" : "Crear nueva aplicación"}
+                aria-label={!hasPaymentMethod && !isLoading ? "Creación bloqueada: Requiere método de pago" : "Crear nueva aplicación"}
                 {...props}
               >
                 {buttonContent}
               </Button>
             </span>
           </TooltipTrigger>
-          {!hasPaymentMethod && (
+          {!hasPaymentMethod && !isLoading && (
             <TooltipContent
               side="bottom"
               className="max-w-xs text-center text-xs bg-popover text-popover-foreground border border-border"

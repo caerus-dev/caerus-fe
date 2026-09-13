@@ -81,7 +81,7 @@ const getRoleBadge = (role: string) => {
 export default function ApplicationsPage() {
   const router = useRouter()
   const { refreshApps } = useApps()
-  const { hasValidPaymentMethod, isLoading: isUserLoading } = useUser()
+  const { user, hasValidPaymentMethod, isLoading: isUserLoading } = useUser()
   const [applications, setApplications] = useState<Application[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
@@ -191,11 +191,11 @@ export default function ApplicationsPage() {
             Gestiona tus aplicaciones y sus configuraciones
           </p>
         </div>
-        <CreateAppButton />
+        <CreateAppButton hasValidPaymentMethod={hasValidPaymentMethod} />
       </div>
 
       {/* Banner discreto para colaboradores sin tarjeta */}
-      {!hasValidPaymentMethod && !isUserLoading && applications.length > 0 && (
+      {user && !hasValidPaymentMethod && !isUserLoading && applications.length > 0 && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-lg border border-border/80 bg-muted/40 p-3 text-xs">
           <div className="flex items-center gap-2.5 text-muted-foreground">
             <Info className="h-4 w-4 text-primary shrink-0" />
