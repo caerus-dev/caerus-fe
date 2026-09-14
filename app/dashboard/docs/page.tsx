@@ -21,34 +21,43 @@ import {
   Terminal
 } from "lucide-react"
 const quickStartCode = {
-  install: `npm install @caerus/sdk`,
-  init: `import { Caerus } from '@caerus/sdk';
+  install: `npm install @caerus-dev/sdk`,
+  init: `import { CaerusClient } from '@caerus-dev/sdk';
 
-const caerus = new Caerus({
-  apiKey: process.env.CAERUS_API_KEY,
-  environment: 'production'
+const caerus = new CaerusClient({
+  apiKey: process.env.CAERUS_API_KEY!,
 });`,
-  reserve: `// Reservar un recurso
-const reservation = await caerus.resources.reserve({
-  resourceId: 'seat-A1',
-  userId: 'user_123',
-  ttl: 300 // 5 minutos
-});
-
-if (reservation.success) {
-  console.log('Reserva confirmada:', reservation.id);
-}`,
-  lock: `// Adquirir un distributed lock
-const lock = await caerus.locks.acquire({
-  key: 'payment-process-order-456',
-  ttl: 30000 // 30 segundos
+  reserve: `// Retener temporalmente un recurso (SRE)
+const holder = await caerus.unitary('seat-A1').take({
+  ttlSeconds: 300,
+  metadata: { userId: 'user_123' }
 });
 
 try {
-  // Operacion critica
-  await processPayment(order);
+  await processPayment();
+  await caerus.confirm(holder.id);
+  console.log('Reserva confirmada:', holder.id);
+} catch (error) {
+  await caerus.release(holder.id);
+}`,
+  lock: `import { Dls } from '@caerus-dev/sdk';
+
+const client = new Dls.DlsClient({ apiKey: process.env.CAERUS_API_KEY! });
+const tx = await client.beginTransaction({ timeoutMs: 5000 });
+
+// Adquirir un distributed lock exclusivo (DLS)
+const lock = await client.acquireLock(
+  'payment-process',
+  'order-456',
+  tx.transactionId,
+  'EXCLUSIVE'
+);
+
+try {
+  // Operación crítica con fencing token
+  await processPayment(lock.fencingToken);
 } finally {
-  await lock.release();
+  await client.releaseTransactionLocks(tx.transactionId);
 }`,
 }
 

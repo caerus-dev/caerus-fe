@@ -656,19 +656,7 @@ export default function ApplicationDashboard({
             </div>
           </div>
         </Card>
-        <Card className="bg-card/50 border-border p-4 shadow-sm">
-          <div className="flex items-center justify-between space-y-0 pb-1.5">
-            <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-              <Activity className="h-3.5 w-3.5 text-muted-foreground" />
-              Operaciones Activas
-            </span>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-chart-4">
-              0
-            </div>
-          </div>
-        </Card>
+
       </div>
 
       {/* Tabs */}

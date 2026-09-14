@@ -8,70 +8,74 @@ const codeExamples = [
     id: "reserve",
     label: "Reservar Recurso",
     language: "typescript",
-    code: `import { Caerus } from '@caerus/sdk'
+    code: `import { CaerusClient } from '@caerus-dev/sdk'
 
-const client = new Caerus({ apiKey: process.env.CAERUS_API_KEY })
+const caerus = new CaerusClient({ apiKey: process.env.CAERUS_API_KEY! })
 
-// Reserva un asiento por 5 minutos
-const reservation = await client.resources.reserve({
-  resourceId: 'seat_J4_function_123',
-  ttl: 300, // segundos
-  metadata: { userId: 'user_abc', event: 'Avengers' }
+// 1. Retiene temporalmente un recurso (asiento, stock, cupo)
+const holder = await caerus.unitary('seat_A12').take({
+  ttlSeconds: 120,
+  metadata: { orderId: 'ord_1234' }
 })
 
-if (reservation.success) {
-  // Procesa el pago...
-  await reservation.confirm()
-} else {
-  // Recurso no disponible
-  console.log(reservation.reason)
+try {
+  // 2. Procesa el pago de forma segura
+  const { paymentId } = await chargeCard(4500)
+  
+  // 3. Confirma la reserva de manera definitiva
+  await caerus.confirm(holder.id, { metadata: { paymentId } })
+} catch (error) {
+  // 4. Si el pago falla, libera el recurso inmediatamente
+  await caerus.release(holder.id)
+  throw error
 }`,
   },
   {
     id: "lock",
     label: "Distributed Lock",
     language: "typescript",
-    code: `import { Caerus } from '@caerus/sdk'
+    code: `import { Dls } from '@caerus-dev/sdk'
 
-const client = new Caerus({ apiKey: process.env.CAERUS_API_KEY })
+const client = new Dls.DlsClient({ apiKey: process.env.CAERUS_API_KEY! })
 
-// Adquiere un lock exclusivo con fencing token
-const lock = await client.locks.acquire({
-  key: 'payment_user_123',
-  ttl: 10000, // 10 segundos
-  strategy: 'fail' // o 'retry' | 'queue'
-})
+// 1. Inicia una transacción con timeout
+const tx = await client.beginTransaction({ timeoutMs: 5000 })
 
-if (lock.acquired) {
+// 2. Adquiere lock exclusivo con Fencing Token (ZooKeeper)
+const lock = await client.acquireLock(
+  'order-processing', // Namespace del template configurado
+  'payment_user_123',  // Key dinámica
+  tx.transactionId,
+  'EXCLUSIVE'
+)
+
+if (lock.status === 'ACQUIRED') {
   try {
-    // Operación crítica con el fencing token
+    // 3. Sección crítica protegida contra split-brain
     await processPayment(userId, lock.fencingToken)
   } finally {
-    await lock.release()
+    // 4. Libera los locks asociados a la transacción
+    await client.releaseTransactionLocks(tx.transactionId)
   }
 }`,
   },
   {
     id: "availability",
-    label: "Check Disponibilidad",
+    label: "Consultar Stock",
     language: "typescript",
-    code: `import { Caerus } from '@caerus/sdk'
+    code: `import { CaerusClient } from '@caerus-dev/sdk'
 
-const client = new Caerus({ apiKey: process.env.CAERUS_API_KEY })
+const caerus = new CaerusClient({ apiKey: process.env.CAERUS_API_KEY! })
 
-// Consulta disponibilidad de múltiples recursos
-const availability = await client.resources.checkAvailability({
-  resourceIds: ['seat_A1', 'seat_A2', 'seat_A3', 'seat_A4'],
-  includeMetadata: true
-})
+// 1. Consulta stock disponible y reservas pendientes en tiempo real
+const seat = await caerus.getResource('seat_A12')
+console.log(\`Disponibles: \${seat.availableAmount}\`)
+console.log(\`En proceso de compra: \${seat.pendingCount}\`)
 
-// Respuesta:
-// {
-//   'seat_A1': { available: true },
-//   'seat_A2': { available: false, reservedUntil: '2024-...' },
-//   'seat_A3': { available: true },
-//   'seat_A4': { available: false, confirmedAt: '2024-...' }
-// }`,
+// 2. O consulta todos los recursos de un grupo (ej. fila o categoría)
+const row = await caerus.getResourcesByGroup('row_A')
+const freeSeats = row.resources.filter((s) => s.availableAmount > 0)
+console.log(\`Asientos libres en Fila A: \${freeSeats.length}\`)`,
   },
 ]
 
