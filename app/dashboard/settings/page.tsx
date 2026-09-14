@@ -1,5 +1,6 @@
 "use client"
 
+import { useTheme } from "@/components/theme-provider"
 import { useState, useEffect } from "react"
 import { Settings, User, Building, Bell, Shield, Palette, Globe, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -28,6 +29,7 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export default function SettingsPage() {
+  const { theme, setTheme } = useTheme()
   const [activeTab, setActiveTab] = useState("profile")
   const [user, setUser] = useState<any>(null)
   const [isSaving, setIsSaving] = useState(false)
@@ -112,23 +114,23 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
-            Appearance
+            Apariencia
           </CardTitle>
           <CardDescription>
-            Customize the look and feel
+            Personalizá el aspecto visual de la plataforma
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Theme</Label>
-            <Select defaultValue="dark">
+            <Label>Tema</Label>
+            <Select value={theme} onValueChange={setTheme}>
               <SelectTrigger className="max-w-xs">
-                <SelectValue />
+                <SelectValue placeholder="Seleccionar tema" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
+                <SelectItem value="light">Claro</SelectItem>
+                <SelectItem value="dark">Oscuro</SelectItem>
+                <SelectItem value="system">Sistema</SelectItem>
               </SelectContent>
             </Select>
           </div>
