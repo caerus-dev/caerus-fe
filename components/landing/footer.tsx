@@ -36,7 +36,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/docs" className="hover:text-foreground transition-colors">
+                <Link href="/dashboard/docs" className="hover:text-foreground transition-colors">
                   Documentación
                 </Link>
               </li>
@@ -53,12 +53,12 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-sm">Recursos</h4>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <Link href="/docs/quickstart" className="hover:text-foreground transition-colors">
+                <Link href="/dashboard/docs" className="hover:text-foreground transition-colors">
                   Quick Start
                 </Link>
               </li>
               <li>
-                <Link href="/docs/api" className="hover:text-foreground transition-colors">
+                <Link href="/dashboard/docs" className="hover:text-foreground transition-colors">
                   API Reference
                 </Link>
               </li>

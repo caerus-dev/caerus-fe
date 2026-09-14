@@ -40,7 +40,7 @@ export function HeroSection() {
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <Link href="/docs" className="w-full sm:w-auto">
+          <Link href="/dashboard/docs" className="w-full sm:w-auto">
             <Button size="lg" variant="outline" className="gap-2 text-base px-8 w-full sm:w-auto">
               Ver Documentación
             </Button>
