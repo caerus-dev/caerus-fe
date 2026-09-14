@@ -18,7 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const navigation = [
   { name: "Producto", href: "/#features" },
-  { name: "Documentación", href: "/dashboard/docs" },
+  { name: "Documentación", href: "/docs" },
   { name: "Precios", href: "/pricing" },
 ]
 
