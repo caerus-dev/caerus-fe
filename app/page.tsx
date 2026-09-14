@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/landing/hero-section"
 import { FeaturesSection } from "@/components/landing/features-section"
 import { CodeExamplesSection } from "@/components/landing/code-examples-section"
 import { UseCasesSection } from "@/components/landing/use-cases-section"
+import { PricingPreviewSection } from "@/components/landing/pricing-preview-section"
 import { Footer } from "@/components/landing/footer"
 import { auth0 } from "@/lib/auth0"
 
@@ -17,6 +18,7 @@ export default async function HomePage() {
         <FeaturesSection />
         <CodeExamplesSection />
         <UseCasesSection />
+        <PricingPreviewSection />
       </main>
       <Footer />
     </div>
