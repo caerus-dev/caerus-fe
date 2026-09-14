@@ -64,9 +64,9 @@ export default function SettingsPage() {
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Configuración</h1>
         <p className="text-muted-foreground">
-          Manage your account and organization preferences
+          Administrá las preferencias de tu cuenta personal
         </p>
       </div>
 
@@ -75,10 +75,10 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            Profile
+            Perfil
           </CardTitle>
           <CardDescription>
-            Your personal account information
+            Información de tu cuenta personal
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -88,13 +88,13 @@ export default function SettingsPage() {
             </div>
             <div>
               <Button variant="outline" size="sm">
-                Change Avatar
+                Cambiar Avatar
               </Button>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="name">Nombre Completo</Label>
               <Input id="name" defaultValue={user?.name || ""} />
             </div>
             <div className="space-y-2">
@@ -142,81 +142,81 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Security
+            Seguridad
           </CardTitle>
           <CardDescription>
-            Manage your account security
+            Administrá la seguridad de tu cuenta
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Two-Factor Authentication</p>
+              <p className="font-medium">Autenticación en Dos Pasos (2FA)</p>
               <p className="text-sm text-muted-foreground">
-                Add an extra layer of security to your account
+                Agregá una capa extra de seguridad a tu cuenta
               </p>
             </div>
-            <Button variant="outline">Enable 2FA</Button>
+            <Button variant="outline">Activar 2FA</Button>
           </div>
           <Separator />
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Change Password</p>
+              <p className="font-medium">Cambiar Contraseña</p>
               <p className="text-sm text-muted-foreground">
-                Update your account password
+                Actualizá la contraseña de tu cuenta
               </p>
             </div>
-            <Button variant="outline">Change</Button>
+            <Button variant="outline">Cambiar</Button>
           </div>
           <Separator />
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Active Sessions</p>
+              <p className="font-medium">Sesiones Activas</p>
               <p className="text-sm text-muted-foreground">
-                Manage devices where you are logged in
+                Administrá los dispositivos donde iniciaste sesión
               </p>
             </div>
-            <Button variant="outline">View Sessions</Button>
+            <Button variant="outline">Ver Sesiones</Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Danger Zone */}
+      {/* Zona de Peligro */}
       <Card className="bg-card/50 border-destructive/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <Trash2 className="h-5 w-5" />
-            Danger Zone
+            Zona de Peligro
           </CardTitle>
           <CardDescription>
-            Irreversible and destructive actions
+            Acciones irreversibles y destructivas
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Delete Organization</p>
+              <p className="font-medium">Eliminar Cuenta</p>
               <p className="text-sm text-muted-foreground">
-                Permanently delete your organization and all data
+                Eliminar permanentemente tu cuenta de usuario y todos tus datos
               </p>
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive">Delete Organization</Button>
+                <Button variant="destructive">Eliminar Cuenta</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your
-                    organization, all applications, API keys, and remove all
-                    collaborator access.
+                    Esta acción no se puede deshacer. Esto eliminará permanentemente tu
+                    cuenta, todas tus aplicaciones, API keys y removerá tu
+                    acceso como colaborador.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
                   <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Delete Organization
+                    Eliminar Cuenta
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -228,7 +228,7 @@ export default function SettingsPage() {
       {/* Save button */}
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "Saving..." : "Save Changes"}
+          {isSaving ? "Guardando..." : "Guardar Cambios"}
         </Button>
       </div>
     </div>
