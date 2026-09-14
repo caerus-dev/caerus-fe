@@ -105,59 +105,7 @@ export default function SettingsPage() {
 
 
 
-      {/* Notifications */}
-      <Card className="bg-card/50 border-border">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
-            Notifications
-          </CardTitle>
-          <CardDescription>
-            Configure how you receive alerts and updates
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Email Notifications</p>
-              <p className="text-sm text-muted-foreground">
-                Receive email alerts for important events
-              </p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Usage Alerts</p>
-              <p className="text-sm text-muted-foreground">
-                Get notified when reaching 80% of plan limit
-              </p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Security Alerts</p>
-              <p className="text-sm text-muted-foreground">
-                Alerts for suspicious activity or API key usage
-              </p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Weekly Reports</p>
-              <p className="text-sm text-muted-foreground">
-                Receive weekly usage summary via email
-              </p>
-            </div>
-            <Switch />
-          </div>
-        </CardContent>
-      </Card>
+
 
       {/* Appearance */}
       <Card className="bg-card/50 border-border">
