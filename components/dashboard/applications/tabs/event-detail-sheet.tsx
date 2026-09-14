@@ -13,6 +13,9 @@ import {
   Layers,
   FileJson,
   Info,
+  SlidersHorizontal,
+  Eye,
+  Trash2,
 } from "lucide-react";
 import {
   Sheet,
@@ -34,6 +37,12 @@ interface EventDetailSheetProps {
   catalogItem?: EventTypeCatalogItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onNavigateToManualControl?: (preselect: {
+    product: "SRE" | "DLS";
+    method: string;
+    params: Record<string, any>;
+    autoExecute?: boolean;
+  }) => void;
 }
 
 export function EventDetailSheet({
@@ -41,6 +50,7 @@ export function EventDetailSheet({
   catalogItem,
   open,
   onOpenChange,
+  onNavigateToManualControl,
 }: EventDetailSheetProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
@@ -133,7 +143,207 @@ export function EventDetailSheet({
         {/* Contenido desplazable verticalmente sin desbordamiento horizontal */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6 space-y-6 min-w-0 max-w-full">
           {/* Visualizador específico para Deadlocks */}
-          {isDeadlock && <DeadlockVisualizer payload={parsedPayload} />}
+          {isDeadlock && (
+            <DeadlockVisualizer
+              payload={parsedPayload}
+              onNavigateToManualControl={onNavigateToManualControl}
+              onCloseSheet={() => onOpenChange(false)}
+            />
+          )}
+
+          {/* Acciones directas de Control Manual según producto */}
+          {!isDeadlock &&
+            event.product === "DLS" &&
+            (() => {
+              const dlsTxId =
+                parsedPayload?.victimTransactionId ||
+                parsedPayload?.transactionId ||
+                (event.objectType === "TRANSACTION" ? event.objectId : null) ||
+                (event.eventType.startsWith("transaction.") ? event.objectId : null);
+
+              const dlsLockKey =
+                parsedPayload?.lockKey ||
+                (event.objectType === "LOCK" || event.eventType.startsWith("lock.") ? event.objectId : null);
+              const dlsNamespace = parsedPayload?.namespace || "";
+
+              if (!dlsTxId && !dlsLockKey) return null;
+
+              return (
+                <div className="p-3.5 rounded-xl border border-cyan-500/30 bg-cyan-500/10 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 text-cyan-400 font-semibold text-xs">
+                      <SlidersHorizontal className="h-4 w-4" />
+                      <span>Acciones de Control Manual (DLS)</span>
+                    </div>
+                    <Badge variant="outline" className="border-cyan-500/40 text-cyan-400 font-mono text-[10px]">
+                      Telemetría en Vivo
+                    </Badge>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Consulta el estado en tiempo real en la consola de telemetría y aborta la transacción si permanece activa.
+                  </p>
+                  <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+                    {dlsTxId && (
+                      <Button
+                        size="sm"
+                        className="h-7 text-xs gap-1.5 font-semibold bg-cyan-600 hover:bg-cyan-500 text-white"
+                        onClick={() => {
+                          onOpenChange(false);
+                          onNavigateToManualControl?.({
+                            product: "DLS",
+                            method: "GET_TRANSACTION_STATUS",
+                            params: { transactionId: dlsTxId },
+                            autoExecute: true,
+                          });
+                        }}
+                      >
+                        <SlidersHorizontal className="h-3.5 w-3.5" />
+                        <span>Ver Transacción en Control Manual</span>
+                      </Button>
+                    )}
+                    {dlsLockKey && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs gap-1.5 border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/20"
+                        onClick={() => {
+                          onOpenChange(false);
+                          onNavigateToManualControl?.({
+                            product: "DLS",
+                            method: "GET_LOCK_STATUS",
+                            params: { namespace: dlsNamespace, lockKey: dlsLockKey },
+                            autoExecute: true,
+                          });
+                        }}
+                      >
+                        <SlidersHorizontal className="h-3.5 w-3.5" />
+                        <span>Ver Lock en Control Manual</span>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
+          {event.product === "SRE" &&
+            (() => {
+              const isHolderEvent =
+                event.objectType === "ResourceHolder" ||
+                event.objectType === "HOLDER" ||
+                event.eventType === "resource.taken" ||
+                event.eventType === "resource.released" ||
+                event.eventType === "resource.confirmed" ||
+                event.eventType === "resource.extended" ||
+                event.eventType === "resource.expired" ||
+                event.eventType.includes("holder") ||
+                Boolean(parsedPayload?.holderId || parsedPayload?.resourceHolderId);
+
+              const sreResourceKey =
+                parsedPayload?.resourceKey ||
+                parsedPayload?.key ||
+                (!isHolderEvent ? event.objectId : null);
+
+              const sreHolderId =
+                parsedPayload?.holderId ||
+                parsedPayload?.resourceHolderId ||
+                (isHolderEvent ? event.objectId : null);
+
+              if (!sreResourceKey && !sreHolderId) return null;
+
+              return (
+                <div className="p-3.5 rounded-xl border border-purple-500/30 bg-purple-500/10 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 text-purple-400 font-semibold text-xs">
+                      <SlidersHorizontal className="h-4 w-4" />
+                      <span>Acciones de Control Manual (SRE)</span>
+                    </div>
+                    <Badge variant="outline" className="border-purple-500/40 text-purple-400 font-mono text-[10px]">
+                      Telemetría en Vivo
+                    </Badge>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    Consulta el stock disponible y los holders activos en tiempo real en la consola de telemetría.
+                  </p>
+                  <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+                    {sreResourceKey && (
+                      <>
+                        <Button
+                          size="sm"
+                          className="h-7 text-xs gap-1.5 font-semibold bg-purple-600 hover:bg-purple-500 text-white"
+                          onClick={() => {
+                            onOpenChange(false);
+                            onNavigateToManualControl?.({
+                              product: "SRE",
+                              method: "GET_RESOURCE",
+                              params: { resourceKey: sreResourceKey },
+                              autoExecute: true,
+                            });
+                          }}
+                        >
+                          <SlidersHorizontal className="h-3.5 w-3.5" />
+                          <span>Ver este Recurso en Vivo</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs gap-1.5 border-purple-500/40 text-purple-300 hover:bg-purple-500/20"
+                          onClick={() => {
+                            onOpenChange(false);
+                            onNavigateToManualControl?.({
+                              product: "SRE",
+                              method: "GET_RESOURCE_HOLDERS",
+                              params: { resourceKey: sreResourceKey },
+                              autoExecute: true,
+                            });
+                          }}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span>Ver Holders de Recurso</span>
+                        </Button>
+                      </>
+                    )}
+                    {isHolderEvent && sreHolderId && (() => {
+                      const holderStatusUpper = (parsedPayload?.status || "").toUpperCase();
+                      const expMs = parsedPayload?.expiresAt ? (parsedPayload.expiresAt > 1e11 ? parsedPayload.expiresAt : parsedPayload.expiresAt * 1000) : null;
+                      const isExpired = expMs ? expMs < Date.now() : false;
+                      const isFinalStatus =
+                        event.eventType === "resource.released" ||
+                        event.eventType === "resource.expired" ||
+                        event.eventType === "resource.confirmed" ||
+                        holderStatusUpper === "RELEASED" ||
+                        holderStatusUpper === "EXPIRED" ||
+                        holderStatusUpper === "CONFIRMED" ||
+                        isExpired;
+
+                      if (isFinalStatus) return null;
+
+                      return (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="h-7 text-xs gap-1.5 font-semibold shadow-xs"
+                          onClick={() => {
+                            onOpenChange(false);
+                            onNavigateToManualControl?.({
+                              product: "SRE",
+                              method: "RELEASE_HOLDER",
+                              params: {
+                                holderId: sreHolderId,
+                                resourceKey: sreResourceKey || "",
+                              },
+                              autoExecute: false,
+                            });
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span>Liberar Holder Manualmente</span>
+                        </Button>
+                      );
+                    })()}
+                  </div>
+                </div>
+              );
+            })()}
 
           {/* Sección 1: Información del Evento */}
           <div className="space-y-3">

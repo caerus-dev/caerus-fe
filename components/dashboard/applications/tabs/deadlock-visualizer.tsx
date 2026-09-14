@@ -18,9 +18,20 @@ import { DeadlockPayload } from "@/types/events";
 
 interface DeadlockVisualizerProps {
   payload: DeadlockPayload | any;
+  onNavigateToManualControl?: (preselect: {
+    product: "SRE" | "DLS";
+    method: string;
+    params: Record<string, any>;
+    autoExecute?: boolean;
+  }) => void;
+  onCloseSheet?: () => void;
 }
 
-export function DeadlockVisualizer({ payload }: DeadlockVisualizerProps) {
+export function DeadlockVisualizer({
+  payload,
+  onNavigateToManualControl,
+  onCloseSheet,
+}: DeadlockVisualizerProps) {
   if (!payload) return null;
 
   const victimId = payload.victimTransactionId;
@@ -134,20 +145,23 @@ export function DeadlockVisualizer({ payload }: DeadlockVisualizerProps) {
               </div>
             </div>
 
-            {isAlertOnly && (
-              <Button
-                variant="destructive"
-                size="sm"
-                className="h-7 px-2.5 gap-1.5 text-xs font-medium shrink-0 self-end sm:self-center"
-                onClick={() => {
-                  // TODO: Implementar la llamada para terminar/abortar manualmente el proceso/transacción (victimTransactionId)
-                  console.log("TODO: Terminar transacción manualmente:", victimId);
-                }}
-              >
-                <Ban className="h-3 w-3" />
-                <span>Terminar transacción</span>
-              </Button>
-            )}
+            <Button
+              variant={isAlertOnly ? "destructive" : "outline"}
+              size="sm"
+              className="h-7 px-2.5 gap-1.5 text-xs font-medium shrink-0 self-end sm:self-center"
+              onClick={() => {
+                if (onCloseSheet) onCloseSheet();
+                onNavigateToManualControl?.({
+                  product: "DLS",
+                  method: "GET_TRANSACTION_STATUS",
+                  params: { transactionId: victimId },
+                  autoExecute: true,
+                });
+              }}
+            >
+              <Ban className="h-3 w-3" />
+              <span>{isAlertOnly ? "Resolver en Control Manual" : "Inspeccionar Transacción"}</span>
+            </Button>
           </div>
         )}
 
