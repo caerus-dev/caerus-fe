@@ -14,10 +14,12 @@ export async function getBackendHeaders() {
       "Authorization": `Bearer ${accessToken}`,
     };
   } catch (error: any) {
-    if (error?.code !== "expired") {
+    if (error?.code !== "expired" && error?.code !== "missing_session") {
       console.error("Error getting Auth0 access token:", error);
     }
-    throw new Error("Unauthorized: Could not retrieve access token");
+    const authError = new Error("Unauthorized: Could not retrieve access token");
+    (authError as any).code = error?.code || "unauthorized";
+    throw authError;
   }
 }
 

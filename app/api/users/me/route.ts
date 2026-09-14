@@ -21,6 +21,9 @@ export async function GET() {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error: any) {
+    if (error?.message?.includes("Unauthorized") || error?.code === "missing_session") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     console.error("Error in GET /api/users/me:", error);
     return NextResponse.json(
       { error: error.message || "Internal Server Error" },
