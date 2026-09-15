@@ -37,18 +37,28 @@ export async function PATCH(
   const { id, resourceKey } = await params;
   try {
     const body = await request.json();
+    const payload = {
+      ...body,
+      idempotencyKey: body.idempotencyKey?.trim() || `portal_update_${crypto.randomUUID()}`,
+    };
     const response = await fetchBackend(
       `/v1/environments/${id}/sre/resources/${encodeURIComponent(resourceKey)}`,
       {
         method: "PATCH",
-        body: JSON.stringify(body),
+        body: JSON.stringify(payload),
       }
     );
 
     if (!response.ok) {
       const errorText = await response.text();
+      let errorMsg = errorText || "Error al actualizar el recurso";
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.message) errorMsg = errorJson.message;
+        else if (errorJson.error) errorMsg = errorJson.error;
+      } catch {}
       return NextResponse.json(
-        { error: errorText || "Error al actualizar el recurso" },
+        { error: errorMsg },
         { status: response.status }
       );
     }

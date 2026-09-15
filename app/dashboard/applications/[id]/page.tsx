@@ -811,8 +811,8 @@ export default function ApplicationDashboard({
           <ManualControlTab
             key={
               manualControlPreselect
-                ? `${manualControlPreselect.product}-${manualControlPreselect.method}-${JSON.stringify(manualControlPreselect.params || {})}`
-                : "manual-control-tab-default"
+                ? `${selectedEnv}-${manualControlPreselect.product}-${manualControlPreselect.method}-${JSON.stringify(manualControlPreselect.params || {})}`
+                : `manual-control-tab-${selectedEnv}`
             }
             appId={id}
             selectedEnv={selectedEnv}

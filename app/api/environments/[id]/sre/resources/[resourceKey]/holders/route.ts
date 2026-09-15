@@ -10,8 +10,17 @@ export async function GET(
     const { searchParams } = new URL(request.url);
     const page = searchParams.get("page") || "0";
     const pageSize = searchParams.get("pageSize");
-    const sortDirection = searchParams.get("sortDirection");
+    const rawSort = searchParams.get("sortDirection");
     const statusFilter = searchParams.get("statusFilter");
+
+    let sortDirection: string | null = null;
+    if (rawSort && rawSort !== "DEFAULT") {
+      if (rawSort === "ASC" || rawSort === "ASCENDING") {
+        sortDirection = "ASCENDING";
+      } else if (rawSort === "DESC" || rawSort === "DESCENDING") {
+        sortDirection = "DESCENDING";
+      }
+    }
 
     const queryParts = [`page=${encodeURIComponent(page)}`];
     if (pageSize) queryParts.push(`pageSize=${encodeURIComponent(pageSize)}`);
@@ -26,8 +35,14 @@ export async function GET(
 
     if (!response.ok) {
       const errorText = await response.text();
+      let errorMsg = errorText || "Error al obtener los holders del recurso";
+      try {
+        const errorJson = JSON.parse(errorText);
+        if (errorJson.message) errorMsg = errorJson.message;
+        else if (errorJson.error) errorMsg = errorJson.error;
+      } catch {}
       return NextResponse.json(
-        { error: errorText || "Error al obtener los holders del recurso" },
+        { error: errorMsg },
         { status: response.status }
       );
     }

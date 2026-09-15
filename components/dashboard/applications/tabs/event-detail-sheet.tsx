@@ -310,9 +310,9 @@ export function EventDetailSheet({
                         event.eventType === "resource.released" ||
                         event.eventType === "resource.expired" ||
                         event.eventType === "resource.confirmed" ||
+                        holderStatusUpper === "CONFIRMED" ||
                         holderStatusUpper === "RELEASED" ||
                         holderStatusUpper === "EXPIRED" ||
-                        holderStatusUpper === "CONFIRMED" ||
                         isExpired;
 
                       if (isFinalStatus) return null;

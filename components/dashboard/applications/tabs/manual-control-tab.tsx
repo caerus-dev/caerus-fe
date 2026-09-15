@@ -27,6 +27,8 @@ import {
   ExternalLink,
   Ban,
   Radio,
+  Search,
+  Save,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -164,7 +166,6 @@ export function ManualControlTab({
   const [sreStatusFilter, setSreStatusFilter] = useState<string>("ALL");
   const [deltaAmount, setDeltaAmount] = useState<string>("");
   const [metadata, setMetadata] = useState<string>("");
-  const [idempotencyKey, setIdempotencyKey] = useState<string>("");
 
   // DLS
   const [namespace, setNamespace] = useState<string>(
@@ -194,6 +195,143 @@ export function ManualControlTab({
     description: string;
     action: () => Promise<void>;
   } | null>(null);
+
+  // Notificación de holder liberado recientemente para la vista del recurso
+  const [lastReleasedHolderInfo, setLastReleasedHolderInfo] = useState<{
+    holderId: string;
+    resourceKey: string;
+  } | null>(null);
+
+  // Lista de templates combinada y siempre actualizada
+  const [localTemplates, setLocalTemplates] = useState<any[]>(templates || []);
+  const [detectedUnitaryKeys, setDetectedUnitaryKeys] = useState<Set<string>>(new Set());
+  const [detectedNoMetadataKeys, setDetectedNoMetadataKeys] = useState<Set<string>>(new Set());
+  const [resolvedResource, setResolvedResource] = useState<LiveResourceResponse | null>(null);
+
+  // Sincronizar templates cuando cambian por props
+  useEffect(() => {
+    if (templates && templates.length > 0) {
+      setLocalTemplates(templates);
+    }
+  }, [templates]);
+
+  // Actualizar templates desde el backend si se conoce envId
+  useEffect(() => {
+    if (!envId) return;
+    let isSubscribed = true;
+    fetch(`/api/shared-resource-templates?environmentId=${envId}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!isSubscribed || !data) return;
+        const list = Array.isArray(data) ? data : data.content || [];
+        if (list.length > 0) {
+          setLocalTemplates(list);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isSubscribed = false;
+    };
+  }, [envId]);
+
+  // Auto-inspección en segundo plano cuando se escribe un Resource Key
+  useEffect(() => {
+    if (product !== "SRE" || !envId) return;
+    const cleanKey = resourceKey.trim();
+    if (!cleanKey) {
+      setResolvedResource(null);
+      return;
+    }
+
+    if (result && (result.key === cleanKey || result.resourceId === cleanKey)) {
+      setResolvedResource(result);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/environments/${envId}/sre/resources/${encodeURIComponent(cleanKey)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && (data.key === cleanKey || data.resourceId === cleanKey)) {
+            setResolvedResource(data);
+            setResult((prev: any) => (prev ? prev : data));
+            if (data.templateId) {
+              const hasTpl = localTemplates.some((t: any) => t.id === data.templateId);
+              if (!hasTpl) {
+                try {
+                  const tplRes = await fetch(`/api/shared-resource-templates/${data.templateId}`);
+                  if (tplRes.ok) {
+                    const tplData = await tplRes.json();
+                    if (tplData && tplData.id) {
+                      setLocalTemplates((prev) => [...prev, tplData]);
+                    }
+                  }
+                } catch {}
+              }
+            }
+          }
+        }
+      } catch {}
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [product, envId, resourceKey, result, localTemplates]);
+
+  // Buscar plantilla correspondiente al recurso actual
+  const currentResourceTemplate = useMemo(() => {
+    const cleanKey = resourceKey.trim();
+    if (!cleanKey) return null;
+
+    const target = (result && (result.key === cleanKey || result.resourceId === cleanKey))
+      ? result
+      : resolvedResource && (resolvedResource.key === cleanKey || resolvedResource.resourceId === cleanKey)
+      ? resolvedResource
+      : null;
+
+    let tId = target?.templateId || "";
+    if (!tId && result?.resources && Array.isArray(result.resources)) {
+      const match = result.resources.find((r: any) => r.key === cleanKey);
+      if (match) tId = match.templateId || "";
+    }
+
+    const cleanLower = cleanKey.toLowerCase();
+    const tIdLower = (tId || "").toLowerCase();
+
+    // 1. Match por templateId directo
+    if (tId) {
+      const byId = localTemplates.find(
+        (t: any) => t.id === tId || t.id?.toLowerCase() === tIdLower
+      );
+      if (byId) return byId;
+    }
+
+    // 2. Match por nombre o clave (case-insensitive)
+    return (
+      localTemplates.find((t: any) => {
+        const nameLower = (t.name || "").trim().toLowerCase();
+        const idLower = (t.id || "").trim().toLowerCase();
+        return (
+          idLower === cleanLower ||
+          nameLower === cleanLower ||
+          (tIdLower && (idLower === tIdLower || nameLower === tIdLower))
+        );
+      }) || null
+    );
+  }, [resourceKey, result, resolvedResource, localTemplates]);
+
+  const isCurrentUnitary = Boolean(
+    detectedUnitaryKeys.has(resourceKey.trim()) ||
+    (currentResourceTemplate &&
+      (currentResourceTemplate.type === "UNITARY" || currentResourceTemplate.mode === "unit"))
+  );
+
+  const cannotSaveMetadata = Boolean(
+    detectedNoMetadataKeys.has(resourceKey.trim()) ||
+    (currentResourceTemplate && currentResourceTemplate.saveMetadata === false)
+  );
+
+  const isUnitaryBlocked = Boolean(isCurrentUnitary && cannotSaveMetadata);
 
   // Referencia para no re-ejecutar la misma preselección si el componente o su padre se re-renderiza
   const executedSignatureRef = useRef<string | null>(null);
@@ -320,7 +458,9 @@ export function ManualControlTab({
               page: String(currentPage),
               pageSize: String(srePageSize || 10),
             });
-            if (sreSortDirection) q.set("sortDirection", sreSortDirection);
+            if (sreSortDirection && sreSortDirection !== "DEFAULT") {
+              q.set("sortDirection", sreSortDirection);
+            }
             if (sreStatusFilter && sreStatusFilter !== "ALL") q.set("statusFilter", sreStatusFilter);
             url = `/api/environments/${envId}/sre/resources/${encodeURIComponent(curResourceKey.trim())}/holders?${q.toString()}`;
             break;
@@ -344,9 +484,22 @@ export function ManualControlTab({
             if (!curResourceKey.trim()) {
               throw new Error("El campo 'Resource Key' es obligatorio.");
             }
-            const deltaNum = Number(deltaAmount);
-            if (isNaN(deltaNum) || deltaNum === 0) {
-              throw new Error("El campo 'Delta Amount' debe ser un número entero distinto de cero (+ o -).");
+            if (isUnitaryBlocked) {
+              throw new Error("Este recurso es unitario y su plantilla no permite guardar metadatos. No hay propiedades modificables.");
+            }
+            let deltaNum = 0;
+            if (!isCurrentUnitary) {
+              if (deltaAmount.trim() !== "") {
+                deltaNum = Number(deltaAmount);
+                if (isNaN(deltaNum)) {
+                  throw new Error("El campo 'Delta Amount' debe ser un número entero (+ o -).");
+                }
+              }
+              const hasMetadata = Boolean(metadata.trim());
+              const hasGroup = Boolean(curGroupKey.trim());
+              if (deltaNum === 0 && !hasMetadata && !hasGroup) {
+                throw new Error("Debes ingresar una variación de stock (Delta Amount distinto de cero) o modificar metadatos o grupo.");
+              }
             }
             url = `/api/environments/${envId}/sre/resources/${encodeURIComponent(curResourceKey.trim())}`;
             fetchOptions = {
@@ -356,7 +509,7 @@ export function ManualControlTab({
                 deltaAmount: deltaNum,
                 groupKey: curGroupKey.trim() || undefined,
                 metadata: metadata.trim() || undefined,
-                idempotencyKey: idempotencyKey.trim() || undefined,
+                idempotencyKey: `portal_update_${crypto.randomUUID()}`,
               }),
             };
             break;
@@ -407,19 +560,65 @@ export function ManualControlTab({
       if (!res.ok) {
         const errJson = await res.json().catch(() => ({}));
         let errText = errJson.error || errJson.message || `Error HTTP ${res.status}`;
-        if (typeof errText === "string" && errText.includes("fieldErrors")) {
+        if (typeof errText === "string" && (errText.startsWith("{") || errText.includes("message") || errText.includes("fieldErrors"))) {
           try {
             const parsed = JSON.parse(errText);
             if (parsed.fieldErrors?.length) {
               errText = parsed.fieldErrors.map((f: any) => f.message).join(". ");
+            } else if (parsed.message) {
+              errText = parsed.message;
+            } else if (parsed.error) {
+              errText = parsed.error;
             }
           } catch {}
+        }
+        if (typeof errText === "string") {
+          const curResKey = (options?.overrideParams?.resourceKey || resourceKey || "").trim();
+          if (curResKey) {
+            if (errText.includes("UNITARY")) {
+              setDetectedUnitaryKeys((prev) => new Set(prev).add(curResKey));
+            }
+            if (errText.includes("reject metadata") || errText.includes("saveMetadata")) {
+              setDetectedNoMetadataKeys((prev) => new Set(prev).add(curResKey));
+            }
+          }
         }
         setErrorMessage(errText);
         toast.error(`Error en la llamada: ${errText}`);
       } else {
         if (res.status === 204) {
-          setResult({ success: true, message: "Operación ejecutada con éxito (204 No Content)" });
+          const targetResKey = (
+            options?.overrideParams?.resourceKey ||
+            resourceKey ||
+            (result && typeof result.resourceId === "string" ? result.resourceId : "") ||
+            ""
+          ).trim();
+
+          if (currentProduct === "SRE" && currentMethod === "RELEASE_HOLDER" && targetResKey) {
+            const curHolderId = options?.overrideParams?.holderId || holderId;
+            setLastReleasedHolderInfo({
+              holderId: curHolderId,
+              resourceKey: targetResKey,
+            });
+            toast.success(`Holder '${curHolderId}' liberado con éxito. Actualizando telemetría del recurso...`);
+            setSreMethod("GET_RESOURCE");
+            setResourceKey(targetResKey);
+            setTimeout(() => {
+              executeCall({
+                overrideProduct: "SRE",
+                overrideMethod: "GET_RESOURCE",
+                overrideParams: { resourceKey: targetResKey },
+              });
+            }, 100);
+            return;
+          }
+
+          const fallbackHolderId = options?.overrideParams?.holderId || holderId;
+          const msg = currentMethod === "RELEASE_HOLDER"
+            ? `Holder '${fallbackHolderId}' liberado con éxito (204 No Content).`
+            : "Operación ejecutada con éxito (204 No Content)";
+
+          setResult({ success: true, message: msg });
           toast.success("Operación ejecutada exitosamente.");
         } else {
           const data = await res.json();
@@ -493,24 +692,35 @@ export function ManualControlTab({
     }
     if (targetRes) {
       setResult(targetRes);
-      if (targetRes.metadata) {
-        setMetadata(targetRes.metadata);
+      const matchedT = localTemplates.find(
+        (t: any) => t.id === targetRes.templateId || t.name === targetRes.templateId || t.id?.toLowerCase() === targetRes.templateId?.toLowerCase()
+      );
+      if (matchedT && !matchedT.saveMetadata) {
+        setMetadata("");
+      } else {
+        setMetadata(targetRes.metadata || "");
       }
     }
     setSreMethod("UPDATE_RESOURCE");
   };
 
-  const handleForceReleaseHolder = (hId: string) => {
+  const handleForceReleaseHolder = (hId: string, associatedResKey?: string) => {
+    const targetResKey = (
+      associatedResKey ||
+      resourceKey ||
+      (result && typeof result.resourceId === "string" ? result.resourceId : "") ||
+      ""
+    ).trim();
+
     handleRequestDangerousAction(
       "Liberar Holder Forzosamente",
       `¿Estás seguro de que deseas forzar la liberación del holder '${hId}'? Esta acción liberará la porción del recurso retenido de forma inmediata en el motor SRE.`,
       async () => {
         setHolderId(hId);
-        setSreMethod("RELEASE_HOLDER");
         await executeCall({
           overrideProduct: "SRE",
           overrideMethod: "RELEASE_HOLDER",
-          overrideParams: { holderId: hId },
+          overrideParams: { holderId: hId, resourceKey: targetResKey },
         });
       }
     );
@@ -568,9 +778,20 @@ export function ManualControlTab({
           () => executeCall()
         );
       } else if (product === "SRE" && sreMethod === "UPDATE_RESOURCE") {
+        const hasDelta = deltaAmount.trim() !== "" && Number(deltaAmount) !== 0;
+        const title = isCurrentUnitary
+          ? "Actualizar Metadatos de Recurso Unitario"
+          : hasDelta
+          ? "Actualizar Capacidad / Metadatos de Recurso"
+          : "Actualizar Metadatos / Grupo de Recurso";
+        const desc = isCurrentUnitary
+          ? `¿Estás seguro de actualizar los metadatos del recurso unitario '${resourceKey}'?`
+          : hasDelta
+          ? `¿Estás seguro de modificar el recurso '${resourceKey}' con delta ${deltaAmount}? Esta modificación impactará la capacidad en vivo.`
+          : `¿Estás seguro de actualizar los datos del recurso '${resourceKey}' sin modificar su stock?`;
         handleRequestDangerousAction(
-          "Actualizar Capacidad / Metadatos de Recurso",
-          `¿Estás seguro de modificar el recurso '${resourceKey}' con delta ${deltaAmount}? Esta modificación impactará la capacidad en vivo.`,
+          title,
+          desc,
           () => executeCall()
         );
       } else if (product === "DLS" && dlsMethod === "ABORT_TRANSACTION") {
@@ -757,10 +978,28 @@ export function ManualControlTab({
                       sreMethod === "GET_RESOURCE_HOLDERS" ||
                       sreMethod === "UPDATE_RESOURCE") && (
                       <div className="space-y-1">
-                        <label className="text-[11px] font-medium text-muted-foreground flex items-center justify-between">
-                          <span>Resource Key <span className="text-destructive">*</span></span>
-                          <span className="text-[10px] text-muted-foreground/60">Clave única del recurso</span>
-                        </label>
+                        <div className="flex items-center justify-between">
+                          <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
+                            <span>Resource Key <span className="text-destructive">*</span></span>
+                          </label>
+                          {sreMethod === "UPDATE_RESOURCE" && resourceKey.trim() && (
+                            <button
+                              type="button"
+                              className="text-[10px] text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                              disabled={isLoading}
+                              onClick={() => {
+                                executeCall({
+                                  overrideProduct: "SRE",
+                                  overrideMethod: "GET_RESOURCE",
+                                  overrideParams: { resourceKey: resourceKey.trim() },
+                                });
+                              }}
+                            >
+                              <Search className="h-2.5 w-2.5" />
+                              <span>Cargar datos actuales</span>
+                            </button>
+                          )}
+                        </div>
                         <Input
                           placeholder="ej. stripe-payments, seat-vip-12"
                           value={resourceKey}
@@ -789,43 +1028,136 @@ export function ManualControlTab({
 
                     {sreMethod === "UPDATE_RESOURCE" && (
                       <>
-                        <div className="space-y-1">
+                        {isCurrentUnitary && (
+                          <div className="p-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs space-y-1">
+                            <div className="flex items-center gap-1.5 font-semibold">
+                              <AlertTriangle className="h-4 w-4 shrink-0" />
+                              <span>Recurso Unitario (Capacidad Fija)</span>
+                            </div>
+                            <p className="text-[11px] text-amber-400/90 leading-relaxed">
+                              {cannotSaveMetadata
+                                ? `La plantilla '${currentResourceTemplate?.name || "asociada"}' es de tipo Unitario (capacidad fija = 1) y tiene saveMetadata = false. No admite modificación de stock ni de metadatos.`
+                                : `La plantilla '${currentResourceTemplate?.name || "asociada"}' es de tipo Unitario (capacidad fija = 1). El stock es inmutable, pero puedes modificar sus metadatos a continuación.`}
+                            </p>
+                          </div>
+                        )}
+
+                        <div className="space-y-1.5">
                           <label className="text-[11px] font-medium text-muted-foreground flex items-center justify-between">
-                            <span>Delta Amount (Incremento / Decremento) <span className="text-destructive">*</span></span>
-                            <span className="text-[10px] text-amber-400 font-mono">ej. +5 o -3</span>
+                            <span>
+                              Delta Amount (Incremento / Decremento)
+                              {!isCurrentUnitary && !metadata.trim() && !groupKey.trim() && (
+                                <span className="text-destructive"> *</span>
+                              )}
+                            </span>
+                            {!isCurrentUnitary && (
+                              <span className="text-[10px] text-muted-foreground font-normal">
+                                {metadata.trim() || groupKey.trim()
+                                  ? "(Opcional si cambias metadatos o grupo)"
+                                  : "ej. +5 o -3"}
+                              </span>
+                            )}
                           </label>
                           <Input
                             type="number"
-                            placeholder="ej. 10 para sumar cupos, -5 para restar"
-                            value={deltaAmount}
+                            placeholder={
+                              isCurrentUnitary
+                                ? "No aplicable a recursos unitarios (fijo = 1)"
+                                : "ej. 10 para sumar, -5 para restar (o vacío para solo metadatos)"
+                            }
+                            value={isCurrentUnitary ? "" : deltaAmount}
                             onChange={(e) => setDeltaAmount(e.target.value)}
-                            className="h-8 text-xs font-mono"
-                            required
+                            disabled={isCurrentUnitary}
+                            className={cn(
+                              "h-8 text-xs font-mono",
+                              isCurrentUnitary && "opacity-60 cursor-not-allowed bg-muted"
+                            )}
                           />
+                          {!isCurrentUnitary && (
+                            <div className="flex items-center gap-1.5 pt-0.5">
+                              <span className="text-[10px] text-muted-foreground">Rápido:</span>
+                              {["+1", "+5", "+10", "-1", "-5"].map((val) => (
+                                <Button
+                                  key={val}
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-5 px-1.5 text-[10px] font-mono cursor-pointer hover:bg-primary/10"
+                                  onClick={() => setDeltaAmount(val.replace("+", ""))}
+                                >
+                                  {val}
+                                </Button>
+                              ))}
+                            </div>
+                          )}
                         </div>
 
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-medium text-muted-foreground">
-                            Metadatos JSON (Opcional)
-                          </label>
+                        <div className="space-y-1.5">
+                          <div className="flex items-center justify-between">
+                            <label className="text-[11px] font-medium text-muted-foreground flex items-center gap-1.5">
+                              <span>Metadatos JSON</span>
+                              {cannotSaveMetadata ? (
+                                <span className="text-[10px] text-amber-500 font-semibold">
+                                  (Rechazado por plantilla: saveMetadata = false)
+                                </span>
+                              ) : currentResourceTemplate?.saveMetadata ? (
+                                <span className="text-[10px] text-emerald-500 font-normal">
+                                  (Permitido por plantilla: opcional)
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-muted-foreground/70">(Opcional)</span>
+                              )}
+                            </label>
+                            {result && (result.key === resourceKey || result.resourceId === resourceKey) && result.metadata && (
+                              <div className="flex items-center gap-1">
+                                {metadata !== result.metadata && (
+                                  <button
+                                    type="button"
+                                    className="text-[10px] text-primary hover:underline cursor-pointer"
+                                    onClick={() => setMetadata(result.metadata || "")}
+                                  >
+                                    Restaurar actual
+                                  </button>
+                                )}
+                                {metadata && (
+                                  <button
+                                    type="button"
+                                    className="text-[10px] text-muted-foreground hover:text-foreground cursor-pointer ml-1.5"
+                                    onClick={() => setMetadata("")}
+                                  >
+                                    Limpiar
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
                           <Input
-                            placeholder='ej. {"region": "us-east"}'
-                            value={metadata}
+                            placeholder={
+                              cannotSaveMetadata
+                                ? "Plantilla configurada para rechazar metadatos"
+                                : 'ej. {"region": "us-east"}'
+                            }
+                            value={cannotSaveMetadata ? "" : metadata}
                             onChange={(e) => setMetadata(e.target.value)}
-                            className="h-8 text-xs font-mono"
+                            disabled={cannotSaveMetadata}
+                            className={cn(
+                              "h-8 text-xs font-mono",
+                              cannotSaveMetadata && "opacity-60 cursor-not-allowed bg-muted"
+                            )}
                           />
-                        </div>
 
-                        <div className="space-y-1">
-                          <label className="text-[11px] font-medium text-muted-foreground">
-                            Idempotency Key (Opcional)
-                          </label>
-                          <Input
-                            placeholder="ej. update-token-12345"
-                            value={idempotencyKey}
-                            onChange={(e) => setIdempotencyKey(e.target.value)}
-                            className="h-8 text-xs font-mono"
-                          />
+                          {cannotSaveMetadata && (
+                            <p className="text-[10px] text-amber-500/90 leading-tight">
+                              ⚠️ La plantilla {currentResourceTemplate ? `‘${currentResourceTemplate.name}’` : "asociada"} tiene <code>saveMetadata = false</code>. Cualquier metadato enviado será rechazado por el backend con un error 400.
+                            </p>
+                          )}
+
+                          {result && (result.key === resourceKey || result.resourceId === resourceKey) && result.metadata && (
+                            <p className="text-[10px] text-muted-foreground truncate">
+                              Valor actual en base de datos: <code className="font-mono text-foreground px-1 bg-muted rounded">{result.metadata}</code>
+                            </p>
+                          )}
                         </div>
                       </>
                     )}
@@ -847,12 +1179,12 @@ export function ManualControlTab({
                         </div>
                         <div className="space-y-1">
                           <label className="text-[10px] font-medium text-muted-foreground">
-                            Límite por Página
+                            Tamaño de Página
                           </label>
                           <Input
                             type="number"
                             min="1"
-                            max="50"
+                            max="100"
                             value={srePageSize}
                             onChange={(e) => setSrePageSize(Math.max(1, parseInt(e.target.value) || 10))}
                             className="h-8 text-xs font-mono"
@@ -862,21 +1194,22 @@ export function ManualControlTab({
                     )}
 
                     {sreMethod === "GET_RESOURCE_HOLDERS" && (
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-2 pt-1">
                         <div className="space-y-1">
                           <label className="text-[10px] font-medium text-muted-foreground">
-                            Filtro por Estado
+                            Filtrar por Estado
                           </label>
                           <Select value={sreStatusFilter} onValueChange={setSreStatusFilter}>
                             <SelectTrigger className="h-8 text-xs">
-                              <SelectValue placeholder="Estado" />
+                              <SelectValue placeholder="Todos" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="ALL">Todos los estados</SelectItem>
-                              <SelectItem value="CONFIRMED">CONFIRMED (Tomado)</SelectItem>
-                              <SelectItem value="PENDING">PENDING (En cola)</SelectItem>
-                              <SelectItem value="RELEASED">RELEASED (Liberado)</SelectItem>
-                              <SelectItem value="EXPIRED">EXPIRED (Expirado)</SelectItem>
+                              <SelectItem value="ALL">Todos</SelectItem>
+                              <SelectItem value="ACTIVE">ACTIVE</SelectItem>
+                              <SelectItem value="PENDING">PENDING</SelectItem>
+                              <SelectItem value="CONFIRMED">CONFIRMED</SelectItem>
+                              <SelectItem value="RELEASED">RELEASED</SelectItem>
+                              <SelectItem value="EXPIRED">EXPIRED</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -890,8 +1223,8 @@ export function ManualControlTab({
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="DEFAULT">Por defecto</SelectItem>
-                              <SelectItem value="ASC">Más antiguos primero</SelectItem>
-                              <SelectItem value="DESC">Más recientes primero</SelectItem>
+                              <SelectItem value="ASCENDING">Más antiguos primero</SelectItem>
+                              <SelectItem value="DESCENDING">Más recientes primero</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -993,14 +1326,36 @@ export function ManualControlTab({
               <div className="pt-2">
                 <Button
                   type="submit"
-                  disabled={isLoading || isViewer}
-                  variant={isCurrentActionDangerous ? "destructive" : "default"}
+                  disabled={isLoading || isViewer || (product === "SRE" && sreMethod === "UPDATE_RESOURCE" && isUnitaryBlocked)}
+                  variant={
+                    isUnitaryBlocked
+                      ? "secondary"
+                      : isCurrentActionDangerous
+                      ? "destructive"
+                      : "default"
+                  }
                   className="w-full h-9 gap-2 text-xs font-semibold"
                 >
                   {isLoading ? (
                     <>
                       <RefreshCw className="h-4 w-4 animate-spin" />
                       <span>Ejecutando operación...</span>
+                    </>
+                  ) : product === "SRE" && sreMethod === "UPDATE_RESOURCE" && isUnitaryBlocked ? (
+                    <>
+                      <Ban className="h-4 w-4" />
+                      <span>No modificable (Unitario sin metadatos)</span>
+                    </>
+                  ) : product === "SRE" && sreMethod === "UPDATE_RESOURCE" ? (
+                    <>
+                      <Save className="h-4 w-4" />
+                      <span>
+                        {isCurrentUnitary
+                          ? "Actualizar Metadatos"
+                          : deltaAmount.trim() !== "" && Number(deltaAmount) !== 0
+                          ? "Modificar Recurso"
+                          : "Actualizar Metadatos / Grupo"}
+                      </span>
                     </>
                   ) : isCurrentActionDangerous ? (
                     <>
@@ -1014,6 +1369,11 @@ export function ManualControlTab({
                     </>
                   )}
                 </Button>
+                {product === "SRE" && sreMethod === "UPDATE_RESOURCE" && isUnitaryBlocked && (
+                  <p className="text-[10px] text-amber-500 text-center mt-1.5 font-medium">
+                    No aplicable: Los recursos unitarios con <code>saveMetadata = false</code> no admiten cambios de stock ni de metadatos.
+                  </p>
+                )}
                 {isViewer && (
                   <p className="text-[10px] text-muted-foreground text-center mt-1.5">
                     Modo solo lectura: Tu rol de VIEWER no permite ejecutar acciones de control.
@@ -1216,15 +1576,38 @@ export function ManualControlTab({
                                 <Eye className="h-3 w-3" />
                                 <span>Ver Holders</span>
                               </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-7 text-xs gap-1 text-primary hover:text-primary"
-                                onClick={() => handlePrepareStockUpdate(res)}
-                              >
-                                <PlusCircle className="h-3 w-3" />
-                                <span>Modificar Stock</span>
-                              </Button>
+                              {(() => {
+                                const resTemplate = templates.find(
+                                  (t: any) => t.id === res.templateId || t.name === res.templateId
+                                );
+                                const isUnit = Boolean(
+                                  resTemplate && (resTemplate.type === "UNITARY" || resTemplate.mode === "unit")
+                                );
+
+                                if (isUnit) {
+                                  return (
+                                    <Badge
+                                      variant="outline"
+                                      className="h-7 text-[10px] border-border/70 text-muted-foreground font-normal px-2"
+                                      title="Recurso unitario: capacidad fija de 1 unidad y no admite modificaciones de stock"
+                                    >
+                                      Unitario (Fijo)
+                                    </Badge>
+                                  );
+                                }
+
+                                return (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7 text-xs gap-1 text-primary hover:text-primary"
+                                    onClick={() => handlePrepareStockUpdate(res)}
+                                  >
+                                    <PlusCircle className="h-3 w-3" />
+                                    <span>Modificar Stock</span>
+                                  </Button>
+                                );
+                              })()}
                             </div>
                           </div>
                         ))}
@@ -1278,6 +1661,35 @@ export function ManualControlTab({
               {/* CASO 2: SRE - Detalle de Recurso Individual */}
               {product === "SRE" && (sreMethod === "GET_RESOURCE" || sreMethod === "UPDATE_RESOURCE" || (result && typeof result.availableAmount === "number" && !Array.isArray(result.resources))) && (
                 <Card className="bg-card/60 border-border p-4 space-y-4">
+                  {lastReleasedHolderInfo && lastReleasedHolderInfo.resourceKey === (result.key || resourceKey) && (
+                    <div className="flex items-center justify-between p-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 shrink-0" />
+                        <span>
+                          Holder <strong className="font-mono text-foreground">{lastReleasedHolderInfo.holderId}</strong> liberado exitosamente. Stock disponible actualizado en vivo a <strong className="font-mono text-foreground">{result.availableAmount}</strong>.
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-6 text-[11px] px-2 border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/20 cursor-pointer"
+                          onClick={() => handleInspectHoldersForResource(result.key || resourceKey)}
+                        >
+                          Ver holders restantes
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground cursor-pointer"
+                          onClick={() => setLastReleasedHolderInfo(null)}
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex items-start justify-between gap-3 flex-wrap border-b border-border/50 pb-3">
                     <div>
                       <span className="text-[10px] uppercase font-bold text-muted-foreground">
@@ -1304,15 +1716,25 @@ export function ManualControlTab({
                         <span>Ver Holders</span>
                       </Button>
                       {sreMethod === "GET_RESOURCE" && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-xs gap-1 text-primary hover:text-primary"
-                          onClick={() => handlePrepareStockUpdate(result)}
-                        >
-                          <PlusCircle className="h-3 w-3" />
-                          <span>Modificar Stock</span>
-                        </Button>
+                        isCurrentUnitary ? (
+                          <Badge
+                            variant="outline"
+                            className="h-7 text-[11px] border-border/70 text-muted-foreground font-normal px-2.5"
+                            title="Recurso unitario: capacidad fija de 1 unidad y no admite modificaciones de stock"
+                          >
+                            Unitario (Fijo)
+                          </Badge>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 text-xs gap-1 text-primary hover:text-primary"
+                            onClick={() => handlePrepareStockUpdate(result)}
+                          >
+                            <PlusCircle className="h-3 w-3" />
+                            <span>Modificar Stock</span>
+                          </Button>
+                        )
                       )}
                       {sreMethod === "UPDATE_RESOURCE" && (
                         <Button
@@ -1354,14 +1776,24 @@ export function ManualControlTab({
                       </p>
                     </div>
 
-                    <div className="p-3 rounded-lg border border-border/60 bg-background/50 space-y-1">
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground">
-                        Template ID
-                      </span>
-                      <p className="font-mono text-xs text-muted-foreground truncate" title={result.templateId}>
-                        {result.templateId || "Dinámico"}
-                      </p>
-                    </div>
+                    {(() => {
+                      const matchedTemplate =
+                        currentResourceTemplate ||
+                        localTemplates.find(
+                          (t: any) => t.id === result.templateId || t.name === result.templateId
+                        );
+                      const tName = matchedTemplate?.name;
+                      return (
+                        <div className="p-3 rounded-lg border border-border/60 bg-background/50 space-y-1">
+                          <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                            Plantilla
+                          </span>
+                          <p className="font-medium text-xs text-foreground truncate" title={tName || (result.templateId ? `ID: ${result.templateId}` : undefined)}>
+                            {tName || "—"}
+                          </p>
+                        </div>
+                      );
+                    })()}
 
                     <div className="p-3 rounded-lg border border-border/60 bg-background/50 space-y-1">
                       <span className="text-[10px] uppercase font-bold text-muted-foreground">
@@ -1480,7 +1912,7 @@ export function ManualControlTab({
                                     size="sm"
                                     className="h-7 text-xs gap-1"
                                     disabled={isViewer}
-                                    onClick={() => handleForceReleaseHolder(h.holderId)}
+                                    onClick={() => handleForceReleaseHolder(h.holderId, h.resourceId || resourceKey)}
                                   >
                                     <Trash2 className="h-3 w-3" />
                                     <span>Liberar Holder</span>
@@ -1561,7 +1993,7 @@ export function ManualControlTab({
                         size="sm"
                         className="h-7 text-xs gap-1"
                         disabled={isViewer}
-                        onClick={() => handleForceReleaseHolder(result.holderId || holderId)}
+                        onClick={() => handleForceReleaseHolder(result.holderId || holderId, result.resourceId || resourceKey)}
                       >
                         <Trash2 className="h-3 w-3" />
                         <span>Liberar este Holder</span>
@@ -1831,7 +2263,7 @@ export function ManualControlTab({
 
               {/* CASO 7: Resultado Genérico / Confirmación 204 */}
               {(sreMethod === "RELEASE_HOLDER" || dlsMethod === "ABORT_TRANSACTION" || result?.success === true || (result?.message && !result?.key && !result?.status)) && (
-                <Card className="bg-emerald-500/10 border-emerald-500/30 p-4">
+                <Card className="bg-emerald-500/10 border-emerald-500/30 p-4 space-y-3">
                   <div className="flex items-center gap-2.5 text-emerald-400">
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
                     <div>
@@ -1843,6 +2275,29 @@ export function ManualControlTab({
                       </p>
                     </div>
                   </div>
+                  {product === "SRE" && resourceKey && (
+                    <div className="pt-2 border-t border-emerald-500/20 flex items-center justify-between gap-2 flex-wrap">
+                      <span className="text-xs text-muted-foreground">
+                        Recurso en formulario: <strong className="font-mono text-foreground">{resourceKey}</strong>
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-6 text-xs gap-1 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 cursor-pointer"
+                        onClick={() => {
+                          setSreMethod("GET_RESOURCE");
+                          executeCall({
+                            overrideProduct: "SRE",
+                            overrideMethod: "GET_RESOURCE",
+                            overrideParams: { resourceKey },
+                          });
+                        }}
+                      >
+                        <Eye className="h-3 w-3" />
+                        <span>Ver Stock de &apos;{resourceKey}&apos;</span>
+                      </Button>
+                    </div>
+                  )}
                 </Card>
               )}
 
