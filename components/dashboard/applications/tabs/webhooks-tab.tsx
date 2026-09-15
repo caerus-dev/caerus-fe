@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Plus, Trash2, Edit, RefreshCw, Webhook, MoreVertical } from 'lucide-react'
+import { Plus, Trash2, Edit, RefreshCw, Webhook, MoreVertical, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { WebhookDeliveriesView } from './webhook-deliveries-view'
 
 interface WebhooksTabProps {
   webhooks: any[]
@@ -37,6 +38,26 @@ export function WebhooksTab({
 }: WebhooksTabProps) {
   const isViewer = myRole === 'VIEWER'
   const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
+  const [selectedWebhookId, setSelectedWebhookId] = useState<string | null>(null)
+
+  const activeWebhook = selectedWebhookId
+    ? webhooks.find((w: any) => w.id === selectedWebhookId)
+    : null
+
+  // Si hay un webhook seleccionado, mostramos la vista detallada (Stripe Deliveries Split-View)
+  if (activeWebhook) {
+    return (
+      <WebhookDeliveriesView
+        webhook={activeWebhook}
+        selectedEnv={selectedEnv}
+        currentEnvDetails={currentEnvDetails}
+        myRole={myRole}
+        onBack={() => setSelectedWebhookId(null)}
+        onEditWebhook={openFormDialog}
+        onRotateSecret={onRotateSecret}
+      />
+    )
+  }
 
   return (
     <div className="space-y-3">
@@ -104,10 +125,11 @@ export function WebhooksTab({
               )}
             >
               <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div
+                    onClick={() => setSelectedWebhookId(webhook.id)}
                     className={cn(
-                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border',
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border cursor-pointer hover:opacity-80 transition-opacity',
                       webhook.isActive
                         ? cn(envColors.bg, envColors.border, envColors.text)
                         : 'bg-secondary text-muted-foreground border-border'
@@ -115,9 +137,12 @@ export function WebhooksTab({
                   >
                     <Webhook className="h-5 w-5" />
                   </div>
-                  <div className="space-y-1 min-w-0">
+                  <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-mono text-sm sm:text-base truncate max-w-[200px] sm:max-w-[400px]">
+                      <p
+                        onClick={() => setSelectedWebhookId(webhook.id)}
+                        className="font-mono text-sm sm:text-base truncate max-w-[200px] sm:max-w-[400px] cursor-pointer hover:text-primary transition-colors font-medium"
+                      >
                         {webhook.url}
                       </p>
                       <span
@@ -131,7 +156,12 @@ export function WebhooksTab({
                       </span>
                     </div>
                     {webhook.description && (
-                      <p className="text-sm font-medium">{webhook.description}</p>
+                      <p
+                        onClick={() => setSelectedWebhookId(webhook.id)}
+                        className="text-sm font-medium cursor-pointer hover:text-primary transition-colors truncate"
+                      >
+                        {webhook.description}
+                      </p>
                     )}
                     <p className="text-xs text-muted-foreground truncate max-w-[250px] sm:max-w-[500px]">
                       Suscrito a: {webhook.eventTypes?.length || 0} evento(s) {webhook.eventTypes?.join(', ')}
@@ -139,40 +169,56 @@ export function WebhooksTab({
                   </div>
                 </div>
                 
-                {!isViewer && (
-                  <div className="flex items-center justify-end gap-3 w-full sm:w-auto">
-                    <div className="flex items-center space-x-2 mr-2">
-                      <Switch
-                        checked={webhook.isActive}
-                        onCheckedChange={(checked) => onToggleWebhook(webhook.id, checked)}
-                      />
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => openFormDialog(webhook)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onRotateSecret(webhook.id)}>
-                          <RefreshCw className="mr-2 h-4 w-4" />
-                          Rotar Secreto
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => onDeleteWebhook(webhook.id)}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Eliminar
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                )}
+                <div className="flex items-center justify-end gap-2.5 w-full sm:w-auto">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedWebhookId(webhook.id)}
+                    className="gap-1.5 h-8 text-xs cursor-pointer"
+                  >
+                    <Send className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span>Entregas</span>
+                  </Button>
+
+                  {!isViewer && (
+                    <>
+                      <div className="flex items-center space-x-2 mr-1">
+                        <Switch
+                          checked={webhook.isActive}
+                          onCheckedChange={(checked) => onToggleWebhook(webhook.id, checked)}
+                        />
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setSelectedWebhookId(webhook.id)}>
+                            <Send className="mr-2 h-4 w-4" />
+                            Ver entregas
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => openFormDialog(webhook)}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onRotateSecret(webhook.id)}>
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            Rotar Secreto
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => onDeleteWebhook(webhook.id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Eliminar
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </>
+                  )}
+                </div>
               </CardContent>
             </Card>
           ))}
