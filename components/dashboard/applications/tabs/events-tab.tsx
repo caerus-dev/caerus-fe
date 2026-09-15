@@ -57,6 +57,12 @@ interface EventsTabProps {
   selectedEnv: string;
   currentEnvDetails?: any;
   myRole?: string;
+  onNavigateToManualControl?: (preselect: {
+    product: "SRE" | "DLS";
+    method: string;
+    params: Record<string, any>;
+    autoExecute?: boolean;
+  }) => void;
 }
 
 // Caché a nivel de módulo para cargar el catálogo de tipos de evento una sola vez en la aplicación
@@ -68,6 +74,7 @@ export function EventsTab({
   appId,
   selectedEnv,
   currentEnvDetails,
+  onNavigateToManualControl,
 }: EventsTabProps) {
   const envId = currentEnvDetails?.id;
   const envColors = getEnvColors(selectedEnv, null, envId);
@@ -753,6 +760,7 @@ export function EventsTab({
         catalogItem={selectedCatalogItem}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
+        onNavigateToManualControl={onNavigateToManualControl}
       />
     </div>
   );

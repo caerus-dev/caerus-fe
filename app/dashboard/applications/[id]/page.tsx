@@ -53,7 +53,9 @@ import { DuplicateTemplateDialog } from "@/components/dashboard/applications/dup
 import { DuplicateLockDialog } from "@/components/dashboard/applications/duplicate-lock-dialog"
 import { MetricsTab } from "@/components/dashboard/applications/tabs/metrics-tab"
 import { EventsTab } from "@/components/dashboard/applications/tabs/events-tab"
-import { LineChart, History } from "lucide-react"
+import { ManualControlTab } from "@/components/dashboard/applications/tabs/manual-control-tab"
+import { ManualControlPreselect } from "@/types/telemetry"
+import { LineChart, History, SlidersHorizontal } from "lucide-react"
 
 export default function ApplicationDashboard({
   params,
@@ -64,6 +66,10 @@ export default function ApplicationDashboard({
   const router = useRouter()
   const searchParams = useSearchParams()
   const envParam = searchParams.get("env")
+  const tabParam = searchParams.get("tab")
+
+  const [activeTab, setActiveTab] = useState<string>(tabParam || "resources")
+  const [manualControlPreselect, setManualControlPreselect] = useState<ManualControlPreselect | null>(null)
 
   const [app, setApp] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -215,6 +221,17 @@ export default function ApplicationDashboard({
       isSubscribed = false
     }
   }, [selectedEnv, app?.id])
+
+  useEffect(() => {
+    if (tabParam && ["resources", "locks", "keys", "webhooks", "metrics", "events", "control-manual"].includes(tabParam)) {
+      setActiveTab(tabParam)
+    }
+  }, [tabParam])
+
+  const handleNavigateToManualControl = (config: ManualControlPreselect) => {
+    setManualControlPreselect(config)
+    setActiveTab("control-manual")
+  }
 
   const handleEnvChange = (val: string) => {
     if (val === selectedEnv) return
@@ -672,7 +689,16 @@ export default function ApplicationDashboard({
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="resources" className="space-y-3">
+      <Tabs
+        value={activeTab}
+        onValueChange={(val) => {
+          setActiveTab(val)
+          if (val !== "control-manual") {
+            setManualControlPreselect(null)
+          }
+        }}
+        className="space-y-3"
+      >
         <div className="w-full overflow-x-auto pb-1 -mb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <TabsList className="bg-secondary flex w-max min-w-full sm:min-w-0 sm:w-fit">
             <TabsTrigger value="resources" className="gap-1.5 px-3">
@@ -703,6 +729,10 @@ export default function ApplicationDashboard({
               <History className="h-4 w-4" />
               <span>Eventos</span>
             </TabsTrigger>
+            <TabsTrigger value="control-manual" className="gap-1.5 px-3">
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Control Manual</span>
+            </TabsTrigger>
           </TabsList>
         </div>
 
@@ -729,6 +759,7 @@ export default function ApplicationDashboard({
             isLoading={isTemplatesLoading}
             onOpenDeleteLock={handleOpenDeleteLock}
             onOpenDuplicateLock={handleOpenDuplicateLock}
+            onNavigateToManualControl={handleNavigateToManualControl}
           />
         </TabsContent>
 
@@ -772,6 +803,24 @@ export default function ApplicationDashboard({
             selectedEnv={selectedEnv}
             currentEnvDetails={currentEnvDetails}
             myRole={app.myRole}
+            onNavigateToManualControl={handleNavigateToManualControl}
+          />
+        </TabsContent>
+
+        <TabsContent value="control-manual" className="space-y-4">
+          <ManualControlTab
+            key={
+              manualControlPreselect
+                ? `${selectedEnv}-${manualControlPreselect.product}-${manualControlPreselect.method}-${JSON.stringify(manualControlPreselect.params || {})}`
+                : `manual-control-tab-${selectedEnv}`
+            }
+            appId={id}
+            selectedEnv={selectedEnv}
+            currentEnvDetails={currentEnvDetails}
+            myRole={app.myRole}
+            locks={locks}
+            templates={templates}
+            initialPreselect={manualControlPreselect}
           />
         </TabsContent>
       </Tabs>
