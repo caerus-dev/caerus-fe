@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { Lock, Plus, MoreVertical, Settings, Play, Trash2, Copy } from 'lucide-react'
+import { Lock, Plus, MoreVertical, Settings, Play, Trash2, Copy, SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -22,6 +22,12 @@ interface LocksTabProps {
   isLoading?: boolean
   onOpenDeleteLock: (template: any) => void
   onOpenDuplicateLock: (template: any) => void
+  onNavigateToManualControl?: (preselect: {
+    product: "SRE" | "DLS"
+    method: string
+    params: Record<string, any>
+    autoExecute?: boolean
+  }) => void
 }
 
 export function LocksTab({
@@ -32,7 +38,8 @@ export function LocksTab({
   myRole,
   isLoading,
   onOpenDeleteLock,
-  onOpenDuplicateLock
+  onOpenDuplicateLock,
+  onNavigateToManualControl,
 }: LocksTabProps) {
   const isViewer = myRole === 'VIEWER'
   const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
@@ -138,6 +145,21 @@ export function LocksTab({
                                 Configurar
                               </DropdownMenuItem>
                             </Link>
+                            {onNavigateToManualControl && (
+                              <DropdownMenuItem
+                                className="cursor-pointer flex items-center"
+                                onClick={() =>
+                                  onNavigateToManualControl({
+                                    product: "DLS",
+                                    method: "GET_LOCK_STATUS",
+                                    params: { namespace: lock.namespace, lockKey: "" },
+                                  })
+                                }
+                              >
+                                <SlidersHorizontal className="h-4 w-4 mr-2 text-primary shrink-0" />
+                                <span>Ver en Control Manual...</span>
+                              </DropdownMenuItem>
+                            )}
                             {onOpenDuplicateLock && (
                               <DropdownMenuItem
                                 className="cursor-pointer flex items-center"
