@@ -47,6 +47,12 @@ describe('lib/utils', () => {
       const productionColors = getEnvColors('PRODUCTION')
       expect(productionColors.dot).toBe('bg-green-500')
     })
+
+    it('should prioritize customPresetId color over environment name', () => {
+      const customColors = getEnvColors('dev', 'purple')
+      expect(customColors.dot).toBe('bg-purple-500')
+      expect(customColors.text).toBe('text-purple-400')
+    })
   })
 
   describe('formatPercentage', () => {

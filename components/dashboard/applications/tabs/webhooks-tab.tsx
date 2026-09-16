@@ -37,7 +37,7 @@ export function WebhooksTab({
   openFormDialog,
 }: WebhooksTabProps) {
   const isViewer = myRole === 'VIEWER'
-  const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
+  const envColors = getEnvColors(selectedEnv, currentEnvDetails?.color, currentEnvDetails?.id)
   const [selectedWebhookId, setSelectedWebhookId] = useState<string | null>(null)
 
   const activeWebhook = selectedWebhookId

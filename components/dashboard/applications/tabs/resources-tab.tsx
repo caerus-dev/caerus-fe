@@ -37,7 +37,7 @@ export function ResourcesTab({
   onOpenDuplicateTemplate,
 }: ResourcesTabProps) {
   const isViewer = myRole === 'VIEWER'
-  const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
+  const envColors = getEnvColors(selectedEnv, currentEnvDetails?.color, currentEnvDetails?.id)
 
   return (
     <div className="space-y-3">

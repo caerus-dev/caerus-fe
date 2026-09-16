@@ -572,7 +572,7 @@ export default function ApplicationDashboard({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="gap-2 h-9 text-sm font-semibold cursor-pointer border-border/80 px-3">
-                  <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", getEnvColors(selectedEnv, null, currentEnvDetails?.id).dot)} />
+                  <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", getEnvColors(selectedEnv, currentEnvDetails?.color, currentEnvDetails?.id).dot)} />
                   <span className="capitalize">{selectedEnv}</span>
                   <ChevronDown className="h-4 w-4 opacity-60 ml-0.5" />
                 </Button>
@@ -580,7 +580,7 @@ export default function ApplicationDashboard({
               <DropdownMenuContent align="end" className="w-52 bg-card border-border p-1.5">
                 {app?.environments && app.environments.map((env: any) => {
                   const isSelected = selectedEnv === env.name
-                  const colors = getEnvColors(env.name, null, env.id)
+                  const colors = getEnvColors(env.name, env.color, env.id)
                   return (
                     <DropdownMenuItem
                       key={env.id}

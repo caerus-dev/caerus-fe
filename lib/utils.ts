@@ -127,28 +127,29 @@ export function getEnvColors(envName?: string | null, customPresetId?: string | 
 }
 
 export function getUniqueEnvDots(
-  environments?: (string | { name: string })[] | null,
+  environments?: (string | { name: string; color?: string | null; id?: string | null })[] | null,
   maxDots = 3
 ) {
   if (!environments || environments.length === 0) {
     return { visibleDots: [], overflowCount: 0, allNames: [] }
   }
 
-  const names = environments.map((e) => (typeof e === 'string' ? e : e.name))
-  const seenKinds = new Set<EnvKind>()
+  const items = environments.map((e) =>
+    typeof e === 'string'
+      ? { name: e, color: null, id: null }
+      : { name: e.name, color: e.color || null, id: (e as any).id || null }
+  )
+  const names = items.map((i) => i.name)
+  const seenDots = new Set<string>()
   const result: { kind: EnvKind; colors: ReturnType<typeof getEnvColors> }[] = []
 
-  const order: EnvKind[] = ['dev', 'staging', 'prod', 'purple', 'cyan', 'pink', 'orange', 'slate']
-
-  for (const name of names) {
-    seenKinds.add(envKind(name))
-  }
-
-  for (const kind of order) {
-    if (seenKinds.has(kind)) {
+  for (const item of items) {
+    const colors = getEnvColors(item.name, item.color, item.id)
+    if (!seenDots.has(colors.dot)) {
+      seenDots.add(colors.dot)
       result.push({
-        kind,
-        colors: getEnvColors(kind),
+        kind: envKind(item.name),
+        colors,
       })
     }
   }

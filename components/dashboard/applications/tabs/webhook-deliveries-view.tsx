@@ -78,7 +78,7 @@ export function WebhookDeliveriesView({
   onRotateSecret,
 }: WebhookDeliveriesViewProps) {
   const isViewer = myRole === "VIEWER";
-  const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id);
+  const envColors = getEnvColors(selectedEnv, currentEnvDetails?.color, currentEnvDetails?.id);
 
   // Estado de sub-pestaña: 'deliveries' o 'overview'
   const [activeSubTab, setActiveSubTab] = useState<string>("deliveries");
