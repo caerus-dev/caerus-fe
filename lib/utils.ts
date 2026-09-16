@@ -178,3 +178,29 @@ export const formatPercentage = (val: number): string => {
   if (val >= 100) return Math.round(val).toString()
   return Number(val.toFixed(1)).toString()
 }
+
+export const formatRelativeTime = (dateInput: string | number | Date): string => {
+  const date = new Date(dateInput)
+  if (isNaN(date.getTime())) return ""
+
+  const now = new Date()
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+  if (diffInSeconds < 30) return "Justo ahora"
+  if (diffInSeconds < 60) return `Hace ${diffInSeconds}s`
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60)
+  if (diffInMinutes < 60) return `Hace ${diffInMinutes}m`
+
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  if (diffInHours < 24) return `Hace ${diffInHours}h`
+
+  const diffInDays = Math.floor(diffInHours / 24)
+  if (diffInDays === 1) return "Ayer"
+  if (diffInDays < 7) return `Hace ${diffInDays}d`
+
+  return date.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+  })
+}
