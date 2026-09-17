@@ -123,7 +123,14 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>Tema</Label>
-            <Select value={theme} onValueChange={setTheme}>
+            <Select
+              value={theme}
+              onValueChange={(value) => {
+                if (value === "light" || value === "dark" || value === "system") {
+                  setTheme(value)
+                }
+              }}
+            >
               <SelectTrigger className="max-w-xs">
                 <SelectValue placeholder="Seleccionar tema" />
               </SelectTrigger>
