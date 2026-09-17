@@ -205,6 +205,7 @@ export function DocsContent() {
                     variant="ghost"
                     size="icon"
                     className="absolute top-3 right-3 h-8 w-8 hover:bg-background/80"
+                    aria-label={copiedCode === key ? "Código copiado" : "Copiar código"}
                     onClick={() => copyToClipboard(code, key)}
                   >
                     {copiedCode === key ? (
