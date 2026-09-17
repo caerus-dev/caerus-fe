@@ -11,7 +11,7 @@ const faqs = [
   {
     question: "¿Necesito tarjeta de crédito para empezar?",
     answer:
-      "Podés explorar la plataforma y registrarte gratis. Para crear aplicaciones y procesar operaciones con el plan Developer, solo requerimos vincular una tarjeta para validar la cuenta y cubrir eventuales consumos excedentes.",
+      "Sí. Para activar la cuenta y desplegar aplicaciones, tenés que registrar una tarjeta de respaldo; el plan Developer sigue costando $0 y solo cobra excedentes.",
   },
   {
     question: "¿Qué ocurre si supero el límite mensual de llamadas?",
