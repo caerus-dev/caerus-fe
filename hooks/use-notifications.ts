@@ -22,6 +22,8 @@ export function useNotifications() {
   const filterRef = useRef<NotificationFilter>(filter);
   filterRef.current = filter;
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   // Carga únicamente el conteo de no leídas (para el badge / polling liviano)
   const fetchUnreadCount = useCallback(async () => {
     try {
@@ -44,7 +46,13 @@ export function useNotifications() {
         setIsLoadingMore(true);
       } else {
         setIsLoading(true);
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
       }
+
+      const signal = !append ? abortControllerRef.current?.signal : undefined;
 
       try {
         const params = new URLSearchParams({
@@ -58,13 +66,17 @@ export function useNotifications() {
 
         const res = await fetch(`/api/notifications?${params.toString()}`, {
           cache: "no-store",
+          signal,
         });
 
         if (res.ok) {
           const data: NotificationsPagedResponse = await res.json();
-          setNotifications((prev) =>
-            append ? [...prev, ...(data.content || [])] : data.content || []
-          );
+          setNotifications((prev) => {
+            if (!append) return data.content || [];
+            const existingIds = new Set(prev.map((n) => n.id));
+            const newItems = (data.content || []).filter((n) => !existingIds.has(n.id));
+            return [...prev, ...newItems];
+          });
           setPage(data.page ?? targetPage);
           setHasNext(Boolean(data.hasNext));
           setTotalElements(data.totalElements ?? 0);
@@ -72,7 +84,10 @@ export function useNotifications() {
             setUnreadCount(data.unreadCount);
           }
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === "AbortError") {
+          return;
+        }
         console.error("Error fetching notifications list:", err);
       } finally {
         setIsLoading(false);
@@ -99,14 +114,17 @@ export function useNotifications() {
 
   // Marcar una notificación individual como leída con Optimistic Update
   const markAsRead = useCallback(async (id: string) => {
-    setNotifications((prev) =>
-      prev.map((item) =>
+    setNotifications((prev) => {
+      const target = prev.find((item) => item.id === id);
+      if (target && !target.read) {
+        setUnreadCount((count) => Math.max(0, count - 1));
+      }
+      return prev.map((item) =>
         item.id === id
           ? { ...item, read: true, readAt: item.readAt || new Date().toISOString() }
           : item
-      )
-    );
-    setUnreadCount((prev) => Math.max(0, prev - 1));
+      );
+    });
 
     try {
       const res = await fetch(`/api/notifications/${id}/read`, {
@@ -144,6 +162,10 @@ export function useNotifications() {
   useEffect(() => {
     fetchNotifications(0, "all", false);
     fetchUnreadCount();
+
+    return () => {
+      abortControllerRef.current?.abort();
+    };
   }, [fetchNotifications, fetchUnreadCount]);
 
   // Polling inteligente de conteo no leído (cada 45s, solo si el documento está visible)

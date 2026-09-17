@@ -6,6 +6,9 @@ export type NotificationSeverity = "INFO" | "WARNING" | "CRITICAL";
 
 export interface NotificationMetadata {
   percentage?: number;
+  consumed?: number;
+  included?: number;
+  planName?: string;
   actionUrl?: string;
   token?: string;
   applicationName?: string;
