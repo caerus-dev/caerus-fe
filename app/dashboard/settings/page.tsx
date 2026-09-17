@@ -2,7 +2,7 @@
 
 import { useTheme } from "@/components/theme-provider"
 import { useState, useEffect } from "react"
-import { User, Shield, Palette } from "lucide-react"
+import { User, Shield, Palette, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
@@ -168,7 +179,49 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-
+      {/* Zona de Peligro */}
+      <Card className="bg-card/50 border-destructive/50">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-destructive">
+            <Trash2 className="h-5 w-5" />
+            Zona de Peligro
+          </CardTitle>
+          <CardDescription>
+            Acciones irreversibles y destructivas
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Eliminar Cuenta</p>
+              <p className="text-sm text-muted-foreground">
+                Eliminar permanentemente tu cuenta de usuario y todos tus datos
+              </p>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">Eliminar Cuenta</Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta acción no se puede deshacer. Esto eliminará permanentemente tu
+                    cuenta, todas tus aplicaciones, API keys y removerá tu
+                    acceso como colaborador.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Eliminar Cuenta
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
