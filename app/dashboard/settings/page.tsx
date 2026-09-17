@@ -1,12 +1,12 @@
 "use client"
 
+import { useTheme } from "@/components/theme-provider"
 import { useState, useEffect } from "react"
-import { Settings, User, Building, Bell, Shield, Palette, Globe, Trash2 } from "lucide-react"
+import { User, Shield, Palette, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import {
   Select,
@@ -28,9 +28,8 @@ import {
 } from "@/components/ui/alert-dialog"
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("profile")
+  const { theme, setTheme } = useTheme()
   const [user, setUser] = useState<any>(null)
-  const [isSaving, setIsSaving] = useState(false)
   
   // We'll fetch the user data in this client component to replace the mock.
   // In the future this could be supplied by a global context.
@@ -52,19 +51,13 @@ export default function SettingsPage() {
     fetchUser()
   }, [])
 
-  const handleSave = async () => {
-    setIsSaving(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsSaving(false)
-  }
-
   return (
     <div className="space-y-8">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Configuración</h1>
         <p className="text-muted-foreground">
-          Manage your account and organization preferences
+          Administrá las preferencias de tu cuenta personal
         </p>
       </div>
 
@@ -73,10 +66,10 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
-            Profile
+            Perfil
           </CardTitle>
           <CardDescription>
-            Your personal account information
+            Información de tu cuenta personal
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -86,14 +79,14 @@ export default function SettingsPage() {
             </div>
             <div>
               <Button variant="outline" size="sm">
-                Change Avatar
+                Cambiar Avatar
               </Button>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input id="name" defaultValue={user?.name || ""} />
+              <Label htmlFor="name">Nombre Completo</Label>
+              <Input id="name" defaultValue={user?.name || ""} readOnly className="bg-secondary text-muted-foreground" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -103,122 +96,39 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Organization Settings */}
-      <Card className="bg-card/50 border-border">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building className="h-5 w-5" />
-            Organization
-          </CardTitle>
-          <CardDescription>
-            Manage your organization settings
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="org-name">Organization Name</Label>
-                <Input id="org-name" defaultValue={user?.org_name || user?.name || ""} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="org-slug">Organization Slug</Label>
-                <Input id="org-slug" defaultValue={user?.org_name || user?.name || ""} disabled className="bg-secondary" />
-              </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="timezone">Timezone</Label>
-            <Select defaultValue="america-buenos_aires">
-              <SelectTrigger id="timezone" className="max-w-xs">
-                <Globe className="h-4 w-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="america-buenos_aires">America/Buenos_Aires (GMT-3)</SelectItem>
-                <SelectItem value="america-new_york">America/New_York (GMT-4)</SelectItem>
-                <SelectItem value="europe-london">Europe/London (GMT+1)</SelectItem>
-                <SelectItem value="asia-tokyo">Asia/Tokyo (GMT+9)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Notifications */}
-      <Card className="bg-card/50 border-border">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
-            Notifications
-          </CardTitle>
-          <CardDescription>
-            Configure how you receive alerts and updates
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Email Notifications</p>
-              <p className="text-sm text-muted-foreground">
-                Receive email alerts for important events
-              </p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Usage Alerts</p>
-              <p className="text-sm text-muted-foreground">
-                Get notified when reaching 80% of plan limit
-              </p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Security Alerts</p>
-              <p className="text-sm text-muted-foreground">
-                Alerts for suspicious activity or API key usage
-              </p>
-            </div>
-            <Switch defaultChecked />
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Weekly Reports</p>
-              <p className="text-sm text-muted-foreground">
-                Receive weekly usage summary via email
-              </p>
-            </div>
-            <Switch />
-          </div>
-        </CardContent>
-      </Card>
+
+
 
       {/* Appearance */}
       <Card className="bg-card/50 border-border">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="h-5 w-5" />
-            Appearance
+            Apariencia
           </CardTitle>
           <CardDescription>
-            Customize the look and feel
+            Personalizá el aspecto visual de la plataforma
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Theme</Label>
-            <Select defaultValue="dark">
+            <Label>Tema</Label>
+            <Select
+              value={theme}
+              onValueChange={(value) => {
+                if (value === "light" || value === "dark" || value === "system") {
+                  setTheme(value)
+                }
+              }}
+            >
               <SelectTrigger className="max-w-xs">
-                <SelectValue />
+                <SelectValue placeholder="Seleccionar tema" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
+                <SelectItem value="light">Claro</SelectItem>
+                <SelectItem value="dark">Oscuro</SelectItem>
+                <SelectItem value="system">Sistema</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -230,81 +140,81 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Security
+            Seguridad
           </CardTitle>
           <CardDescription>
-            Manage your account security
+            Administrá la seguridad de tu cuenta
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Two-Factor Authentication</p>
+              <p className="font-medium">Autenticación en Dos Pasos (2FA)</p>
               <p className="text-sm text-muted-foreground">
-                Add an extra layer of security to your account
+                Agregá una capa extra de seguridad a tu cuenta
               </p>
             </div>
-            <Button variant="outline">Enable 2FA</Button>
+            <Button variant="outline">Activar 2FA</Button>
           </div>
           <Separator />
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Change Password</p>
+              <p className="font-medium">Cambiar Contraseña</p>
               <p className="text-sm text-muted-foreground">
-                Update your account password
+                Actualizá la contraseña de tu cuenta
               </p>
             </div>
-            <Button variant="outline">Change</Button>
+            <Button variant="outline">Cambiar</Button>
           </div>
           <Separator />
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Active Sessions</p>
+              <p className="font-medium">Sesiones Activas</p>
               <p className="text-sm text-muted-foreground">
-                Manage devices where you are logged in
+                Administrá los dispositivos donde iniciaste sesión
               </p>
             </div>
-            <Button variant="outline">View Sessions</Button>
+            <Button variant="outline">Ver Sesiones</Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Danger Zone */}
+      {/* Zona de Peligro */}
       <Card className="bg-card/50 border-destructive/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <Trash2 className="h-5 w-5" />
-            Danger Zone
+            Zona de Peligro
           </CardTitle>
           <CardDescription>
-            Irreversible and destructive actions
+            Acciones irreversibles y destructivas
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Delete Organization</p>
+              <p className="font-medium">Eliminar Cuenta</p>
               <p className="text-sm text-muted-foreground">
-                Permanently delete your organization and all data
+                Eliminar permanentemente tu cuenta de usuario y todos tus datos
               </p>
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive">Delete Organization</Button>
+                <Button variant="destructive">Eliminar Cuenta</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your
-                    organization, all applications, API keys, and remove all
-                    collaborator access.
+                    Esta acción no se puede deshacer. Esto eliminará permanentemente tu
+                    cuenta, todas tus aplicaciones, API keys y removerá tu
+                    acceso como colaborador.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
                   <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Delete Organization
+                    Eliminar Cuenta
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -312,13 +222,6 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Save button */}
-      <div className="flex justify-end">
-        <Button onClick={handleSave} disabled={isSaving}>
-          {isSaving ? "Saving..." : "Save Changes"}
-        </Button>
-      </div>
     </div>
   )
 }

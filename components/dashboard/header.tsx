@@ -36,7 +36,7 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
 
       <div className="flex items-center gap-2">
         {/* Docs link */}
-        <Link href="/dashboard/docs">
+        <Link href="/docs">
           <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5">
             <BookOpen className="h-4 w-4" />
             <span className="hidden sm:inline">Documentación</span>

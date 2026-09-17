@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { triggerUserRefresh, useUser } from "@/hooks/use-user";
 import { BillingPlan, PlanCode } from "@/types/billing";
+import { DEFAULT_BILLING_PLANS } from "@/lib/billing-plans";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
@@ -277,7 +278,7 @@ export function SetupPaymentMethodModal({
   const [step, setStep] = useState<"select-plan" | "payment">(initialStep);
 
   // Plans state
-  const [plans, setPlans] = useState<BillingPlan[]>([]);
+  const [plans, setPlans] = useState<BillingPlan[]>(DEFAULT_BILLING_PLANS);
   const [isLoadingPlans, setIsLoadingPlans] = useState(false);
   const [selectedPlanCode, setSelectedPlanCode] = useState<PlanCode>("DEVELOPER");
 
