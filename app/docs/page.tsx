@@ -1,20 +1,269 @@
-import { auth0 } from "@/lib/auth0"
-import { Navbar } from "@/components/landing/navbar"
-import { Footer } from "@/components/landing/footer"
-import { DocsContent } from "@/components/docs/docs-content"
+import Link from "next/link"
+import { ArrowRight, Layers, Lock, Zap, Server, ShieldCheck, Database } from "lucide-react"
+import { DocsPageLayout } from "@/components/docs/docs-page-layout"
+import { CodeBlock, SignatureBlock } from "@/components/docs/code-block"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 
-export default async function DocsPage() {
-  const session = await auth0.getSession()
+const tocItems = [
+  { id: "problema", title: "¿Qué problema resuelve Caerus?" },
+  { id: "arquitectura", title: "Arquitectura de Estado Híbrido" },
+  { id: "aviones", title: "Control Plane vs Data Plane" },
+  { id: "motores", title: "Los Motores: SRE y DLS" },
+  { id: "quickstart", title: "Inicio Rápido (SDK)" },
+]
 
+export default function DocsOverviewPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Navbar user={session?.user} />
-      <main className="flex-1 pt-28 pb-20 px-6">
-        <div className="max-w-6xl mx-auto">
-          <DocsContent />
+    <DocsPageLayout
+      breadcrumbs={[{ label: "Comenzando" }, { label: "Visión General" }]}
+      title="Visión General & Arquitectura"
+      badge="Core Platform"
+      description="Caerus es una plataforma Backend-as-a-Service (BaaS) diseñada para resolver la concurrencia distribuida, reservas de recursos limitados y sincronización de procesos críticos sin complejidad operativa."
+      tocItems={tocItems}
+    >
+      {/* Sección: El Problema */}
+      <section id="problema" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          ¿Qué problema resuelve Caerus?
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Vender o apartar algo de lo que <strong>solo hay una unidad</strong> (una butaca de cine, un turno médico, un cupo de inscripción o inventario limitado) es mucho más difícil de lo que aparenta. Dos usuarios presionan <em>Comprar</em> en la misma fracción de segundo; una pasarela de pago tarda 8 segundos en contestar; y un tercer usuario abandona el carrito con el recurso bloqueado.
+        </p>
+        <p className="text-muted-foreground leading-relaxed">
+          Resolver esto de forma artesanal exige clústeres de ZooKeeper, scripts Lua en Redis, transacciones con bloqueos pesados en SQL y tareas en segundo plano para limpiar reservas abandonadas. <strong>Caerus abstrae toda esta infraestructura distribuida detrás de APIs declarativas de baja latencia y un SDK unificado.</strong>
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
+          <Card className="bg-muted/20 border-border/60">
+            <CardHeader className="p-4 pb-2">
+              <Zap className="h-5 w-5 text-amber-500 mb-1" />
+              <CardTitle className="text-sm">Menor Time-to-Market</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 text-xs text-muted-foreground">
+              Elimina meses de desarrollo e ingeniería de infraestructura distribuida en cada microservicio.
+            </CardContent>
+          </Card>
+
+          <Card className="bg-muted/20 border-border/60">
+            <CardHeader className="p-4 pb-2">
+              <ShieldCheck className="h-5 w-5 text-emerald-500 mb-1" />
+              <CardTitle className="text-sm">Cero Overbooking</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 text-xs text-muted-foreground">
+              Garantiza exclusión mutua estricta y evita sobreventas o carreras de actualización en la base de datos.
+            </CardContent>
+          </Card>
+
+          <Card className="bg-muted/20 border-border/60">
+            <CardHeader className="p-4 pb-2">
+              <Server className="h-5 w-5 text-blue-500 mb-1" />
+              <CardTitle className="text-sm">Latencia &lt; 20 ms</CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 text-xs text-muted-foreground">
+              El hot path opera en memoria con operaciones atómicas gRPC sobre Redis, sin contención en disco.
+            </CardContent>
+          </Card>
         </div>
-      </main>
-      <Footer />
-    </div>
+      </section>
+
+      {/* Sección: Arquitectura de Estado Híbrido */}
+      <section id="arquitectura" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Arquitectura de Estado Híbrido
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Caerus implementa un modelo de estado híbrido que desacopla la velocidad de procesamiento de la persistencia durable en disco:
+        </p>
+
+        <div className="space-y-3 my-4">
+          <div className="rounded-xl border border-border/60 bg-muted/30 p-4">
+            <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
+              <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
+              <span>1. Hot Path (En Memoria - Redis Stack)</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+              Las operaciones transaccionales de alta frecuencia (adquisición de locks, reservas temporales <code>take</code>, conteo atómico y expiraciones por TTL) se procesan directamente en <strong>Redis</strong> mediante scripts Lua atómicos.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-border/60 bg-muted/30 p-4">
+            <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
+              <span className="inline-block h-2 w-2 rounded-full bg-blue-500" />
+              <span>2. Cold Path (Persistencia - PostgreSQL con Write-Behind)</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+              El estado se sincroniza periódicamente a <strong>PostgreSQL</strong> mediante trabajadores en segundo plano y el patrón <em>Transactional Outbox</em> con <code>SKIP LOCKED</code>, protegiendo a la base de datos de picos de contención.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Sección: Control Plane vs Data Plane */}
+      <section id="aviones" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Control Plane vs Data Plane
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          El sistema está dividido estrictamente en dos planos para garantizar máxima seguridad y aislamiento:
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+          <div className="rounded-xl border border-border/70 p-4 bg-muted/20">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-sm text-foreground">Control Plane (Gestión)</h3>
+              <Badge variant="outline" className="text-[10px]">REST / Auth0</Badge>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Es el dashboard web donde los administradores y desarrolladores gestionan Organizaciones, Ambientes (Dev, Staging, Prod), Plantillas de Recursos y API Keys de autenticación.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-border/70 p-4 bg-muted/20">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-semibold text-sm text-foreground">Data Plane (Motor de Ejecución)</h3>
+              <Badge variant="outline" className="text-[10px] text-primary border-primary/40">gRPC / 9090</Badge>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Es el motor de alta concurrencia con el que dialoga el SDK de tu backend. Se comunica por gRPC binario, validando API Keys en cada solicitud con latencias menores a 20 ms.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Sección: Motores SRE y DLS */}
+      <section id="motores" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Los Motores: SRE y DLS
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Caerus provee dos motores especializados según el nivel de abstracción requerido:
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+          <Card className="border-border/70 hover:border-border transition-colors">
+            <CardHeader className="p-5 pb-3">
+              <div className="flex items-center gap-2">
+                <Layers className="h-5 w-5 text-emerald-500" />
+                <CardTitle className="text-base">Shared Resource Engine (SRE)</CardTitle>
+              </div>
+              <CardDescription className="text-xs pt-1">
+                Motor orientado a la lógica de negocio y reservas temporales de inventario.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-5 pt-0 space-y-3 text-xs text-muted-foreground">
+              <ul className="list-disc list-inside space-y-1">
+                <li>Recursos <strong>Unitarios</strong> (asientos numerados) vs <strong>Con cupo</strong> (entradas generales).</li>
+                <li>Ciclo: <code>take()</code> con TTL ➔ <code>confirm()</code> o <code>release()</code>.</li>
+                <li>Estrategias de conflicto: <code>FAIL</code> vs <code>QUEUE</code> (fila de espera).</li>
+              </ul>
+              <div className="pt-2 flex gap-2">
+                <Link href="/docs/sre">
+                  <Button variant="outline" size="sm" className="text-xs gap-1">
+                    Ver SRE <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </Link>
+                <Link href="/docs/sre/demo">
+                  <Button variant="secondary" size="sm" className="text-xs gap-1 text-amber-500 font-medium">
+                    Demo Cine 🍿
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/70 hover:border-border transition-colors">
+            <CardHeader className="p-5 pb-3">
+              <div className="flex items-center gap-2">
+                <Lock className="h-5 w-5 text-purple-500" />
+                <CardTitle className="text-base">Distributed Locking Service (DLS)</CardTitle>
+              </div>
+              <CardDescription className="text-xs pt-1">
+                Motor de sincronización a bajo nivel y exclusión mutua para microservicios.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-5 pt-0 space-y-3 text-xs text-muted-foreground">
+              <ul className="list-disc list-inside space-y-1">
+                <li>Locks <strong>Exclusive</strong> y <strong>Shared Read</strong> en transacciones.</li>
+                <li><strong>Fencing Tokens</strong> monótonos de ZooKeeper para evitar split-brain.</li>
+                <li>Detección automática de ciclos de <strong>Deadlock</strong> y corte de víctima.</li>
+              </ul>
+              <div className="pt-2 flex gap-2">
+                <Link href="/docs/dls">
+                  <Button variant="outline" size="sm" className="text-xs gap-1">
+                    Ver DLS <ArrowRight className="h-3 w-3" />
+                  </Button>
+                </Link>
+                <Link href="/docs/dls/demo">
+                  <Button variant="secondary" size="sm" className="text-xs gap-1 text-amber-500 font-medium">
+                    Simulador DLS ⚡
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Sección: Inicio Rápido */}
+      <section id="quickstart" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Inicio Rápido (SDK)
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Instalá el SDK en tu aplicación Node.js o TypeScript y empezá a reservar recursos en minutos:
+        </p>
+
+        <CodeBlock code="npm install @caerus-dev/sdk" language="bash" title="Terminal" />
+
+        <p className="text-xs text-muted-foreground pt-1">
+          Ejemplo de retención de recurso unitario con pago y confirmación:
+        </p>
+
+        <CodeBlock
+          title="server.ts"
+          language="typescript"
+          showLineNumbers
+          code={`import { CaerusClient } from '@caerus-dev/sdk';
+
+const caerus = new CaerusClient({
+  apiKey: process.env.CAERUS_API_KEY!,
+});
+
+// 1. Apartar el asiento durante 5 minutos
+const holder = await caerus.unitary('asiento-B14').take({
+  ttlSeconds: 300,
+  metadata: { clienteId: 'usr_948' }
+});
+
+try {
+  // 2. Procesar el cobro en la pasarela de pagos
+  await procesarPagoTarjeta(holder.id);
+
+  // 3. Confirmar la venta de forma definitiva
+  await caerus.confirm(holder.id);
+  console.log('Compra confirmada con éxito:', holder.id);
+} catch (error) {
+  // 4. Si el pago falla, liberar inmediatamente para otros clientes
+  await caerus.release(holder.id);
+}`}
+        />
+
+        <div className="flex items-center gap-3 pt-4">
+          <Link href="/docs/sdk">
+            <Button className="gap-2">
+              <span>Continuar a la Guía del SDK</span>
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+          <Link href="/docs/sre/demo">
+            <Button variant="outline">
+              Probar Demo Caerus Cine
+            </Button>
+          </Link>
+        </div>
+      </section>
+    </DocsPageLayout>
   )
 }
