@@ -34,3 +34,28 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function DELETE(_request: NextRequest) {
+  try {
+    const response = await fetchBackend("/v1/notifications", {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return NextResponse.json(
+        { error: errorText || "Error al eliminar todas las notificaciones" },
+        { status: response.status }
+      );
+    }
+
+    return new NextResponse(null, { status: 204 });
+  } catch (error: any) {
+    console.error("Error en DELETE /api/notifications:", error);
+    return NextResponse.json(
+      { error: error.message || "Error interno del servidor" },
+      { status: 500 }
+    );
+  }
+}
+

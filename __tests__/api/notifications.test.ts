@@ -5,10 +5,11 @@ vi.mock("@/lib/api", () => ({
   fetchBackend: vi.fn(),
 }));
 
-import { GET as getNotifications } from "@/app/api/notifications/route";
+import { GET as getNotifications, DELETE as deleteAllNotificationsRoute } from "@/app/api/notifications/route";
 import { GET as getUnreadCount } from "@/app/api/notifications/unread-count/route";
 import { PATCH as markSingleAsRead } from "@/app/api/notifications/[id]/read/route";
 import { PATCH as markAllAsRead } from "@/app/api/notifications/read-all/route";
+import { DELETE as deleteSingleNotificationRoute } from "@/app/api/notifications/[id]/route";
 import { fetchBackend } from "@/lib/api";
 
 describe("Notifications BFF API Routes", () => {
@@ -122,21 +123,69 @@ describe("Notifications BFF API Routes", () => {
     });
   });
 
-  describe("PATCH /api/notifications/read-all", () => {
-    it("marks all notifications as read and returns 204", async () => {
+  describe("DELETE /api/notifications/[id]", () => {
+    it("deletes single notification and returns 204", async () => {
       vi.mocked(fetchBackend).mockResolvedValueOnce(
         new Response(null, { status: 204 })
       );
 
-      const request = new NextRequest("http://localhost:3000/api/notifications/read-all", {
-        method: "PATCH",
+      const request = new NextRequest("http://localhost:3000/api/notifications/uuid-1", {
+        method: "DELETE",
       });
-      const res = await markAllAsRead(request);
+      const res = await deleteSingleNotificationRoute(request, {
+        params: Promise.resolve({ id: "uuid-1" }),
+      });
 
       expect(res.status).toBe(204);
-      expect(fetchBackend).toHaveBeenCalledWith("/v1/notifications/read-all", {
-        method: "PATCH",
+      expect(fetchBackend).toHaveBeenCalledWith("/v1/notifications/uuid-1", {
+        method: "DELETE",
       });
+    });
+
+    it("handles failure from backend gracefully", async () => {
+      vi.mocked(fetchBackend).mockResolvedValueOnce(
+        new Response("Not Found", { status: 404 })
+      );
+
+      const request = new NextRequest("http://localhost:3000/api/notifications/uuid-not-found", {
+        method: "DELETE",
+      });
+      const res = await deleteSingleNotificationRoute(request, {
+        params: Promise.resolve({ id: "uuid-not-found" }),
+      });
+
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe("DELETE /api/notifications", () => {
+    it("deletes all notifications and returns 204", async () => {
+      vi.mocked(fetchBackend).mockResolvedValueOnce(
+        new Response(null, { status: 204 })
+      );
+
+      const request = new NextRequest("http://localhost:3000/api/notifications", {
+        method: "DELETE",
+      });
+      const res = await deleteAllNotificationsRoute(request);
+
+      expect(res.status).toBe(204);
+      expect(fetchBackend).toHaveBeenCalledWith("/v1/notifications", {
+        method: "DELETE",
+      });
+    });
+
+    it("handles failure from backend gracefully", async () => {
+      vi.mocked(fetchBackend).mockResolvedValueOnce(
+        new Response("Internal Server Error", { status: 500 })
+      );
+
+      const request = new NextRequest("http://localhost:3000/api/notifications", {
+        method: "DELETE",
+      });
+      const res = await deleteAllNotificationsRoute(request);
+
+      expect(res.status).toBe(500);
     });
   });
 });

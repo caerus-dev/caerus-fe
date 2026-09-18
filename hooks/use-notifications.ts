@@ -22,6 +22,9 @@ export function useNotifications() {
   const filterRef = useRef<NotificationFilter>(filter);
   filterRef.current = filter;
 
+  const notificationsRef = useRef<NotificationItem[]>(notifications);
+  notificationsRef.current = notifications;
+
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Carga únicamente el conteo de no leídas (para el badge / polling liviano)
@@ -114,17 +117,18 @@ export function useNotifications() {
 
   // Marcar una notificación individual como leída con Optimistic Update
   const markAsRead = useCallback(async (id: string) => {
-    setNotifications((prev) => {
-      const target = prev.find((item) => item.id === id);
-      if (target && !target.read) {
-        setUnreadCount((count) => Math.max(0, count - 1));
-      }
-      return prev.map((item) =>
+    const target = notificationsRef.current.find((item) => item.id === id);
+    if (target && !target.read) {
+      setUnreadCount((count) => Math.max(0, count - 1));
+    }
+
+    setNotifications((prev) =>
+      prev.map((item) =>
         item.id === id
           ? { ...item, read: true, readAt: item.readAt || new Date().toISOString() }
           : item
-      );
-    });
+      )
+    );
 
     try {
       const res = await fetch(`/api/notifications/${id}/read`, {
@@ -141,10 +145,10 @@ export function useNotifications() {
   // Marcar todas las notificaciones como leídas con Optimistic Update
   const markAllAsRead = useCallback(async () => {
     const nowIso = new Date().toISOString();
+    setUnreadCount(0);
     setNotifications((prev) =>
       prev.map((item) => ({ ...item, read: true, readAt: item.readAt || nowIso }))
     );
-    setUnreadCount(0);
 
     try {
       const res = await fetch("/api/notifications/read-all", {
@@ -155,6 +159,69 @@ export function useNotifications() {
       }
     } catch (err) {
       console.error("Error marking all notifications as read:", err);
+    }
+  }, []);
+
+  // Eliminar una notificación individual con Optimistic Update
+  const deleteNotification = useCallback(async (id: string) => {
+    const deletedItem = notificationsRef.current.find((item) => item.id === id);
+    const wasUnread = deletedItem ? !deletedItem.read : false;
+
+    if (wasUnread) {
+      setUnreadCount((count) => Math.max(0, count - 1));
+    }
+
+    setNotifications((prev) => prev.filter((item) => item.id !== id));
+
+    try {
+      const res = await fetch(`/api/notifications/${id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok && res.status !== 404) {
+        console.error(`Failed to delete notification ${id}:`, res.status);
+        // Rollback en caso de fallo
+        if (deletedItem) {
+          setNotifications((prev) => [deletedItem, ...prev]);
+          if (wasUnread) {
+            setUnreadCount((count) => count + 1);
+          }
+        }
+      }
+    } catch (err) {
+      console.error(`Error deleting notification ${id}:`, err);
+      // Rollback
+      if (deletedItem) {
+        setNotifications((prev) => [deletedItem, ...prev]);
+        if (wasUnread) {
+          setUnreadCount((count) => count + 1);
+        }
+      }
+    }
+  }, []);
+
+  // Eliminar todas las notificaciones con Optimistic Update
+  const deleteAllNotifications = useCallback(async () => {
+    const previousNotifications = [...notificationsRef.current];
+    const previousUnreadCount = notificationsRef.current.filter((n) => !n.read).length;
+
+    setUnreadCount(0);
+    setNotifications([]);
+
+    try {
+      const res = await fetch("/api/notifications", {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        console.error("Failed to delete all notifications:", res.status);
+        // Rollback
+        setNotifications(previousNotifications);
+        setUnreadCount(previousUnreadCount);
+      }
+    } catch (err) {
+      console.error("Error deleting all notifications:", err);
+      // Rollback
+      setNotifications(previousNotifications);
+      setUnreadCount(previousUnreadCount);
     }
   }, []);
 
@@ -205,5 +272,7 @@ export function useNotifications() {
     fetchMore,
     markAsRead,
     markAllAsRead,
+    deleteNotification,
+    deleteAllNotifications,
   };
 }
