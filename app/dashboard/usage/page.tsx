@@ -1,9 +1,22 @@
 "use client"
 
 import { useState } from "react"
-import { BarChart3, Activity, Calendar, Download, Filter, TrendingUp, TrendingDown } from "lucide-react"
+import Link from "next/link"
+import {
+  BarChart3,
+  Activity,
+  Calendar,
+  Download,
+  Filter,
+  Zap,
+  ArrowUpRight,
+  Clock,
+  AlertTriangle,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Select,
   SelectContent,
@@ -19,19 +32,28 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
 } from "recharts"
+import { useUser } from "@/hooks/use-user"
+import { useApps } from "@/components/dashboard/apps-context"
+import { toast } from "sonner"
 
 export default function UsagePage() {
   const [timeRange, setTimeRange] = useState("30d")
+  const { user, isLoading: isUserLoading } = useUser()
+  const { applications, isAppsLoading } = useApps()
 
-  const totalCalls = 0
-  const planLimit = 125000
-  const usagePercentage = 0
-  const isNearLimit = false
+  const consumedUnits = user?.billingUsage?.consumedUnits ?? 0
+  const includedUnits =
+    user?.billingUsage?.includedUnits ?? (user?.billingPlan?.includedBillingUnits ?? 50000)
+  const usagePercentage =
+    user?.billingUsage?.percentage ??
+    (includedUnits > 0 ? Math.round((consumedUnits / includedUnits) * 100) : 0)
+  const isNearLimit = usagePercentage >= 80
+  const isOverLimit = usagePercentage >= 100
+  const currentPlan = user?.billingPlan
+  const period = user?.billingUsage?.period || new Date().toISOString().slice(0, 7)
 
-  // Generamos datos vacíos de manera dinámica basados en timeRange
+  // Generamos datos para el rango seleccionado
   const generateData = () => {
     const data = []
     const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90
@@ -40,37 +62,42 @@ export default function UsagePage() {
       const d = new Date(now)
       d.setDate(d.getDate() - i)
       data.push({
-        date: d.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }),
+        date: d.toLocaleDateString("es-ES", { month: "short", day: "numeric" }),
         calls: 0,
-        locks: 0
       })
     }
     return data
   }
-  
+
   const usageData = generateData()
-  const applicationBreakdown: any[] = []
-  const eventLog: any[] = []
 
-  const getEnvironmentBadgeClass = (env: string) => {
-    switch (env) {
-      case "prod":
-        return "bg-primary/20 text-primary"
-      case "dev":
-        return "bg-chart-2/20 text-chart-2"
-      default:
-        return "bg-secondary text-muted-foreground"
+  const handleExport = () => {
+    try {
+      const rows = [
+        ["Concepto", "Valor"],
+        ["Período", period],
+        ["Plan", currentPlan?.name || "Developer"],
+        ["Código de Plan", currentPlan?.code || "DEVELOPER"],
+        ["Requests Consumidas", consumedUnits.toString()],
+        ["Requests Incluidas", includedUnits.toString()],
+        ["Porcentaje de Uso", `${usagePercentage}%`],
+        ["Aplicaciones Activas", applications.map((a) => a.name).join("; ") || "Ninguna"],
+        ["Fecha de Generación", new Date().toLocaleString("es-ES")],
+      ]
+      const csvContent =
+        "data:text/csv;charset=utf-8," +
+        rows.map((e) => e.map((cell) => `"${cell}"`).join(",")).join("\n")
+      const encodedUri = encodeURI(csvContent)
+      const link = document.createElement("a")
+      link.setAttribute("href", encodedUri)
+      link.setAttribute("download", `consumo-caerus-${period}.csv`)
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      toast.success("Reporte de consumo descargado exitosamente")
+    } catch {
+      toast.error("Error al exportar los datos de consumo")
     }
-  }
-
-  const getEventColor = (event: string) => {
-    if (event.includes("acquired") || event.includes("confirmed") || event.includes("created")) {
-      return "text-primary"
-    }
-    if (event.includes("expired") || event.includes("timeout")) {
-      return "text-chart-4"
-    }
-    return "text-muted-foreground"
   }
 
   return (
@@ -78,26 +105,26 @@ export default function UsagePage() {
       {/* Page header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Usage</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Consumo</h1>
           <p className="text-muted-foreground">
-            Monitor your API consumption and plan limits
+            Monitorea el consumo de tu API y los límites de tu plan
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[160px]">
               <Calendar className="h-4 w-4 mr-2" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="90d">Last 90 days</SelectItem>
+              <SelectItem value="7d">Últimos 7 días</SelectItem>
+              <SelectItem value="30d">Últimos 30 días</SelectItem>
+              <SelectItem value="90d">Últimos 90 días</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={handleExport}>
             <Download className="h-4 w-4" />
-            Export
+            Exportar
           </Button>
         </div>
       </div>
@@ -106,66 +133,110 @@ export default function UsagePage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-card/50 border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground">
-              API Calls (30d)
+            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center justify-between">
+              <span>Requests Consumidas</span>
+              <Activity className="h-4 w-4 text-primary" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-primary">84.2k</span>
-              <span className="flex items-center text-xs text-primary">
-                <TrendingUp className="h-3 w-3 mr-1" />
-                +12.3%
-              </span>
-            </div>
+            {isUserLoading ? (
+              <Skeleton className="h-9 w-28" />
+            ) : (
+              <div>
+                <div className="text-3xl font-bold text-primary">
+                  {consumedUnits.toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Período {period}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card className="bg-card/50 border-border">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground">
-              Active Locks
+            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center justify-between">
+              <span>Plan Activo</span>
+              <Zap className="h-4 w-4 text-primary" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-chart-2">12</span>
-              <span className="flex items-center text-xs text-muted-foreground">
-                <TrendingDown className="h-3 w-3 mr-1" />
-                -2
-              </span>
-            </div>
+            {isUserLoading ? (
+              <Skeleton className="h-9 w-28" />
+            ) : (
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-3xl font-bold text-foreground">
+                    {currentPlan?.name || "Developer"}
+                  </span>
+                  <Badge variant="secondary" className="font-mono text-xs">
+                    {currentPlan?.code || "DEVELOPER"}
+                  </Badge>
+                </div>
+                <div className="mt-1">
+                  <Link
+                    href="/settings/billing"
+                    className="text-xs text-primary hover:underline inline-flex items-center gap-1 font-medium"
+                  >
+                    Gestionar facturación y límites
+                    <ArrowUpRight className="h-3 w-3" />
+                  </Link>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card className={`border-border ${isNearLimit ? "bg-chart-4/5 border-chart-4/30" : "bg-card/50"}`}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-normal text-muted-foreground">
-              Plan Usage
+            <CardTitle className="text-sm font-normal text-muted-foreground flex items-center justify-between">
+              <span>Uso del Plan</span>
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex items-baseline justify-between">
-                <span className={`text-3xl font-bold ${isNearLimit ? "text-chart-4" : "text-foreground"}`}>
-                  {usagePercentage}%
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {totalCalls.toLocaleString()} / {planLimit.toLocaleString()}
-                </span>
+            {isUserLoading ? (
+              <Skeleton className="h-9 w-full" />
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-baseline justify-between">
+                  <span
+                    className={`text-3xl font-bold ${
+                      isOverLimit ? "text-destructive" : isNearLimit ? "text-amber-500" : "text-foreground"
+                    }`}
+                  >
+                    {usagePercentage}%
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {consumedUnits.toLocaleString()} / {includedUnits.toLocaleString()} requests
+                  </span>
+                </div>
+                <div className="h-2 rounded-full bg-secondary overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all ${
+                      isOverLimit ? "bg-destructive" : isNearLimit ? "bg-amber-500" : "bg-primary"
+                    }`}
+                    style={{ width: `${Math.min(usagePercentage, 100)}%` }}
+                  />
+                </div>
+                {isOverLimit ? (
+                  <p className="text-xs text-destructive flex items-center gap-1 font-medium">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                    Has superado las requests incluidas.
+                  </p>
+                ) : isNearLimit ? (
+                  <p className="text-xs text-amber-500 flex items-center gap-1 font-medium">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                    Cerca del límite del plan. Considera mejorar.
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Límite de {includedUnits.toLocaleString()} requests mensuales.
+                  </p>
+                )}
               </div>
-              <div className="h-2 rounded-full bg-secondary overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all ${isNearLimit ? "bg-chart-4" : "bg-primary"}`}
-                  style={{ width: `${usagePercentage}%` }}
-                />
-              </div>
-              {isNearLimit && (
-                <p className="text-xs text-chart-4">
-                  Approaching plan limit. Consider upgrading.
-                </p>
-              )}
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -175,10 +246,10 @@ export default function UsagePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            API Calls Over Time
+            Llamadas a la API en el Tiempo
           </CardTitle>
           <CardDescription>
-            Daily API call volume for the selected period
+            Volumen diario de llamadas a la API durante el período seleccionado
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -200,6 +271,7 @@ export default function UsagePage() {
                 <YAxis 
                   stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
+                  allowDecimals={false}
                 />
                 <Tooltip
                   contentStyle={{
@@ -208,6 +280,7 @@ export default function UsagePage() {
                     borderRadius: "8px",
                   }}
                   labelStyle={{ color: "hsl(var(--foreground))" }}
+                  formatter={(val: any) => [`${val} requests`, "Consumo"]}
                 />
                 <Area
                   type="monotone"
@@ -229,48 +302,67 @@ export default function UsagePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
-              Usage by Application
+              Consumo por Aplicación
             </CardTitle>
             <CardDescription>
-              API calls distribution across applications
+              Distribución de llamadas a la API entre tus aplicaciones
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-[200px] mb-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={applicationBreakdown} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                  <YAxis 
-                    dataKey="name" 
-                    type="category" 
-                    stroke="hsl(var(--muted-foreground))" 
-                    fontSize={12}
-                    width={100}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Bar dataKey="calls" fill="hsl(var(--primary))" radius={4} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-              <div className="space-y-2">
-                {applicationBreakdown.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">No hay datos de aplicaciones.</p>
-                ) : (
-                  applicationBreakdown.map((app) => (
-                    <div key={app.name} className="flex items-center justify-between text-sm">
-                      <span className="font-mono">{app.name}</span>
-                      <span className="text-muted-foreground">{app.percentage}%</span>
-                    </div>
-                  ))
-                )}
+            {isAppsLoading ? (
+              <div className="space-y-3 py-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
               </div>
+            ) : applications.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+                <p className="text-sm font-medium">No tienes aplicaciones registradas todavía.</p>
+                <p className="text-xs mt-1 text-muted-foreground">
+                  Crea tu primera aplicación para comenzar a monitorear su consumo.
+                </p>
+                <Button asChild variant="outline" size="sm" className="mt-3 text-xs">
+                  <Link href="/dashboard">Ir al Dashboard</Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {applications.map((app) => (
+                  <div
+                    key={app.name}
+                    className="flex items-center justify-between p-2.5 rounded-lg border border-border/50 bg-background/50 hover:bg-muted/40 transition-colors"
+                  >
+                    <div className="min-w-0">
+                      <Link
+                        href={app.href}
+                        className="text-sm font-medium hover:underline text-foreground truncate block"
+                      >
+                        {app.name}
+                      </Link>
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        {app.environments.map((env) => (
+                          <span
+                            key={env}
+                            className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
+                              env.toLowerCase() === "production" || env.toLowerCase() === "prod"
+                                ? "bg-primary/15 text-primary"
+                                : "bg-secondary text-muted-foreground"
+                            }`}
+                          >
+                            {env}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0 text-xs text-muted-foreground font-mono">
+                      0 requests
+                    </div>
+                  </div>
+                ))}
+                <p className="text-xs text-muted-foreground pt-2 text-center">
+                  El desglose por aplicación se calcula a partir de los registros de telemetría de tus API keys.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -279,38 +371,30 @@ export default function UsagePage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>Event Log</CardTitle>
-                <CardDescription>Real-time activity stream</CardDescription>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-5 w-5" />
+                  Registro de Eventos
+                </CardTitle>
+                <CardDescription>Flujo de actividad reciente en tiempo real</CardDescription>
               </div>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Filter className="h-4 w-4" />
-                Filter
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 text-xs"
+                onClick={() => toast.info("No hay filtros disponibles en este momento.")}
+              >
+                <Filter className="h-3.5 w-3.5" />
+                Filtrar
               </Button>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3 max-h-[280px] overflow-y-auto">
-              {eventLog.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">No hay actividad reciente.</p>
-              ) : (
-                eventLog.map((event) => (
-                  <div key={event.id} className="flex items-center justify-between gap-3 py-2 border-b border-border last:border-0">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className={`h-2 w-2 rounded-full shrink-0 ${getEventColor(event.event) === "text-primary" ? "bg-primary" : getEventColor(event.event) === "text-chart-4" ? "bg-chart-4" : "bg-muted-foreground"}`} />
-                      <div className="min-w-0">
-                        <p className={`font-mono text-sm truncate ${getEventColor(event.event)}`}>{event.event}</p>
-                        <p className="text-xs text-muted-foreground truncate">{event.app}</p>
-                      </div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className={`rounded px-2 py-0.5 text-xs font-medium ${getEnvironmentBadgeClass(event.env)}`}>
-                        {event.env}
-                      </span>
-                      <p className="text-xs text-muted-foreground mt-1">{event.time}</p>
-                    </div>
-                  </div>
-                ))
-              )}
+            <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+              <Activity className="h-8 w-8 mb-2 opacity-40 text-muted-foreground" />
+              <p className="text-sm font-medium">No hay actividad reciente registrada.</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                Las adquisiciones, confirmaciones y liberaciones de locks ejecutadas mediante el SDK se registrarán aquí.
+              </p>
             </div>
           </CardContent>
         </Card>
