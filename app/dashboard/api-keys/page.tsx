@@ -338,7 +338,7 @@ export default function ApiKeysPage() {
                 className="h-7 text-xs gap-1"
                 onClick={() =>
                   copyToClipboard(
-                    `import { Caerus } from '@caerus/sdk'\n\nconst client = new Caerus({\n  apiKey: process.env.CAERUS_API_KEY\n})`,
+                    `import { CaerusClient } from '@caerus-dev/sdk'\n\nconst caerus = new CaerusClient({\n  apiKey: process.env.CAERUS_API_KEY\n})`,
                     "snippet"
                   )
                 }
@@ -355,14 +355,14 @@ export default function ApiKeysPage() {
               <code>
                 <span className="text-chart-2">import</span>
                 {" { "}
-                <span className="text-chart-3">Caerus</span>
+                <span className="text-chart-3">CaerusClient</span>
                 {" } "}
                 <span className="text-chart-2">from</span>{" "}
-                <span className="text-primary">{`'@caerus/sdk'`}</span>
+                <span className="text-primary">{`'@caerus-dev/sdk'`}</span>
                 {"\n\n"}
-                <span className="text-chart-2">const</span> client ={" "}
+                <span className="text-chart-2">const</span> caerus ={" "}
                 <span className="text-chart-2">new</span>{" "}
-                <span className="text-chart-3">Caerus</span>
+                <span className="text-chart-3">CaerusClient</span>
                 {"({\n"}
                 {"  "}apiKey: process.env.
                 <span className="text-primary">CAERUS_API_KEY</span>
