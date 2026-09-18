@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cn, getEnvColors, formatPercentage } from '@/lib/utils'
+import { cn, getEnvColors, formatPercentage, formatRelativeTime } from '@/lib/utils'
 
 describe('lib/utils', () => {
   describe('cn', () => {
@@ -47,6 +47,12 @@ describe('lib/utils', () => {
       const productionColors = getEnvColors('PRODUCTION')
       expect(productionColors.dot).toBe('bg-green-500')
     })
+
+    it('should prioritize customPresetId color over environment name', () => {
+      const customColors = getEnvColors('dev', 'purple')
+      expect(customColors.dot).toBe('bg-purple-500')
+      expect(customColors.text).toBe('text-purple-400')
+    })
   })
 
   describe('formatPercentage', () => {
@@ -68,6 +74,32 @@ describe('lib/utils', () => {
     it('should handle falsy and NaN values gracefully', () => {
       expect(formatPercentage(0)).toBe('0')
       expect(formatPercentage(NaN)).toBe('0')
+    })
+  })
+
+  describe('formatRelativeTime', () => {
+    it('should return empty string for invalid dates', () => {
+      expect(formatRelativeTime('invalid-date')).toBe('')
+    })
+
+    it('should format seconds ago', () => {
+      const date = new Date(Date.now() - 10 * 1000)
+      expect(formatRelativeTime(date.toISOString())).toBe('Justo ahora')
+    })
+
+    it('should format minutes ago', () => {
+      const date = new Date(Date.now() - 5 * 60 * 1000)
+      expect(formatRelativeTime(date.toISOString())).toBe('Hace 5m')
+    })
+
+    it('should format hours ago', () => {
+      const date = new Date(Date.now() - 3 * 3600 * 1000)
+      expect(formatRelativeTime(date.toISOString())).toBe('Hace 3h')
+    })
+
+    it('should format yesterday', () => {
+      const date = new Date(Date.now() - 25 * 3600 * 1000)
+      expect(formatRelativeTime(date.toISOString())).toBe('Ayer')
     })
   })
 })

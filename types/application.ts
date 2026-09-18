@@ -10,6 +10,16 @@ export interface Application {
   updatedAt: string
 }
 
+export interface EnvironmentResponse {
+  id: string
+  applicationId?: string
+  name: string
+  description?: string
+  color?: string | null
+  createdAt?: string
+  updatedAt?: string
+}
+
 export interface ResourceItem {
   id: string
   name: string

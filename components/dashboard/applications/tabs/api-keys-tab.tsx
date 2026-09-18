@@ -25,7 +25,7 @@ export function ApiKeysTab({
   onOpenRevokeKey,
 }: ApiKeysTabProps) {
   const isViewer = myRole === 'VIEWER'
-  const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
+  const envColors = getEnvColors(selectedEnv, currentEnvDetails?.color, currentEnvDetails?.id)
 
   return (
     <div className="space-y-3">
@@ -89,7 +89,7 @@ export function ApiKeysTab({
               key={key.id}
               className={cn(
                 'bg-card/50 border-border py-0 border-l-2',
-                getEnvColors(selectedEnv).borderStrong
+                envColors.borderStrong
               )}
             >
               <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
@@ -99,9 +99,9 @@ export function ApiKeysTab({
                       'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border',
                       key.state === 'ACTIVE'
                         ? cn(
-                            getEnvColors(selectedEnv).bg,
-                            getEnvColors(selectedEnv).border,
-                            getEnvColors(selectedEnv).text
+                            envColors.bg,
+                            envColors.border,
+                            envColors.text
                           )
                         : 'bg-secondary text-muted-foreground border-border'
                     )}

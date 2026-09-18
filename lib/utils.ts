@@ -127,28 +127,29 @@ export function getEnvColors(envName?: string | null, customPresetId?: string | 
 }
 
 export function getUniqueEnvDots(
-  environments?: (string | { name: string })[] | null,
+  environments?: (string | { name: string; color?: string | null; id?: string | null })[] | null,
   maxDots = 3
 ) {
   if (!environments || environments.length === 0) {
     return { visibleDots: [], overflowCount: 0, allNames: [] }
   }
 
-  const names = environments.map((e) => (typeof e === 'string' ? e : e.name))
-  const seenKinds = new Set<EnvKind>()
+  const items = environments.map((e) =>
+    typeof e === 'string'
+      ? { name: e, color: null, id: null }
+      : { name: e.name, color: e.color || null, id: (e as any).id || null }
+  )
+  const names = items.map((i) => i.name)
+  const seenDots = new Set<string>()
   const result: { kind: EnvKind; colors: ReturnType<typeof getEnvColors> }[] = []
 
-  const order: EnvKind[] = ['dev', 'staging', 'prod', 'purple', 'cyan', 'pink', 'orange', 'slate']
-
-  for (const name of names) {
-    seenKinds.add(envKind(name))
-  }
-
-  for (const kind of order) {
-    if (seenKinds.has(kind)) {
+  for (const item of items) {
+    const colors = getEnvColors(item.name, item.color, item.id)
+    if (!seenDots.has(colors.dot)) {
+      seenDots.add(colors.dot)
       result.push({
-        kind,
-        colors: getEnvColors(kind),
+        kind: envKind(item.name),
+        colors,
       })
     }
   }
@@ -177,4 +178,30 @@ export const formatPercentage = (val: number): string => {
   if (!val || isNaN(val)) return '0'
   if (val >= 100) return Math.round(val).toString()
   return Number(val.toFixed(1)).toString()
+}
+
+export const formatRelativeTime = (dateInput: string | number | Date): string => {
+  const date = new Date(dateInput)
+  if (isNaN(date.getTime())) return ""
+
+  const now = new Date()
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+  if (diffInSeconds < 30) return "Justo ahora"
+  if (diffInSeconds < 60) return `Hace ${diffInSeconds}s`
+
+  const diffInMinutes = Math.floor(diffInSeconds / 60)
+  if (diffInMinutes < 60) return `Hace ${diffInMinutes}m`
+
+  const diffInHours = Math.floor(diffInMinutes / 60)
+  if (diffInHours < 24) return `Hace ${diffInHours}h`
+
+  const diffInDays = Math.floor(diffInHours / 24)
+  if (diffInDays === 1) return "Ayer"
+  if (diffInDays < 7) return `Hace ${diffInDays}d`
+
+  return date.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+  })
 }

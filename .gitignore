@@ -19,5 +19,4 @@ node_modules
 .vercel
 .claude/
 .env*
-package-lock.json
-pnpm-workspace.yaml
+
