@@ -17,6 +17,7 @@ import { GET as getUser } from '@/app/api/user/route'
 import { GET as getApplications, POST as createApplication } from '@/app/api/applications/route'
 import { GET as getAppById, PUT as updateAppById, DELETE as deleteAppById } from '@/app/api/applications/[id]/route'
 import { POST as acceptInvitation } from '@/app/api/invitations/[token]/accept/route'
+import { GET as getMe, DELETE as deleteMe } from '@/app/api/users/me/route'
 import { auth0 } from '@/lib/auth0'
 import { fetchBackend } from '@/lib/api'
 
@@ -191,6 +192,31 @@ describe('app/api Routes (Endpoints Internos)', () => {
 
       expect(res.status).toBe(200)
       expect(fetchBackend).toHaveBeenCalledWith('/v1/invitations/token-abc/accept', { method: 'POST' })
+    })
+  })
+
+  describe('/api/users/me', () => {
+    it('GET /api/users/me should return user profile from backend', async () => {
+      const mockBackendResponse = new Response(
+        JSON.stringify({ id: 'user-1', email: 'test@caerus.dev' }),
+        { status: 200 }
+      )
+      vi.mocked(fetchBackend).mockResolvedValueOnce(mockBackendResponse)
+
+      const res = await getMe()
+      expect(res.status).toBe(200)
+      expect(fetchBackend).toHaveBeenCalledWith('/v1/users/me')
+      const body = await res.json()
+      expect(body.id).toBe('user-1')
+    })
+
+    it('DELETE /api/users/me should forward DELETE to backend and return 204', async () => {
+      const mockBackendResponse = new Response(null, { status: 204 })
+      vi.mocked(fetchBackend).mockResolvedValueOnce(mockBackendResponse)
+
+      const res = await deleteMe()
+      expect(res.status).toBe(204)
+      expect(fetchBackend).toHaveBeenCalledWith('/v1/users/me', { method: 'DELETE' })
     })
   })
 })
