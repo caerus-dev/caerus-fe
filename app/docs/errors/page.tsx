@@ -102,6 +102,62 @@ try {
         />
       </section>
 
+      {/* IdempotencyError */}
+      <section id="idempotency-error" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Manejo de <code>IdempotencyError</code>
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Ocurre cuando una plantilla tiene activada la opción <strong>Idempotencia</strong> y se envía una solicitud sin <code>idempotencyKey</code>, o cuando se reutiliza una clave existente con parámetros o payload diferente:
+        </p>
+
+        <CodeBlock
+          language="typescript"
+          title="manejo-idempotencia.ts"
+          code={`import { IdempotencyError } from '@caerus-dev/sdk';
+
+try {
+  // Envía siempre una clave idempotente única asociada a la operación del usuario
+  const holder = await caerus.unitary('butaca_A1').take({
+    idempotencyKey: \`req_\${orderId}\`,
+  });
+} catch (error) {
+  if (error instanceof IdempotencyError) {
+    console.error('Conflicto de idempotencia:', error.message);
+  } else {
+    throw error;
+  }
+}`}
+        />
+      </section>
+
+      {/* NotFoundError */}
+      <section id="not-found-error" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Manejo de <code>NotFoundError</code> (404)
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Se produce cuando el recurso, la plantilla asociada o el <code>holderId</code> no existen en el ambiente consultado o fueron eliminados:
+        </p>
+
+        <CodeBlock
+          language="typescript"
+          title="manejo-not-found.ts"
+          code={`import { NotFoundError } from '@caerus-dev/sdk';
+
+try {
+  await caerus.confirm(holderId);
+} catch (error) {
+  if (error instanceof NotFoundError) {
+    console.error('Holder o recurso no encontrado:', error.message);
+    // Notificar al cliente que la reserva no existe o ya caducó
+  } else {
+    throw error;
+  }
+}`}
+        />
+      </section>
+
       {/* Troubleshooting */}
       <section id="troubleshooting" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
