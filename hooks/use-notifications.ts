@@ -30,7 +30,7 @@ export function useNotifications() {
   // Carga únicamente el conteo de no leídas (para el badge / polling liviano)
   const fetchUnreadCount = useCallback(async () => {
     try {
-      const res = await fetch("/api/notifications/unread-count", {
+      const res = await fetch(`/api/notifications/unread-count?_t=${Date.now()}`, {
         cache: "no-store",
       });
       if (res.ok) {
@@ -61,6 +61,7 @@ export function useNotifications() {
         const params = new URLSearchParams({
           page: targetPage.toString(),
           size: "10",
+          _t: Date.now().toString(),
         });
 
         if (currentFilter === "unread") {
@@ -235,25 +236,28 @@ export function useNotifications() {
     };
   }, [fetchNotifications, fetchUnreadCount]);
 
-  // Polling inteligente de conteo no leído (cada 45s, solo si el documento está visible)
+  // Polling inteligente de conteo no leído (cada 10s, si la pestaña/ventana está activa)
+  // Revalida ante "focus" (clave al switchear de ventana/cuenta) o "visibilitychange"
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (document.visibilityState === "visible") {
-        fetchUnreadCount();
-      }
-    }, 45000);
-
-    const handleVisibilityChange = () => {
+    const handleRefresh = () => {
       if (document.visibilityState === "visible") {
         fetchUnreadCount();
       }
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const interval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        fetchUnreadCount();
+      }
+    }, 10000);
+
+    window.addEventListener("focus", handleRefresh);
+    document.addEventListener("visibilitychange", handleRefresh);
 
     return () => {
       clearInterval(interval);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleRefresh);
+      document.removeEventListener("visibilitychange", handleRefresh);
     };
   }, [fetchUnreadCount]);
 

@@ -24,6 +24,7 @@ export function NotificationDropdown() {
     hasNext,
     setFilter,
     fetchNotifications,
+    fetchUnreadCount,
     fetchMore,
     markAsRead,
     markAllAsRead,
@@ -34,8 +35,9 @@ export function NotificationDropdown() {
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
     if (nextOpen) {
-      // Revalidar notificaciones al abrir el popover
+      // Revalidar notificaciones y conteo al abrir el popover
       fetchNotifications(0, filter, false);
+      fetchUnreadCount();
     }
   };
 
