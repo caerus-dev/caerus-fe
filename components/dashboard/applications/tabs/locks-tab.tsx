@@ -42,7 +42,7 @@ export function LocksTab({
   onNavigateToManualControl,
 }: LocksTabProps) {
   const isViewer = myRole === 'VIEWER'
-  const envColors = getEnvColors(selectedEnv, null, currentEnvDetails?.id)
+  const envColors = getEnvColors(selectedEnv, currentEnvDetails?.color, currentEnvDetails?.id)
 
   return (
     <div className="space-y-3">
@@ -66,36 +66,37 @@ export function LocksTab({
 
       {isLoading ? (
         <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="p-4 rounded-xl border border-border/70 bg-card/70 dark:bg-card/50 flex items-center justify-between gap-4 animate-pulse"
-            >
-              <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                <Skeleton className="h-10 w-10 rounded-lg shrink-0 bg-primary/20 dark:bg-primary/15 border border-primary/20" />
-                <div className="space-y-2 flex-1 min-w-0">
-                  <Skeleton className="h-4 w-36 sm:w-48 rounded bg-muted-foreground/30 dark:bg-muted-foreground/20" />
-                  <Skeleton className="h-3 w-56 sm:w-64 rounded bg-muted-foreground/20 dark:bg-muted-foreground/15" />
+          {[1, 2].map((i) => (
+            <Card key={i} className="bg-card/50 border-border py-0">
+              <CardContent className="flex items-center justify-between py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-lg shrink-0" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-48" />
+                  </div>
                 </div>
-              </div>
-              <Skeleton className="h-8 w-8 rounded-lg shrink-0 bg-muted-foreground/20 dark:bg-muted-foreground/15" />
-            </div>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-8 w-8" />
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       ) : locks.length === 0 ? (
-        <Card className="bg-card/50 border-border">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Lock className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4 flex items-center gap-1.5 flex-wrap justify-center">
-              <span>Aún no hay configuraciones de locks en</span>
-              <span className={cn("font-mono font-semibold px-2 py-0.5 rounded-md text-xs gap-1.5 inline-flex items-center border", envColors.badge)}>
-                <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", envColors.dot)} />
-                {selectedEnv}
-              </span>
+        <Card className="bg-card/50 border-border py-0">
+          <CardContent className="flex flex-col items-center justify-center py-8 px-4 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted text-muted-foreground mb-3">
+              <Lock className="h-6 w-6" />
+            </div>
+            <p className="font-medium text-foreground mb-1">No hay locks configurados</p>
+            <p className="text-sm text-muted-foreground max-w-sm mb-4">
+              Crea locks distribuidos para coordinar procesos concurrentes y evitar condiciones de carrera.
             </p>
             {!isViewer && (
               <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
-                <Button className="gap-2">
+                <Button variant="outline" size="sm" className="gap-2">
                   <Plus className="h-4 w-4" />
                   Crear Primer Lock
                 </Button>
@@ -106,11 +107,11 @@ export function LocksTab({
       ) : (
         <div className="space-y-3">
           {locks.map((lock: any) => (
-                <Card key={lock.id} className={cn("bg-card/50 border-border py-0 border-l-2", getEnvColors(selectedEnv).borderStrong)}>
+                <Card key={lock.id} className={cn("bg-card/50 border-border py-0 border-l-2", envColors.borderStrong)}>
                   <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
                     <div className="flex items-center gap-3">
-                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", getEnvColors(selectedEnv).bg)}>
-                        <Lock className={cn("h-5 w-5", getEnvColors(selectedEnv).text)} />
+                      <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-lg", envColors.bg)}>
+                        <Lock className={cn("h-5 w-5", envColors.text)} />
                       </div>
                       <div className="space-y-1 min-w-0">
                         <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">{lock.namespace}</p>

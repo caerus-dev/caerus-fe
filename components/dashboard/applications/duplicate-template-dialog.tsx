@@ -182,7 +182,7 @@ export function DuplicateTemplateDialog({
           ) : (
             <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
               {targetEnvironments.map((env) => {
-                const colors = getEnvColors(env.name, null, env.id)
+                const colors = getEnvColors(env.name, env.color, env.id)
                 const isChecked = selectedEnvIds.includes(env.id.toString())
                 return (
                   <div

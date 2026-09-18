@@ -90,7 +90,7 @@ export function ManualControlTab({
 }: ManualControlTabProps) {
   const envId = currentEnvDetails?.id;
   const isViewer = myRole === "VIEWER";
-  const envColors = getEnvColors(selectedEnv, null, envId);
+  const envColors = getEnvColors(selectedEnv, currentEnvDetails?.color, envId);
 
   // Helpers seguros para formatear fechas
   const formatDateSafe = (timestamp: any, pattern = "dd/MM HH:mm:ss") => {

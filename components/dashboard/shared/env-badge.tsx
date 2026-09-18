@@ -3,12 +3,14 @@ import { getEnvColors } from '@/lib/utils'
 
 interface EnvBadgeProps {
   environment: string
+  color?: string | null
+  envId?: string | null
   showDot?: boolean
   className?: string
 }
 
-export function EnvBadge({ environment, showDot = true, className = '' }: EnvBadgeProps) {
-  const colors = getEnvColors(environment)
+export function EnvBadge({ environment, color, envId, showDot = true, className = '' }: EnvBadgeProps) {
+  const colors = getEnvColors(environment, color, envId)
   const label = environment.toLowerCase()
 
   return (

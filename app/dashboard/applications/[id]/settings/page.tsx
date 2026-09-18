@@ -27,6 +27,7 @@ interface Environment {
   label: string
   description?: string
   enabled: boolean
+  color?: string | null
 }
 
 export default function ApplicationSettingsPage({
@@ -99,6 +100,7 @@ export default function ApplicationSettingsPage({
                 label: env.name.charAt(0).toUpperCase() + env.name.slice(1),
                 description: env.description || "",
                 enabled: true,
+                color: env.color || null,
               }))
             )
           }
@@ -128,9 +130,9 @@ export default function ApplicationSettingsPage({
 
   const handleOpenEditEnv = (env: Environment) => {
     setEnvDialogMode("edit")
-    const savedColor = typeof window !== "undefined"
+    const savedColor = env.color || (typeof window !== "undefined"
       ? (localStorage.getItem(`caerus_env_color_${env.id}`) || localStorage.getItem(`caerus_env_color_name_${env.name.toLowerCase()}`))
-      : null
+      : null)
     const defaultColor = (env.name === "prod" || env.name === "production") ? "green" : (env.name === "stage" || env.name === "staging" || env.name === "qa") ? "yellow" : "blue"
     setEnvForm({ name: env.name, description: env.description || "", color: savedColor || defaultColor })
     setEnvFormError("")
@@ -156,6 +158,7 @@ export default function ApplicationSettingsPage({
             applicationId: id,
             name: envForm.name,
             description: envForm.description,
+            color: envForm.color,
           }),
         })
         if (res.ok) {
@@ -172,6 +175,7 @@ export default function ApplicationSettingsPage({
               label: newEnv.name.charAt(0).toUpperCase() + newEnv.name.slice(1),
               description: newEnv.description || "",
               enabled: true,
+              color: newEnv.color || envForm.color,
             },
           ])
           refreshApps(); setEnvDialogOpen(false)
@@ -186,6 +190,7 @@ export default function ApplicationSettingsPage({
           body: JSON.stringify({
             name: envForm.name,
             description: envForm.description,
+            color: envForm.color,
           }),
         })
         if (res.ok) {
@@ -202,6 +207,7 @@ export default function ApplicationSettingsPage({
                     name: updatedEnv.name,
                     label: updatedEnv.name.charAt(0).toUpperCase() + updatedEnv.name.slice(1),
                     description: updatedEnv.description || "",
+                    color: updatedEnv.color || envForm.color,
                   }
                 : e
             )
@@ -404,7 +410,7 @@ export default function ApplicationSettingsPage({
               ) : (
                 <div className="space-y-2">
                   {environments.map((env) => {
-                    const envColors = getEnvColors(env.name, null, env.id)
+                    const envColors = getEnvColors(env.name, env.color, env.id)
                     return (
                       <div
                         key={env.id}

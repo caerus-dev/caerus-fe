@@ -77,7 +77,7 @@ export function EventsTab({
   onNavigateToManualControl,
 }: EventsTabProps) {
   const envId = currentEnvDetails?.id;
-  const envColors = getEnvColors(selectedEnv, null, envId);
+  const envColors = getEnvColors(selectedEnv, currentEnvDetails?.color, envId);
 
   // Catálogo de tipos de eventos
   const [catalog, setCatalog] = useState<EventTypeCatalogItem[]>(
