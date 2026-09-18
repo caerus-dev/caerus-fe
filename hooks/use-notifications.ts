@@ -236,8 +236,7 @@ export function useNotifications() {
     };
   }, [fetchNotifications, fetchUnreadCount]);
 
-  // Polling inteligente de conteo no leído (cada 10s, si la pestaña/ventana está activa)
-  // Revalida ante "focus" (clave al switchear de ventana/cuenta) o "visibilitychange"
+  // Revalidación on-demand únicamente al hacer focus en la ventana o cambiar de pestaña (cero polling en background)
   useEffect(() => {
     const handleRefresh = () => {
       if (document.visibilityState === "visible") {
@@ -245,17 +244,10 @@ export function useNotifications() {
       }
     };
 
-    const interval = setInterval(() => {
-      if (document.visibilityState === "visible") {
-        fetchUnreadCount();
-      }
-    }, 10000);
-
     window.addEventListener("focus", handleRefresh);
     document.addEventListener("visibilitychange", handleRefresh);
 
     return () => {
-      clearInterval(interval);
       window.removeEventListener("focus", handleRefresh);
       document.removeEventListener("visibilitychange", handleRefresh);
     };
