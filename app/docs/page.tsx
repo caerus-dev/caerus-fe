@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 const tocItems = [
   { id: "problema", title: "¿Qué problema resuelve Caerus?" },
   { id: "arquitectura", title: "Arquitectura de Estado Híbrido" },
-  { id: "aviones", title: "Control Plane vs Data Plane" },
+  { id: "control-plane-vs-data-plane", title: "Control Plane vs Data Plane" },
   { id: "motores", title: "Los Motores: SRE y DLS" },
   { id: "quickstart", title: "Inicio Rápido (SDK)" },
 ]
@@ -101,7 +101,7 @@ export default function DocsOverviewPage() {
       </section>
 
       {/* Sección: Control Plane vs Data Plane */}
-      <section id="aviones" className="space-y-4">
+      <section id="control-plane-vs-data-plane" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
           Control Plane vs Data Plane
         </h2>
