@@ -85,18 +85,19 @@ export function LocksTab({
           ))}
         </div>
       ) : locks.length === 0 ? (
-        <Card className="bg-card/50 border-border py-0">
-          <CardContent className="flex flex-col items-center justify-center py-8 px-4 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted text-muted-foreground mb-3">
-              <Lock className="h-6 w-6" />
-            </div>
-            <p className="font-medium text-foreground mb-1">No hay locks configurados</p>
-            <p className="text-sm text-muted-foreground max-w-sm mb-4">
-              Crea locks distribuidos para coordinar procesos concurrentes y evitar condiciones de carrera.
+        <Card className="bg-card/50 border-border">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <Lock className="h-12 w-12 text-muted-foreground mb-4" />
+            <p className="text-muted-foreground mb-4 flex items-center gap-1.5 flex-wrap justify-center">
+              <span>Aún no hay locks configurados en</span>
+              <span className={cn("font-mono font-semibold px-2 py-0.5 rounded-md text-xs gap-1.5 inline-flex items-center border", envColors.badge)}>
+                <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", envColors.dot)} />
+                {selectedEnv}
+              </span>
             </p>
             {!isViewer && (
               <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
-                <Button variant="outline" size="sm" className="gap-2">
+                <Button className="gap-2" disabled={!currentEnvDetails?.id}>
                   <Plus className="h-4 w-4" />
                   Crear Primer Lock
                 </Button>
