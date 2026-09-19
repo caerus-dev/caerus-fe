@@ -140,7 +140,7 @@ export function LocksTab({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <Link href={`/dashboard/applications/${appId}/locks/${lock.id}/edit`}>
+                            <Link href={`/dashboard/applications/${appId}/locks/${lock.id}/edit?env=${encodeURIComponent(selectedEnv)}`}>
                               <DropdownMenuItem className="cursor-pointer">
                                 <Settings className="h-4 w-4 mr-2" />
                                 Configurar

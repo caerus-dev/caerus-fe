@@ -75,6 +75,14 @@ export function ResourceForm({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
 
+  const envParam = searchParams.get("env")
+  const getReturnUrl = () => {
+    if (envParam) {
+      return `/dashboard/applications/${applicationId}?env=${encodeURIComponent(envParam)}&tab=resources`
+    }
+    return `/dashboard/applications/${applicationId}?tab=resources`
+  }
+
   const form = useForm<ResourceFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -121,11 +129,7 @@ export function ResourceForm({
       })
 
       if (res.ok) {
-        const envParam = searchParams.get("env")
-        const targetUrl = envParam
-          ? `/dashboard/applications/${applicationId}?env=${encodeURIComponent(envParam)}`
-          : `/dashboard/applications/${applicationId}`
-        router.push(targetUrl)
+        router.push(getReturnUrl())
       } else {
         const errData = await res.json().catch(() => ({}))
         setErrorMsg(errData.error || "Ocurrió un error al guardar el recurso.")
@@ -147,7 +151,7 @@ export function ResourceForm({
         method: "DELETE",
       })
       if (res.ok) {
-        router.push(`/dashboard/applications/${applicationId}`)
+        router.push(getReturnUrl())
       } else {
         const errData = await res.json().catch(() => ({}))
         setErrorMsg(errData.error || "Error al intentar eliminar el recurso.")
@@ -166,7 +170,7 @@ export function ResourceForm({
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => router.back()}
+          onClick={() => router.push(getReturnUrl())}
           className="shrink-0"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -401,7 +405,7 @@ export function ResourceForm({
               <div /> // Spacer
             )}
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+              <Button type="button" variant="outline" onClick={() => router.push(getReturnUrl())}>
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting} className="gap-2">

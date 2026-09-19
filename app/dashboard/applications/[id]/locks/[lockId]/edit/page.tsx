@@ -1,15 +1,10 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { use, useEffect, useState, Suspense } from "react"
 import { LockForm, LockFormValues } from "@/components/dashboard/lock-form"
 import { Loader2 } from "lucide-react"
 
-export default function EditLockPage({
-  params,
-}: {
-  params: Promise<{ id: string; lockId: string }>
-}) {
-  const { id, lockId } = use(params)
+function EditLockContainer({ id, lockId }: { id: string; lockId: string }) {
   const [initialData, setInitialData] = useState<LockFormValues | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -63,5 +58,25 @@ export default function EditLockPage({
       initialData={initialData} 
       isEditing 
     />
+  )
+}
+
+export default function EditLockPage({
+  params,
+}: {
+  params: Promise<{ id: string; lockId: string }>
+}) {
+  const { id, lockId } = use(params)
+
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      }
+    >
+      <EditLockContainer id={id} lockId={lockId} />
+    </Suspense>
   )
 }

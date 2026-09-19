@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -56,8 +56,17 @@ interface LockFormProps {
 
 export function LockForm({ applicationId, environmentId, lockId, initialData, isEditing = false }: LockFormProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+
+  const envParam = searchParams.get("env")
+  const getReturnUrl = () => {
+    if (envParam) {
+      return `/dashboard/applications/${applicationId}?env=${encodeURIComponent(envParam)}&tab=locks`
+    }
+    return `/dashboard/applications/${applicationId}?tab=locks`
+  }
 
   const form = useForm<LockFormValues>({
     resolver: zodResolver(formSchema),
@@ -107,7 +116,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
         throw new Error(errorData.error || "Hubo un error al guardar el lock")
       }
 
-      router.push(`/dashboard/applications/${applicationId}`)
+      router.push(getReturnUrl())
     } catch (error: any) {
       console.error(error)
       setApiError(error.message)
@@ -122,7 +131,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
     try {
       const res = await fetch(`/api/distributed-lock-templates/${lockId}`, { method: "DELETE" })
       if (!res.ok) throw new Error("Error eliminando el lock")
-      router.push(`/dashboard/applications/${applicationId}`)
+      router.push(getReturnUrl())
     } catch (e: any) {
       setApiError(e.message)
       setIsSubmitting(false)
@@ -135,7 +144,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => router.back()}
+          onClick={() => router.push(getReturnUrl())}
           className="shrink-0"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -350,7 +359,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
               <div /> // Spacer
             )}
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+              <Button type="button" variant="outline" onClick={() => router.push(getReturnUrl())}>
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting} className="gap-2 bg-chart-2 text-chart-2-foreground hover:bg-chart-2/90">
