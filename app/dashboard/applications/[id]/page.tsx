@@ -707,7 +707,7 @@ export default function ApplicationDashboard({
             </TabsTrigger>
             <TabsTrigger value="webhooks" className="gap-1.5 px-3">
               <Webhook className="h-4 w-4" />
-              <span>Notificaciones</span>
+              <span>Webhooks</span>
             </TabsTrigger>
             <TabsTrigger value="metrics" className="gap-1.5 px-3">
               <LineChart className="h-4 w-4" />
