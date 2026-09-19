@@ -63,7 +63,7 @@ interface Invitation {
 const roleLabels: Record<string, { label: string; color: string }> = {
   OWNER: { label: "Propietario", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
   ADMIN: { label: "Administrador", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  VIEWER: { label: "Visor", color: "bg-gray-500/20 text-gray-400 border-gray-500/30" },
+  VIEWER: { label: "Lector", color: "bg-gray-500/20 text-gray-400 border-gray-500/30" },
 }
 
 export default function TeamPage({
@@ -394,7 +394,7 @@ export default function TeamPage({
                         <SelectItem value="VIEWER">
                           <div className="flex items-center gap-2">
                             <Users className="w-4 h-4 text-zinc-400" />
-                            Visor (Solo lectura)
+                            Lector (Solo lectura)
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -632,7 +632,7 @@ export default function TeamPage({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ADMIN">Administrador</SelectItem>
-                  <SelectItem value="VIEWER">Visor (Solo lectura)</SelectItem>
+                  <SelectItem value="VIEWER">Lector (Solo lectura)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

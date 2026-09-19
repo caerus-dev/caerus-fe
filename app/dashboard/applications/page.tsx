@@ -72,7 +72,7 @@ const getRoleBadge = (role: string) => {
     default:
       return (
         <Badge variant="outline" className="bg-zinc-500/10 text-zinc-400 border-zinc-500/20 text-xs font-semibold">
-          Visor
+          Lector
         </Badge>
       );
   }

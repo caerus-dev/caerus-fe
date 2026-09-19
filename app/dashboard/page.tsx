@@ -133,14 +133,14 @@ export default async function DashboardPage() {
       case "ADMIN":
         return (
           <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs font-semibold">
-            Colaborador (Admin)
+            Administrador
           </Badge>
         );
       case "VIEWER":
       default:
         return (
           <Badge variant="outline" className="bg-zinc-500/10 text-zinc-400 border-zinc-500/20 text-xs font-semibold">
-            Colaborador (Viewer)
+            Lector
           </Badge>
         );
     }
