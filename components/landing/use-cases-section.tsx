@@ -26,7 +26,7 @@ const useCases = [
     icon: CreditCard,
     title: "Operaciones Financieras",
     description:
-      "Garantiza que operaciones criticas como pagos o transferencias se ejecuten una sola vez, sin duplicados.",
+      "Garantiza que operaciones críticas como pagos o transferencias se ejecuten una sola vez, sin duplicados.",
     example: "Fintech, Bancos, Pasarelas de Pago",
   },
 ]
