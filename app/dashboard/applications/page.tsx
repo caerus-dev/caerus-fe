@@ -373,7 +373,7 @@ export default function ApplicationsPage() {
             <DialogHeader>
               <DialogTitle>Eliminar Aplicación</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro que deseas eliminar la aplicación{" "}
+                ¿Estás seguro de que deseas eliminar la aplicación{" "}
                 <span className="font-medium text-foreground">
                   {appToDelete?.name}
                 </span>

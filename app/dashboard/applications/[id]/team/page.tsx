@@ -574,7 +574,7 @@ export default function TeamPage({
           <DialogHeader>
             <DialogTitle>Remover Colaborador</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro que deseas remover a{" "}
+              ¿Estás seguro de que deseas remover a{" "}
               <span className="font-semibold text-foreground">
                 {collaboratorToRemove?.email}
               </span>{" "}

@@ -379,7 +379,7 @@ export default function ApiKeysPage() {
           <DialogHeader>
             <DialogTitle>Revocar API Key</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro que deseas revocar la API Key con prefijo{" "}
+              ¿Estás seguro de que deseas revocar la API Key con prefijo{" "}
               <span className="font-mono font-semibold text-foreground">{keyToRevoke?.keyPrefix}••••</span>?
               Esta acción es irreversible y los clientes que usen esta clave ya no podrán autenticarse.
             </DialogDescription>

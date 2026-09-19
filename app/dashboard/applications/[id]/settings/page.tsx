@@ -650,7 +650,7 @@ export default function ApplicationSettingsPage({
             <DialogHeader>
               <DialogTitle>Eliminar Ambiente</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro que deseas eliminar el ambiente{" "}
+                ¿Estás seguro de que deseas eliminar el ambiente{" "}
                 <span className="font-semibold text-foreground">{selectedEnvForDelete?.name}</span>?
                 Esta acción es irreversible y eliminará todos los recursos, locks y API keys asociados a este ambiente.
               </DialogDescription>
