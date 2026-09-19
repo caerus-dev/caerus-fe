@@ -37,7 +37,7 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-6">
             <Link
-              href="https://github.com"
+              href="https://github.com/caerus-dev"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors flex items-center gap-1.5"
