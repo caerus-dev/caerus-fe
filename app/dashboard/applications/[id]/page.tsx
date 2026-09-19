@@ -707,7 +707,7 @@ export default function ApplicationDashboard({
             </TabsTrigger>
             <TabsTrigger value="webhooks" className="gap-1.5 px-3">
               <Webhook className="h-4 w-4" />
-              <span>Notificaciones</span>
+              <span>Webhooks</span>
             </TabsTrigger>
             <TabsTrigger value="metrics" className="gap-1.5 px-3">
               <LineChart className="h-4 w-4" />
@@ -829,7 +829,7 @@ export default function ApplicationDashboard({
           <DialogHeader>
             <DialogTitle>Eliminar Plantilla de Recurso</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro que deseas eliminar la plantilla de recurso{" "}
+              ¿Estás seguro de que deseas eliminar la plantilla de recurso{" "}
               <span className="font-semibold text-foreground">{templateToDelete?.name}</span>?
               Esta acción es irreversible y revocaría el acceso a este recurso en el motor SRE.
             </DialogDescription>
@@ -857,7 +857,7 @@ export default function ApplicationDashboard({
           <DialogHeader>
             <DialogTitle>Revocar API Key</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro que deseas revocar la API Key con prefijo{" "}
+              ¿Estás seguro de que deseas revocar la API Key con prefijo{" "}
               <span className="font-mono font-semibold text-foreground">{keyToRevoke?.keyPrefix}••••</span>?
               Esta acción es irreversible y los clientes que usen esta clave ya no podrán autenticarse.
             </DialogDescription>
@@ -917,7 +917,7 @@ export default function ApplicationDashboard({
           <DialogHeader>
             <DialogTitle>Eliminar Plantilla de Lock</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro que deseas eliminar la plantilla de lock{" "}
+              ¿Estás seguro de que deseas eliminar la plantilla de lock{" "}
               <span className="font-semibold text-foreground">{lockToDelete?.namespace}</span>?
               Esta acción es irreversible.
             </DialogDescription>
@@ -967,7 +967,7 @@ export default function ApplicationDashboard({
           <DialogHeader>
             <DialogTitle>Eliminar Webhook</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro que deseas eliminar el webhook con URL{" "}
+              ¿Estás seguro de que deseas eliminar el webhook con URL{" "}
               <span className="font-semibold text-foreground">{webhookToDelete?.url}</span>?
               Esta acción es irreversible.
             </DialogDescription>
@@ -999,7 +999,7 @@ export default function ApplicationDashboard({
           <DialogHeader>
             <DialogTitle>Rotar Secreto de Webhook</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro que deseas rotar el secreto del webhook con URL{" "}
+              ¿Estás seguro de que deseas rotar el secreto del webhook con URL{" "}
               <span className="font-semibold text-foreground">{webhookToRotate?.url}</span>?
               El secreto anterior se invalidará inmediatamente y las nuevas peticiones se firmarán con el nuevo.
             </DialogDescription>

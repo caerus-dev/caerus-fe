@@ -72,7 +72,7 @@ const getRoleBadge = (role: string) => {
     default:
       return (
         <Badge variant="outline" className="bg-zinc-500/10 text-zinc-400 border-zinc-500/20 text-xs font-semibold">
-          Visor
+          Lector
         </Badge>
       );
   }
@@ -373,7 +373,7 @@ export default function ApplicationsPage() {
             <DialogHeader>
               <DialogTitle>Eliminar Aplicación</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro que deseas eliminar la aplicación{" "}
+                ¿Estás seguro de que deseas eliminar la aplicación{" "}
                 <span className="font-medium text-foreground">
                   {appToDelete?.name}
                 </span>

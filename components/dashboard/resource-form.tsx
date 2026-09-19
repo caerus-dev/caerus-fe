@@ -9,6 +9,17 @@ import { ArrowLeft, Box, Save, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
   Form,
   FormControl,
   FormDescription,
@@ -75,6 +86,14 @@ export function ResourceForm({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
 
+  const envParam = searchParams.get("env")
+  const getReturnUrl = () => {
+    if (envParam) {
+      return `/dashboard/applications/${applicationId}?env=${encodeURIComponent(envParam)}&tab=resources`
+    }
+    return `/dashboard/applications/${applicationId}?tab=resources`
+  }
+
   const form = useForm<ResourceFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -121,11 +140,7 @@ export function ResourceForm({
       })
 
       if (res.ok) {
-        const envParam = searchParams.get("env")
-        const targetUrl = envParam
-          ? `/dashboard/applications/${applicationId}?env=${encodeURIComponent(envParam)}`
-          : `/dashboard/applications/${applicationId}`
-        router.push(targetUrl)
+        router.push(getReturnUrl())
       } else {
         const errData = await res.json().catch(() => ({}))
         setErrorMsg(errData.error || "Ocurrió un error al guardar el recurso.")
@@ -139,7 +154,6 @@ export function ResourceForm({
   }
 
   async function handleDelete() {
-    if (!window.confirm("¿Estás seguro que deseas eliminar esta plantilla de recurso?")) return
     setIsSubmitting(true)
     setErrorMsg("")
     try {
@@ -147,7 +161,7 @@ export function ResourceForm({
         method: "DELETE",
       })
       if (res.ok) {
-        router.push(`/dashboard/applications/${applicationId}`)
+        router.push(getReturnUrl())
       } else {
         const errData = await res.json().catch(() => ({}))
         setErrorMsg(errData.error || "Error al intentar eliminar el recurso.")
@@ -166,7 +180,7 @@ export function ResourceForm({
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => router.back()}
+          onClick={() => router.push(getReturnUrl())}
           className="shrink-0"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -393,15 +407,37 @@ export function ResourceForm({
 
           <div className="flex items-center justify-between pt-4">
             {isEditing ? (
-              <Button type="button" variant="destructive" className="gap-2" onClick={handleDelete} disabled={isSubmitting}>
-                <Trash2 className="h-4 w-4" />
-                Eliminar Plantilla
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" variant="destructive" className="gap-2" disabled={isSubmitting}>
+                    <Trash2 className="h-4 w-4" />
+                    Eliminar Plantilla
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Eliminar plantilla de recurso?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta acción no se puede deshacer. Se eliminará la configuración de la plantilla de recurso compartido en este ambiente.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isSubmitting}>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      disabled={isSubmitting}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {isSubmitting ? "Eliminando..." : "Sí, eliminar"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             ) : (
               <div /> // Spacer
             )}
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+              <Button type="button" variant="outline" onClick={() => router.push(getReturnUrl())}>
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting} className="gap-2">

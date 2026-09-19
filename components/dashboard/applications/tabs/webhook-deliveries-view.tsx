@@ -325,7 +325,7 @@ export function WebhookDeliveriesView({
             className="gap-2 text-xs text-muted-foreground hover:text-foreground -ml-2 mb-1 cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
-            Volver a Notificaciones
+            Volver a Webhooks
           </Button>
         </div>
 

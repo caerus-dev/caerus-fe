@@ -133,14 +133,14 @@ export default async function DashboardPage() {
       case "ADMIN":
         return (
           <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs font-semibold">
-            Colaborador (Admin)
+            Administrador
           </Badge>
         );
       case "VIEWER":
       default:
         return (
           <Badge variant="outline" className="bg-zinc-500/10 text-zinc-400 border-zinc-500/20 text-xs font-semibold">
-            Colaborador (Viewer)
+            Lector
           </Badge>
         );
     }
@@ -189,7 +189,7 @@ export default async function DashboardPage() {
               <div>
                 <CardTitle className="text-base font-semibold flex items-center gap-2">
                   <Gauge className="h-4 w-4 text-primary" />
-                  Consumo del Periodo Actual ({userProfile?.billingUsage?.period || "Mensual"})
+                  Consumo del Período Actual ({userProfile?.billingUsage?.period || "Mensual"})
                 </CardTitle>
                 <CardDescription className="text-xs text-muted-foreground mt-0.5">
                   {isEnterprise
@@ -208,7 +208,7 @@ export default async function DashboardPage() {
             {isEnterprise ? (
               <div className="flex items-center justify-between text-xs py-1">
                 <span className="text-muted-foreground">
-                  <strong className="text-foreground font-mono">{consumedUnits.toLocaleString()}</strong> requests consumidas este periodo
+                  <strong className="text-foreground font-mono">{consumedUnits.toLocaleString()}</strong> requests consumidas este período
                 </span>
                 <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20 text-[10px] font-semibold">
                   Sin límite estricto
