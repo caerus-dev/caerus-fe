@@ -9,6 +9,17 @@ import { ArrowLeft, Lock, Save, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
   Form,
   FormControl,
   FormDescription,
@@ -126,7 +137,6 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
   }
 
   async function handleDelete() {
-    if (!confirm("¿Estás seguro de que deseas eliminar este lock?")) return
     setIsSubmitting(true)
     try {
       const res = await fetch(`/api/distributed-lock-templates/${lockId}`, { method: "DELETE" })
@@ -351,10 +361,32 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
 
           <div className="flex items-center justify-between pt-4">
             {isEditing ? (
-              <Button type="button" variant="destructive" className="gap-2" onClick={handleDelete} disabled={isSubmitting}>
-                <Trash2 className="h-4 w-4" />
-                Eliminar Plantilla
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" variant="destructive" className="gap-2" disabled={isSubmitting}>
+                    <Trash2 className="h-4 w-4" />
+                    Eliminar Plantilla
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Eliminar plantilla de lock?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta acción no se puede deshacer. Se eliminará la configuración de la plantilla de lock distribuido para este namespace.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isSubmitting}>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      disabled={isSubmitting}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {isSubmitting ? "Eliminando..." : "Sí, eliminar"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             ) : (
               <div /> // Spacer
             )}

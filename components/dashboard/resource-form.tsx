@@ -9,6 +9,17 @@ import { ArrowLeft, Box, Save, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
   Form,
   FormControl,
   FormDescription,
@@ -143,7 +154,6 @@ export function ResourceForm({
   }
 
   async function handleDelete() {
-    if (!window.confirm("¿Estás seguro que deseas eliminar esta plantilla de recurso?")) return
     setIsSubmitting(true)
     setErrorMsg("")
     try {
@@ -397,10 +407,32 @@ export function ResourceForm({
 
           <div className="flex items-center justify-between pt-4">
             {isEditing ? (
-              <Button type="button" variant="destructive" className="gap-2" onClick={handleDelete} disabled={isSubmitting}>
-                <Trash2 className="h-4 w-4" />
-                Eliminar Plantilla
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" variant="destructive" className="gap-2" disabled={isSubmitting}>
+                    <Trash2 className="h-4 w-4" />
+                    Eliminar Plantilla
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Eliminar plantilla de recurso?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta acción no se puede deshacer. Se eliminará la configuración de la plantilla de recurso compartido en este ambiente.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isSubmitting}>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      disabled={isSubmitting}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {isSubmitting ? "Eliminando..." : "Sí, eliminar"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             ) : (
               <div /> // Spacer
             )}
