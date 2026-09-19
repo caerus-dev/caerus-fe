@@ -52,6 +52,18 @@ describe('lib/utils', () => {
       const customColors = getEnvColors('dev', 'purple')
       expect(customColors.dot).toBe('bg-purple-500')
       expect(customColors.text).toBe('text-purple-400')
+
+      const greenColors = getEnvColors('fadsfdsf', 'green')
+      expect(greenColors.dot).toBe('bg-green-500')
+      expect(greenColors.text).toBe('text-green-400')
+
+      const blueColors = getEnvColors('prod', 'blue')
+      expect(blueColors.dot).toBe('bg-blue-500')
+      expect(blueColors.text).toBe('text-blue-400')
+
+      const yellowColors = getEnvColors('custom-env', 'yellow')
+      expect(yellowColors.dot).toBe('bg-yellow-500')
+      expect(yellowColors.text).toBe('text-yellow-400')
     })
   })
 
