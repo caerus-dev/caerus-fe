@@ -9,7 +9,7 @@ const tocItems = [
   { id: "catalogo", title: "Catálogo de Excepciones del SDK" },
   { id: "conflict-error", title: "ConflictError (409)" },
   { id: "validation-error", title: "ValidationError (Idempotencia)" },
-  { id: "not-found-error", title: "NotFoundError (404)" },
+  { id: "resource-not-found-error", title: "ResourceNotFoundError (404)" },
   { id: "troubleshooting", title: "Troubleshooting de Conexión" },
 ]
 
@@ -55,7 +55,7 @@ export default function DocsErrorsPage() {
                 <TableCell>La plantilla exige clave de idempotencia (<code>reason === &apos;IDEMPOTENCY_KEY_REQUIRED&apos;</code>) o los parámetros son inválidos.</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-mono font-semibold text-blue-500">NotFoundError</TableCell>
+                <TableCell className="font-mono font-semibold text-blue-500">ResourceNotFoundError</TableCell>
                 <TableCell className="font-mono">NOT_FOUND / 404</TableCell>
                 <TableCell>El recurso, plantilla o holder especificado no existe o fue borrado lógicamente.</TableCell>
               </TableRow>
@@ -131,10 +131,10 @@ try {
         />
       </section>
 
-      {/* NotFoundError */}
-      <section id="not-found-error" className="space-y-4">
+      {/* ResourceNotFoundError */}
+      <section id="resource-not-found-error" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Manejo de <code>NotFoundError</code> (404)
+          Manejo de <code>ResourceNotFoundError</code> (404)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
           Se produce cuando el recurso, la plantilla asociada o el <code>holderId</code> no existen en el ambiente consultado o fueron eliminados:
@@ -143,12 +143,12 @@ try {
         <CodeBlock
           language="typescript"
           title="manejo-not-found.ts"
-          code={`import { NotFoundError } from '@caerus-dev/sdk';
+          code={`import { ResourceNotFoundError } from '@caerus-dev/sdk';
 
 try {
   await caerus.confirm(holderId);
 } catch (error) {
-  if (error instanceof NotFoundError) {
+  if (error instanceof ResourceNotFoundError) {
     console.error('Holder o recurso no encontrado:', error.message);
     // Notificar al cliente que la reserva no existe o ya caducó
   } else {
