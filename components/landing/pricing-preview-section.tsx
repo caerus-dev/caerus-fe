@@ -28,8 +28,8 @@ export function PricingPreviewSection() {
 
               <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
                 Caerus funciona bajo un esquema de facturación pensado para desarrolladores. Contás con un{" "}
-                <strong className="text-foreground font-semibold">plan gratuito Developer ($0/mes)</strong> con
-                50.000 requests mensuales incluidas para prototipar y validar tu producto con costo inicial cero. A medida que tu
+                <strong className="text-foreground font-semibold">plan gratuito Developer</strong> para
+                prototipar y validar tu producto con costo inicial cero. A medida que tu
                 tráfico y tus necesidades de alta disponibilidad aumentan, podés escalar de plan en cualquier momento.
               </p>
 
