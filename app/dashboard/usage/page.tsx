@@ -84,16 +84,22 @@ export default function UsagePage() {
         ["Aplicaciones Activas", applications.map((a) => a.name).join("; ") || "Ninguna"],
         ["Fecha de Generación", new Date().toLocaleString("es-ES")],
       ]
-      const csvContent =
-        "data:text/csv;charset=utf-8," +
-        rows.map((e) => e.map((cell) => `"${cell}"`).join(",")).join("\n")
-      const encodedUri = encodeURI(csvContent)
+      const escapeCsvCell = (cell: string) => {
+        const neutralized = /^[=+\-@\t\r]/.test(cell) ? `'${cell}` : cell
+        return `"${neutralized.replace(/"/g, '""')}"`
+      }
+      const blob = new Blob(
+        [`\uFEFF${rows.map((row) => row.map(escapeCsvCell).join(",")).join("\r\n")}`],
+        { type: "text/csv;charset=utf-8" }
+      )
+      const encodedUri = URL.createObjectURL(blob)
       const link = document.createElement("a")
       link.setAttribute("href", encodedUri)
       link.setAttribute("download", `consumo-caerus-${period}.csv`)
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      URL.revokeObjectURL(encodedUri)
       toast.success("Reporte de consumo descargado exitosamente")
     } catch {
       toast.error("Error al exportar los datos de consumo")
