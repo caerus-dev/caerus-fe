@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 const tocItems = [
   { id: "catalogo", title: "Catálogo de Excepciones del SDK" },
   { id: "conflict-error", title: "ConflictError (409)" },
-  { id: "idempotency-error", title: "IdempotencyError" },
+  { id: "validation-error", title: "ValidationError (Idempotencia)" },
   { id: "not-found-error", title: "NotFoundError (404)" },
   { id: "troubleshooting", title: "Troubleshooting de Conexión" },
 ]
@@ -50,9 +50,9 @@ export default function DocsErrorsPage() {
                 <TableCell>El recurso ya está retenido por otro usuario o sin stock disponible.</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="font-mono font-semibold text-amber-500">IdempotencyError</TableCell>
+                <TableCell className="font-mono font-semibold text-amber-500">ValidationError</TableCell>
                 <TableCell className="font-mono">INVALID_ARGUMENT</TableCell>
-                <TableCell>La plantilla exige clave de idempotencia o se reutilizó una clave con payload diferente.</TableCell>
+                <TableCell>La plantilla exige clave de idempotencia (<code>reason === &apos;IDEMPOTENCY_KEY_REQUIRED&apos;</code>) o los parámetros son inválidos.</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-mono font-semibold text-blue-500">NotFoundError</TableCell>
@@ -102,19 +102,19 @@ try {
         />
       </section>
 
-      {/* IdempotencyError */}
-      <section id="idempotency-error" className="space-y-4">
+      {/* ValidationError / Idempotencia */}
+      <section id="validation-error" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Manejo de <code>IdempotencyError</code>
+          Manejo de <code>ValidationError</code> (Idempotencia)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Ocurre cuando una plantilla tiene activada la opción <strong>Idempotencia</strong> y se envía una solicitud sin <code>idempotencyKey</code>, o cuando se reutiliza una clave existente con parámetros o payload diferente:
+          Ocurre cuando una plantilla tiene activada la opción <strong>Idempotencia</strong> y se envía una solicitud sin <code>idempotencyKey</code> (donde <code>error.reason === &apos;IDEMPOTENCY_KEY_REQUIRED&apos;</code>), o cuando se envían argumentos que no superan las validaciones:
         </p>
 
         <CodeBlock
           language="typescript"
           title="manejo-idempotencia.ts"
-          code={`import { IdempotencyError } from '@caerus-dev/sdk';
+          code={`import { ValidationError } from '@caerus-dev/sdk';
 
 try {
   // Envía siempre una clave idempotente única asociada a la operación del usuario
@@ -122,8 +122,8 @@ try {
     idempotencyKey: \`req_\${orderId}\`,
   });
 } catch (error) {
-  if (error instanceof IdempotencyError) {
-    console.error('Conflicto de idempotencia:', error.message);
+  if (error instanceof ValidationError && error.reason === 'IDEMPOTENCY_KEY_REQUIRED') {
+    console.error('Clave de idempotencia requerida:', error.message);
   } else {
     throw error;
   }

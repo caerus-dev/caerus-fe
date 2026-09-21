@@ -95,8 +95,8 @@ export const docsConfig: DocsConfig = {
         {
           title: "Catálogo de Errores y Troubleshooting",
           href: "/docs/errors",
-          description: "Mapeo de excepciones (ConflictError, IdempotencyError, NotFoundError) y códigos HTTP/gRPC.",
-          keywords: ["errores", "conflicterror", "idempotencyerror", "notfounderror", "troubleshooting", "fallas"],
+          description: "Mapeo de excepciones (ConflictError, ValidationError, NotFoundError) y códigos HTTP/gRPC.",
+          keywords: ["errores", "conflicterror", "validationerror", "idempotencia", "notfounderror", "troubleshooting", "fallas"],
         },
       ],
     },
