@@ -57,6 +57,7 @@ export default function UsagePage() {
   const period = user?.billingUsage?.period || new Date().toISOString().slice(0, 7)
 
   const [dailyUsageData, setDailyUsageData] = useState<{ date: string; calls: number }[]>([])
+  const [appUsageData, setAppUsageData] = useState<Record<string, number>>({})
   const [isChartLoading, setIsChartLoading] = useState(false)
 
   useEffect(() => {
@@ -80,16 +81,27 @@ export default function UsagePage() {
         const appsData = await appsRes.json()
         const appsList: any[] = appsData.content || []
         const envIds: string[] = []
+        const envToAppMap: Record<string, string> = {}
+        const initialAppUsage: Record<string, number> = {}
 
         for (const app of appsList) {
+          if (app.name) {
+            initialAppUsage[app.name] = 0
+          }
           if (Array.isArray(app.environments)) {
             for (const env of app.environments) {
-              if (env.id) envIds.push(env.id)
+              if (env.id) {
+                envIds.push(env.id)
+                if (app.name) {
+                  envToAppMap[env.id] = app.name
+                }
+              }
             }
           }
         }
 
         const statsByDate: Record<string, number> = {}
+        const appUsageCount: Record<string, number> = { ...initialAppUsage }
 
         if (envIds.length > 0) {
           const statsPromises = envIds.map(async (envId) => {
@@ -99,23 +111,28 @@ export default function UsagePage() {
                 { cache: "no-store" }
               )
               if (res.ok) {
-                return await res.json()
+                const data = await res.json()
+                return { envId, data }
               }
             } catch {
-              return []
+              return { envId, data: [] }
             }
-            return []
+            return { envId, data: [] }
           })
 
           const results = await Promise.allSettled(statsPromises)
           for (const res of results) {
-            if (res.status === "fulfilled" && Array.isArray(res.value)) {
-              for (const stat of res.value) {
+            if (res.status === "fulfilled" && Array.isArray(res.value.data)) {
+              const appName = envToAppMap[res.value.envId]
+              for (const stat of res.value.data) {
                 if (stat.date) {
                   const callsCount =
                     Number(stat.totalBillingUnits || 0) ||
                     (Number(stat.dlsAcquireAttempts || 0) + Number(stat.sreTakeAttempts || 0))
                   statsByDate[stat.date] = (statsByDate[stat.date] || 0) + callsCount
+                  if (appName) {
+                    appUsageCount[appName] = (appUsageCount[appName] || 0) + callsCount
+                  }
                 }
               }
             }
@@ -136,6 +153,7 @@ export default function UsagePage() {
 
         if (isMounted) {
           setDailyUsageData(points)
+          setAppUsageData(appUsageCount)
         }
       } catch (err) {
         console.error("Error loading usage chart data:", err)
@@ -469,7 +487,7 @@ export default function UsagePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {isAppsLoading ? (
+            {isAppsLoading || isChartLoading ? (
               <div className="space-y-3 py-2">
                 <Skeleton className="h-10 w-full" />
                 <Skeleton className="h-10 w-full" />
@@ -486,40 +504,66 @@ export default function UsagePage() {
               </div>
             ) : (
               <div className="space-y-3">
-                {applications.map((app) => (
-                  <div
-                    key={app.name}
-                    className="flex items-center justify-between p-2.5 rounded-lg border border-border/50 bg-background/50 hover:bg-muted/40 transition-colors"
-                  >
-                    <div className="min-w-0">
-                      <Link
-                        href={app.href}
-                        className="text-sm font-medium hover:underline text-foreground truncate block"
-                      >
-                        {app.name}
-                      </Link>
-                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                        {app.environments.map((env) => (
-                          <span
-                            key={env}
-                            className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
-                              env.toLowerCase() === "production" || env.toLowerCase() === "prod"
-                                ? "bg-primary/15 text-primary"
-                                : "bg-secondary text-muted-foreground"
-                            }`}
-                          >
-                            {env}
+                {applications.map((app) => {
+                  const appCalls = appUsageData[app.name] ?? 0
+                  const hasUsage = totalDailyCalls > 0
+                  const isUnavailable = totalDailyCalls === 0 && consumedUnits > 0
+
+                  return (
+                    <div
+                      key={app.name}
+                      className="flex items-center justify-between p-2.5 rounded-lg border border-border/50 bg-background/50 hover:bg-muted/40 transition-colors"
+                    >
+                      <div className="min-w-0">
+                        <Link
+                          href={app.href}
+                          className="text-sm font-medium hover:underline text-foreground truncate block"
+                        >
+                          {app.name}
+                        </Link>
+                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                          {app.environments.map((env) => (
+                            <span
+                              key={env}
+                              className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
+                                env.toLowerCase() === "production" || env.toLowerCase() === "prod"
+                                  ? "bg-primary/15 text-primary"
+                                  : "bg-secondary text-muted-foreground"
+                              }`}
+                            >
+                              {env}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0 text-xs font-mono">
+                        {isUnavailable ? (
+                          <span className="text-muted-foreground italic text-xs font-sans">
+                            No disponible
                           </span>
-                        ))}
+                        ) : hasUsage ? (
+                          <div>
+                            <span className="font-semibold text-foreground">
+                              {appCalls.toLocaleString()}
+                            </span>{" "}
+                            <span className="text-muted-foreground">requests</span>
+                            {appCalls > 0 && (
+                              <div className="text-[10px] text-muted-foreground font-sans">
+                                {((appCalls / totalDailyCalls) * 100).toFixed(1)}% del total
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">0 requests</span>
+                        )}
                       </div>
                     </div>
-                    <div className="text-right shrink-0 text-xs text-muted-foreground font-mono">
-                      0 requests
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
                 <p className="text-xs text-muted-foreground pt-2 text-center">
-                  El desglose por aplicación se calcula a partir de los registros de telemetría de tus API keys.
+                  {totalDailyCalls === 0 && consumedUnits > 0
+                    ? "El desglose por aplicación no está disponible para este período de telemetría."
+                    : "El desglose por aplicación se calcula a partir de los registros de telemetría de tus entornos."}
                 </p>
               </div>
             )}
