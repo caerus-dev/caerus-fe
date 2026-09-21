@@ -12,6 +12,8 @@ import {
   ArrowUpRight,
   Clock,
   AlertTriangle,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -39,12 +41,12 @@ import { toast } from "sonner"
 
 export default function UsagePage() {
   const [timeRange, setTimeRange] = useState("30d")
-  const { user, isLoading: isUserLoading } = useUser()
+  const { user, isLoading: isUserLoading, error: userError, refreshUser } = useUser()
   const { applications, isAppsLoading } = useApps()
 
   const consumedUnits = user?.billingUsage?.consumedUnits ?? 0
   const includedUnits =
-    user?.billingUsage?.includedUnits ?? (user?.billingPlan?.includedBillingUnits ?? 50000)
+    user?.billingUsage?.includedUnits ?? user?.billingPlan?.includedBillingUnits ?? 0
   const usagePercentage =
     user?.billingUsage?.percentage ??
     (includedUnits > 0 ? Math.round((consumedUnits / includedUnits) * 100) : 0)
@@ -72,12 +74,16 @@ export default function UsagePage() {
   const usageData = generateData()
 
   const handleExport = () => {
+    if (!user) {
+      toast.error("No hay datos de facturación disponibles para exportar")
+      return
+    }
     try {
       const rows = [
         ["Concepto", "Valor"],
         ["Período", period],
-        ["Plan", currentPlan?.name || "Developer"],
-        ["Código de Plan", currentPlan?.code || "DEVELOPER"],
+        ["Plan", currentPlan?.name || "Sin plan"],
+        ["Código de Plan", currentPlan?.code || "-"],
         ["Requests Consumidas", consumedUnits.toString()],
         ["Requests Incluidas", includedUnits.toString()],
         ["Porcentaje de Uso", `${usagePercentage}%`],
@@ -128,15 +134,52 @@ export default function UsagePage() {
               <SelectItem value="90d">Últimos 90 días</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="gap-2" onClick={handleExport}>
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={handleExport}
+            disabled={!user || isUserLoading || Boolean(userError)}
+          >
             <Download className="h-4 w-4" />
             Exportar
           </Button>
         </div>
       </div>
 
-      {/* Usage overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Error state */}
+      {!isUserLoading && userError && !user ? (
+        <Card className="border-destructive/40 bg-destructive/5">
+          <CardContent className="pt-6 flex flex-col items-center justify-center text-center space-y-4 py-12">
+            <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center text-destructive">
+              <AlertCircle className="h-6 w-6" />
+            </div>
+            <div className="space-y-1.5 max-w-md">
+              <h3 className="font-semibold text-lg text-foreground">
+                Error al cargar datos de consumo
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                No pudimos obtener la información de tu plan y uso de la API desde el servidor.
+              </p>
+              {userError && (
+                <p className="text-xs font-mono text-destructive/90 bg-destructive/10 px-2.5 py-1 rounded inline-block">
+                  {userError}
+                </p>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => refreshUser()}
+              className="gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Reintentar
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {/* Usage overview */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-card/50 border-border">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground flex items-center justify-between">
@@ -174,11 +217,13 @@ export default function UsagePage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-3xl font-bold text-foreground">
-                    {currentPlan?.name || "Developer"}
+                    {currentPlan?.name || "Sin plan"}
                   </span>
-                  <Badge variant="secondary" className="font-mono text-xs">
-                    {currentPlan?.code || "DEVELOPER"}
-                  </Badge>
+                  {currentPlan?.code && (
+                    <Badge variant="secondary" className="font-mono text-xs">
+                      {currentPlan.code}
+                    </Badge>
+                  )}
                 </div>
                 <div className="mt-1">
                   <Link
@@ -405,6 +450,8 @@ export default function UsagePage() {
           </CardContent>
         </Card>
       </div>
+        </>
+      )}
     </div>
   )
 }
