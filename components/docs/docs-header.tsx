@@ -31,8 +31,14 @@ export function DocsHeader({ onSearchClick }: DocsHeaderProps) {
             <SheetContent side="left" className="w-[280px] sm:w-[320px] p-6 overflow-y-auto">
               <SheetHeader className="mb-4 text-left">
                 <SheetTitle className="text-base font-semibold flex items-center gap-2">
-                  <img src="/logo.svg" alt="Caerus" className="h-5 w-auto" />
-                  <span>Documentación</span>
+                  <Link
+                    href="/docs"
+                    onClick={() => setSheetOpen(false)}
+                    className="flex items-center gap-2 hover:opacity-90 transition-opacity"
+                  >
+                    <img src="/logo.svg" alt="Caerus" className="h-5 w-auto" />
+                    <span>Documentación</span>
+                  </Link>
                 </SheetTitle>
               </SheetHeader>
               <DocsSidebar
@@ -40,6 +46,7 @@ export function DocsHeader({ onSearchClick }: DocsHeaderProps) {
                   setSheetOpen(false)
                   onSearchClick()
                 }}
+                onNavigate={() => setSheetOpen(false)}
               />
             </SheetContent>
           </Sheet>

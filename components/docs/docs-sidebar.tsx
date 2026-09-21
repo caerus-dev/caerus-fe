@@ -11,10 +11,11 @@ import { cn } from "@/lib/utils"
 
 interface DocsSidebarProps {
   onSearchClick?: () => void
+  onNavigate?: () => void
   className?: string
 }
 
-export function DocsSidebar({ onSearchClick, className }: DocsSidebarProps) {
+export function DocsSidebar({ onSearchClick, onNavigate, className }: DocsSidebarProps) {
   const pathname = usePathname()
   const [filterQuery, setFilterQuery] = React.useState("")
 
@@ -73,6 +74,7 @@ export function DocsSidebar({ onSearchClick, className }: DocsSidebarProps) {
                   <li key={item.href}>
                     <Link
                       href={item.href}
+                      onClick={onNavigate}
                       className={cn(
                         "group flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md text-xs transition-colors",
                         isActive
