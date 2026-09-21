@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { format, subDays } from "date-fns"
 import {
   BarChart3,
   Activity,
@@ -55,23 +56,104 @@ export default function UsagePage() {
   const currentPlan = user?.billingPlan
   const period = user?.billingUsage?.period || new Date().toISOString().slice(0, 7)
 
-  // Generamos datos para el rango seleccionado
-  const generateData = () => {
-    const data = []
-    const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90
-    const now = new Date()
-    for (let i = days; i >= 0; i--) {
-      const d = new Date(now)
-      d.setDate(d.getDate() - i)
-      data.push({
-        date: d.toLocaleDateString("es-ES", { month: "short", day: "numeric" }),
-        calls: 0,
-      })
-    }
-    return data
-  }
+  const [dailyUsageData, setDailyUsageData] = useState<{ date: string; calls: number }[]>([])
+  const [isChartLoading, setIsChartLoading] = useState(false)
 
-  const usageData = generateData()
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadDailyUsage() {
+      setIsChartLoading(true)
+      try {
+        const days = timeRange === "7d" ? 7 : timeRange === "30d" ? 30 : 90
+        const now = new Date()
+        const startDate = format(subDays(now, days), "yyyy-MM-dd")
+        const endDate = format(now, "yyyy-MM-dd")
+
+        // Obtener aplicaciones y sus entornos para consultar telemetría
+        const appsRes = await fetch("/api/applications?size=50", { cache: "no-store" })
+        if (!appsRes.ok) {
+          if (isMounted) setIsChartLoading(false)
+          return
+        }
+
+        const appsData = await appsRes.json()
+        const appsList: any[] = appsData.content || []
+        const envIds: string[] = []
+
+        for (const app of appsList) {
+          if (Array.isArray(app.environments)) {
+            for (const env of app.environments) {
+              if (env.id) envIds.push(env.id)
+            }
+          }
+        }
+
+        const statsByDate: Record<string, number> = {}
+
+        if (envIds.length > 0) {
+          const statsPromises = envIds.map(async (envId) => {
+            try {
+              const res = await fetch(
+                `/api/environments/${envId}/statistics?startDate=${startDate}&endDate=${endDate}`,
+                { cache: "no-store" }
+              )
+              if (res.ok) {
+                return await res.json()
+              }
+            } catch {
+              return []
+            }
+            return []
+          })
+
+          const results = await Promise.allSettled(statsPromises)
+          for (const res of results) {
+            if (res.status === "fulfilled" && Array.isArray(res.value)) {
+              for (const stat of res.value) {
+                if (stat.date) {
+                  const callsCount =
+                    Number(stat.totalBillingUnits || 0) ||
+                    (Number(stat.dlsAcquireAttempts || 0) + Number(stat.sreTakeAttempts || 0))
+                  statsByDate[stat.date] = (statsByDate[stat.date] || 0) + callsCount
+                }
+              }
+            }
+          }
+        }
+
+        // Construir puntos continuos para cada día del rango
+        const points = []
+        for (let i = days; i >= 0; i--) {
+          const d = subDays(now, i)
+          const dateKey = format(d, "yyyy-MM-dd")
+          const label = d.toLocaleDateString("es-ES", { month: "short", day: "numeric" })
+          points.push({
+            date: label,
+            calls: statsByDate[dateKey] || 0,
+          })
+        }
+
+        if (isMounted) {
+          setDailyUsageData(points)
+        }
+      } catch (err) {
+        console.error("Error loading usage chart data:", err)
+      } finally {
+        if (isMounted) {
+          setIsChartLoading(false)
+        }
+      }
+    }
+
+    loadDailyUsage()
+
+    return () => {
+      isMounted = false
+    }
+  }, [timeRange])
+
+  const totalDailyCalls = dailyUsageData.reduce((acc, curr) => acc + curr.calls, 0)
 
   const handleExport = () => {
     if (!user) {
@@ -304,46 +386,73 @@ export default function UsagePage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={usageData}>
-                <defs>
-                  <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={12}
-                />
-                <YAxis 
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={12}
-                  allowDecimals={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "8px",
-                  }}
-                  labelStyle={{ color: "hsl(var(--foreground))" }}
-                  formatter={(val: any) => [`${val} requests`, "Consumo"]}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="calls"
-                  stroke="hsl(var(--primary))"
-                  fillOpacity={1}
-                  fill="url(#colorCalls)"
-                  strokeWidth={2}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          {isChartLoading ? (
+            <div className="h-[300px] flex items-center justify-center">
+              <Skeleton className="h-full w-full rounded-lg" />
+            </div>
+          ) : totalDailyCalls > 0 ? (
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={dailyUsageData}>
+                  <defs>
+                    <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis 
+                    dataKey="date" 
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                  />
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                    allowDecimals={false}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                    }}
+                    labelStyle={{ color: "hsl(var(--foreground))" }}
+                    formatter={(val: any) => [`${val} requests`, "Consumo"]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="calls"
+                    stroke="hsl(var(--primary))"
+                    fillOpacity={1}
+                    fill="url(#colorCalls)"
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          ) : consumedUnits > 0 ? (
+            <div className="h-[300px] flex flex-col items-center justify-center text-center p-6 border border-dashed rounded-lg bg-muted/20">
+              <Activity className="h-10 w-10 text-muted-foreground/60 mb-3" />
+              <p className="text-sm font-medium text-foreground">
+                Desglose diario no disponible para este período
+              </p>
+              <p className="text-xs text-muted-foreground max-w-sm mt-1">
+                Se registraron {consumedUnits.toLocaleString()} requests en el período de facturación actual, pero no se encontraron métricas diarias detalladas para el rango seleccionado.
+              </p>
+            </div>
+          ) : (
+            <div className="h-[300px] flex flex-col items-center justify-center text-center p-6 border border-dashed rounded-lg bg-muted/20">
+              <Activity className="h-10 w-10 text-muted-foreground/60 mb-3" />
+              <p className="text-sm font-medium text-foreground">
+                Sin actividad registrada
+              </p>
+              <p className="text-xs text-muted-foreground max-w-sm mt-1">
+                No se registraron llamadas a la API durante los últimos{" "}
+                {timeRange === "7d" ? "7 días" : timeRange === "30d" ? "30 días" : "90 días"}.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
