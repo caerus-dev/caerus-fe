@@ -46,7 +46,7 @@ export default function DocsErrorsPage() {
             <TableBody className="text-xs">
               <TableRow>
                 <TableCell className="font-mono font-semibold text-red-500">ConflictError</TableCell>
-                <TableCell className="font-mono">ABORTED / 409</TableCell>
+                <TableCell className="font-mono">FAILED_PRECONDITION / 409</TableCell>
                 <TableCell>El recurso ya está retenido por otro usuario o sin stock disponible.</TableCell>
               </TableRow>
               <TableRow>
