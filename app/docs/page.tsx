@@ -211,6 +211,26 @@ export default function DocsOverviewPage() {
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
           Inicio Rápido (SDK)
         </h2>
+
+        {/* Banner Consola Web */}
+        <div className="rounded-xl border border-primary/25 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 my-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-primary" />
+              <span className="font-semibold text-sm text-foreground">Paso previo: Configuración en la Consola Web</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Antes de inicializar el cliente en código, aprende a crear tu aplicación, configurar entornos y definir las plantillas de recursos y bloqueos en el Dashboard.
+            </p>
+          </div>
+          <Link href="/docs/dashboard" className="shrink-0">
+            <Button variant="outline" size="sm" className="gap-2 text-xs">
+              <span>Guía de la Consola Web</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        </div>
+
         <p className="text-muted-foreground leading-relaxed">
           Instalá el SDK en tu aplicación Node.js o TypeScript y empezá a reservar recursos en minutos:
         </p>

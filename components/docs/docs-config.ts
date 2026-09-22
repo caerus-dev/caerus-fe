@@ -37,6 +37,13 @@ export const docsConfig: DocsConfig = {
           description: "Qué es Caerus, arquitectura híbrida Redis/Postgres y resolución de concurrencia.",
           keywords: ["introduccion", "arquitectura", "overview", "redis", "postgres", "hybrid state", "hot path"],
         },
+        {
+          title: "Consola Web & Dashboard",
+          href: "/docs/dashboard",
+          badge: "New",
+          description: "Guía paso a paso: creación de aplicaciones, gestión de entornos y configuración de plantillas SRE y DLS.",
+          keywords: ["dashboard", "consola", "aplicacion", "entornos", "templates", "plantillas", "sre", "dls", "api keys", "web"],
+        },
       ],
     },
     {
