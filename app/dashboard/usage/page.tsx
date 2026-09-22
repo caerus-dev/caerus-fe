@@ -224,8 +224,8 @@ export default function UsagePage() {
         </div>
         <div className="flex items-center gap-2">
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-[160px]">
-              <Calendar className="h-4 w-4 mr-2" />
+            <SelectTrigger className="w-[190px] sm:w-[200px] shrink-0">
+              <Calendar className="h-4 w-4 shrink-0 text-muted-foreground" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -236,7 +236,7 @@ export default function UsagePage() {
           </Select>
           <Button
             variant="outline"
-            className="gap-2"
+            className="gap-2 shrink-0"
             onClick={handleExport}
             disabled={!user || isUserLoading || Boolean(userError)}
           >
