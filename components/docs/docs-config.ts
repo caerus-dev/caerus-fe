@@ -93,6 +93,13 @@ export const docsConfig: DocsConfig = {
       title: "Referencia y Guías",
       items: [
         {
+          title: "Contratos gRPC & Protobuf",
+          href: "/docs/proto",
+          badge: "Core",
+          description: "Especificación formal y agnóstica de todos los RPCs de SharedResourceEngine y DistributedLockingEngine.",
+          keywords: ["grpc", "proto", "protobuf", "rpc", "sre", "dls", "createresource", "begintransaction", "acquirelock", "contratos"],
+        },
+        {
           title: "Catálogo de Errores y Troubleshooting",
           href: "/docs/errors",
           description: "Mapeo de excepciones (ConflictError, ValidationError, ResourceNotFoundError) y códigos HTTP/gRPC.",

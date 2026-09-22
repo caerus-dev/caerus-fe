@@ -11,6 +11,7 @@ interface CodeBlockProps {
   title?: string
   showLineNumbers?: boolean
   className?: string
+  wrap?: boolean
 }
 
 export function highlightCodeLine(line: string, lineIndex: number): React.ReactNode {
@@ -85,6 +86,7 @@ export function CodeBlock({
   title,
   showLineNumbers = false,
   className,
+  wrap = false,
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false)
 
@@ -116,7 +118,7 @@ export function CodeBlock({
           {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
         </Button>
 
-        <pre className="overflow-x-auto p-4 leading-relaxed text-sm scrollbar-thin">
+        <pre className={cn("p-4 leading-relaxed text-sm scrollbar-thin", wrap ? "overflow-x-hidden" : "overflow-x-auto")}>
           <code>
             {showLineNumbers ? (
               lines.map((line, idx) => (
@@ -124,14 +126,14 @@ export function CodeBlock({
                   <span className="table-cell select-none pr-4 text-right text-xs text-muted-foreground/40 font-mono">
                     {idx + 1}
                   </span>
-                  <span className="table-cell whitespace-pre font-mono">
+                  <span className={cn("table-cell font-mono", wrap ? "whitespace-pre-wrap break-words" : "whitespace-pre")}>
                     {highlightCodeLine(line, idx)}
                   </span>
                 </div>
               ))
             ) : (
               lines.map((line, idx) => (
-                <div key={idx} className="whitespace-pre font-mono">
+                <div key={idx} className={cn("font-mono", wrap ? "whitespace-pre-wrap break-words" : "whitespace-pre")}>
                   {highlightCodeLine(line, idx)}
                 </div>
               ))

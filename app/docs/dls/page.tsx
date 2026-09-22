@@ -147,6 +147,25 @@ try {
         />
       </section>
 
+      {/* Enlace a la Especificación gRPC / Proto */}
+      <div className="rounded-xl border border-purple-500/30 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Lock className="h-4 w-4 text-purple-500" />
+            <span className="font-semibold text-sm text-foreground">Especificación gRPC de bajo nivel</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Consultá los contratos <code>proto3</code> completos de <code>BeginTransaction</code>, <code>AcquireLock</code> (server streaming), <code>ReleaseLock</code> y <code>GetTransactionStatus</code>.
+          </p>
+        </div>
+        <Link href="/docs/proto#dls-service" className="shrink-0">
+          <Button variant="outline" size="sm" className="gap-2 border-purple-500/30 text-purple-500 hover:bg-purple-500/10 text-xs">
+            <span>Ver Contratos Protobuf</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </Link>
+      </div>
+
       {/* Enlace al Simulador DLS */}
       <section id="demo-link" className="rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-transparent p-6 space-y-3">
         <div className="flex items-center gap-2">
