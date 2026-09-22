@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { Skeleton } from "@/components/ui/skeleton"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const navigation = [
   {
@@ -115,17 +116,15 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
             <button className={cn("flex items-center gap-3 rounded-lg hover:bg-accent/50 p-1.5 transition-colors cursor-pointer w-full select-none outline-none border-0 bg-transparent text-left", isCollapsed && "justify-center px-0")}>
               {user ? (
                 <>
-                  {user.picture ? (
-                    <img
+                  <Avatar className="h-8 w-8 rounded-full border border-border/80 shrink-0">
+                    <AvatarImage
                       src={user.picture}
                       alt={user.name || "User Avatar"}
-                      className="h-8 w-8 rounded-full border border-border/80 object-cover shrink-0"
                     />
-                  ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-primary font-bold text-xs shrink-0">
+                    <AvatarFallback className="bg-primary/10 border border-primary/20 text-primary font-bold text-xs">
                       {(user.name || user.email || "U").charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                    </AvatarFallback>
+                  </Avatar>
                   {!isCollapsed && (
                     <>
                       <div className="flex-1 overflow-hidden text-left">
