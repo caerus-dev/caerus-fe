@@ -60,26 +60,31 @@ export function HeroSection() {
             </div>
             <div className="p-3.5 sm:p-6 text-left font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto max-w-full">
               <code>
-                <span className="text-muted-foreground">{"// Reserva un asiento en 3 líneas"}</span>
+                <span className="text-muted-foreground">{"// Reserva un asiento en 2 líneas"}</span>
                 <br />
                 <span className="text-chart-2">const</span>{" "}
-                <span className="text-foreground">reservation</span>{" "}
+                <span className="text-foreground">holder</span>{" "}
                 <span className="text-chart-2">=</span>{" "}
                 <span className="text-chart-2">await</span>{" "}
-                <span className="text-chart-3">Caerus</span>
+                <span className="text-foreground">caerus</span>
                 <span className="text-foreground">.</span>
-                <span className="text-primary">reserve</span>
+                <span className="text-primary">unitary</span>
                 <span className="text-foreground">(</span>
                 <span className="text-chart-3">{'"seat_J4"'}</span>
-                <span className="text-foreground">)</span>
+                <span className="text-foreground">).</span>
+                <span className="text-primary">take</span>
+                <span className="text-foreground">()</span>
                 <br />
                 <br />
                 <span className="text-muted-foreground">{"// Confirma cuando el pago sea exitoso"}</span>
                 <br />
                 <span className="text-chart-2">await</span>{" "}
-                <span className="text-foreground">reservation.</span>
+                <span className="text-foreground">caerus</span>
+                <span className="text-foreground">.</span>
                 <span className="text-primary">confirm</span>
-                <span className="text-foreground">()</span>
+                <span className="text-foreground">(</span>
+                <span className="text-foreground">holder.id</span>
+                <span className="text-foreground">)</span>
                 <span className="cursor-blink text-primary">|</span>
               </code>
             </div>
