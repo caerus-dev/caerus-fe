@@ -2,7 +2,7 @@
 
 import { useTheme } from "@/components/theme-provider"
 import { useState, useEffect } from "react"
-import { User, Shield, Palette, Trash2, AlertTriangle } from "lucide-react"
+import { User, Palette, Trash2, AlertTriangle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -149,29 +149,6 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      {/* Security */}
-      <Card className="bg-card/50 border-border">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Seguridad
-          </CardTitle>
-          <CardDescription>
-            Administrá la seguridad de tu cuenta
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">Cambiar Contraseña</p>
-              <p className="text-sm text-muted-foreground">
-                Actualizá la contraseña de tu cuenta
-              </p>
-            </div>
-            <Button variant="outline">Cambiar</Button>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Zona de Peligro */}
       <Card className="bg-card/50 border-destructive/50">
