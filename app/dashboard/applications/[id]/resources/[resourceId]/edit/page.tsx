@@ -1,15 +1,10 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { use, useEffect, useState, Suspense } from "react"
 import { ResourceForm } from "@/components/dashboard/resource-form"
 import { Loader2 } from "lucide-react"
 
-export default function EditResourcePage({
-  params,
-}: {
-  params: Promise<{ id: string; resourceId: string }>
-}) {
-  const { id, resourceId } = use(params)
+function EditResourceContainer({ id, resourceId }: { id: string; resourceId: string }) {
   const [initialData, setInitialData] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -67,5 +62,25 @@ export default function EditResourcePage({
       initialData={initialData} 
       isEditing={true} 
     />
+  )
+}
+
+export default function EditResourcePage({
+  params,
+}: {
+  params: Promise<{ id: string; resourceId: string }>
+}) {
+  const { id, resourceId } = use(params)
+
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      }
+    >
+      <EditResourceContainer id={id} resourceId={resourceId} />
+    </Suspense>
   )
 }

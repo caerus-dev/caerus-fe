@@ -119,7 +119,7 @@ export function LocksTab({
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
                           <span className="capitalize">Tipo {lock.lockType === "EXCLUSIVE" ? "exclusivo" : "lectura-escritura"}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span>Tipo de Adquisicion: {{'FAIL': 'Fallo', 'RETRY': 'Reintento', 'QUEUE': 'Encolar'}[lock.conflictResolution as string] || lock.conflictResolution}</span>
+                          <span>Tipo de Adquisición: {{'FAIL': 'Fallo', 'RETRY': 'Reintento', 'QUEUE': 'Encolar'}[lock.conflictResolution as string] || lock.conflictResolution}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
                           <span>Deadlocks: {lock.deadlockResolutionStrategy}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
@@ -141,7 +141,7 @@ export function LocksTab({
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <Link href={`/dashboard/applications/${appId}/locks/${lock.id}/edit`}>
+                            <Link href={`/dashboard/applications/${appId}/locks/${lock.id}/edit?env=${encodeURIComponent(selectedEnv)}`}>
                               <DropdownMenuItem className="cursor-pointer">
                                 <Settings className="h-4 w-4 mr-2" />
                                 Configurar

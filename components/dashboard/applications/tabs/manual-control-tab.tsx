@@ -1376,7 +1376,7 @@ export function ManualControlTab({
                 )}
                 {isViewer && (
                   <p className="text-[10px] text-muted-foreground text-center mt-1.5">
-                    Modo solo lectura: Tu rol de VIEWER no permite ejecutar acciones de control.
+                    Modo solo lectura: Tu rol de Lector no permite ejecutar acciones de control.
                   </p>
                 )}
               </div>

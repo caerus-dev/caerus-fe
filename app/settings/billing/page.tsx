@@ -454,7 +454,7 @@ export default function BillingPage() {
               <div className="space-y-2 pt-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-foreground flex items-center gap-1.5">
-                    Consumo del Periodo ({usage?.period || new Date().toISOString().slice(0, 7)})
+                    Consumo del Período ({usage?.period || new Date().toISOString().slice(0, 7)})
                   </span>
                   <div className="text-muted-foreground font-mono">
                     {(usage?.consumedUnits ?? 0).toLocaleString()} requests consumidas
@@ -469,7 +469,7 @@ export default function BillingPage() {
               <div className="space-y-2 pt-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-foreground flex items-center gap-1.5">
-                    Consumo del Periodo ({usage?.period || new Date().toISOString().slice(0, 7)})
+                    Consumo del Período ({usage?.period || new Date().toISOString().slice(0, 7)})
                   </span>
                   <div className="text-muted-foreground">
                     {isUserLoading ? (
@@ -499,7 +499,7 @@ export default function BillingPage() {
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Las requests se renuevan automáticamente al inicio de cada periodo mensual.
+                    Las requests se renuevan automáticamente al inicio de cada período mensual.
                   </p>
                 )}
               </div>
@@ -633,7 +633,7 @@ export default function BillingPage() {
               Historial de Facturas
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground">
-              Consulta y descarga los recibos de tus periodos mensuales.
+              Consulta y descarga los recibos de tus períodos mensuales.
             </CardDescription>
           </div>
           <Button
@@ -666,7 +666,7 @@ export default function BillingPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-border">
-                    <TableHead className="text-xs font-semibold">Periodo</TableHead>
+                    <TableHead className="text-xs font-semibold">Período</TableHead>
                     <TableHead className="text-xs font-semibold">N° Comprobante</TableHead>
                     <TableHead className="text-xs font-semibold">Monto</TableHead>
                     <TableHead className="text-xs font-semibold">Estado</TableHead>

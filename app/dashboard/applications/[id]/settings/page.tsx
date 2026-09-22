@@ -244,17 +244,16 @@ export default function ApplicationSettingsPage({
 
   const handleDeleteEnvConfirm = async () => {
     if (!selectedEnvForDelete) return
-    console.log("INTENTANDO ELIMINAR ENTORNO:", selectedEnvForDelete.name, "CON ID:", selectedEnvForDelete.id)
     setIsSavingEnv(true)
     setDeleteEnvError(null)
     try {
-      console.log("URL DE FETCH:", `/api/applications/${id}/environments/${selectedEnvForDelete.id}`)
       const res = await fetch(`/api/applications/${id}/environments/${selectedEnvForDelete.id}`, {
         method: "DELETE",
       })
       if (res.ok) {
         setEnvironments((prev) => prev.filter((e) => e.id !== selectedEnvForDelete.id))
-        refreshApps(); setConfirmDeleteEnvOpen(false)
+        refreshApps()
+        setConfirmDeleteEnvOpen(false)
         setSelectedEnvForDelete(null)
       } else {
         const errData = await res.json().catch(() => ({ message: "Error al eliminar el ambiente" }))
@@ -664,7 +663,7 @@ export default function ApplicationSettingsPage({
             <DialogHeader>
               <DialogTitle>Eliminar Ambiente</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro que deseas eliminar el ambiente{" "}
+                ¿Estás seguro de que deseas eliminar el ambiente{" "}
                 <span className="font-semibold text-foreground">{selectedEnvForDelete?.name}</span>?
                 Esta acción es irreversible y eliminará todos los recursos, locks y API keys asociados a este ambiente.
               </DialogDescription>

@@ -1,13 +1,24 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { ArrowLeft, Lock, Save, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import {
   Form,
   FormControl,
@@ -56,8 +67,17 @@ interface LockFormProps {
 
 export function LockForm({ applicationId, environmentId, lockId, initialData, isEditing = false }: LockFormProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+
+  const envParam = searchParams.get("env")
+  const getReturnUrl = () => {
+    if (envParam) {
+      return `/dashboard/applications/${applicationId}?env=${encodeURIComponent(envParam)}&tab=locks`
+    }
+    return `/dashboard/applications/${applicationId}?tab=locks`
+  }
 
   const form = useForm<LockFormValues>({
     resolver: zodResolver(formSchema),
@@ -107,7 +127,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
         throw new Error(errorData.error || "Hubo un error al guardar el lock")
       }
 
-      router.push(`/dashboard/applications/${applicationId}`)
+      router.push(getReturnUrl())
     } catch (error: any) {
       console.error(error)
       setApiError(error.message)
@@ -117,12 +137,11 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
   }
 
   async function handleDelete() {
-    if (!confirm("¿Estás seguro de que deseas eliminar este lock?")) return
     setIsSubmitting(true)
     try {
       const res = await fetch(`/api/distributed-lock-templates/${lockId}`, { method: "DELETE" })
       if (!res.ok) throw new Error("Error eliminando el lock")
-      router.push(`/dashboard/applications/${applicationId}`)
+      router.push(getReturnUrl())
     } catch (e: any) {
       setApiError(e.message)
       setIsSubmitting(false)
@@ -135,7 +154,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => router.back()}
+          onClick={() => router.push(getReturnUrl())}
           className="shrink-0"
         >
           <ArrowLeft className="h-5 w-5" />
@@ -342,15 +361,37 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
 
           <div className="flex items-center justify-between pt-4">
             {isEditing ? (
-              <Button type="button" variant="destructive" className="gap-2" onClick={handleDelete} disabled={isSubmitting}>
-                <Trash2 className="h-4 w-4" />
-                Eliminar Plantilla
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" variant="destructive" className="gap-2" disabled={isSubmitting}>
+                    <Trash2 className="h-4 w-4" />
+                    Eliminar Plantilla
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Eliminar plantilla de lock?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta acción no se puede deshacer. Se eliminará la configuración de la plantilla de lock distribuido para este namespace.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isSubmitting}>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      disabled={isSubmitting}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {isSubmitting ? "Eliminando..." : "Sí, eliminar"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             ) : (
               <div /> // Spacer
             )}
             <div className="flex gap-4">
-              <Button type="button" variant="outline" onClick={() => router.back()}>
+              <Button type="button" variant="outline" onClick={() => router.push(getReturnUrl())}>
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting} className="gap-2 bg-chart-2 text-chart-2-foreground hover:bg-chart-2/90">

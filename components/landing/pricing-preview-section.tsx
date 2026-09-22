@@ -27,10 +27,10 @@ export function PricingPreviewSection() {
               </h2>
 
               <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-                Caerus funciona bajo un esquema de suscripción pensado para desarrolladores. Contás con un{" "}
-                <strong className="text-foreground font-semibold">plan gratuito</strong> con llamadas a la API y
-                recursos incluidos para prototipar y validar tu producto sin poner tarjeta de crédito. A medida que tu
-                tráfico y tus necesidades de alta disponibilidad aumentan, podés subir de plan en cualquier momento.
+                Caerus funciona bajo un esquema de facturación pensado para desarrolladores. Contás con un{" "}
+                <strong className="text-foreground font-semibold">plan gratuito Developer</strong> para
+                prototipar y validar tu producto con costo inicial cero. A medida que tu
+                tráfico y tus necesidades de alta disponibilidad aumentan, podés escalar de plan en cualquier momento.
               </p>
 
               {/* Highlights */}
