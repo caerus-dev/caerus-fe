@@ -1,9 +1,17 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { Copy, Check } from "lucide-react"
 
-const codeExamples = [
+interface CodeExample {
+  id: string
+  label: string
+  language: string
+  code: string
+  render: () => React.ReactNode
+}
+
+const codeExamples: CodeExample[] = [
   {
     id: "reserve",
     label: "Reservar Recurso",
@@ -29,6 +37,94 @@ try {
   await caerus.release(holder.id)
   throw error
 }`,
+    render: () => (
+      <code>
+        <span className="text-chart-2">import</span>{" "}
+        <span className="text-foreground">{"{ "}</span>
+        <span className="text-chart-3">CaerusClient</span>
+        <span className="text-foreground">{" }"}</span>{" "}
+        <span className="text-chart-2">from</span>{" "}
+        <span className="text-chart-3">{"'@caerus-dev/sdk'"}</span>
+        <br />
+        <br />
+        <span className="text-chart-2">const</span>{" "}
+        <span className="text-foreground">caerus</span>{" "}
+        <span className="text-chart-2">=</span>{" "}
+        <span className="text-chart-2">new</span>{" "}
+        <span className="text-chart-3">CaerusClient</span>
+        <span className="text-foreground">{"({ apiKey: process.env."}</span>
+        <span className="text-chart-3">CAERUS_API_KEY</span>
+        <span className="text-foreground">{"! })"}</span>
+        <br />
+        <br />
+        <span className="text-muted-foreground">{"// 1. Retiene temporalmente un recurso (asiento, stock, cupo)"}</span>
+        <br />
+        <span className="text-chart-2">const</span>{" "}
+        <span className="text-foreground">holder</span>{" "}
+        <span className="text-chart-2">=</span>{" "}
+        <span className="text-chart-2">await</span>{" "}
+        <span className="text-foreground">caerus.</span>
+        <span className="text-primary">unitary</span>
+        <span className="text-foreground">(</span>
+        <span className="text-chart-3">{"'seat_A12'"}</span>
+        <span className="text-foreground">).</span>
+        <span className="text-primary">take</span>
+        <span className="text-foreground">{"({"}</span>
+        <br />
+        <span className="text-foreground">{"  ttlSeconds: "}</span>
+        <span className="text-amber-500">120</span>
+        <span className="text-foreground">,</span>
+        <br />
+        <span className="text-foreground">{"  metadata: { orderId: "}</span>
+        <span className="text-chart-3">{"'ord_1234'"}</span>
+        <span className="text-foreground">{" }"}</span>
+        <br />
+        <span className="text-foreground">{"})"}</span>
+        <br />
+        <br />
+        <span className="text-chart-2">try</span>{" "}
+        <span className="text-foreground">{"{"}</span>
+        <br />
+        <span className="text-muted-foreground">{"  // 2. Procesa el pago de forma segura"}</span>
+        <br />
+        <span className="text-foreground">{"  "}</span>
+        <span className="text-chart-2">const</span>{" "}
+        <span className="text-foreground">{"{ paymentId } "}</span>
+        <span className="text-chart-2">=</span>{" "}
+        <span className="text-chart-2">await</span>{" "}
+        <span className="text-primary">chargeCard</span>
+        <span className="text-foreground">(</span>
+        <span className="text-amber-500">4500</span>
+        <span className="text-foreground">)</span>
+        <br />
+        <br />
+        <span className="text-muted-foreground">{"  // 3. Confirma la reserva de manera definitiva"}</span>
+        <br />
+        <span className="text-foreground">{"  "}</span>
+        <span className="text-chart-2">await</span>{" "}
+        <span className="text-foreground">caerus.</span>
+        <span className="text-primary">confirm</span>
+        <span className="text-foreground">(holder.id, {"{ metadata: { paymentId } }"})</span>
+        <br />
+        <span className="text-foreground">{"}"}</span>{" "}
+        <span className="text-chart-2">catch</span>{" "}
+        <span className="text-foreground">(error) {"{"}</span>
+        <br />
+        <span className="text-muted-foreground">{"  // 4. Si el pago falla, libera el recurso inmediatamente"}</span>
+        <br />
+        <span className="text-foreground">{"  "}</span>
+        <span className="text-chart-2">await</span>{" "}
+        <span className="text-foreground">caerus.</span>
+        <span className="text-primary">release</span>
+        <span className="text-foreground">(holder.id)</span>
+        <br />
+        <span className="text-foreground">{"  "}</span>
+        <span className="text-chart-2">throw</span>{" "}
+        <span className="text-foreground">error</span>
+        <br />
+        <span className="text-foreground">{"}"}</span>
+      </code>
+    ),
   },
   {
     id: "lock",
@@ -58,24 +154,100 @@ if (lock.status === 'ACQUIRED') {
     await client.releaseTransactionLocks(tx.transactionId)
   }
 }`,
-  },
-  {
-    id: "availability",
-    label: "Consultar Stock",
-    language: "typescript",
-    code: `import { CaerusClient } from '@caerus-dev/sdk'
-
-const caerus = new CaerusClient({ apiKey: process.env.CAERUS_API_KEY! })
-
-// 1. Consulta stock disponible y reservas pendientes en tiempo real
-const seat = await caerus.getResource('seat_A12')
-console.log(\`Disponibles: \${seat.availableAmount}\`)
-console.log(\`En proceso de compra: \${seat.pendingCount}\`)
-
-// 2. O consulta todos los recursos de un grupo (ej. fila o categoría)
-const row = await caerus.getResourcesByGroup('row_A')
-const freeSeats = row.resources.filter((s) => s.availableAmount > 0)
-console.log(\`Asientos libres en Fila A: \${freeSeats.length}\`)`,
+    render: () => (
+      <code>
+        <span className="text-chart-2">import</span>{" "}
+        <span className="text-foreground">{"{ "}</span>
+        <span className="text-chart-3">Dls</span>
+        <span className="text-foreground">{" }"}</span>{" "}
+        <span className="text-chart-2">from</span>{" "}
+        <span className="text-chart-3">{"'@caerus-dev/sdk'"}</span>
+        <br />
+        <br />
+        <span className="text-chart-2">const</span>{" "}
+        <span className="text-foreground">client</span>{" "}
+        <span className="text-chart-2">=</span>{" "}
+        <span className="text-chart-2">new</span>{" "}
+        <span className="text-chart-3">Dls.DlsClient</span>
+        <span className="text-foreground">{"({ apiKey: process.env."}</span>
+        <span className="text-chart-3">CAERUS_API_KEY</span>
+        <span className="text-foreground">{"! })"}</span>
+        <br />
+        <br />
+        <span className="text-muted-foreground">{"// 1. Inicia una transacción con timeout"}</span>
+        <br />
+        <span className="text-chart-2">const</span>{" "}
+        <span className="text-foreground">tx</span>{" "}
+        <span className="text-chart-2">=</span>{" "}
+        <span className="text-chart-2">await</span>{" "}
+        <span className="text-foreground">client.</span>
+        <span className="text-primary">beginTransaction</span>
+        <span className="text-foreground">{"({ timeoutMs: "}</span>
+        <span className="text-amber-500">5000</span>
+        <span className="text-foreground">{" })"}</span>
+        <br />
+        <br />
+        <span className="text-muted-foreground">{"// 2. Adquiere lock exclusivo con Fencing Token (ZooKeeper)"}</span>
+        <br />
+        <span className="text-chart-2">const</span>{" "}
+        <span className="text-foreground">lock</span>{" "}
+        <span className="text-chart-2">=</span>{" "}
+        <span className="text-chart-2">await</span>{" "}
+        <span className="text-foreground">client.</span>
+        <span className="text-primary">acquireLock</span>
+        <span className="text-foreground">(</span>
+        <br />
+        <span className="text-foreground">{"  "}</span>
+        <span className="text-chart-3">{"'order-processing'"}</span>
+        <span className="text-foreground">, </span>
+        <span className="text-muted-foreground">{"// Namespace del template configurado"}</span>
+        <br />
+        <span className="text-foreground">{"  "}</span>
+        <span className="text-chart-3">{"'payment_user_123'"}</span>
+        <span className="text-foreground">,  </span>
+        <span className="text-muted-foreground">{"// Key dinámica"}</span>
+        <br />
+        <span className="text-foreground">{"  tx.transactionId,"}</span>
+        <br />
+        <span className="text-foreground">{"  "}</span>
+        <span className="text-chart-3">{"'EXCLUSIVE'"}</span>
+        <br />
+        <span className="text-foreground">{")"}</span>
+        <br />
+        <br />
+        <span className="text-chart-2">if</span>{" "}
+        <span className="text-foreground">(lock.status === </span>
+        <span className="text-chart-3">{"'ACQUIRED'"}</span>
+        <span className="text-foreground">) {"{"}</span>
+        <br />
+        <span className="text-foreground">{"  "}</span>
+        <span className="text-chart-2">try</span>{" "}
+        <span className="text-foreground">{"{"}</span>
+        <br />
+        <span className="text-muted-foreground">{"    // 3. Sección crítica protegida contra split-brain"}</span>
+        <br />
+        <span className="text-foreground">{"    "}</span>
+        <span className="text-chart-2">await</span>{" "}
+        <span className="text-primary">processPayment</span>
+        <span className="text-foreground">(userId, lock.fencingToken)</span>
+        <br />
+        <span className="text-foreground">{"  } "}</span>
+        <span className="text-chart-2">finally</span>{" "}
+        <span className="text-foreground">{"{"}</span>
+        <br />
+        <span className="text-muted-foreground">{"    // 4. Libera los locks asociados a la transacción"}</span>
+        <br />
+        <span className="text-foreground">{"    "}</span>
+        <span className="text-chart-2">await</span>{" "}
+        <span className="text-foreground">client.</span>
+        <span className="text-primary">releaseTransactionLocks</span>
+        <span className="text-foreground">(tx.transactionId)</span>
+        <br />
+        <span className="text-foreground">{"  }"}</span>
+        <br />
+        <span className="text-foreground">{"}"}</span>
+      </code>
+    ),
   },
 ]
 
@@ -83,7 +255,7 @@ export function CodeExamplesSection() {
   const [activeTab, setActiveTab] = useState("reserve")
   const [copied, setCopied] = useState(false)
 
-  const activeExample = codeExamples.find((e) => e.id === activeTab)
+  const activeExample = codeExamples.find((e) => e.id === activeTab) || codeExamples[0]
 
   const copyToClipboard = async () => {
     if (activeExample) {
@@ -128,7 +300,7 @@ export function CodeExamplesSection() {
             </div>
             <button
               onClick={copyToClipboard}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             >
               {copied ? (
                 <>
@@ -145,9 +317,9 @@ export function CodeExamplesSection() {
           </div>
 
           {/* Code content */}
-          <div className="p-4 sm:p-6 overflow-x-auto">
-            <pre className="font-mono text-sm leading-relaxed">
-              <code className="text-foreground/90">{activeExample?.code}</code>
+          <div className="p-4 sm:p-6 overflow-x-auto text-left">
+            <pre className="font-mono text-xs sm:text-sm leading-relaxed">
+              {activeExample.render()}
             </pre>
           </div>
         </div>
@@ -156,7 +328,7 @@ export function CodeExamplesSection() {
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-8 text-xs sm:text-sm text-muted-foreground">
           <span>SDKs disponibles:</span>
           <div className="flex flex-wrap justify-center gap-2">
-            {["TypeScript", "Python", "Go", "REST API"].map((sdk) => (
+            {["TypeScript", "Python", "Go", "gRPC Service"].map((sdk) => (
               <span
                 key={sdk}
                 className="px-3 py-1 rounded-full bg-secondary border border-border text-foreground text-xs sm:text-sm"
