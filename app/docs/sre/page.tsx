@@ -36,7 +36,7 @@ export default function DocsSrePage() {
           En Caerus, la distinción entre un recurso del que hay <em>exactamente uno</em> y un recurso del que hay <em>múltiples unidades intercambiables</em> es una diferencia en el sistema de tipos de TypeScript:
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+        <div className="grid grid-cols-1 gap-6 my-4">
           <div className="rounded-xl border border-border/70 p-4 bg-muted/20">
             <h3 className="font-semibold text-sm text-foreground mb-1 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
