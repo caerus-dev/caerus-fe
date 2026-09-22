@@ -625,7 +625,7 @@ export default function BillingPage() {
       </div>
 
       {/* 3. Tabla Paginada de Facturas */}
-      <Card className="border-border bg-card shadow-sm">
+      <Card id="invoices-section" className="border-border bg-card shadow-sm">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-lg font-bold flex items-center gap-2 text-foreground">
@@ -961,6 +961,11 @@ export default function BillingPage() {
                     <p className="text-amber-500 font-medium">
                       Aviso: Si tienes más de 1 colaborador activo en tus aplicaciones, deberás removerlos antes de descender de plan.
                     </p>
+                    {user?.billingPlan?.code === "STARTUP" && (
+                      <p className="text-xs text-amber-500 font-medium">
+                        Aviso: Al descender a Developer, se liquidará en tu tarjeta el abono y consumo del período actual de Startup.
+                      </p>
+                    )}
                   </>
                 )}
               </div>
@@ -1018,10 +1023,10 @@ export default function BillingPage() {
             <AlertDialogDescription asChild>
               <div className="text-sm text-muted-foreground space-y-2">
                 <p>
-                  Si no tienes aplicaciones activas, tu tarjeta se desvinculará y tu cuenta volverá al estado inicial sin método de pago.
+                  Si no tienes aplicaciones activas ni facturas pendientes, tu tarjeta se desvinculará y tu plan pasará a Developer.
                 </p>
-                <p className="text-xs text-amber-500">
-                  Aviso: Si tienes aplicaciones en funcionamiento, el sistema requerirá que las elimines previamente para evitar interrupciones en el servicio.
+                <p className="text-xs text-amber-500 font-medium">
+                  Aviso: Antes de desvincular, el sistema liquidará automáticamente en tu tarjeta cualquier consumo o abono pendiente del período actual. Si el cobro falla, la tarjeta no podrá ser desvinculada.
                 </p>
               </div>
             </AlertDialogDescription>
@@ -1033,7 +1038,11 @@ export default function BillingPage() {
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>{detachConflict.message}</AlertTitle>
                 <AlertDescription className="text-xs mt-1 space-y-1">
-                  <p className="font-semibold text-foreground/90">Aplicaciones que debes eliminar primero:</p>
+                  <p className="font-semibold text-foreground/90">
+                    {detachConflict.details.some((d) => d.toLowerCase().includes("factura") || d.toLowerCase().includes("saldo"))
+                      ? "Requisitos pendientes:"
+                      : "Aplicaciones que debes eliminar primero:"}
+                  </p>
                   <ul className="list-disc pl-4 space-y-0.5">
                     {detachConflict.details.map((detail, idx) => (
                       <li key={idx} className="font-medium">{detail}</li>
@@ -1041,15 +1050,33 @@ export default function BillingPage() {
                   </ul>
                 </AlertDescription>
               </Alert>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="w-full text-xs font-semibold"
-                onClick={() => router.push("/dashboard/applications")}
-              >
-                Ir a Mis Aplicaciones →
-              </Button>
+              {detachConflict.details.some((d) => d.toLowerCase().includes("factura") || d.toLowerCase().includes("saldo")) ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs font-semibold"
+                  onClick={() => {
+                    setDetachDialogOpen(false);
+                    const invoicesEl = document.getElementById("invoices-section");
+                    if (invoicesEl) {
+                      invoicesEl.scrollIntoView({ behavior: "smooth" });
+                    }
+                  }}
+                >
+                  Ver Historial de Facturas ↓
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs font-semibold"
+                  onClick={() => router.push("/dashboard/applications")}
+                >
+                  Ir a Mis Aplicaciones →
+                </Button>
+              )}
             </div>
           )}
 

@@ -273,9 +273,9 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                       const extraCount = app.environments.length - visibleDots.length;
                       return (
                         <span className="flex shrink-0 items-center gap-1">
-                          {visibleDots.map(({ kind, colors }) => (
+                          {visibleDots.map(({ kind, colors }, idx) => (
                             <span
-                              key={kind}
+                              key={`${kind}-${colors.dot}-${idx}`}
                               className={cn("h-1.5 w-1.5 rounded-full", colors.dot)}
                               title={allNames.join(", ")}
                             />

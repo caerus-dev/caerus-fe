@@ -1,6 +1,6 @@
 "use client"
 
-import { use, useEffect, useState } from "react"
+import { use, useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, CheckCircle2, XCircle, Sparkles, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,7 @@ export default function AcceptInvitePage({
   const router = useRouter()
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading")
   const [errorMessage, setErrorMessage] = useState("")
+  const hasRequestedRef = useRef(false)
 
   useEffect(() => {
     if (!token) {
@@ -22,6 +23,9 @@ export default function AcceptInvitePage({
       setErrorMessage("Falta el token de invitación.")
       return
     }
+
+    if (hasRequestedRef.current) return
+    hasRequestedRef.current = true
 
     const acceptInvitation = async () => {
       try {

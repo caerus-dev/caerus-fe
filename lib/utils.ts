@@ -7,17 +7,89 @@ export function cn(...inputs: ClassValue[]) {
 
 export type ColorPreset = 'blue' | 'yellow' | 'green' | 'purple' | 'cyan' | 'pink' | 'orange' | 'slate'
 
-type EnvKind = 'dev' | 'staging' | 'prod' | 'purple' | 'cyan' | 'pink' | 'orange' | 'slate'
+export interface EnvColorStyles {
+  dot: string
+  text: string
+  border: string
+  borderStrong: string
+  bg: string
+  bgSoft: string
+  badge: string
+}
 
-function envKind(envName?: string | null): EnvKind {
-  const name = (envName || '').toLowerCase()
-  if (name === 'prod' || name === 'production') return 'prod'
-  if (name === 'stage' || name === 'staging' || name === 'qa') return 'staging'
-  if (name.includes('sandbox') || name.includes('feature')) return 'purple'
-  if (name.includes('test')) return 'cyan'
-  if (name.includes('demo')) return 'pink'
-  if (name.includes('preprod') || name.includes('pre-prod')) return 'orange'
-  return 'dev'
+export const ENV_COLOR_MAP: Record<ColorPreset, EnvColorStyles> = {
+  blue: {
+    dot: 'bg-blue-500',
+    text: 'text-blue-400',
+    border: 'border-blue-500/50',
+    borderStrong: 'border-blue-500',
+    bg: 'bg-blue-500/20',
+    bgSoft: 'bg-blue-500/5',
+    badge: 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+  },
+  yellow: {
+    dot: 'bg-yellow-500',
+    text: 'text-yellow-400',
+    border: 'border-yellow-500/50',
+    borderStrong: 'border-yellow-500',
+    bg: 'bg-yellow-500/20',
+    bgSoft: 'bg-yellow-500/5',
+    badge: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
+  },
+  green: {
+    dot: 'bg-green-500',
+    text: 'text-green-400',
+    border: 'border-green-500/50',
+    borderStrong: 'border-green-500',
+    bg: 'bg-green-500/20',
+    bgSoft: 'bg-green-500/5',
+    badge: 'bg-green-500/20 text-green-400 border border-green-500/30',
+  },
+  purple: {
+    dot: 'bg-purple-500',
+    text: 'text-purple-400',
+    border: 'border-purple-500/50',
+    borderStrong: 'border-purple-500',
+    bg: 'bg-purple-500/20',
+    bgSoft: 'bg-purple-500/5',
+    badge: 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+  },
+  cyan: {
+    dot: 'bg-cyan-500',
+    text: 'text-cyan-400',
+    border: 'border-cyan-500/50',
+    borderStrong: 'border-cyan-500',
+    bg: 'bg-cyan-500/20',
+    bgSoft: 'bg-cyan-500/5',
+    badge: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
+  },
+  pink: {
+    dot: 'bg-pink-500',
+    text: 'text-pink-400',
+    border: 'border-pink-500/50',
+    borderStrong: 'border-pink-500',
+    bg: 'bg-pink-500/20',
+    bgSoft: 'bg-pink-500/5',
+    badge: 'bg-pink-500/20 text-pink-400 border border-pink-500/30',
+  },
+  orange: {
+    dot: 'bg-orange-500',
+    text: 'text-orange-400',
+    border: 'border-orange-500/50',
+    borderStrong: 'border-orange-500',
+    bg: 'bg-orange-500/20',
+    bgSoft: 'bg-orange-500/5',
+    badge: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
+  },
+  slate: {
+    dot: 'bg-slate-400',
+    text: 'text-slate-400',
+    border: 'border-slate-500/50',
+    borderStrong: 'border-slate-400',
+    bg: 'bg-slate-500/20',
+    bgSoft: 'bg-slate-500/5',
+    badge: 'bg-slate-500/20 text-slate-400 border border-slate-500/30',
+  },
 }
 
 export const ENV_COLOR_PRESETS = [
@@ -31,86 +103,38 @@ export const ENV_COLOR_PRESETS = [
   { id: 'slate', label: 'Gris (Otro)', dot: 'bg-slate-400' },
 ] as const
 
-export function getEnvColors(envName?: string | null, customPresetId?: string | null, envId?: string | null) {
-  const map = {
-    dev: {
-      dot: 'bg-blue-500',
-      text: 'text-blue-400',
-      border: 'border-blue-500/50',
-      borderStrong: 'border-blue-500',
-      bg: 'bg-blue-500/20',
-      bgSoft: 'bg-blue-500/5',
-      badge: 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
-    },
-    staging: {
-      dot: 'bg-yellow-500',
-      text: 'text-yellow-400',
-      border: 'border-yellow-500/50',
-      borderStrong: 'border-yellow-500',
-      bg: 'bg-yellow-500/20',
-      bgSoft: 'bg-yellow-500/5',
-      badge: 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
-    },
-    prod: {
-      dot: 'bg-green-500',
-      text: 'text-green-400',
-      border: 'border-green-500/50',
-      borderStrong: 'border-green-500',
-      bg: 'bg-green-500/20',
-      bgSoft: 'bg-green-500/5',
-      badge: 'bg-green-500/20 text-green-400 border border-green-500/30',
-    },
-    purple: {
-      dot: 'bg-purple-500',
-      text: 'text-purple-400',
-      border: 'border-purple-500/50',
-      borderStrong: 'border-purple-500',
-      bg: 'bg-purple-500/20',
-      bgSoft: 'bg-purple-500/5',
-      badge: 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
-    },
-    cyan: {
-      dot: 'bg-cyan-500',
-      text: 'text-cyan-400',
-      border: 'border-cyan-500/50',
-      borderStrong: 'border-cyan-500',
-      bg: 'bg-cyan-500/20',
-      bgSoft: 'bg-cyan-500/5',
-      badge: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30',
-    },
-    pink: {
-      dot: 'bg-pink-500',
-      text: 'text-pink-400',
-      border: 'border-pink-500/50',
-      borderStrong: 'border-pink-500',
-      bg: 'bg-pink-500/20',
-      bgSoft: 'bg-pink-500/5',
-      badge: 'bg-pink-500/20 text-pink-400 border border-pink-500/30',
-    },
-    orange: {
-      dot: 'bg-orange-500',
-      text: 'text-orange-400',
-      border: 'border-orange-500/50',
-      borderStrong: 'border-orange-500',
-      bg: 'bg-orange-500/20',
-      bgSoft: 'bg-orange-500/5',
-      badge: 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
-    },
-    slate: {
-      dot: 'bg-slate-400',
-      text: 'text-slate-400',
-      border: 'border-slate-500/50',
-      borderStrong: 'border-slate-400',
-      bg: 'bg-slate-500/20',
-      bgSoft: 'bg-slate-500/5',
-      badge: 'bg-slate-500/20 text-slate-400 border border-slate-500/30',
-    },
-  } as const
+/**
+ * Infiere un color predeterminado a partir del nombre del ambiente
+ * si no tiene ningún color explícito configurado en la base de datos.
+ */
+export function inferColorFromName(envName?: string | null): ColorPreset {
+  const name = (envName || '').toLowerCase().trim()
+  if (name === 'prod' || name === 'production') return 'green'
+  if (name === 'stage' || name === 'staging' || name === 'qa') return 'yellow'
+  if (name.includes('sandbox') || name.includes('feature')) return 'purple'
+  if (name.includes('test')) return 'cyan'
+  if (name.includes('demo')) return 'pink'
+  if (name.includes('preprod') || name.includes('pre-prod')) return 'orange'
+  return 'blue' // Color azul por defecto para dev/local/otros
+}
 
-  let kind: EnvKind = envKind(envName)
+// Mapeo retrocompatible por si en código antiguo o tests se pasaba "dev", "prod" o "staging" como preset
+const LEGACY_KIND_TO_COLOR: Record<string, ColorPreset> = {
+  dev: 'blue',
+  development: 'blue',
+  staging: 'yellow',
+  stage: 'yellow',
+  prod: 'green',
+  production: 'green',
+}
 
-  let savedColor: string | null = customPresetId || null
-  if (!savedColor && typeof window !== "undefined") {
+export function getEnvColors(
+  envName?: string | null,
+  customColor?: string | null,
+  envId?: string | null
+): EnvColorStyles {
+  let savedColor: string | null = customColor || null
+  if (!savedColor && typeof window !== 'undefined') {
     if (envId) {
       savedColor = localStorage.getItem(`caerus_env_color_${envId}`)
     }
@@ -119,11 +143,22 @@ export function getEnvColors(envName?: string | null, customPresetId?: string | 
     }
   }
 
-  if (savedColor && savedColor in map) {
-    kind = savedColor as EnvKind
+  let color: ColorPreset = 'blue'
+
+  if (savedColor) {
+    const normalized = savedColor.trim().toLowerCase()
+    if (normalized in ENV_COLOR_MAP) {
+      color = normalized as ColorPreset
+    } else if (normalized in LEGACY_KIND_TO_COLOR) {
+      color = LEGACY_KIND_TO_COLOR[normalized]
+    } else {
+      color = inferColorFromName(envName)
+    }
+  } else {
+    color = inferColorFromName(envName)
   }
 
-  return map[kind] || map.slate
+  return ENV_COLOR_MAP[color] || ENV_COLOR_MAP.slate
 }
 
 export function getUniqueEnvDots(
@@ -141,14 +176,16 @@ export function getUniqueEnvDots(
   )
   const names = items.map((i) => i.name)
   const seenDots = new Set<string>()
-  const result: { kind: EnvKind; colors: ReturnType<typeof getEnvColors> }[] = []
+  const result: { color: ColorPreset; kind: ColorPreset; colors: EnvColorStyles }[] = []
 
   for (const item of items) {
     const colors = getEnvColors(item.name, item.color, item.id)
     if (!seenDots.has(colors.dot)) {
       seenDots.add(colors.dot)
+      const preset = ENV_COLOR_PRESETS.find((p) => p.dot === colors.dot)?.id || 'blue'
       result.push({
-        kind: envKind(item.name),
+        color: preset,
+        kind: preset,
         colors,
       })
     }

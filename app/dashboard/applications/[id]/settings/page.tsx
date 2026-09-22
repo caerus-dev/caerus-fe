@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { ArrowLeft, Loader2, Plus, Trash2, AlertTriangle, Pencil } from "lucide-react"
-import { cn, ENV_COLOR_PRESETS, getEnvColors } from "@/lib/utils"
+import { cn, ENV_COLOR_PRESETS, getEnvColors, inferColorFromName } from "@/lib/utils"
 interface Environment {
   id: string
   name: string
@@ -130,10 +130,11 @@ export default function ApplicationSettingsPage({
 
   const handleOpenEditEnv = (env: Environment) => {
     setEnvDialogMode("edit")
+    setSelectedEnvForEdit(env)
     const savedColor = env.color || (typeof window !== "undefined"
       ? (localStorage.getItem(`caerus_env_color_${env.id}`) || localStorage.getItem(`caerus_env_color_name_${env.name.toLowerCase()}`))
       : null)
-    const defaultColor = (env.name === "prod" || env.name === "production") ? "green" : (env.name === "stage" || env.name === "staging" || env.name === "qa") ? "yellow" : "blue"
+    const defaultColor = inferColorFromName(env.name)
     setEnvForm({ name: env.name, description: env.description || "", color: savedColor || defaultColor })
     setEnvFormError("")
     setEnvDialogOpen(true)
@@ -178,12 +179,19 @@ export default function ApplicationSettingsPage({
               color: newEnv.color || envForm.color,
             },
           ])
-          refreshApps(); setEnvDialogOpen(false)
+          refreshApps()
+          setSelectedEnvForEdit(null)
+          setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
           setEnvFormError(errData.message || errData.error || "Error al crear el ambiente")
         }
-      } else if (envDialogMode === "edit" && selectedEnvForEdit) {
+      } else if (envDialogMode === "edit") {
+        if (!selectedEnvForEdit) {
+          setEnvFormError("No se seleccionó ningún ambiente para editar")
+          return
+        }
+
         const res = await fetch(`/api/applications/${id}/environments/${selectedEnvForEdit.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -212,7 +220,9 @@ export default function ApplicationSettingsPage({
                 : e
             )
           )
-          refreshApps(); setEnvDialogOpen(false)
+          refreshApps()
+          setSelectedEnvForEdit(null)
+          setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
           setEnvFormError(errData.message || errData.error || "Error al actualizar el ambiente")
@@ -557,7 +567,10 @@ export default function ApplicationSettingsPage({
         </Dialog>
 
         {/* Create/Edit Environment Dialog */}
-        <Dialog open={envDialogOpen} onOpenChange={setEnvDialogOpen}>
+        <Dialog open={envDialogOpen} onOpenChange={(open) => {
+          setEnvDialogOpen(open)
+          if (!open) setSelectedEnvForEdit(null)
+        }}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
@@ -621,7 +634,7 @@ export default function ApplicationSettingsPage({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => { refreshApps(); setEnvDialogOpen(false); }}
+                  onClick={() => { refreshApps(); setSelectedEnvForEdit(null); setEnvDialogOpen(false); }}
                   disabled={isSavingEnv}
                 >
                   Cancelar
