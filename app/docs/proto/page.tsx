@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const tocItems = [
-  { id: "introduccion", title: "Arquitectura gRPC & Protobuf" },
+  { id: "introduccion", title: "Protocolo gRPC & Protobuf" },
   { id: "sre-service", title: "SharedResourceEngine (SRE)" },
   { id: "sre-inventory", title: "SRE: Gestión de Inventario" },
   { id: "sre-transactions", title: "SRE: Operaciones de Reserva" },
@@ -33,10 +33,10 @@ export default function DocsProtoPage() {
       {/* Introducción */}
       <section id="introduccion" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Arquitectura gRPC &amp; Protobuf
+          Protocolo gRPC &amp; Protobuf
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Toda la comunicación de alto rendimiento (<em>hot path</em>) de Caerus opera bajo el protocolo <strong>gRPC sobre HTTP/2</strong> con serialización binaria <strong>Protocol Buffers v3 (proto3)</strong>.
+          Toda la comunicación de alto rendimiento de Caerus opera bajo el protocolo <strong>gRPC sobre HTTP/2</strong> con serialización binaria <strong>Protocol Buffers v3 (proto3)</strong>.
         </p>
         <p className="text-muted-foreground leading-relaxed">
           Esta especificación describe los métodos RPC, sus parámetros de entrada, mensajes de respuesta y comportamientos semánticos de forma completamente independiente de si utilizas nuestro SDK en TypeScript/Node.js o clientes generados en <strong>Go, Python, Java, C#, Rust o C++</strong>.
@@ -63,7 +63,7 @@ export default function DocsProtoPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Coordinación distribuida con exclusión mutua estricta, bloqueos de lectura/escritura (Read-Write), transacciones con timeout y Fencing Tokens monotónicos de ZooKeeper.
+              Coordinación distribuida con exclusión mutua estricta, bloqueos de lectura/escritura (Read-Write), transacciones con timeout y Fencing Tokens monotónicos respaldados por consenso.
             </CardContent>
           </Card>
         </div>
@@ -453,7 +453,7 @@ message AcquireLockRequest {
 message AcquireLockResponse {
   // ID asignado a la reserva de lock
   string lock_id = 1;
-  // Fencing Token monotónicamente creciente (ZooKeeper czxid)
+  // Fencing Token monotónicamente creciente
   int64 fencing_token = 2;
   // Estado: ACQUIRED, DENIED o QUEUED
   LockStatus status = 3;

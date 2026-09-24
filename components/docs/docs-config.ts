@@ -31,11 +31,11 @@ export const docsConfig: DocsConfig = {
       title: "Comenzando",
       items: [
         {
-          title: "Visión General & Arquitectura",
+          title: "Visión General de la Plataforma",
           href: "/docs",
           badge: "Core",
-          description: "Qué es Caerus, arquitectura híbrida Redis/Postgres y resolución de concurrencia.",
-          keywords: ["introduccion", "arquitectura", "overview", "redis", "postgres", "hybrid state", "hot path"],
+          description: "Qué es Caerus, modelo de concurrencia distribuida y resolución de carreras.",
+          keywords: ["introduccion", "plataforma", "overview", "concurrencia", "consistencia", "rendimiento"],
         },
         {
           title: "Consola Web & Dashboard",
@@ -84,8 +84,8 @@ export const docsConfig: DocsConfig = {
           title: "Locks y Transacciones DLS",
           href: "/docs/dls",
           badge: "DLS",
-          description: "Exclusión mutua, modos Exclusive vs Shared Read, Fencing Tokens de ZooKeeper y Deadlocks.",
-          keywords: ["dls", "distributed lock", "fencing token", "zookeeper", "deadlock", "exclusive", "shared read", "transacciones"],
+          description: "Exclusión mutua, modos Exclusive vs Shared Read, Fencing Tokens y Deadlocks.",
+          keywords: ["dls", "distributed lock", "fencing token", "deadlock", "exclusive", "shared read", "transacciones"],
         },
         {
           title: "Demo Interactiva: Simulador DLS",

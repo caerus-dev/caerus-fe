@@ -3,7 +3,7 @@ import { DocsShell } from "@/components/docs/docs-shell"
 
 export const metadata: Metadata = {
   title: "Documentación | Caerus BaaS",
-  description: "Guía completa de arquitectura, SDKs y motores de concurrencia distribuida (SRE y DLS) en Caerus.",
+  description: "Guía completa de plataforma, SDKs y motores de concurrencia distribuida (SRE y DLS) en Caerus.",
 }
 
 export default function DocsLayout({

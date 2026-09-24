@@ -95,7 +95,7 @@ export default function DocsDashboardPage() {
           <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">4</span>
-              <h3 className="font-semibold text-sm text-foreground">Instancias en Caliente (Hot Path)</h3>
+              <h3 className="font-semibold text-sm text-foreground">Instancias en Tiempo Real</h3>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Los recursos reales creados en tiempo de ejecución (la butaca <code>D4</code>, el turno médico de las 14:00 o el lock sobre <code>user_wallet_99</code>) que heredan las reglas de su plantilla asociada.
@@ -343,7 +343,7 @@ export default function DocsDashboardPage() {
                 <Badge variant="outline" className="text-[10px] font-mono border-purple-500/30 text-purple-500">Recomendado</Badge>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Genera un número de versión monotónico creciente (respaldado por ZooKeeper) con cada adquisición. Protege a tu base de datos contra workers "zombies" demorados por recolección de basura o pausas de red (Split-Brain).
+                Genera un número de versión monotónico creciente con cada adquisición respaldado por consenso estricto. Protege a tu base de datos contra workers "zombies" demorados por recolección de basura o pausas de red (Split-Brain).
               </p>
             </div>
 

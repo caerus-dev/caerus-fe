@@ -87,10 +87,10 @@ export default function DocsDlsPage() {
         <div className="rounded-xl border border-primary/40 bg-primary/5 p-4 space-y-2 text-xs text-muted-foreground leading-relaxed">
           <div className="flex items-center gap-2 font-semibold text-foreground">
             <Key className="h-4 w-4 text-primary" />
-            <span>Garantía de Secuencia Monótona (ZooKeeper Consensus)</span>
+            <span>Garantía de Secuencia Monótona (Consenso Distribuido)</span>
           </div>
           <p>
-            Caerus genera un <strong>Fencing Token</strong>: un número entero estrictamente incremental (otorgado mediante consenso con ZooKeeper) junto a cada adquisición exitosa. Al escribir en tu base de datos o almacenamiento, verificás que el token sea mayor al último aceptado; si el proceso se quedó dormido, su token viejo será rechazado inmediatamente.
+            Caerus genera un <strong>Fencing Token</strong>: un número entero estrictamente incremental (otorgado mediante consenso distribuido garantizado) junto a cada adquisición exitosa. Al escribir en tu base de datos o almacenamiento, verificás que el token sea mayor al último aceptado; si el proceso se quedó dormido, su token viejo será rechazado inmediatamente.
           </p>
         </div>
       </section>

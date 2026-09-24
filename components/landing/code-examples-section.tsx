@@ -137,7 +137,7 @@ const client = new Dls.DlsClient({ apiKey: process.env.CAERUS_API_KEY! })
 // 1. Inicia una transacción con timeout
 const tx = await client.beginTransaction({ timeoutMs: 5000 })
 
-// 2. Adquiere lock exclusivo con Fencing Token (ZooKeeper)
+// 2. Adquiere lock exclusivo con Fencing Token
 const lock = await client.acquireLock(
   'order-processing', // Namespace del template configurado
   'payment_user_123',  // Key dinámica
@@ -187,7 +187,7 @@ if (lock.status === 'ACQUIRED') {
         <span className="text-foreground">{" })"}</span>
         <br />
         <br />
-        <span className="text-muted-foreground">{"// 2. Adquiere lock exclusivo con Fencing Token (ZooKeeper)"}</span>
+        <span className="text-muted-foreground">{"// 2. Adquiere lock exclusivo con Fencing Token"}</span>
         <br />
         <span className="text-chart-2">const</span>{" "}
         <span className="text-foreground">lock</span>{" "}
