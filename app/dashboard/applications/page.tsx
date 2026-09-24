@@ -305,7 +305,7 @@ export default function ApplicationsPage() {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/applications/${app.id}/api-keys`}>
+                        <Link href={`/dashboard/applications/${app.id}?tab=keys`}>
                           <Key className="w-4 h-4 mr-2" />
                           API Keys
                         </Link>
