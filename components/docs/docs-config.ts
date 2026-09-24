@@ -31,11 +31,18 @@ export const docsConfig: DocsConfig = {
       title: "Comenzando",
       items: [
         {
-          title: "Visión General & Arquitectura",
+          title: "Visión General de la Plataforma",
           href: "/docs",
           badge: "Core",
-          description: "Qué es Caerus, arquitectura híbrida Redis/Postgres y resolución de concurrencia.",
-          keywords: ["introduccion", "arquitectura", "overview", "redis", "postgres", "hybrid state", "hot path"],
+          description: "Qué es Caerus, modelo de concurrencia distribuida y resolución de carreras.",
+          keywords: ["introduccion", "plataforma", "overview", "concurrencia", "consistencia", "rendimiento"],
+        },
+        {
+          title: "Consola Web & Dashboard",
+          href: "/docs/dashboard",
+          badge: "New",
+          description: "Guía paso a paso: creación de aplicaciones, gestión de entornos y configuración de plantillas SRE y DLS.",
+          keywords: ["dashboard", "consola", "aplicacion", "entornos", "templates", "plantillas", "sre", "dls", "api keys", "web"],
         },
       ],
     },
@@ -77,8 +84,8 @@ export const docsConfig: DocsConfig = {
           title: "Locks y Transacciones DLS",
           href: "/docs/dls",
           badge: "DLS",
-          description: "Exclusión mutua, modos Exclusive vs Shared Read, Fencing Tokens de ZooKeeper y Deadlocks.",
-          keywords: ["dls", "distributed lock", "fencing token", "zookeeper", "deadlock", "exclusive", "shared read", "transacciones"],
+          description: "Exclusión mutua, modos Exclusive vs Shared Read, Fencing Tokens y Deadlocks.",
+          keywords: ["dls", "distributed lock", "fencing token", "deadlock", "exclusive", "shared read", "transacciones"],
         },
         {
           title: "Demo Interactiva: Simulador DLS",
@@ -92,6 +99,13 @@ export const docsConfig: DocsConfig = {
     {
       title: "Referencia y Guías",
       items: [
+        {
+          title: "Contratos gRPC & Protobuf",
+          href: "/docs/proto",
+          badge: "Core",
+          description: "Especificación formal y agnóstica de todos los RPCs de SharedResourceEngine y DistributedLockingEngine.",
+          keywords: ["grpc", "proto", "protobuf", "rpc", "sre", "dls", "createresource", "begintransaction", "acquirelock", "contratos"],
+        },
         {
           title: "Catálogo de Errores y Troubleshooting",
           href: "/docs/errors",

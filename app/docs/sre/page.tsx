@@ -36,7 +36,7 @@ export default function DocsSrePage() {
           En Caerus, la distinción entre un recurso del que hay <em>exactamente uno</em> y un recurso del que hay <em>múltiples unidades intercambiables</em> es una diferencia en el sistema de tipos de TypeScript:
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+        <div className="grid grid-cols-1 gap-6 my-4">
           <div className="rounded-xl border border-border/70 p-4 bg-muted/20">
             <h3 className="font-semibold text-sm text-foreground mb-1 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -174,6 +174,25 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
           </Card>
         </div>
       </section>
+
+      {/* Enlace a la Especificación gRPC / Proto */}
+      <div className="rounded-xl border border-emerald-500/30 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Layers className="h-4 w-4 text-emerald-500" />
+            <span className="font-semibold text-sm text-foreground">Especificación gRPC de bajo nivel</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            ¿Construyendo un cliente en Go, Python, Java o Rust? Consultá los contratos <code>proto3</code> completos de <code>CreateResource</code>, <code>Take</code>, <code>Confirm</code> y <code>Release</code>.
+          </p>
+        </div>
+        <Link href="/docs/proto#sre-service" className="shrink-0">
+          <Button variant="outline" size="sm" className="gap-2 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10 text-xs">
+            <span>Ver Contratos Protobuf</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </Link>
+      </div>
 
       {/* Enlace a la Demo */}
       <section id="demo-link" className="rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent p-6 space-y-3">

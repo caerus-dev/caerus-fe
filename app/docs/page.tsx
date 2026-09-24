@@ -8,8 +8,7 @@ import { Badge } from "@/components/ui/badge"
 
 const tocItems = [
   { id: "problema", title: "¿Qué problema resuelve Caerus?" },
-  { id: "arquitectura", title: "Arquitectura de Estado Híbrido" },
-  { id: "control-plane-vs-data-plane", title: "Control Plane vs Data Plane" },
+  { id: "garantias", title: "Garantías de Consistencia y Rendimiento" },
   { id: "motores", title: "Los Motores: SRE y DLS" },
   { id: "quickstart", title: "Inicio Rápido (SDK)" },
 ]
@@ -18,7 +17,7 @@ export default function DocsOverviewPage() {
   return (
     <DocsPageLayout
       breadcrumbs={[{ label: "Comenzando" }, { label: "Visión General" }]}
-      title="Visión General & Arquitectura"
+      title="Visión General de la Plataforma"
       badge="Core Platform"
       description="Caerus es una plataforma Backend-as-a-Service (BaaS) diseñada para resolver la concurrencia distribuida, reservas de recursos limitados y sincronización de procesos críticos sin complejidad operativa."
       tocItems={tocItems}
@@ -32,7 +31,7 @@ export default function DocsOverviewPage() {
           Vender o apartar algo de lo que <strong>solo hay una unidad</strong> (una butaca de cine, un turno médico, un cupo de inscripción o inventario limitado) es mucho más difícil de lo que aparenta. Dos usuarios presionan <em>Comprar</em> en la misma fracción de segundo; una pasarela de pago tarda 8 segundos en contestar; y un tercer usuario abandona el carrito con el recurso bloqueado.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          Resolver esto de forma artesanal exige clústeres de ZooKeeper, scripts Lua en Redis, transacciones con bloqueos pesados en SQL y tareas en segundo plano para limpiar reservas abandonadas. <strong>Caerus abstrae toda esta infraestructura distribuida detrás de APIs declarativas de baja latencia y un SDK unificado.</strong>
+          Resolver esto de forma artesanal exige coordinar clústeres distribuidos complejos, diseñar mecanismos a medida contra condiciones de carrera, lidiar con bloqueos pesados en bases de datos y programar tareas en segundo plano para limpiar reservas abandonadas. <strong>Caerus abstrae toda esta complejidad detrás de APIs declarativas de baja latencia y un SDK unificado.</strong>
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
@@ -59,74 +58,42 @@ export default function DocsOverviewPage() {
           <Card className="bg-muted/20 border-border/60">
             <CardHeader className="p-4 pb-2">
               <Server className="h-5 w-5 text-blue-500 mb-1" />
-              <CardTitle className="text-sm">Latencia &lt; 20 ms</CardTitle>
+              <CardTitle className="text-sm">Alta Velocidad en Memoria</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground">
-              El hot path opera en memoria con operaciones atómicas gRPC sobre Redis, sin contención en disco.
+              El motor opera en memoria mediante transacciones atómicas de ultra baja latencia, sin contención en disco.
             </CardContent>
           </Card>
         </div>
       </section>
 
-      {/* Sección: Arquitectura de Estado Híbrido */}
-      <section id="arquitectura" className="space-y-4">
+      {/* Sección: Garantías de Consistencia y Rendimiento */}
+      <section id="garantias" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Arquitectura de Estado Híbrido
+          Garantías de Consistencia y Rendimiento
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Caerus implementa un modelo de estado híbrido que desacopla la velocidad de procesamiento de la persistencia durable en disco:
-        </p>
-
-        <div className="space-y-3 my-4">
-          <div className="rounded-xl border border-border/60 bg-muted/30 p-4">
-            <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
-              <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
-              <span>1. Hot Path (En Memoria - Redis Stack)</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-              Las operaciones transaccionales de alta frecuencia (adquisición de locks, reservas temporales <code>take</code>, conteo atómico y expiraciones por TTL) se procesan directamente en <strong>Redis</strong> mediante scripts Lua atómicos.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-border/60 bg-muted/30 p-4">
-            <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
-              <span className="inline-block h-2 w-2 rounded-full bg-blue-500" />
-              <span>2. Cold Path (Persistencia - PostgreSQL con Write-Behind)</span>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-              El estado se sincroniza periódicamente a <strong>PostgreSQL</strong> mediante trabajadores en segundo plano y el patrón <em>Transactional Outbox</em> con <code>SKIP LOCKED</code>, protegiendo a la base de datos de picos de contención.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Sección: Control Plane vs Data Plane */}
-      <section id="control-plane-vs-data-plane" className="space-y-4">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Control Plane vs Data Plane
-        </h2>
-        <p className="text-muted-foreground leading-relaxed">
-          El sistema está dividido estrictamente en dos planos para garantizar máxima seguridad y aislamiento:
+          Caerus combina procesamiento atómico en memoria para respuestas en milisegundos con mecanismos automáticos de persistencia y durabilidad:
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-          <div className="rounded-xl border border-border/70 p-4 bg-muted/20">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-sm text-foreground">Control Plane (Gestión)</h3>
-              <Badge variant="outline" className="text-[10px]">REST / Auth0</Badge>
+          <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-1.5">
+            <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
+              <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
+              <span>Ejecución Atómica en Memoria</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Es el dashboard web donde los administradores y desarrolladores gestionan Organizaciones, Ambientes (Dev, Staging, Prod), Plantillas de Recursos y API Keys de autenticación.
+              Las operaciones transaccionales de alta frecuencia (adquisición de bloqueos, reservas temporales <code>take</code>, conteo atómico y expiraciones por TTL) se procesan directamente en memoria con exclusión mutua estricta.
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/70 p-4 bg-muted/20">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-sm text-foreground">Data Plane (Motor de Ejecución)</h3>
-              <Badge variant="outline" className="text-[10px] text-primary border-primary/40">gRPC / 9090</Badge>
+          <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-1.5">
+            <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
+              <span className="inline-block h-2 w-2 rounded-full bg-blue-500" />
+              <span>Persistencia y Tolerancia a Fallos</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Es el motor de alta concurrencia con el que dialoga el SDK de tu backend. Se comunica por gRPC binario, validando API Keys en cada solicitud con latencias menores a 20 ms.
+              El estado de cada reserva y bloqueo se sincroniza de forma duradera desacoplándose de los picos de tráfico, garantizando consistencia y trazabilidad histórica sin degradar los tiempos de respuesta.
             </p>
           </div>
         </div>
@@ -186,8 +153,8 @@ export default function DocsOverviewPage() {
             <CardContent className="p-5 pt-0 space-y-3 text-xs text-muted-foreground">
               <ul className="list-disc list-inside space-y-1">
                 <li>Locks <strong>Exclusive</strong> y <strong>Shared Read</strong> en transacciones.</li>
-                <li><strong>Fencing Tokens</strong> monótonos de ZooKeeper para evitar split-brain.</li>
-                <li>Detección automática de ciclos de <strong>Deadlock</strong> y corte de víctima.</li>
+                <li><strong>Fencing Tokens</strong> monotónicos para evitar escrituras obsoletas (split-brain).</li>
+                <li>Detección y resolución automática de ciclos de <strong>Deadlock</strong>.</li>
               </ul>
               <div className="pt-2 flex gap-2">
                 <Link href="/docs/dls">
@@ -211,6 +178,26 @@ export default function DocsOverviewPage() {
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
           Inicio Rápido (SDK)
         </h2>
+
+        {/* Banner Consola Web */}
+        <div className="rounded-xl border border-primary/25 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 my-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-primary" />
+              <span className="font-semibold text-sm text-foreground">Paso previo: Configuración en la Consola Web</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Antes de inicializar el cliente en código, aprende a crear tu aplicación, configurar entornos y definir las plantillas de recursos y bloqueos en el Dashboard.
+            </p>
+          </div>
+          <Link href="/docs/dashboard" className="shrink-0">
+            <Button variant="outline" size="sm" className="gap-2 text-xs">
+              <span>Guía de la Consola Web</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </Link>
+        </div>
+
         <p className="text-muted-foreground leading-relaxed">
           Instalá el SDK en tu aplicación Node.js o TypeScript y empezá a reservar recursos en minutos:
         </p>

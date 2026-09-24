@@ -42,7 +42,7 @@ export function DocsPageLayout({
   return (
     <div className={cn("flex gap-8 items-start w-full", className)}>
       {/* Columna Central de Contenido */}
-      <article className="flex-1 min-w-0 max-w-4xl">
+      <article className="flex-1 min-w-0">
         {/* Breadcrumb estilo SlothUI */}
         <div className="mb-4">
           <Breadcrumb>
@@ -87,7 +87,7 @@ export function DocsPageLayout({
             )}
           </div>
           {description && (
-            <p className="text-base text-muted-foreground leading-relaxed max-w-3xl">{description}</p>
+            <p className="text-base text-muted-foreground leading-relaxed">{description}</p>
           )}
         </header>
 

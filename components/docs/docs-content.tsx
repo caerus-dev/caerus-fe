@@ -282,9 +282,9 @@ export function DocsContent() {
                 <Terminal className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-foreground">gRPC Hot-Path</p>
+                <p className="font-semibold text-sm text-foreground">gRPC API</p>
                 <p className="text-xs text-muted-foreground truncate">
-                  Protocol Buffers optimizados para baja latencia (Redis + ZooKeeper)
+                  Protocol Buffers optimizados para baja latencia
                 </p>
               </div>
             </div>

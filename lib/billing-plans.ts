@@ -86,7 +86,7 @@ export const PLAN_MARKETING_METADATA: Record<PlanCode, (plan: BillingPlan) => Pl
     features: [
       "Volumen de llamadas personalizable a medida",
       "Colaboradores y miembros de equipo ilimitados",
-      "Detección y resolución automática de deadlocks (DFS)",
+      "Detección y resolución automática de deadlocks en tiempo real",
       "SLA de disponibilidad garantizado del 99.99%",
       "Soporte técnico 24/7 y canal directo dedicado",
       "Todo lo incluido en el plan Startup",
