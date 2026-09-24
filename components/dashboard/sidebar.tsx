@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { cn, getEnvColors, getUniqueEnvDots } from "@/lib/utils"
 import { useApps } from "./apps-context"
+import { useUser } from "@/hooks/use-user"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -73,24 +74,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
   const pathname = usePathname()
   const router = useRouter()
   const { applications, isAppsLoading } = useApps()
-  const [user, setUser] = useState<any>(null)
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("/api/user")
-        if (res.ok) {
-          const data = await res.json()
-          if (data && data.user) {
-            setUser(data.user)
-          }
-        }
-      } catch (error) {
-        console.error("Error loading sidebar user profile:", error)
-      }
-    }
-    fetchUser()
-  }, [])
+  const { sessionUser: user } = useUser()
 
   return (
     <aside

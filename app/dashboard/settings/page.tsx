@@ -1,6 +1,7 @@
 "use client"
 
 import { useTheme } from "@/components/theme-provider"
+import { useUser } from "@/hooks/use-user"
 import { useState, useEffect } from "react"
 import { User, Palette, Trash2, AlertTriangle, Mail, CheckCircle2, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -30,29 +31,9 @@ import { toast } from "sonner"
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
-  const [user, setUser] = useState<any>(null)
+  const { sessionUser: user } = useUser()
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
   const [deleteAccountError, setDeleteAccountError] = useState<string | null>(null)
-  
-  // We'll fetch the user data in this client component to replace the mock.
-  // In the future this could be supplied by a global context.
-  
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("/api/user")
-        if (res.ok) {
-          const data = await res.json()
-          if (data && data.user) {
-            setUser(data.user)
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch user", err)
-      }
-    }
-    fetchUser()
-  }, [])
 
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true)
