@@ -36,32 +36,35 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
 
       <div className="flex items-center gap-2">
         {/* Docs link */}
-        <Link href="/docs">
-          <Button variant="ghost" size="sm" className="text-muted-foreground gap-1.5">
+        <Button asChild variant="ghost" size="sm" className="text-muted-foreground gap-1.5">
+          <Link href="/docs">
             <BookOpen className="h-4 w-4" />
             <span className="hidden sm:inline">Documentación</span>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
 
         {/* In-App Notifications Dropdown */}
         <NotificationDropdown />
 
         {/* Theme Toggle */}
-        {mounted && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            title="Cambiar tema"
-          >
-            {resolvedTheme === "dark" ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          title="Cambiar tema"
+          disabled={!mounted}
+        >
+          {mounted ? (
+            resolvedTheme === "dark" ? (
               <Sun className="h-5 w-5 text-muted-foreground" />
             ) : (
               <Moon className="h-5 w-5 text-muted-foreground" />
-            )}
-            <span className="sr-only">Cambiar tema</span>
-          </Button>
-        )}
+            )
+          ) : (
+            <span className="h-5 w-5" />
+          )}
+          <span className="sr-only">Cambiar tema</span>
+        </Button>
       </div>
     </header>
   )
