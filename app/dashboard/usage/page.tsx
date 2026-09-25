@@ -39,6 +39,7 @@ import {
 import { useUser } from "@/hooks/use-user"
 import { useApps } from "@/components/dashboard/apps-context"
 import { toast } from "sonner"
+import { formatPercentage } from "@/lib/utils"
 
 export default function UsagePage() {
   const [timeRange, setTimeRange] = useState("30d")
@@ -186,7 +187,7 @@ export default function UsagePage() {
         ["Código de Plan", currentPlan?.code || "-"],
         ["Requests Consumidas", consumedUnits.toString()],
         ["Requests Incluidas", includedUnits.toString()],
-        ["Porcentaje de Uso", `${usagePercentage}%`],
+        ["Porcentaje de Uso", `${formatPercentage(usagePercentage)}%`],
         ["Aplicaciones Activas", applications.map((a) => a.name).join("; ") || "Ninguna"],
         ["Fecha de Generación", new Date().toLocaleString("es-ES")],
       ]
@@ -357,7 +358,7 @@ export default function UsagePage() {
                       isOverLimit ? "text-destructive" : isNearLimit ? "text-amber-500" : "text-foreground"
                     }`}
                   >
-                    {usagePercentage}%
+                    {formatPercentage(usagePercentage)}%
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {consumedUnits.toLocaleString()} / {includedUnits.toLocaleString()} requests
