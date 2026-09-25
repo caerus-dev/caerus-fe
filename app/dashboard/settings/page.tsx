@@ -1,6 +1,7 @@
 "use client"
 
 import { useTheme } from "@/components/theme-provider"
+import { useUser } from "@/hooks/use-user"
 import { useState, useEffect } from "react"
 import { User, Palette, Trash2, AlertTriangle, Mail, CheckCircle2, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -30,29 +31,9 @@ import { toast } from "sonner"
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
-  const [user, setUser] = useState<any>(null)
+  const { sessionUser: user } = useUser()
   const [isDeletingAccount, setIsDeletingAccount] = useState(false)
   const [deleteAccountError, setDeleteAccountError] = useState<string | null>(null)
-  
-  // We'll fetch the user data in this client component to replace the mock.
-  // In the future this could be supplied by a global context.
-  
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("/api/user")
-        if (res.ok) {
-          const data = await res.json()
-          if (data && data.user) {
-            setUser(data.user)
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch user", err)
-      }
-    }
-    fetchUser()
-  }, [])
 
   const handleDeleteAccount = async () => {
     setIsDeletingAccount(true)
@@ -86,7 +67,7 @@ export default function SettingsPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Configuración</h1>
         <p className="text-muted-foreground">
-          Administrá las preferencias de tu cuenta personal
+          Administra las preferencias de tu cuenta personal
         </p>
       </div>
 
@@ -147,10 +128,10 @@ export default function SettingsPage() {
             <Info className="h-4 w-4 shrink-0 text-muted-foreground/80 mt-0.5" />
             <p>
               {user?.sub?.startsWith("google-oauth2|")
-                ? "Tu nombre, correo y foto de perfil están vinculados a tu cuenta de Google. Para modificarlos, gestioná tus datos directamente en tu cuenta de Google."
+                ? "Tu nombre, correo y foto de perfil están vinculados a tu cuenta de Google. Para modificarlos, gestiona tus datos directamente en tu cuenta de Google."
                 : user?.sub?.startsWith("github|")
-                ? "Tu nombre, correo y foto de perfil están vinculados a tu cuenta de GitHub. Para modificarlos, gestioná tus datos directamente en tu perfil de GitHub."
-                : "Tu información de perfil está asociada a tus credenciales de acceso a Caerus. Para solicitar una actualización de tus datos, comunicate con soporte."}
+                ? "Tu nombre, correo y foto de perfil están vinculados a tu cuenta de GitHub. Para modificarlos, gestiona tus datos directamente en tu perfil de GitHub."
+                : "Tu información de perfil está asociada a tus credenciales de acceso a Caerus. Para solicitar una actualización de tus datos, comunícate con soporte."}
             </p>
           </div>
         </CardContent>
@@ -164,7 +145,7 @@ export default function SettingsPage() {
             Apariencia
           </CardTitle>
           <CardDescription>
-            Personalizá el aspecto visual de la plataforma
+            Personaliza el aspecto visual de la plataforma
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -231,7 +212,7 @@ export default function SettingsPage() {
                         <div className="space-y-1">
                           <p className="font-semibold text-xs">Liquidación final de facturación</p>
                           <p>
-                            Si contás con un método de pago registrado o un plan pago activo con consumo del ciclo actual, se generará y cobrará automáticamente una factura de liquidación final en tu tarjeta antes de cerrar tu cuenta.
+                            Si cuentas con un método de pago registrado o un plan pago activo con consumo del ciclo actual, se generará y cobrará automáticamente una factura de liquidación final en tu tarjeta antes de cerrar tu cuenta.
                           </p>
                         </div>
                       </div>

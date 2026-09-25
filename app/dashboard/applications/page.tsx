@@ -29,7 +29,6 @@ import {
   Settings, 
   Trash2, 
   Users,
-  Key,
   Layers,
   ExternalLink,
   Loader2,
@@ -302,12 +301,6 @@ export default function ApplicationsPage() {
                         <Link href={`/dashboard/applications/${app.id}/team`}>
                           <Users className="w-4 h-4 mr-2" />
                           Colaboradores
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href={`/dashboard/applications/${app.id}/api-keys`}>
-                          <Key className="w-4 h-4 mr-2" />
-                          API Keys
                         </Link>
                       </DropdownMenuItem>
                       {app.myRole === "OWNER" && (

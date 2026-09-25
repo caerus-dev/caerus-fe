@@ -11,8 +11,17 @@ export function triggerUserRefresh(updatedUser?: UserResponse) {
   }
 }
 
+export interface Auth0User {
+  name?: string;
+  email?: string;
+  picture?: string;
+  sub?: string;
+  nickname?: string;
+}
+
 export interface UserContextType {
   user: UserResponse | null;
+  sessionUser: Auth0User | null;
   isLoading: boolean;
   error: string | null;
   refreshUser: () => Promise<UserResponse | null>;
@@ -21,6 +30,7 @@ export interface UserContextType {
 
 export const defaultContext: UserContextType = {
   user: null,
+  sessionUser: null,
   isLoading: false,
   error: null,
   refreshUser: async () => null,
@@ -31,8 +41,23 @@ export const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserResponse | null>(null);
+  const [sessionUser, setSessionUser] = useState<Auth0User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const fetchSessionUser = useCallback(async (checkMounted?: () => boolean) => {
+    try {
+      const res = await fetch("/api/user");
+      if (res.ok) {
+        const data = await res.json();
+        if ((!checkMounted || checkMounted()) && data && data.user) {
+          setSessionUser(data.user);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching session user:", err);
+    }
+  }, []);
 
   const fetchUser = useCallback(async (checkMounted?: () => boolean) => {
     setIsLoading(true);
@@ -77,6 +102,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const checkMounted = () => isMounted;
 
     fetchUser(checkMounted);
+    fetchSessionUser(checkMounted);
 
     const handleRefresh = (event: Event) => {
       if (!isMounted) return;
@@ -85,6 +111,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setUser(customEvent.detail);
       }
       fetchUser(checkMounted);
+      fetchSessionUser(checkMounted);
     };
 
     window.addEventListener(USER_UPDATED_EVENT, handleRefresh);
@@ -92,12 +119,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
       isMounted = false;
       window.removeEventListener(USER_UPDATED_EVENT, handleRefresh);
     };
-  }, [fetchUser]);
+  }, [fetchUser, fetchSessionUser]);
 
   return (
     <UserContext.Provider
       value={{
         user,
+        sessionUser,
         isLoading,
         error,
         refreshUser: () => fetchUser(),

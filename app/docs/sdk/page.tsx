@@ -19,7 +19,7 @@ export default function DocsSdkPage() {
       breadcrumbs={[{ label: "SDK", href: "/docs/sdk" }, { label: "Instalación y Conexión" }]}
       title="@caerus-dev/sdk"
       badge="TypeScript / Node.js"
-      description="El cliente oficial de Caerus para aplicaciones backend. Administrá reservas de inventario y locks distribuidos con tipado estricto y comunicación gRPC de alto rendimiento."
+      description="El cliente oficial de Caerus para aplicaciones backend. Administra reservas de inventario y locks distribuidos con tipado estricto y comunicación gRPC de alto rendimiento."
       tocItems={tocItems}
     >
       <SignatureBlock signature="const caerus = new CaerusClient(options: CaerusClientOptions);" />
@@ -48,7 +48,7 @@ export default function DocsSdkPage() {
           Inicialización del Cliente
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          La API Key identifica a tu organización y ambiente (e.g. Producción, Staging), por lo que el SDK sabe automáticamente a qué tenant pertenece cada operación:
+          La API Key identifica a tu organización y entorno (e.g. Producción, Staging), por lo que el SDK sabe automáticamente a qué tenant pertenece cada operación:
         </p>
 
         <CodeBlock
@@ -68,7 +68,7 @@ export const caerus = new CaerusClient({
           Conexión a un Caerus Local (Docker)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Para pruebas unitarias, integración o desarrollo offline con el Data Plane levantado en tu máquina (puerto <code>9090</code>):
+          Para pruebas unitarias, integración o desarrollo offline con Caerus levantado en tu máquina (puerto <code>9090</code>):
         </p>
 
         <CodeBlock
@@ -87,7 +87,7 @@ export const caerus = new CaerusClient({
             <span>Formato de endpoint y TLS</span>
           </div>
           <p className="leading-relaxed">
-            El <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (sin prefijo <code>http://</code> ni <code>https://</code>). Además, recordá que <code>tls: false</code> es mandatorio en local; de lo contrario OpenSSL arrojará un error de versión de protocolo.
+            El <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (sin prefijo <code>http://</code> ni <code>https://</code>). Además, recuerda que <code>tls: false</code> es obligatorio en local; de lo contrario OpenSSL arrojará un error de versión de protocolo.
           </p>
         </div>
       </section>
@@ -116,7 +116,7 @@ export const caerus = new CaerusClient({
               <TableRow>
                 <TableCell className="font-mono font-medium text-primary">endpoint</TableCell>
                 <TableCell className="font-mono text-muted-foreground">Cloud Caerus</TableCell>
-                <TableCell>Dirección <code>host:port</code> del motor gRPC del Data Plane.</TableCell>
+                <TableCell>Dirección <code>host:port</code> del motor gRPC de Caerus.</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-mono font-medium text-primary">tls</TableCell>
@@ -135,17 +135,17 @@ export const caerus = new CaerusClient({
 
       {/* Siguiente paso */}
       <section id="siguiente-paso" className="pt-4 flex items-center justify-between border-t border-border/50">
-        <Link href="/docs">
-          <Button variant="ghost" size="sm">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/docs">
             ← Visión General
-          </Button>
-        </Link>
-        <Link href="/docs/sre">
-          <Button size="sm" className="gap-2">
+          </Link>
+        </Button>
+        <Button asChild size="sm" className="gap-2">
+          <Link href="/docs/sre">
             <span>Aprender SRE (Shared Resources)</span>
             <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </section>
     </DocsPageLayout>
   )

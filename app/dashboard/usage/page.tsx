@@ -328,7 +328,7 @@ export default function UsagePage() {
                 </div>
                 <div className="mt-1">
                   <Link
-                    href="/settings/billing"
+                    href="/dashboard/billing"
                     className="text-xs text-primary hover:underline inline-flex items-center gap-1 font-medium"
                   >
                     Gestionar facturación y límites

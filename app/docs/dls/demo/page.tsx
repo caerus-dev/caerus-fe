@@ -107,7 +107,7 @@ export default function DocsDlsDemoPage() {
           Correr el Simulador Localmente
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Podés clonar el repositorio de la demo del DLS e iniciar el simulador interactivo en tu entorno local:
+          Puedes clonar el repositorio de la demo del DLS e iniciar el simulador interactivo en tu entorno local:
         </p>
 
         <CodeBlock
@@ -120,23 +120,23 @@ pnpm dev`}
         />
 
         <div className="pt-2 flex flex-col sm:flex-row gap-3">
-          <a
-            href={docsConfig.demoDlsRepoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button className="gap-2 bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto">
+          <Button asChild className="gap-2 bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto">
+            <a
+              href={docsConfig.demoDlsRepoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Github className="h-4 w-4" />
               <span>Ver Repositorio caerus-dev/demo-dls</span>
               <ExternalLink className="h-3.5 w-3.5 opacity-70" />
-            </Button>
-          </a>
+            </a>
+          </Button>
 
-          <Link href="/docs/dls">
-            <Button variant="outline" className="w-full sm:w-auto">
+          <Button asChild variant="outline" className="w-full sm:w-auto">
+            <Link href="/docs/dls">
               ← Volver a Conceptos DLS
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </section>
     </DocsPageLayout>

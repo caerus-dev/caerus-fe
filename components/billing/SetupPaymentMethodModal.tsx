@@ -9,7 +9,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/theme-provider";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -98,7 +98,7 @@ function SetupCardForm({ onSuccess, onBack, selectedPlan }: SetupFormProps) {
 
     try {
       const returnUrl = typeof window !== "undefined"
-        ? `${window.location.origin}/settings/billing?setup_success=true`
+        ? `${window.location.origin}/dashboard/billing?setup_success=true`
         : undefined;
 
       const { error, setupIntent } = await stripe.confirmSetup({

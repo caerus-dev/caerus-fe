@@ -62,7 +62,7 @@ export default function DocsErrorsPage() {
               <TableRow>
                 <TableCell className="font-mono font-semibold text-purple-500">AuthenticationError</TableCell>
                 <TableCell className="font-mono">UNAUTHENTICATED</TableCell>
-                <TableCell>API Key inválida, revocada o no correspondiente al ambiente.</TableCell>
+                <TableCell>API Key inválida, revocada o no correspondiente al entorno.</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-mono font-semibold text-foreground">TimeoutError</TableCell>
@@ -137,7 +137,7 @@ try {
           Manejo de <code>ResourceNotFoundError</code> (404)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Se produce cuando el recurso, la plantilla asociada o el <code>holderId</code> no existen en el ambiente consultado o fueron eliminados:
+          Se produce cuando el recurso, la plantilla asociada o el <code>holderId</code> no existen en el entorno consultado o fueron eliminados:
         </p>
 
         <CodeBlock

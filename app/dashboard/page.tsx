@@ -26,7 +26,7 @@ import { CreateAppButton } from "@/components/applications/CreateAppButton";
 import { fetchBackend } from "@/lib/api";
 import { auth0 } from "@/lib/auth0";
 import { UserResponse } from "@/types/billing";
-import { formatPercentage } from "@/lib/utils";
+import { formatPercentage, formatRelativeTime } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const session = await auth0.getSession();
@@ -106,7 +106,55 @@ export default async function DashboardPage() {
     },
   ];
 
-  const recentActivity: any[] = [];
+  // Fetch recent activity across user's environments
+  let recentActivity: any[] = [];
+  try {
+    const envFetchTasks: { envId: string; appName: string; envName: string }[] = [];
+    for (const app of applicationsList) {
+      if (Array.isArray(app.environments)) {
+        for (const env of app.environments) {
+          if (env.id) {
+            envFetchTasks.push({
+              envId: env.id,
+              appName: app.name,
+              envName: env.name,
+            });
+          }
+        }
+      }
+    }
+
+    if (envFetchTasks.length > 0) {
+      const eventResults = await Promise.allSettled(
+        envFetchTasks.map(async (task) => {
+          const res = await fetchBackend(`/v1/events?environmentId=${task.envId}&limit=5`);
+          if (!res.ok) return [];
+          const data = await res.json();
+          const items: any[] = Array.isArray(data.content) ? data.content : [];
+          return items.map((item: any) => ({
+            id: item.id || `${task.envId}-${item.occurredAt || item.receivedAt}`,
+            event: item.eventType || item.product || "event",
+            application: task.appName,
+            environment: task.envName,
+            time: formatRelativeTime(item.occurredAt || item.receivedAt || new Date()),
+            timestamp: new Date(item.occurredAt || item.receivedAt || 0).getTime(),
+          }));
+        })
+      );
+
+      const allEvents: any[] = [];
+      for (const res of eventResults) {
+        if (res.status === "fulfilled" && Array.isArray(res.value)) {
+          allEvents.push(...res.value);
+        }
+      }
+
+      allEvents.sort((a, b) => b.timestamp - a.timestamp);
+      recentActivity = allEvents.slice(0, 6);
+    }
+  } catch (error: any) {
+    console.error("Error fetching recent activity:", error);
+  }
 
   const getEventColor = (event: string) => {
     if (event.includes("acquired") || event.includes("confirmed") || event.includes("created")) {
@@ -197,11 +245,11 @@ export default async function DashboardPage() {
                     : `Límite incluido en tu plan ${userProfile?.billingPlan?.name || "Developer"}: ${includedUnits.toLocaleString()} requests`}
                 </CardDescription>
               </div>
-              <Link href="/settings/billing">
-                <Button variant="outline" size="sm" className="text-xs h-8">
+              <Button asChild variant="outline" size="sm" className="text-xs h-8">
+                <Link href="/dashboard/billing">
                   Gestionar Plan y Facturación
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -243,16 +291,24 @@ export default async function DashboardPage() {
         </Card>
       )}
 
-      {/* 5. Vista de Colaborador Invitado con Aplicaciones Compartidas */}
-      {!hasValidPaymentMethod && appsCount > 0 && (
+      {/* 5. Aplicaciones Recientes */}
+      {appsCount > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Aplicaciones Compartidas Contigo
+              Tus Aplicaciones Recientes
             </h2>
-            <span className="text-xs text-muted-foreground">
-              {appsCount} {appsCount === 1 ? "aplicación" : "aplicaciones"}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground hidden sm:inline">
+                {appsCount} {appsCount === 1 ? "aplicación" : "aplicaciones"}
+              </span>
+              <Button asChild variant="ghost" size="sm" className="text-muted-foreground gap-1 text-xs h-7">
+                <Link href="/dashboard/applications">
+                  Ver todas
+                  <ArrowUpRight className="h-3 w-3" />
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -273,13 +329,13 @@ export default async function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardFooter className="pt-2 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{(app.environments || []).length} ambientes</span>
-                  <Link href={`/dashboard/applications/${app.id}`}>
-                    <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
+                  <span>{(app.environments || []).length} {app.environments?.length === 1 ? "entorno" : "entornos"}</span>
+                  <Button asChild variant="ghost" size="sm" className="h-7 text-xs gap-1">
+                    <Link href={`/dashboard/applications/${app.id}`}>
                       Abrir
                       <ArrowUpRight className="h-3 w-3" />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
@@ -293,12 +349,12 @@ export default async function DashboardPage() {
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             Actividad Reciente
           </h2>
-          <Link href="/dashboard/usage">
-            <Button variant="ghost" size="sm" className="text-muted-foreground gap-1">
+          <Button asChild variant="ghost" size="sm" className="text-muted-foreground gap-1">
+            <Link href="/dashboard/usage">
               Ver todo
               <ArrowUpRight className="h-3 w-3" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
 
         <Card className="bg-card/50 border-border overflow-hidden">
@@ -313,7 +369,7 @@ export default async function DashboardPage() {
                     Aplicación
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Ambiente
+                    Entorno
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Tiempo
@@ -324,7 +380,9 @@ export default async function DashboardPage() {
                 {recentActivity.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">
-                      No hay actividad reciente.
+                      {appsCount === 0
+                        ? "Crea tu primera aplicación para comenzar a registrar actividad."
+                        : "No hay actividad reciente registrada en tus entornos."}
                     </td>
                   </tr>
                 ) : (

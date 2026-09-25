@@ -100,7 +100,7 @@ export default function DocsProtoPage() {
               <Badge variant="secondary" className="text-[11px] font-mono shrink-0">Alta de Inventario</Badge>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Registra un nuevo recurso dentro de un ambiente de aplicación asociado a una plantilla existente (<code>template_name</code>). Define la cantidad inicial de unidades disponibles y opcionalmente un grupo y metadata JSON arbitraria.
+              Registra un nuevo recurso dentro de un entorno de aplicación asociado a una plantilla existente (<code>template_name</code>). Define la cantidad inicial de unidades disponibles y opcionalmente un grupo y metadata JSON arbitraria.
             </p>
 
             <CodeBlock
@@ -122,7 +122,7 @@ export default function DocsProtoPage() {
             />
 
             <div className="text-xs text-muted-foreground space-y-1">
-              <p><strong>Comportamiento semántico:</strong> Si el recurso ya existe con esa misma <code>key</code> en el ambiente, responde con error <code>ALREADY_EXISTS (409)</code>.</p>
+              <p><strong>Comportamiento semántico:</strong> Si el recurso ya existe con esa misma <code>key</code> en el entorno, responde con error <code>ALREADY_EXISTS (409)</code>.</p>
             </div>
           </div>
 

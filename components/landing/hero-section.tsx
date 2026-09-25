@@ -34,17 +34,17 @@ export function HeroSection() {
 
         {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto">
-          <Link href="/dashboard" className="w-full sm:w-auto">
-            <Button size="lg" className="glow-primary gap-2 text-base px-8 w-full sm:w-auto">
+          <Button asChild size="lg" className="glow-primary gap-2 text-base px-8 w-full sm:w-auto">
+            <Link href="/dashboard">
               Comenzar Gratis
               <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-          <Link href="/docs" className="w-full sm:w-auto">
-            <Button size="lg" variant="outline" className="gap-2 text-base px-8 w-full sm:w-auto">
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="gap-2 text-base px-8 w-full sm:w-auto">
+            <Link href="/docs">
               Ver Documentación
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
 
         {/* Code preview */}

@@ -310,11 +310,11 @@ export default function TeamPage({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4 min-w-0">
-          <Link href={`/dashboard/applications/${id}`}>
-            <Button variant="ghost" size="icon">
+          <Button asChild variant="ghost" size="icon">
+            <Link href={`/dashboard/applications/${id}`}>
               <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold text-foreground">
               Colaboradores
@@ -349,7 +349,7 @@ export default function TeamPage({
                     {inviteError.toLowerCase().includes("límite de colaboradores") && (
                       <div className="pl-6.5">
                         <Link
-                          href="/settings/billing"
+                          href="/dashboard/billing"
                           className="inline-flex items-center gap-1 text-xs font-semibold text-primary underline hover:text-primary/80 transition-colors"
                         >
                           Ver Planes y Facturación →
@@ -400,7 +400,7 @@ export default function TeamPage({
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground">
-                      {inviteRole === "ADMIN" && "Puede ver todo y crear/editar/eliminar ambientes y recursos compartidos."}
+                      {inviteRole === "ADMIN" && "Puede ver todo y crear/editar/eliminar entornos y recursos compartidos."}
                       {inviteRole === "VIEWER" && "Tiene acceso de solo lectura. No puede realizar modificaciones."}
                     </p>
                   </div>

@@ -90,7 +90,7 @@ export default function AcceptInvitePage({
             </CardHeader>
             <CardContent className="text-center pb-8">
               <p className="text-sm text-muted-foreground">
-                Ya tienes acceso a los ambientes, recursos compartidos y configuraciones correspondientes a tu rol.
+                Ya tienes acceso a los entornos, recursos compartidos y configuraciones correspondientes a tu rol.
               </p>
             </CardContent>
             <CardFooter className="pt-2">

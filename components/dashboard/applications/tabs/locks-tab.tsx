@@ -55,12 +55,12 @@ export function LocksTab({
           </span>
         </p>
         {!isViewer && (
-          <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
-            <Button className="gap-2">
+          <Button asChild className="gap-2">
+            <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
               <Plus className="h-4 w-4" />
               Nuevo Lock
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         )}
       </div>
 
@@ -96,12 +96,12 @@ export function LocksTab({
               </span>
             </p>
             {!isViewer && (
-              <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
-                <Button className="gap-2" disabled={!currentEnvDetails?.id}>
+              <Button asChild className="gap-2" disabled={!currentEnvDetails?.id}>
+                <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
                   <Plus className="h-4 w-4" />
                   Crear Primer Lock
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
           </CardContent>
         </Card>
@@ -168,7 +168,7 @@ export function LocksTab({
                                 onClick={() => onOpenDuplicateLock(lock)}
                               >
                                 <Copy className="h-4 w-4 mr-2 shrink-0" />
-                                <span>Duplicar a otro ambiente...</span>
+                                <span>Duplicar a otro entorno...</span>
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuSeparator />

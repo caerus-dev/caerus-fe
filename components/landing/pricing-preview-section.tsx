@@ -19,18 +19,18 @@ export function PricingPreviewSection() {
                   <Sparkles className="h-3.5 w-3.5 mr-1" />
                   Modelo de Suscripción
                 </Badge>
-                <span className="text-xs text-muted-foreground">Comenzá 100% gratis</span>
+                <span className="text-xs text-muted-foreground">Comienza 100% gratis</span>
               </div>
 
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                Empezá sin costo, escalá a medida que crezca tu concurrencia
+                Empieza sin costo, escala a medida que crezca tu concurrencia
               </h2>
 
               <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
-                Caerus funciona bajo un esquema de facturación pensado para desarrolladores. Contás con un{" "}
+                Caerus funciona bajo un esquema de facturación pensado para desarrolladores. Cuentas con un{" "}
                 <strong className="text-foreground font-semibold">plan gratuito Developer</strong> para
                 prototipar y validar tu producto con costo inicial cero. A medida que tu
-                tráfico y tus necesidades de alta disponibilidad aumentan, podés escalar de plan en cualquier momento.
+                tráfico y tus necesidades de alta disponibilidad aumentan, puedes escalar de plan en cualquier momento.
               </p>
 
               {/* Highlights */}
@@ -41,7 +41,7 @@ export function PricingPreviewSection() {
                 </div>
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                   <Zap className="h-4 w-4 text-chart-2 shrink-0" />
-                  <span>Subí de nivel cuando quieras</span>
+                  <span>Sube de nivel cuando quieras</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                   <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
@@ -51,12 +51,12 @@ export function PricingPreviewSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0 items-start md:items-end justify-center">
-              <Link href="/pricing" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full h-12 px-6 font-semibold gap-2 shadow-lg shadow-primary/20">
+              <Button asChild size="lg" className="w-full sm:w-auto h-12 px-6 font-semibold gap-2 shadow-lg shadow-primary/20">
+                <Link href="/pricing">
                   Ver detalle de cada plan
                   <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
               <span className="text-xs text-muted-foreground text-center md:text-right w-full">
                 Comparativa de límites y precios
               </span>

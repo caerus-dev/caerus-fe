@@ -60,7 +60,7 @@ export default function NewApplicationPage() {
 
     const selectedEnvs = Object.values(formData.environments).filter(Boolean)
     if (selectedEnvs.length === 0) {
-      setError("Debes seleccionar al menos un ambiente")
+      setError("Debes seleccionar al menos un entorno")
       return
     }
 
@@ -103,11 +103,11 @@ export default function NewApplicationPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/dashboard/applications">
-          <Button variant="ghost" size="icon">
+        <Button asChild variant="ghost" size="icon">
+          <Link href="/dashboard/applications">
             <ArrowLeft className="w-4 h-4" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Nueva Aplicación</h1>
           <p className="text-muted-foreground">
@@ -198,9 +198,9 @@ export default function NewApplicationPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Ambientes Iniciales</CardTitle>
+            <CardTitle>Entornos Iniciales</CardTitle>
             <CardDescription>
-              Selecciona los ambientes que deseas crear inicialmente. Podrás añadir o remover ambientes posteriormente.
+              Selecciona los entornos que deseas crear inicialmente. Podrás añadir o remover entornos posteriormente.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -223,7 +223,7 @@ export default function NewApplicationPage() {
                       dev
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">Ambiente de desarrollo y pruebas locales.</p>
+                  <p className="text-xs text-muted-foreground">Entorno de desarrollo y pruebas locales.</p>
                 </div>
               </label>
 
@@ -245,7 +245,7 @@ export default function NewApplicationPage() {
                       stg
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">Ambiente de pruebas pre-producción.</p>
+                  <p className="text-xs text-muted-foreground">Entorno de pruebas pre-producción.</p>
                 </div>
               </label>
 
@@ -267,7 +267,7 @@ export default function NewApplicationPage() {
                       prod
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">Ambiente productivo para usuarios finales.</p>
+                  <p className="text-xs text-muted-foreground">Entorno productivo para usuarios finales.</p>
                 </div>
               </label>
             </div>
@@ -275,11 +275,11 @@ export default function NewApplicationPage() {
         </Card>
 
         <div className="flex justify-end gap-4">
-          <Link href="/dashboard/applications">
-            <Button variant="outline" type="button" disabled={isLoading}>
+          <Button asChild variant="outline" type="button" disabled={isLoading}>
+            <Link href="/dashboard/applications">
               Cancelar
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
               <>

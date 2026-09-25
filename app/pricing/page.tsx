@@ -11,7 +11,7 @@ const faqs = [
   {
     question: "¿Necesito tarjeta de crédito para empezar?",
     answer:
-      "Sí. Para activar la cuenta y desplegar aplicaciones, tenés que registrar una tarjeta de respaldo; el plan Developer sigue costando $0 y solo cobra excedentes.",
+      "Sí. Para activar la cuenta y desplegar aplicaciones, tienes que registrar una tarjeta de respaldo; el plan Developer sigue costando $0 y solo cobra excedentes.",
   },
   {
     question: "¿Qué ocurre si supero el límite mensual de llamadas?",
@@ -21,7 +21,7 @@ const faqs = [
   {
     question: "¿Puedo cambiar de plan o cancelar en cualquier momento?",
     answer:
-      "Sí, podés subir, bajar o cancelar tu suscripción en cualquier momento desde la sección de Facturación dentro de tu dashboard.",
+      "Sí, puedes subir, bajar o cancelar tu suscripción en cualquier momento desde la sección de Facturación dentro de tu dashboard.",
   },
 ]
 
@@ -44,7 +44,7 @@ export default async function PricingPage() {
               Planes claros pensados para escalar
             </h1>
             <p className="text-lg text-muted-foreground">
-              Comenzá gratis para construir tu solución de concurrencia y elegí el plan que mejor se adapte al volumen de tu producto.
+              Comienza gratis para construir tu solución de concurrencia y elige el plan que mejor se adapte al volumen de tu producto.
             </p>
           </div>
 
@@ -67,7 +67,7 @@ export default async function PricingPage() {
               const ctaHref = session?.user
                 ? isEnterprise
                   ? meta.ctaHref
-                  : "/settings/billing"
+                  : "/dashboard/billing"
                 : meta.ctaHref
 
               const ctaText = session?.user
@@ -128,23 +128,25 @@ export default async function PricingPage() {
                   </div>
 
                   {meta.isExternalLink ? (
-                    <a href={ctaHref} className="w-full mt-auto">
-                      <Button
-                        className="w-full h-12 text-sm font-semibold"
-                        variant={meta.highlight ? "default" : "outline"}
-                      >
+                    <Button
+                      asChild
+                      className="w-full h-12 text-sm font-semibold mt-auto"
+                      variant={meta.highlight ? "default" : "outline"}
+                    >
+                      <a href={ctaHref}>
                         {ctaText}
-                      </Button>
-                    </a>
+                      </a>
+                    </Button>
                   ) : (
-                    <Link href={ctaHref} className="w-full mt-auto">
-                      <Button
-                        className="w-full h-12 text-sm font-semibold"
-                        variant={meta.highlight ? "default" : "outline"}
-                      >
+                    <Button
+                      asChild
+                      className="w-full h-12 text-sm font-semibold mt-auto"
+                      variant={meta.highlight ? "default" : "outline"}
+                    >
+                      <Link href={ctaHref}>
                         {ctaText}
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                   )}
                 </div>
               )
@@ -156,7 +158,7 @@ export default async function PricingPage() {
             <div className="text-center mb-10 space-y-2">
               <h2 className="text-2xl font-bold">Preguntas frecuentes sobre facturación</h2>
               <p className="text-sm text-muted-foreground">
-                ¿Tenés dudas sobre cómo funciona el modelo de cobro de Caerus?
+                ¿Tienes dudas sobre cómo funciona el modelo de cobro de Caerus?
               </p>
             </div>
 

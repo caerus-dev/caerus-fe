@@ -68,7 +68,7 @@ export default function DocsDashboardPage() {
               <h3 className="font-semibold text-sm text-foreground">Aplicación (Tenant)</h3>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Es el contenedor principal de un proyecto o sistema (por ejemplo, <em>"Ticketera Cine"</em> o <em>"Plataforma E-commerce"</em>). Agrupa todos sus ambientes, colaboradores y facturación.
+              Es el contenedor principal de un proyecto o sistema (por ejemplo, <em>"Ticketera Cine"</em> o <em>"Plataforma E-commerce"</em>). Agrupa todos sus entornos, colaboradores y facturación.
             </p>
           </div>
 
@@ -78,7 +78,7 @@ export default function DocsDashboardPage() {
               <h3 className="font-semibold text-sm text-foreground">Entornos (Environments)</h3>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Instancias lógicas completamente aisladas (ej: <code>dev</code>, <code>staging</code>, <code>production</code>). Cada entorno tiene sus propias API Keys, base de datos y clúster de caché independientes.
+              Instancias lógicas completamente aisladas (ej: <code>dev</code>, <code>staging</code>, <code>production</code>). Cada entorno cuenta con API Keys, recursos y locks aislados de forma independiente sin interferencia entre sí.
             </p>
           </div>
 
@@ -163,7 +163,7 @@ export default function DocsDashboardPage() {
               <span>Pausa y Deshabilitación</span>
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Cada entorno cuenta con un interruptor de activación. Al deshabilitar un entorno temporalmente, todos los endpoints y llamadas gRPC hacia ese ambiente son bloqueados de inmediato, lo que resulta útil durante ventanas de mantenimiento preventivo.
+              Cada entorno cuenta con un interruptor de activación. Al deshabilitar un entorno temporalmente, todos los endpoints y llamadas gRPC hacia ese entorno son bloqueados de inmediato, lo que resulta útil durante ventanas de mantenimiento preventivo.
             </p>
           </div>
         </div>
@@ -427,7 +427,7 @@ export default function DocsDashboardPage() {
           Herramientas de Operación y Control
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          El panel de control incluye utilidades avanzadas para acelerar el desarrollo y auditar el comportamiento del clúster:
+          El panel de control incluye utilidades avanzadas para acelerar el desarrollo y auditar el comportamiento de tus recursos:
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
@@ -473,12 +473,12 @@ export default function DocsDashboardPage() {
             <h4 className="text-sm font-semibold text-foreground">¿Listo para conectar tu código?</h4>
             <p className="text-xs text-muted-foreground">Una vez creadas tus plantillas y API Keys, consulta la guía de inicio rápido con el SDK oficial.</p>
           </div>
-          <Link href="/docs/sdk" className="shrink-0">
-            <Button size="sm" className="gap-2 text-xs">
+          <Button asChild size="sm" className="gap-2 text-xs shrink-0">
+            <Link href="/docs/sdk">
               <span>Ver Guía del SDK</span>
               <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </section>
     </DocsPageLayout>

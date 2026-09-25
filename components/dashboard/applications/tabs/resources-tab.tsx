@@ -50,12 +50,12 @@ export function ResourcesTab({
           </span>
         </p>
         {!isViewer && (
-          <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
-            <Button className="gap-2" disabled={!currentEnvDetails?.id}>
+          <Button asChild className="gap-2" disabled={!currentEnvDetails?.id}>
+            <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
               <Plus className="h-4 w-4" />
               Nuevo Recurso
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         )}
       </div>
 
@@ -89,12 +89,12 @@ export function ResourcesTab({
               </span>
             </p>
             {!isViewer && (
-              <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
-                <Button className="gap-2" disabled={!currentEnvDetails?.id}>
+              <Button asChild className="gap-2" disabled={!currentEnvDetails?.id}>
+                <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
                   <Plus className="h-4 w-4" />
                   Crear Primer Recurso
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
           </CardContent>
         </Card>
@@ -163,7 +163,7 @@ export function ResourcesTab({
                             onClick={() => onOpenDuplicateTemplate(template)}
                           >
                             <Copy className="h-4 w-4 mr-2 shrink-0" />
-                            <span>Duplicar a otro ambiente...</span>
+                            <span>Duplicar a otro entorno...</span>
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />

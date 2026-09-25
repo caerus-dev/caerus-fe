@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
-import { Plus, Key, Copy, Check, Trash2, Loader2 } from "lucide-react"
+import { useState, useEffect, useMemo, useCallback } from "react"
+import { Plus, Key, Copy, Check, Trash2, Loader2, AlertCircle, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -32,6 +32,8 @@ export default function ApiKeysPage() {
   const [apiKeys, setApiKeys] = useState<any[]>([])
   const [isAppsLoading, setIsAppsLoading] = useState(true)
   const [isKeysLoading, setIsKeysLoading] = useState(false)
+  const [appsError, setAppsError] = useState<string | null>(null)
+  const [keysError, setKeysError] = useState<string | null>(null)
 
   const [confirmRevokeKeyOpen, setConfirmRevokeKeyOpen] = useState(false)
   const [keyToRevoke, setKeyToRevoke] = useState<any>(null)
@@ -41,26 +43,33 @@ export default function ApiKeysPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
   // Fetch all applications
-  useEffect(() => {
-    const fetchApps = async () => {
-      try {
-        const res = await fetch("/api/applications")
-        if (res.ok) {
-          const data = await res.json()
-          const content = data.content || []
-          setApps(content)
-          if (content.length > 0) {
-            setSelectedAppId(content[0].id)
-          }
+  const fetchApps = useCallback(async () => {
+    setIsAppsLoading(true)
+    setAppsError(null)
+    try {
+      const res = await fetch("/api/applications")
+      if (res.ok) {
+        const data = await res.json()
+        const content = data.content || []
+        setApps(content)
+        if (content.length > 0) {
+          setSelectedAppId(content[0].id)
         }
-      } catch (error) {
-        console.error("Error fetching applications:", error)
-      } finally {
-        setIsAppsLoading(false)
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        setAppsError(errData.error || errData.message || "Error al cargar las aplicaciones")
       }
+    } catch (error) {
+      console.error("Error fetching applications:", error)
+      setAppsError("Error de conexión al cargar las aplicaciones")
+    } finally {
+      setIsAppsLoading(false)
     }
-    fetchApps()
   }, [])
+
+  useEffect(() => {
+    fetchApps()
+  }, [fetchApps])
 
   // Auto-select first environment of selected application
   const selectedAppObj = apps.find((app) => app.id === selectedAppId)
@@ -79,25 +88,30 @@ export default function ApiKeysPage() {
   }, [selectedAppId, environments])
 
   // Fetch API keys for selected environment
-  useEffect(() => {
+  const fetchKeys = useCallback(async () => {
     if (!selectedEnvId) return
-
-    const fetchKeys = async () => {
-      setIsKeysLoading(true)
-      try {
-        const res = await fetch(`/api/environments/${selectedEnvId}/api-keys`)
-        if (res.ok) {
-          const data = await res.json()
-          setApiKeys(data.content || [])
-        }
-      } catch (error) {
-        console.error("Error fetching API keys:", error)
-      } finally {
-        setIsKeysLoading(false)
+    setIsKeysLoading(true)
+    setKeysError(null)
+    try {
+      const res = await fetch(`/api/environments/${selectedEnvId}/api-keys`)
+      if (res.ok) {
+        const data = await res.json()
+        setApiKeys(data.content || [])
+      } else {
+        const errData = await res.json().catch(() => ({}))
+        setKeysError(errData.error || errData.message || "Error al obtener las API Keys")
       }
+    } catch (error) {
+      console.error("Error fetching API keys:", error)
+      setKeysError("Error de conexión al obtener las API Keys")
+    } finally {
+      setIsKeysLoading(false)
     }
-    fetchKeys()
   }, [selectedEnvId])
+
+  useEffect(() => {
+    fetchKeys()
+  }, [fetchKeys])
 
   const handleCreateApiKey = async () => {
     if (!selectedEnvId) return
@@ -180,6 +194,22 @@ export default function ApiKeysPage() {
                   <Loader2 className="h-4 w-4 animate-spin text-primary" />
                   Cargando aplicaciones...
                 </div>
+              ) : appsError ? (
+                <div className="flex items-center justify-between gap-2 pt-1 text-sm text-destructive">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{appsError}</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={fetchApps}
+                    className="h-7 text-xs gap-1 border-destructive/30 hover:bg-destructive/10 shrink-0"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                    Reintentar
+                  </Button>
+                </div>
               ) : apps.length === 0 ? (
                 <p className="text-sm text-muted-foreground pt-2">No tienes aplicaciones creadas.</p>
               ) : (
@@ -199,13 +229,13 @@ export default function ApiKeysPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="envSelect">Ambiente</Label>
+              <Label htmlFor="envSelect">Entorno</Label>
               {environments.length === 0 ? (
-                <p className="text-sm text-muted-foreground pt-2">Selecciona una aplicación con ambientes.</p>
+                <p className="text-sm text-muted-foreground pt-2">Selecciona una aplicación con entornos.</p>
               ) : (
                 <Select value={selectedEnvId} onValueChange={setSelectedEnvId}>
                   <SelectTrigger id="envSelect" className="bg-secondary/40 border-border cursor-pointer">
-                    <SelectValue placeholder="Seleccionar Ambiente" />
+                    <SelectValue placeholder="Seleccionar Entorno" />
                   </SelectTrigger>
                   <SelectContent>
                     {environments.map((env: any) => (
@@ -234,8 +264,8 @@ export default function ApiKeysPage() {
       {/* API Keys list */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">Claves en el ambiente</h2>
-          {selectedEnvId && selectedAppObj?.myRole !== "VIEWER" && (
+          <h2 className="text-lg font-semibold tracking-tight">Claves en el entorno</h2>
+          {selectedEnvId && selectedAppObj?.myRole !== "VIEWER" && !appsError && !keysError && (
             <Button className="gap-2" onClick={handleCreateApiKey}>
               <Plus className="h-4 w-4" />
               Generar API Key
@@ -247,18 +277,42 @@ export default function ApiKeysPage() {
           <div className="flex justify-center py-12">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
           </div>
+        ) : appsError ? (
+          <Card className="bg-card/50 border-destructive/30">
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <AlertCircle className="h-10 w-10 mb-3 text-destructive" />
+              <p className="font-medium text-foreground mb-1">No se pudieron cargar las aplicaciones</p>
+              <p className="text-sm text-muted-foreground mb-4">{appsError}</p>
+              <Button variant="outline" size="sm" onClick={fetchApps} className="gap-2">
+                <RefreshCw className="h-4 w-4" />
+                Reintentar
+              </Button>
+            </CardContent>
+          </Card>
+        ) : keysError ? (
+          <Card className="bg-card/50 border-destructive/30">
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+              <AlertCircle className="h-10 w-10 mb-3 text-destructive" />
+              <p className="font-medium text-foreground mb-1">Error al obtener las API Keys</p>
+              <p className="text-sm text-muted-foreground mb-4">{keysError}</p>
+              <Button variant="outline" size="sm" onClick={fetchKeys} className="gap-2">
+                <RefreshCw className="h-4 w-4" />
+                Reintentar
+              </Button>
+            </CardContent>
+          </Card>
         ) : !selectedEnvId ? (
           <Card className="bg-card/50 border-border">
             <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <Key className="h-10 w-10 mb-3" />
-              <p>Selecciona una aplicación y ambiente para ver las API Keys.</p>
+              <p>Selecciona una aplicación y entorno para ver las API Keys.</p>
             </CardContent>
           </Card>
         ) : apiKeys.length === 0 ? (
           <Card className="bg-card/50 border-border">
             <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground text-center">
               <Key className="h-10 w-10 mb-3 text-muted-foreground" />
-              <p className="mb-4">No hay API Keys configuradas para este ambiente.</p>
+              <p className="mb-4">No hay API Keys configuradas para este entorno.</p>
               {selectedAppObj?.myRole !== "VIEWER" && (
                 <Button className="gap-2" onClick={handleCreateApiKey}>
                   <Plus className="h-4 w-4" />

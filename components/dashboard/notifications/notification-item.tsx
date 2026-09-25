@@ -69,7 +69,7 @@ export function NotificationItemRow({
   // Determinar URL de acción
   const getActionUrl = (): string | null => {
     if (metadata?.actionUrl) return metadata.actionUrl;
-    if (isBilling) return "/settings/billing";
+    if (isBilling) return "/dashboard/billing";
     if (isInvitation && metadata?.token) {
       return `/accept-invite?token=${metadata.token}`;
     }

@@ -20,6 +20,7 @@ import {
 } from "lucide-react"
 import { cn, getEnvColors, getUniqueEnvDots } from "@/lib/utils"
 import { useApps } from "./apps-context"
+import { useUser } from "@/hooks/use-user"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,14 +48,19 @@ const navigation = [
     href: "/dashboard/api-keys",
     icon: Key,
   },
+  {
+    name: "Consumo",
+    href: "/dashboard/usage",
+    icon: BarChart3,
+  },
 ]
 
 // Mock applications removed to fetch from API dynamically
 
 const accountNav = [
   {
-    name: "Uso y Facturación",
-    href: "/settings/billing",
+    name: "Facturación",
+    href: "/dashboard/billing",
     icon: CreditCard,
   },
   {
@@ -73,24 +79,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
   const pathname = usePathname()
   const router = useRouter()
   const { applications, isAppsLoading } = useApps()
-  const [user, setUser] = useState<any>(null)
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch("/api/user")
-        if (res.ok) {
-          const data = await res.json()
-          if (data && data.user) {
-            setUser(data.user)
-          }
-        }
-      } catch (error) {
-        console.error("Error loading sidebar user profile:", error)
-      }
-    }
-    fetchUser()
-  }, [])
+  const { sessionUser: user } = useUser()
 
   return (
     <aside
@@ -254,7 +243,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                 <li key={app.name}>
                   <Link
                     href={app.href}
-                    title={isCollapsed ? `${app.name} (${app.environments.join(", ") || "sin ambientes"})` : undefined}
+                    title={isCollapsed ? `${app.name} (${app.environments.join(", ") || "sin entornos"})` : undefined}
                     className={cn(
                       "group flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200",
                       isActive
@@ -305,7 +294,10 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
           )}
           <ul className="space-y-1">
             {accountNav.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/") || (item.href === "/settings/billing" && pathname.startsWith("/dashboard/billing"))
+              const isActive =
+                pathname === item.href ||
+                pathname.startsWith(item.href + "/") ||
+                (item.href === "/dashboard/billing" && (pathname === "/settings/billing" || pathname.startsWith("/settings/billing/")))
               return (
                 <li key={item.name}>
                   <Link
