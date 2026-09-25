@@ -48,6 +48,19 @@ export function Navbar({ user }: { user?: NavbarUser }) {
     }
   };
 
+  const isActive = (item: (typeof navigation)[0]) => {
+    if (item.name === "Precios") {
+      return pathname === "/pricing" || pathname.startsWith("/pricing")
+    }
+    if (item.name === "Documentación") {
+      return pathname === "/docs" || pathname.startsWith("/docs")
+    }
+    if (item.name === "Producto") {
+      return pathname === "/" || pathname === ""
+    }
+    return false
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <nav className="mx-auto flex md:grid md:grid-cols-3 max-w-7xl items-center justify-between px-6 py-4 lg:px-8 w-full">
@@ -59,16 +72,27 @@ export function Navbar({ user }: { user?: NavbarUser }) {
         </div>
 
         <div className="hidden md:flex md:items-center md:gap-8 md:justify-self-center">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={(e) => handleScroll(e, item.href)}
-              className="text-base font-semibold text-muted-foreground/90 transition-all duration-200 hover:text-primary hover:scale-105"
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navigation.map((item) => {
+            const active = isActive(item)
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={(e) => handleScroll(e, item.href)}
+                className={cn(
+                  "relative text-base font-semibold transition-all duration-200 hover:scale-105",
+                  active
+                    ? "text-primary [text-shadow:0_0_12px_rgba(217,70,239,0.7),0_0_20px_rgba(217,70,239,0.4)]"
+                    : "text-muted-foreground/90 hover:text-primary"
+                )}
+              >
+                {item.name}
+                {active && (
+                  <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 rounded-full bg-primary shadow-[0_0_8px_rgba(217,70,239,0.8)]" />
+                )}
+              </Link>
+            )
+          })}
         </div>
 
         <div className="hidden md:flex md:items-center md:gap-4 md:justify-self-end">
@@ -156,19 +180,27 @@ export function Navbar({ user }: { user?: NavbarUser }) {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl">
           <div className="space-y-1 px-6 py-4">
-            {navigation.map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="block py-2 text-base font-semibold text-muted-foreground hover:text-foreground"
-                onClick={(e) => {
-                  setMobileMenuOpen(false);
-                  handleScroll(e, item.href);
-                }}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {navigation.map((item) => {
+              const active = isActive(item)
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    "block py-2 text-base font-semibold transition-all duration-200",
+                    active
+                      ? "text-primary [text-shadow:0_0_12px_rgba(217,70,239,0.7),0_0_20px_rgba(217,70,239,0.4)] font-bold"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                  onClick={(e) => {
+                    setMobileMenuOpen(false);
+                    handleScroll(e, item.href);
+                  }}
+                >
+                  {item.name}
+                </Link>
+              )
+            })}
             <div className="flex flex-col gap-2 pt-4 border-t border-border mt-4">
               {user ? (
                 <>
