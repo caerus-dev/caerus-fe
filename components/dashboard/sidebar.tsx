@@ -48,14 +48,19 @@ const navigation = [
     href: "/dashboard/api-keys",
     icon: Key,
   },
+  {
+    name: "Consumo",
+    href: "/dashboard/usage",
+    icon: BarChart3,
+  },
 ]
 
 // Mock applications removed to fetch from API dynamically
 
 const accountNav = [
   {
-    name: "Uso y Facturación",
-    href: "/settings/billing",
+    name: "Facturación",
+    href: "/dashboard/billing",
     icon: CreditCard,
   },
   {
@@ -289,7 +294,10 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
           )}
           <ul className="space-y-1">
             {accountNav.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + "/") || (item.href === "/settings/billing" && pathname.startsWith("/dashboard/billing"))
+              const isActive =
+                pathname === item.href ||
+                pathname.startsWith(item.href + "/") ||
+                (item.href === "/dashboard/billing" && (pathname === "/settings/billing" || pathname.startsWith("/settings/billing/")))
               return (
                 <li key={item.name}>
                   <Link

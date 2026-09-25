@@ -60,12 +60,12 @@ export function DashboardHeaderAlerts({
               </p>
             </div>
           </div>
-          <Link href="/settings/billing" className="shrink-0 w-full sm:w-auto">
-            <Button size="sm" variant="destructive" className="w-full gap-1.5 text-xs">
+          <Button asChild size="sm" variant="destructive" className="shrink-0 w-full sm:w-auto gap-1.5 text-xs">
+            <Link href="/dashboard/billing">
               Gestionar Facturación
               <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       )}
 
@@ -90,12 +90,12 @@ export function DashboardHeaderAlerts({
               </p>
             </div>
           </div>
-          <Link href="/settings/billing" className="shrink-0 w-full sm:w-auto">
-            <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10">
+          <Button asChild size="sm" variant="outline" className="shrink-0 w-full sm:w-auto gap-1.5 text-xs border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10">
+            <Link href="/dashboard/billing">
               Ver Facturación
               <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       )}
 

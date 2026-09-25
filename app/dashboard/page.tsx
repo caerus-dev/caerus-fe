@@ -198,7 +198,7 @@ export default async function DashboardPage() {
                 </CardDescription>
               </div>
               <Button asChild variant="outline" size="sm" className="text-xs h-8">
-                <Link href="/settings/billing">
+                <Link href="/dashboard/billing">
                   Gestionar Plan y Facturación
                 </Link>
               </Button>

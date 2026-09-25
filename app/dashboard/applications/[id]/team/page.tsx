@@ -349,7 +349,7 @@ export default function TeamPage({
                     {inviteError.toLowerCase().includes("límite de colaboradores") && (
                       <div className="pl-6.5">
                         <Link
-                          href="/settings/billing"
+                          href="/dashboard/billing"
                           className="inline-flex items-center gap-1 text-xs font-semibold text-primary underline hover:text-primary/80 transition-colors"
                         >
                           Ver Planes y Facturación →

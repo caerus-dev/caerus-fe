@@ -67,7 +67,7 @@ export default async function PricingPage() {
               const ctaHref = session?.user
                 ? isEnterprise
                   ? meta.ctaHref
-                  : "/settings/billing"
+                  : "/dashboard/billing"
                 : meta.ctaHref
 
               const ctaText = session?.user
