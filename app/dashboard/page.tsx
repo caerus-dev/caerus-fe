@@ -197,11 +197,11 @@ export default async function DashboardPage() {
                     : `Límite incluido en tu plan ${userProfile?.billingPlan?.name || "Developer"}: ${includedUnits.toLocaleString()} requests`}
                 </CardDescription>
               </div>
-              <Link href="/settings/billing">
-                <Button variant="outline" size="sm" className="text-xs h-8">
+              <Button asChild variant="outline" size="sm" className="text-xs h-8">
+                <Link href="/settings/billing">
                   Gestionar Plan y Facturación
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -243,16 +243,24 @@ export default async function DashboardPage() {
         </Card>
       )}
 
-      {/* 5. Vista de Colaborador Invitado con Aplicaciones Compartidas */}
-      {!hasValidPaymentMethod && appsCount > 0 && (
+      {/* 5. Aplicaciones Recientes */}
+      {appsCount > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Aplicaciones Compartidas Contigo
+              Tus Aplicaciones Recientes
             </h2>
-            <span className="text-xs text-muted-foreground">
-              {appsCount} {appsCount === 1 ? "aplicación" : "aplicaciones"}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground hidden sm:inline">
+                {appsCount} {appsCount === 1 ? "aplicación" : "aplicaciones"}
+              </span>
+              <Button asChild variant="ghost" size="sm" className="text-muted-foreground gap-1 text-xs h-7">
+                <Link href="/dashboard/applications">
+                  Ver todas
+                  <ArrowUpRight className="h-3 w-3" />
+                </Link>
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -273,13 +281,13 @@ export default async function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardFooter className="pt-2 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{(app.environments || []).length} ambientes</span>
-                  <Link href={`/dashboard/applications/${app.id}`}>
-                    <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
+                  <span>{(app.environments || []).length} {app.environments?.length === 1 ? "entorno" : "entornos"}</span>
+                  <Button asChild variant="ghost" size="sm" className="h-7 text-xs gap-1">
+                    <Link href={`/dashboard/applications/${app.id}`}>
                       Abrir
                       <ArrowUpRight className="h-3 w-3" />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
@@ -293,12 +301,12 @@ export default async function DashboardPage() {
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             Actividad Reciente
           </h2>
-          <Link href="/dashboard/usage">
-            <Button variant="ghost" size="sm" className="text-muted-foreground gap-1">
+          <Button asChild variant="ghost" size="sm" className="text-muted-foreground gap-1">
+            <Link href="/dashboard/usage">
               Ver todo
               <ArrowUpRight className="h-3 w-3" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
 
         <Card className="bg-card/50 border-border overflow-hidden">
