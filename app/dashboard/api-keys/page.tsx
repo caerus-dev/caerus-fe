@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback } from "react"
-import { Plus, Key, Copy, Check, Trash2, Loader2, AlertCircle, RefreshCw } from "lucide-react"
+import { Plus, Key, Copy, Check, Trash2, Loader2, AlertCircle, RefreshCw, Box, Layers } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -183,44 +183,41 @@ export default function ApiKeysPage() {
         </div>
       </div>
 
-      {/* Selectors card */}
-      <Card className="bg-card/50 border-border">
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="appSelect">Aplicación</Label>
+      {/* Context Selection Toolbar */}
+      <div className="rounded-xl border border-border/80 bg-card/50 p-4 sm:p-5 backdrop-blur-sm shadow-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 flex-1">
+            {/* Selector de Aplicación */}
+            <div className="flex flex-col gap-1.5 sm:min-w-[260px] max-w-sm flex-1">
+              <Label htmlFor="appSelect" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <Box className="h-3.5 w-3.5 text-primary" />
+                Aplicación
+              </Label>
               {isAppsLoading ? (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground h-10 px-3 bg-secondary/30 rounded-lg border border-border/60">
                   <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  Cargando aplicaciones...
+                  <span>Cargando aplicaciones...</span>
                 </div>
               ) : appsError ? (
-                <div className="flex items-center justify-between gap-2 pt-1 text-sm text-destructive">
-                  <div className="flex items-center gap-1.5 min-w-0">
-                    <AlertCircle className="h-4 w-4 shrink-0" />
-                    <span className="truncate">{appsError}</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={fetchApps}
-                    className="h-7 text-xs gap-1 border-destructive/30 hover:bg-destructive/10 shrink-0"
-                  >
-                    <RefreshCw className="h-3 w-3" />
-                    Reintentar
+                <div className="flex items-center justify-between gap-2 h-10 px-3 bg-destructive/10 rounded-lg border border-destructive/30 text-xs text-destructive">
+                  <span className="truncate">{appsError}</span>
+                  <Button variant="ghost" size="sm" onClick={fetchApps} className="h-6 px-1.5 text-[11px] gap-1">
+                    <RefreshCw className="h-3 w-3" /> Reintentar
                   </Button>
                 </div>
               ) : apps.length === 0 ? (
-                <p className="text-sm text-muted-foreground pt-2">No tienes aplicaciones creadas.</p>
+                <div className="flex items-center h-10 px-3 text-xs text-muted-foreground italic bg-secondary/20 rounded-lg border border-border/50">
+                  No tienes aplicaciones creadas
+                </div>
               ) : (
                 <Select value={selectedAppId} onValueChange={setSelectedAppId}>
-                  <SelectTrigger id="appSelect" className="bg-secondary/40 border-border cursor-pointer">
+                  <SelectTrigger id="appSelect" className="h-10 bg-secondary/40 border-border/80 hover:bg-secondary/60 transition-colors font-medium cursor-pointer">
                     <SelectValue placeholder="Seleccionar Aplicación" />
                   </SelectTrigger>
                   <SelectContent>
                     {apps.map((app) => (
-                      <SelectItem key={app.id} value={app.id}>
-                        {app.name}
+                      <SelectItem key={app.id} value={app.id} className="cursor-pointer">
+                        <span className="font-medium">{app.name}</span>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -228,19 +225,28 @@ export default function ApiKeysPage() {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="envSelect">Entorno</Label>
+            {/* Separador visual en desktop */}
+            <div className="hidden sm:block h-10 w-[1px] bg-border/60 self-end mb-0.5" />
+
+            {/* Selector de Entorno */}
+            <div className="flex flex-col gap-1.5 sm:min-w-[240px] max-w-sm flex-1">
+              <Label htmlFor="envSelect" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <Layers className="h-3.5 w-3.5 text-chart-2" />
+                Entorno
+              </Label>
               {environments.length === 0 ? (
-                <p className="text-sm text-muted-foreground pt-2">Selecciona una aplicación con entornos.</p>
+                <div className="flex items-center h-10 px-3 text-xs text-muted-foreground italic bg-secondary/20 rounded-lg border border-border/50">
+                  Sin entornos disponibles
+                </div>
               ) : (
                 <Select value={selectedEnvId} onValueChange={setSelectedEnvId}>
-                  <SelectTrigger id="envSelect" className="bg-secondary/40 border-border cursor-pointer">
+                  <SelectTrigger id="envSelect" className="h-10 bg-secondary/40 border-border/80 hover:bg-secondary/60 transition-colors font-medium cursor-pointer">
                     <SelectValue placeholder="Seleccionar Entorno" />
                   </SelectTrigger>
                   <SelectContent>
                     {environments.map((env: any) => (
-                      <SelectItem key={env.id} value={env.id}>
-                        <span className="flex items-center gap-1.5 font-mono">
+                      <SelectItem key={env.id} value={env.id} className="cursor-pointer">
+                        <span className="flex items-center gap-2 font-mono">
                           <span className={cn(
                             "h-2 w-2 rounded-full shrink-0",
                             env.name === "prod" || env.name === "production"
@@ -249,7 +255,7 @@ export default function ApiKeysPage() {
                               ? "bg-chart-4"
                               : "bg-chart-2"
                           )} />
-                          {env.name}
+                          <span>{env.name}</span>
                         </span>
                       </SelectItem>
                     ))}
@@ -258,19 +264,30 @@ export default function ApiKeysPage() {
               )}
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Botón de acción principal alinear a la derecha */}
+          {selectedEnvId && selectedAppObj?.myRole !== "VIEWER" && !appsError && !keysError && (
+            <div className="lg:self-end pb-0.5">
+              <Button className="glow-primary gap-2 h-10 w-full sm:w-auto font-semibold px-4 cursor-pointer" onClick={handleCreateApiKey}>
+                <Plus className="h-4 w-4" />
+                Generar API Key
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* API Keys list */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">Claves en el entorno</h2>
-          {selectedEnvId && selectedAppObj?.myRole !== "VIEWER" && !appsError && !keysError && (
-            <Button className="gap-2" onClick={handleCreateApiKey}>
-              <Plus className="h-4 w-4" />
-              Generar API Key
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold tracking-tight">Claves en el entorno</h2>
+            {selectedEnvId && apiKeys.length > 0 && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-muted-foreground font-mono">
+                {apiKeys.length}
+              </span>
+            )}
+          </div>
         </div>
 
         {isKeysLoading ? (
