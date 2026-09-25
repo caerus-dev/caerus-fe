@@ -140,7 +140,7 @@ caerus.unitary('funcionneon_D9').take({ idempotencyKey: '...', ttlSeconds: 120 }
           Correr la Demo en tu Máquina
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Si preferís clonar el código y correrla localmente:
+          Si prefieres clonar el código y ejecutarla localmente:
         </p>
 
         <CodeBlock

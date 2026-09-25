@@ -44,7 +44,7 @@ export function DocsSearchDialog({ open, onOpenChange }: DocsSearchDialogProps) 
       open={open}
       onOpenChange={onOpenChange}
       title="Buscar en la documentación"
-      description="Explorá temas, APIs, SDKs y simulaciones de Caerus"
+      description="Explora temas, APIs, SDKs y simulaciones de Caerus"
     >
       <CommandInput placeholder="Buscar conceptos, métodos, errores (ej: SRE, Fencing, take, lock)..." />
       <CommandList className="max-h-[350px] p-2">

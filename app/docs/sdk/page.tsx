@@ -19,7 +19,7 @@ export default function DocsSdkPage() {
       breadcrumbs={[{ label: "SDK", href: "/docs/sdk" }, { label: "Instalación y Conexión" }]}
       title="@caerus-dev/sdk"
       badge="TypeScript / Node.js"
-      description="El cliente oficial de Caerus para aplicaciones backend. Administrá reservas de inventario y locks distribuidos con tipado estricto y comunicación gRPC de alto rendimiento."
+      description="El cliente oficial de Caerus para aplicaciones backend. Administra reservas de inventario y locks distribuidos con tipado estricto y comunicación gRPC de alto rendimiento."
       tocItems={tocItems}
     >
       <SignatureBlock signature="const caerus = new CaerusClient(options: CaerusClientOptions);" />
@@ -87,7 +87,7 @@ export const caerus = new CaerusClient({
             <span>Formato de endpoint y TLS</span>
           </div>
           <p className="leading-relaxed">
-            El <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (sin prefijo <code>http://</code> ni <code>https://</code>). Además, recordá que <code>tls: false</code> es mandatorio en local; de lo contrario OpenSSL arrojará un error de versión de protocolo.
+            El <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (sin prefijo <code>http://</code> ni <code>https://</code>). Además, recuerda que <code>tls: false</code> es obligatorio en local; de lo contrario OpenSSL arrojará un error de versión de protocolo.
           </p>
         </div>
       </section>

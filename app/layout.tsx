@@ -19,7 +19,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Caerus | Concurrency as a Service',
   description: 'Backend as a Service for managing distributed concurrency. Shared resources, distributed locks, and real-time coordination made simple.',
-  generator: 'v0.app',
   icons: {
     icon: [
       {
@@ -37,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} bg-background`} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} bg-background`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"

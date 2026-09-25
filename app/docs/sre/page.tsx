@@ -183,7 +183,7 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
             <span className="font-semibold text-sm text-foreground">Especificación gRPC de bajo nivel</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            ¿Construyendo un cliente en Go, Python, Java o Rust? Consultá los contratos <code>proto3</code> completos de <code>CreateResource</code>, <code>Take</code>, <code>Confirm</code> y <code>Release</code>.
+            ¿Construyendo un cliente en Go, Python, Java o Rust? Consulta los contratos <code>proto3</code> completos de <code>CreateResource</code>, <code>Take</code>, <code>Confirm</code> y <code>Release</code>.
           </p>
         </div>
         <Link href="/docs/proto#sre-service" className="shrink-0">
@@ -198,10 +198,10 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
       <section id="demo-link" className="rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent p-6 space-y-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-amber-500" />
-          <h3 className="text-base font-semibold text-foreground">¿Querés ver el SRE en acción?</h3>
+          <h3 className="text-base font-semibold text-foreground">¿Quieres ver el SRE en acción?</h3>
         </div>
         <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-          Diseñamos la demo interactiva <strong>Caerus Cine</strong>, donde podés pelear en vivo contra vos mismo por la misma butaca en dos pestañas y comparar la política <code>FAIL</code> frente a <code>QUEUE</code> con panel de llamadas en tiempo real.
+          Diseñamos la demo interactiva <strong>Caerus Cine</strong>, donde puedes pelear en vivo contra ti mismo por la misma butaca en dos pestañas y comparar la política <code>FAIL</code> frente a <code>QUEUE</code> con panel de llamadas en tiempo real.
         </p>
         <div className="pt-2">
           <Link href="/docs/sre/demo">

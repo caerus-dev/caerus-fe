@@ -199,7 +199,7 @@ export default function DocsOverviewPage() {
         </div>
 
         <p className="text-muted-foreground leading-relaxed">
-          Instalá el SDK en tu aplicación Node.js o TypeScript y empezá a reservar recursos en minutos:
+          Instala el SDK en tu aplicación Node.js o TypeScript y empieza a reservar recursos en minutos:
         </p>
 
         <CodeBlock code="npm install @caerus-dev/sdk" language="bash" title="Terminal" />

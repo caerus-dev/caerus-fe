@@ -155,7 +155,7 @@ try {
             <span className="font-semibold text-sm text-foreground">Especificación gRPC de bajo nivel</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Consultá los contratos <code>proto3</code> completos de <code>BeginTransaction</code>, <code>AcquireLock</code> (server streaming), <code>ReleaseLock</code> y <code>GetTransactionStatus</code>.
+            Consulta los contratos <code>proto3</code> completos de <code>BeginTransaction</code>, <code>AcquireLock</code> (server streaming), <code>ReleaseLock</code> y <code>GetTransactionStatus</code>.
           </p>
         </div>
         <Link href="/docs/proto#dls-service" className="shrink-0">
@@ -173,7 +173,7 @@ try {
           <h3 className="text-base font-semibold text-foreground">Visualizador de Nodos y Deadlocks en Vivo</h3>
         </div>
         <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-          Explorá cómo interactúan 2 o 3 workers en tiempo real, observá la formación de ciclos en el grafo de dependencias y probá la estampida concurrente en la demo interactiva del DLS.
+          Explora cómo interactúan 2 o 3 workers en tiempo real, observa la formación de ciclos en el grafo de dependencias y prueba la estampida concurrente en la demo interactiva del DLS.
         </p>
         <div className="pt-2">
           <Link href="/docs/dls/demo">

@@ -81,7 +81,7 @@ export function DocsToc({ items = [], className }: DocsTocProps) {
           <span>Repositorios del Proyecto</span>
         </div>
         <p className="text-[11px] text-muted-foreground leading-normal">
-          Accedé al código fuente de los clientes, las demos interactivas y las especificaciones.
+          Accede al código fuente de los clientes, las demos interactivas y las especificaciones.
         </p>
         <div className="flex flex-col gap-1.5 pt-1">
           <a

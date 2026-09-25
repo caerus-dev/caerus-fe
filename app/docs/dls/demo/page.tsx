@@ -107,7 +107,7 @@ export default function DocsDlsDemoPage() {
           Correr el Simulador Localmente
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Podés clonar el repositorio de la demo del DLS e iniciar el simulador interactivo en tu entorno local:
+          Puedes clonar el repositorio de la demo del DLS e iniciar el simulador interactivo en tu entorno local:
         </p>
 
         <CodeBlock
