@@ -60,7 +60,7 @@ export default function NewApplicationPage() {
 
     const selectedEnvs = Object.values(formData.environments).filter(Boolean)
     if (selectedEnvs.length === 0) {
-      setError("Debes seleccionar al menos un ambiente")
+      setError("Debes seleccionar al menos un entorno")
       return
     }
 
@@ -198,9 +198,9 @@ export default function NewApplicationPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Ambientes Iniciales</CardTitle>
+            <CardTitle>Entornos Iniciales</CardTitle>
             <CardDescription>
-              Selecciona los ambientes que deseas crear inicialmente. Podrás añadir o remover ambientes posteriormente.
+              Selecciona los entornos que deseas crear inicialmente. Podrás añadir o remover entornos posteriormente.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -223,7 +223,7 @@ export default function NewApplicationPage() {
                       dev
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">Ambiente de desarrollo y pruebas locales.</p>
+                  <p className="text-xs text-muted-foreground">Entorno de desarrollo y pruebas locales.</p>
                 </div>
               </label>
 
@@ -245,7 +245,7 @@ export default function NewApplicationPage() {
                       stg
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">Ambiente de pruebas pre-producción.</p>
+                  <p className="text-xs text-muted-foreground">Entorno de pruebas pre-producción.</p>
                 </div>
               </label>
 
@@ -267,7 +267,7 @@ export default function NewApplicationPage() {
                       prod
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">Ambiente productivo para usuarios finales.</p>
+                  <p className="text-xs text-muted-foreground">Entorno productivo para usuarios finales.</p>
                 </div>
               </label>
             </div>

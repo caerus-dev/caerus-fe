@@ -418,7 +418,7 @@ export function ResourceForm({
                   <AlertDialogHeader>
                     <AlertDialogTitle>¿Eliminar plantilla de recurso?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Esta acción no se puede deshacer. Se eliminará la configuración de la plantilla de recurso compartido en este ambiente.
+                      Esta acción no se puede deshacer. Se eliminará la configuración de la plantilla de recurso compartido en este entorno.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

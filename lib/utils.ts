@@ -104,7 +104,7 @@ export const ENV_COLOR_PRESETS = [
 ] as const
 
 /**
- * Infiere un color predeterminado a partir del nombre del ambiente
+ * Infiere un color predeterminado a partir del nombre del entorno
  * si no tiene ningún color explícito configurado en la base de datos.
  */
 export function inferColorFromName(envName?: string | null): ColorPreset {

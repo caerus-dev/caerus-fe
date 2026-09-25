@@ -785,7 +785,7 @@ export function WebhookDeliveriesView({
               </div>
 
               <div className="space-y-1">
-                <span className="text-muted-foreground">Ambiente:</span>
+                <span className="text-muted-foreground">Entorno:</span>
                 <p className="font-mono uppercase text-foreground font-semibold">{selectedEnv}</p>
               </div>
             </div>

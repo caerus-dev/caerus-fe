@@ -39,10 +39,10 @@ function parseAndTranslateError(raw: any, templateName?: string, failedEnvNames:
   }
 
   const envsLabel = failedEnvNames.length === 1
-    ? `el ambiente "${failedEnvNames[0]}"`
+    ? `el entorno "${failedEnvNames[0]}"`
     : failedEnvNames.length > 1
-    ? `los ambientes: ${failedEnvNames.join(", ")}`
-    : "los ambientes seleccionados"
+    ? `los entornos: ${failedEnvNames.join(", ")}`
+    : "los entornos seleccionados"
 
   if (typeof msg === "string") {
     if (msg.includes("already exists")) {
@@ -143,7 +143,7 @@ export function DuplicateLockDialog({
         }
       } else {
         const successNames = successfulEnvs.map((s) => s.name).join(", ")
-        toast.success(`Plantilla de Lock "${template?.namespace}" duplicada exitosamente en ${successfulEnvs.length === 1 ? "el ambiente" : "los ambientes"}: ${successNames}`)
+        toast.success(`Plantilla de Lock "${template?.namespace}" duplicada exitosamente en ${successfulEnvs.length === 1 ? "el entorno" : "los entornos"}: ${successNames}`)
         onOpenChange(false)
         setSelectedEnvIds([])
       }
@@ -165,18 +165,18 @@ export function DuplicateLockDialog({
           </DialogTitle>
           <DialogDescription className="text-sm">
             Copia la configuración de la plantilla{" "}
-            <span className="font-semibold text-foreground">{template?.namespace}</span> a otros ambientes de esta aplicación.
+            <span className="font-semibold text-foreground">{template?.namespace}</span> a otros entornos de esta aplicación.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 py-1">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Seleccionar Ambientes de Destino
+            Seleccionar Entornos de Destino
           </p>
 
           {targetEnvironments.length === 0 ? (
             <p className="text-sm text-muted-foreground italic py-2">
-              No hay otros ambientes disponibles para duplicar en esta aplicación.
+              No hay otros entornos disponibles para duplicar en esta aplicación.
             </p>
           ) : (
             <div className="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
@@ -240,7 +240,7 @@ export function DuplicateLockDialog({
             ) : (
               <Copy className="h-4 w-4" />
             )}
-            Duplicar en {selectedEnvIds.length} ambiente{selectedEnvIds.length === 1 ? "" : "s"}
+            Duplicar en {selectedEnvIds.length} entorno{selectedEnvIds.length === 1 ? "" : "s"}
           </Button>
         </DialogFooter>
       </DialogContent>

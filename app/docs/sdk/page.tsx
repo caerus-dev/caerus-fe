@@ -48,7 +48,7 @@ export default function DocsSdkPage() {
           Inicialización del Cliente
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          La API Key identifica a tu organización y ambiente (e.g. Producción, Staging), por lo que el SDK sabe automáticamente a qué tenant pertenece cada operación:
+          La API Key identifica a tu organización y entorno (e.g. Producción, Staging), por lo que el SDK sabe automáticamente a qué tenant pertenece cada operación:
         </p>
 
         <CodeBlock

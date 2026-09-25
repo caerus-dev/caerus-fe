@@ -68,7 +68,7 @@ export default function DocsDashboardPage() {
               <h3 className="font-semibold text-sm text-foreground">Aplicación (Tenant)</h3>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Es el contenedor principal de un proyecto o sistema (por ejemplo, <em>"Ticketera Cine"</em> o <em>"Plataforma E-commerce"</em>). Agrupa todos sus ambientes, colaboradores y facturación.
+              Es el contenedor principal de un proyecto o sistema (por ejemplo, <em>"Ticketera Cine"</em> o <em>"Plataforma E-commerce"</em>). Agrupa todos sus entornos, colaboradores y facturación.
             </p>
           </div>
 
@@ -163,7 +163,7 @@ export default function DocsDashboardPage() {
               <span>Pausa y Deshabilitación</span>
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Cada entorno cuenta con un interruptor de activación. Al deshabilitar un entorno temporalmente, todos los endpoints y llamadas gRPC hacia ese ambiente son bloqueados de inmediato, lo que resulta útil durante ventanas de mantenimiento preventivo.
+              Cada entorno cuenta con un interruptor de activación. Al deshabilitar un entorno temporalmente, todos los endpoints y llamadas gRPC hacia ese entorno son bloqueados de inmediato, lo que resulta útil durante ventanas de mantenimiento preventivo.
             </p>
           </div>
         </div>

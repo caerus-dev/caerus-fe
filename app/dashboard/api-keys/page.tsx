@@ -199,13 +199,13 @@ export default function ApiKeysPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="envSelect">Ambiente</Label>
+              <Label htmlFor="envSelect">Entorno</Label>
               {environments.length === 0 ? (
-                <p className="text-sm text-muted-foreground pt-2">Selecciona una aplicación con ambientes.</p>
+                <p className="text-sm text-muted-foreground pt-2">Selecciona una aplicación con entornos.</p>
               ) : (
                 <Select value={selectedEnvId} onValueChange={setSelectedEnvId}>
                   <SelectTrigger id="envSelect" className="bg-secondary/40 border-border cursor-pointer">
-                    <SelectValue placeholder="Seleccionar Ambiente" />
+                    <SelectValue placeholder="Seleccionar Entorno" />
                   </SelectTrigger>
                   <SelectContent>
                     {environments.map((env: any) => (
@@ -234,7 +234,7 @@ export default function ApiKeysPage() {
       {/* API Keys list */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">Claves en el ambiente</h2>
+          <h2 className="text-lg font-semibold tracking-tight">Claves en el entorno</h2>
           {selectedEnvId && selectedAppObj?.myRole !== "VIEWER" && (
             <Button className="gap-2" onClick={handleCreateApiKey}>
               <Plus className="h-4 w-4" />
@@ -251,14 +251,14 @@ export default function ApiKeysPage() {
           <Card className="bg-card/50 border-border">
             <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <Key className="h-10 w-10 mb-3" />
-              <p>Selecciona una aplicación y ambiente para ver las API Keys.</p>
+              <p>Selecciona una aplicación y entorno para ver las API Keys.</p>
             </CardContent>
           </Card>
         ) : apiKeys.length === 0 ? (
           <Card className="bg-card/50 border-border">
             <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground text-center">
               <Key className="h-10 w-10 mb-3 text-muted-foreground" />
-              <p className="mb-4">No hay API Keys configuradas para este ambiente.</p>
+              <p className="mb-4">No hay API Keys configuradas para este entorno.</p>
               {selectedAppObj?.myRole !== "VIEWER" && (
                 <Button className="gap-2" onClick={handleCreateApiKey}>
                   <Plus className="h-4 w-4" />

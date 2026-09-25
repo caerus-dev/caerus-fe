@@ -145,7 +145,7 @@ export default function ApplicationSettingsPage({
     setEnvFormError("")
 
     if (!envForm.name.trim()) {
-      setEnvFormError("El nombre del ambiente es requerido")
+      setEnvFormError("El nombre del entorno es requerido")
       return
     }
 
@@ -184,11 +184,11 @@ export default function ApplicationSettingsPage({
           setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
-          setEnvFormError(errData.message || errData.error || "Error al crear el ambiente")
+          setEnvFormError(errData.message || errData.error || "Error al crear el entorno")
         }
       } else if (envDialogMode === "edit") {
         if (!selectedEnvForEdit) {
-          setEnvFormError("No se seleccionó ningún ambiente para editar")
+          setEnvFormError("No se seleccionó ningún entorno para editar")
           return
         }
 
@@ -225,12 +225,12 @@ export default function ApplicationSettingsPage({
           setEnvDialogOpen(false)
         } else {
           const errData = await res.json().catch(() => ({}))
-          setEnvFormError(errData.message || errData.error || "Error al actualizar el ambiente")
+          setEnvFormError(errData.message || errData.error || "Error al actualizar el entorno")
         }
       }
     } catch (error) {
       console.error("Error saving environment:", error)
-      setEnvFormError("Ocurrió un error inesperado al guardar el ambiente")
+      setEnvFormError("Ocurrió un error inesperado al guardar el entorno")
     } finally {
       setIsSavingEnv(false)
     }
@@ -256,15 +256,15 @@ export default function ApplicationSettingsPage({
         setConfirmDeleteEnvOpen(false)
         setSelectedEnvForDelete(null)
       } else {
-        const errData = await res.json().catch(() => ({ message: "Error al eliminar el ambiente" }))
+        const errData = await res.json().catch(() => ({ message: "Error al eliminar el entorno" }))
         setDeleteEnvError({
-          message: errData.message || errData.error || "Error al eliminar el ambiente",
+          message: errData.message || errData.error || "Error al eliminar el entorno",
           details: errData.details
         })
       }
     } catch (error) {
       console.error("Error deleting environment:", error)
-      setDeleteEnvError({ message: "Ocurrió un error inesperado al eliminar el ambiente" })
+      setDeleteEnvError({ message: "Ocurrió un error inesperado al eliminar el entorno" })
     } finally {
       setIsSavingEnv(false)
     }
@@ -400,21 +400,21 @@ export default function ApplicationSettingsPage({
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>Ambientes</CardTitle>
+                  <CardTitle>Entornos</CardTitle>
                   <CardDescription>
-                    Gestiona los ambientes de tu aplicación
+                    Gestiona los entornos de tu aplicación
                   </CardDescription>
                 </div>
                 <Button type="button" variant="outline" size="sm" onClick={handleOpenCreateEnv}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Agregar Ambiente
+                  Agregar Entorno
                 </Button>
               </div>
             </CardHeader>
             <CardContent>
               {environments.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground text-sm">
-                  No hay ambientes configurados. Agrega uno para empezar.
+                  No hay entornos configurados. Agrega uno para empezar.
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -574,10 +574,10 @@ export default function ApplicationSettingsPage({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {envDialogMode === "create" ? "Crear Ambiente" : "Editar Ambiente"}
+                {envDialogMode === "create" ? "Crear Entorno" : "Editar Entorno"}
               </DialogTitle>
               <DialogDescription>
-                Define el nombre y la descripción para el ambiente de tu aplicación.
+                Define el nombre y la descripción para el entorno de tu aplicación.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSaveEnv} className="space-y-4">
@@ -587,7 +587,7 @@ export default function ApplicationSettingsPage({
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="envName">Nombre del Ambiente *</Label>
+                <Label htmlFor="envName">Nombre del Entorno *</Label>
                 <Input
                   id="envName"
                   value={envForm.name}
@@ -598,7 +598,7 @@ export default function ApplicationSettingsPage({
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">Color del Ambiente</Label>
+                <Label className="text-xs text-muted-foreground">Color del Entorno</Label>
                 <div className="flex items-center gap-3 pt-1 flex-wrap">
                   {ENV_COLOR_PRESETS.map((preset) => {
                     const isSelected = envForm.color === preset.id
@@ -624,7 +624,7 @@ export default function ApplicationSettingsPage({
                   id="envDesc"
                   value={envForm.description}
                   onChange={(e) => setEnvForm((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Describe brevemente el propósito de este ambiente..."
+                  placeholder="Describe brevemente el propósito de este entorno..."
                   maxLength={500}
                   rows={3}
                   disabled={isSavingEnv}
@@ -661,11 +661,11 @@ export default function ApplicationSettingsPage({
         }}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Eliminar Ambiente</DialogTitle>
+              <DialogTitle>Eliminar Entorno</DialogTitle>
               <DialogDescription>
-                ¿Estás seguro de que deseas eliminar el ambiente{" "}
+                ¿Estás seguro de que deseas eliminar el entorno{" "}
                 <span className="font-semibold text-foreground">{selectedEnvForDelete?.name}</span>?
-                Esta acción es irreversible y eliminará todos los recursos, locks y API keys asociados a este ambiente.
+                Esta acción es irreversible y eliminará todos los recursos, locks y API keys asociados a este entorno.
               </DialogDescription>
             </DialogHeader>
             {deleteEnvError && (

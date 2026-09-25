@@ -228,7 +228,7 @@ export function EventsTab({
     }
   }, [envId, buildQueryParams]);
 
-  // Cargar cuando cambia el ambiente o los filtros principales
+  // Cargar cuando cambia el entorno o los filtros principales
   useEffect(() => {
     fetchInitialEvents();
   }, [fetchInitialEvents]);

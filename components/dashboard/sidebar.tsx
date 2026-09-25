@@ -243,7 +243,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
                 <li key={app.name}>
                   <Link
                     href={app.href}
-                    title={isCollapsed ? `${app.name} (${app.environments.join(", ") || "sin ambientes"})` : undefined}
+                    title={isCollapsed ? `${app.name} (${app.environments.join(", ") || "sin entornos"})` : undefined}
                     className={cn(
                       "group flex items-center justify-between gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200",
                       isActive

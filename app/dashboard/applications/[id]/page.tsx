@@ -604,7 +604,7 @@ export default function ApplicationDashboard({
                     <DropdownMenuItem asChild className="cursor-pointer text-sm py-2 px-2.5 text-muted-foreground hover:text-primary">
                       <Link href={`/dashboard/applications/${id}/settings?action=create_env&env=${encodeURIComponent(selectedEnv)}`} className="flex items-center gap-2.5 w-full">
                         <Plus className="h-4 w-4" />
-                        <span>Nuevo Ambiente</span>
+                        <span>Nuevo Entorno</span>
                       </Link>
                     </DropdownMenuItem>
                   </>

@@ -400,7 +400,7 @@ export default function TeamPage({
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground">
-                      {inviteRole === "ADMIN" && "Puede ver todo y crear/editar/eliminar ambientes y recursos compartidos."}
+                      {inviteRole === "ADMIN" && "Puede ver todo y crear/editar/eliminar entornos y recursos compartidos."}
                       {inviteRole === "VIEWER" && "Tiene acceso de solo lectura. No puede realizar modificaciones."}
                     </p>
                   </div>
