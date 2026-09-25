@@ -319,19 +319,29 @@ export default function ApiKeysPage() {
             </CardContent>
           </Card>
         ) : !selectedEnvId ? (
-          <Card className="bg-card/50 border-border">
-            <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <Key className="h-10 w-10 mb-3" />
-              <p>Selecciona una aplicación y entorno para ver las API Keys.</p>
+          <Card className="bg-card/40 border-border/80 border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-14 text-center">
+              <div className="h-12 w-12 rounded-2xl bg-secondary/60 border border-border/60 flex items-center justify-center text-muted-foreground mb-3">
+                <Layers className="h-6 w-6" />
+              </div>
+              <p className="font-semibold text-foreground text-sm mb-1">Entorno no seleccionado</p>
+              <p className="text-xs text-muted-foreground max-w-xs">Selecciona una aplicación y un entorno en la barra superior para ver o administrar sus API Keys.</p>
             </CardContent>
           </Card>
         ) : apiKeys.length === 0 ? (
-          <Card className="bg-card/50 border-border">
-            <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground text-center">
-              <Key className="h-10 w-10 mb-3 text-muted-foreground" />
-              <p className="mb-4">No hay API Keys configuradas para este entorno.</p>
+          <Card className="bg-card/40 border-border/80 border-dashed">
+            <CardContent className="flex flex-col items-center justify-center py-14 text-center">
+              <div className="h-14 w-14 rounded-2xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary mb-4 shadow-sm shadow-primary/10">
+                <Key className="h-7 w-7" />
+              </div>
+              <h3 className="font-semibold text-foreground text-base mb-1">
+                No hay API Keys en este entorno
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-sm mb-5 leading-relaxed">
+                Genera una credencial de acceso para comenzar a interactuar con los motores de concurrencia mediante el SDK o la API de Caerus.
+              </p>
               {selectedAppObj?.myRole !== "VIEWER" && (
-                <Button className="gap-2" onClick={handleCreateApiKey}>
+                <Button size="lg" className="gap-2 px-5 font-semibold" onClick={handleCreateApiKey}>
                   <Plus className="h-4 w-4" />
                   Crear API Key
                 </Button>
