@@ -473,12 +473,12 @@ export default function DocsDashboardPage() {
             <h4 className="text-sm font-semibold text-foreground">¿Listo para conectar tu código?</h4>
             <p className="text-xs text-muted-foreground">Una vez creadas tus plantillas y API Keys, consulta la guía de inicio rápido con el SDK oficial.</p>
           </div>
-          <Link href="/docs/sdk" className="shrink-0">
-            <Button size="sm" className="gap-2 text-xs">
+          <Button asChild size="sm" className="gap-2 text-xs shrink-0">
+            <Link href="/docs/sdk">
               <span>Ver Guía del SDK</span>
               <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </section>
     </DocsPageLayout>

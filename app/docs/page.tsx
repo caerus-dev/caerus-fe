@@ -126,16 +126,16 @@ export default function DocsOverviewPage() {
                 <li>Estrategias de conflicto: <code>FAIL</code> vs <code>QUEUE</code> (fila de espera).</li>
               </ul>
               <div className="pt-2 flex gap-2">
-                <Link href="/docs/sre">
-                  <Button variant="outline" size="sm" className="text-xs gap-1">
+                <Button asChild variant="outline" size="sm" className="text-xs gap-1">
+                  <Link href="/docs/sre">
                     Ver SRE <ArrowRight className="h-3 w-3" />
-                  </Button>
-                </Link>
-                <Link href="/docs/sre/demo">
-                  <Button variant="secondary" size="sm" className="text-xs gap-1 text-amber-500 font-medium">
+                  </Link>
+                </Button>
+                <Button asChild variant="secondary" size="sm" className="text-xs gap-1 text-amber-500 font-medium">
+                  <Link href="/docs/sre/demo">
                     Demo Cine 🍿
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -157,16 +157,16 @@ export default function DocsOverviewPage() {
                 <li>Detección y resolución automática de ciclos de <strong>Deadlock</strong>.</li>
               </ul>
               <div className="pt-2 flex gap-2">
-                <Link href="/docs/dls">
-                  <Button variant="outline" size="sm" className="text-xs gap-1">
+                <Button asChild variant="outline" size="sm" className="text-xs gap-1">
+                  <Link href="/docs/dls">
                     Ver DLS <ArrowRight className="h-3 w-3" />
-                  </Button>
-                </Link>
-                <Link href="/docs/dls/demo">
-                  <Button variant="secondary" size="sm" className="text-xs gap-1 text-amber-500 font-medium">
+                  </Link>
+                </Button>
+                <Button asChild variant="secondary" size="sm" className="text-xs gap-1 text-amber-500 font-medium">
+                  <Link href="/docs/dls/demo">
                     Simulador DLS ⚡
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -190,12 +190,12 @@ export default function DocsOverviewPage() {
               Antes de inicializar el cliente en código, aprende a crear tu aplicación, configurar entornos y definir las plantillas de recursos y bloqueos en el Dashboard.
             </p>
           </div>
-          <Link href="/docs/dashboard" className="shrink-0">
-            <Button variant="outline" size="sm" className="gap-2 text-xs">
+          <Button asChild variant="outline" size="sm" className="gap-2 text-xs shrink-0">
+            <Link href="/docs/dashboard">
               <span>Guía de la Consola Web</span>
               <ArrowRight className="h-3.5 w-3.5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
 
         <p className="text-muted-foreground leading-relaxed">
@@ -238,17 +238,17 @@ try {
         />
 
         <div className="flex items-center gap-3 pt-4">
-          <Link href="/docs/sdk">
-            <Button className="gap-2">
+          <Button asChild className="gap-2">
+            <Link href="/docs/sdk">
               <span>Continuar a la Guía del SDK</span>
               <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-          <Link href="/docs/sre/demo">
-            <Button variant="outline">
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/docs/sre/demo">
               Probar Demo Caerus Cine
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </section>
     </DocsPageLayout>

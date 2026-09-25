@@ -310,11 +310,11 @@ export default function TeamPage({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4 min-w-0">
-          <Link href={`/dashboard/applications/${id}`}>
-            <Button variant="ghost" size="icon">
+          <Button asChild variant="ghost" size="icon">
+            <Link href={`/dashboard/applications/${id}`}>
               <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold text-foreground">
               Colaboradores

@@ -51,12 +51,12 @@ export function PricingPreviewSection() {
             </div>
 
             <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0 items-start md:items-end justify-center">
-              <Link href="/pricing" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full h-12 px-6 font-semibold gap-2 shadow-lg shadow-primary/20">
+              <Button asChild size="lg" className="w-full sm:w-auto h-12 px-6 font-semibold gap-2 shadow-lg shadow-primary/20">
+                <Link href="/pricing">
                   Ver detalle de cada plan
                   <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+                </Link>
+              </Button>
               <span className="text-xs text-muted-foreground text-center md:text-right w-full">
                 Comparativa de límites y precios
               </span>

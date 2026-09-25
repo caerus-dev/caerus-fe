@@ -328,11 +328,11 @@ export default function ApplicationSettingsPage({
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link href={backUrl}>
-          <Button variant="ghost" size="icon">
+        <Button asChild variant="ghost" size="icon">
+          <Link href={backUrl}>
             <ArrowLeft className="w-4 h-4" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <div>
           <h1 className="text-2xl font-bold text-foreground">
             Configuración de Aplicación
@@ -503,11 +503,11 @@ export default function ApplicationSettingsPage({
         </Card>
 
         <div className="flex justify-end gap-3">
-          <Link href={backUrl}>
-            <Button variant="outline" disabled={isSaving}>
+          <Button asChild variant="outline" disabled={isSaving}>
+            <Link href={backUrl}>
               Cancelar
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <Button onClick={handleSave} disabled={isSaving || !formData.name.trim() || formData.name.length > 100 || formData.description.length > 500}>
             {isSaving ? (
               <>

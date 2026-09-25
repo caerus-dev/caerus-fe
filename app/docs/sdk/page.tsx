@@ -135,17 +135,17 @@ export const caerus = new CaerusClient({
 
       {/* Siguiente paso */}
       <section id="siguiente-paso" className="pt-4 flex items-center justify-between border-t border-border/50">
-        <Link href="/docs">
-          <Button variant="ghost" size="sm">
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/docs">
             ← Visión General
-          </Button>
-        </Link>
-        <Link href="/docs/sre">
-          <Button size="sm" className="gap-2">
+          </Link>
+        </Button>
+        <Button asChild size="sm" className="gap-2">
+          <Link href="/docs/sre">
             <span>Aprender SRE (Shared Resources)</span>
             <ArrowRight className="h-4 w-4" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </section>
     </DocsPageLayout>
   )

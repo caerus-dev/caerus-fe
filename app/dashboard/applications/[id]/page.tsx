@@ -612,19 +612,19 @@ export default function ApplicationDashboard({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Link href={`/dashboard/applications/${id}/team?env=${encodeURIComponent(selectedEnv)}`}>
-              <Button variant="outline" size="sm" className="gap-2 h-8">
+            <Button asChild variant="outline" size="sm" className="gap-2 h-8">
+              <Link href={`/dashboard/applications/${id}/team?env=${encodeURIComponent(selectedEnv)}`}>
                 <Users className="h-4 w-4" />
                 Equipo
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             {app.myRole !== "VIEWER" && (
-              <Link href={`/dashboard/applications/${id}/settings?env=${encodeURIComponent(selectedEnv)}`}>
-                <Button variant="outline" size="sm" className="gap-2 h-8">
+              <Button asChild variant="outline" size="sm" className="gap-2 h-8">
+                <Link href={`/dashboard/applications/${id}/settings?env=${encodeURIComponent(selectedEnv)}`}>
                   <Settings className="h-4 w-4" />
                   Configuración
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
           </div>
         </div>

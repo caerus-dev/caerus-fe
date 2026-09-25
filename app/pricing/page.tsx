@@ -128,23 +128,25 @@ export default async function PricingPage() {
                   </div>
 
                   {meta.isExternalLink ? (
-                    <a href={ctaHref} className="w-full mt-auto">
-                      <Button
-                        className="w-full h-12 text-sm font-semibold"
-                        variant={meta.highlight ? "default" : "outline"}
-                      >
+                    <Button
+                      asChild
+                      className="w-full h-12 text-sm font-semibold mt-auto"
+                      variant={meta.highlight ? "default" : "outline"}
+                    >
+                      <a href={ctaHref}>
                         {ctaText}
-                      </Button>
-                    </a>
+                      </a>
+                    </Button>
                   ) : (
-                    <Link href={ctaHref} className="w-full mt-auto">
-                      <Button
-                        className="w-full h-12 text-sm font-semibold"
-                        variant={meta.highlight ? "default" : "outline"}
-                      >
+                    <Button
+                      asChild
+                      className="w-full h-12 text-sm font-semibold mt-auto"
+                      variant={meta.highlight ? "default" : "outline"}
+                    >
+                      <Link href={ctaHref}>
                         {ctaText}
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                   )}
                 </div>
               )

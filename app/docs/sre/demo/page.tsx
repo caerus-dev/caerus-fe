@@ -109,28 +109,28 @@ caerus.unitary('funcionneon_D9').take({ idempotencyKey: '...', ttlSeconds: 120 }
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          <a
-            href="https://caerus-demo.vercel.app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto">
+          <Button asChild className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto">
+            <a
+              href="https://caerus-demo.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Play className="h-4 w-4" />
               <span>Abrir Demo Caerus Cine en Vercel</span>
               <ExternalLink className="h-3.5 w-3.5 opacity-70" />
-            </Button>
-          </a>
+            </a>
+          </Button>
 
-          <a
-            href={docsConfig.demoSreRepoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button variant="outline" className="gap-2 w-full sm:w-auto">
+          <Button asChild variant="outline" className="gap-2 w-full sm:w-auto">
+            <a
+              href={docsConfig.demoSreRepoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Github className="h-4 w-4" />
               <span>Ver Repositorio caerus-dev/demo-sdk</span>
-            </Button>
-          </a>
+            </a>
+          </Button>
         </div>
       </section>
 

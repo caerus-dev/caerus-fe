@@ -2,8 +2,9 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Search, Github, LayoutDashboard, Menu } from "lucide-react"
+import { Search, Github, LayoutDashboard, Menu, Sun, Moon } from "lucide-react"
 import { docsConfig } from "./docs-config"
+import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet"
@@ -15,6 +16,12 @@ interface DocsHeaderProps {
 
 export function DocsHeader({ onSearchClick }: DocsHeaderProps) {
   const [sheetOpen, setSheetOpen] = React.useState(false)
+  const { setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur-md">
@@ -79,7 +86,7 @@ export function DocsHeader({ onSearchClick }: DocsHeaderProps) {
           </button>
         </div>
 
-        {/* Lado Derecho: Links a Dashboard y GitHub */}
+        {/* Lado Derecho: Links a Dashboard, GitHub y Theme Toggle */}
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -91,23 +98,44 @@ export function DocsHeader({ onSearchClick }: DocsHeaderProps) {
             <Search className="h-4 w-4" />
           </Button>
 
-          <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="text-xs gap-1.5 h-8">
+          <Button asChild variant="ghost" size="sm" className="text-xs gap-1.5 h-8">
+            <Link href="/dashboard">
               <LayoutDashboard className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Dashboard</span>
-            </Button>
-          </Link>
+            </Link>
+          </Button>
 
-          <a
-            href={docsConfig.sdkRepoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button variant="outline" size="sm" className="text-xs gap-1.5 h-8 bg-muted/30">
+          <Button asChild variant="outline" size="sm" className="text-xs gap-1.5 h-8 bg-muted/30">
+            <a
+              href={docsConfig.sdkRepoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Github className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">GitHub</span>
-            </Button>
-          </a>
+            </a>
+          </Button>
+
+          {/* Theme Toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground"
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            title="Cambiar tema"
+            disabled={!mounted}
+          >
+            {mounted ? (
+              resolvedTheme === "dark" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )
+            ) : (
+              <span className="h-4 w-4" />
+            )}
+            <span className="sr-only">Cambiar tema</span>
+          </Button>
         </div>
       </div>
     </header>
