@@ -26,7 +26,7 @@ import { CreateAppButton } from "@/components/applications/CreateAppButton";
 import { fetchBackend } from "@/lib/api";
 import { auth0 } from "@/lib/auth0";
 import { UserResponse } from "@/types/billing";
-import { formatPercentage } from "@/lib/utils";
+import { formatPercentage, formatRelativeTime } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const session = await auth0.getSession();
@@ -106,7 +106,55 @@ export default async function DashboardPage() {
     },
   ];
 
-  const recentActivity: any[] = [];
+  // Fetch recent activity across user's environments
+  let recentActivity: any[] = [];
+  try {
+    const envFetchTasks: { envId: string; appName: string; envName: string }[] = [];
+    for (const app of applicationsList) {
+      if (Array.isArray(app.environments)) {
+        for (const env of app.environments) {
+          if (env.id) {
+            envFetchTasks.push({
+              envId: env.id,
+              appName: app.name,
+              envName: env.name,
+            });
+          }
+        }
+      }
+    }
+
+    if (envFetchTasks.length > 0) {
+      const eventResults = await Promise.allSettled(
+        envFetchTasks.map(async (task) => {
+          const res = await fetchBackend(`/v1/events?environmentId=${task.envId}&limit=5`);
+          if (!res.ok) return [];
+          const data = await res.json();
+          const items: any[] = Array.isArray(data.content) ? data.content : [];
+          return items.map((item: any) => ({
+            id: item.id || `${task.envId}-${item.occurredAt || item.receivedAt}`,
+            event: item.eventType || item.product || "event",
+            application: task.appName,
+            environment: task.envName,
+            time: formatRelativeTime(item.occurredAt || item.receivedAt || new Date()),
+            timestamp: new Date(item.occurredAt || item.receivedAt || 0).getTime(),
+          }));
+        })
+      );
+
+      const allEvents: any[] = [];
+      for (const res of eventResults) {
+        if (res.status === "fulfilled" && Array.isArray(res.value)) {
+          allEvents.push(...res.value);
+        }
+      }
+
+      allEvents.sort((a, b) => b.timestamp - a.timestamp);
+      recentActivity = allEvents.slice(0, 6);
+    }
+  } catch (error: any) {
+    console.error("Error fetching recent activity:", error);
+  }
 
   const getEventColor = (event: string) => {
     if (event.includes("acquired") || event.includes("confirmed") || event.includes("created")) {
@@ -332,7 +380,9 @@ export default async function DashboardPage() {
                 {recentActivity.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-4 py-8 text-center text-sm text-muted-foreground">
-                      No hay actividad reciente.
+                      {appsCount === 0
+                        ? "Crea tu primera aplicación para comenzar a registrar actividad."
+                        : "No hay actividad reciente registrada en tus entornos."}
                     </td>
                   </tr>
                 ) : (
