@@ -68,7 +68,7 @@ export const caerus = new CaerusClient({
           Conexión a un Caerus Local (Docker)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Para pruebas unitarias, integración o desarrollo offline con el Data Plane levantado en tu máquina (puerto <code>9090</code>):
+          Para pruebas unitarias, integración o desarrollo offline con Caerus levantado en tu máquina (puerto <code>9090</code>):
         </p>
 
         <CodeBlock
@@ -116,7 +116,7 @@ export const caerus = new CaerusClient({
               <TableRow>
                 <TableCell className="font-mono font-medium text-primary">endpoint</TableCell>
                 <TableCell className="font-mono text-muted-foreground">Cloud Caerus</TableCell>
-                <TableCell>Dirección <code>host:port</code> del motor gRPC del Data Plane.</TableCell>
+                <TableCell>Dirección <code>host:port</code> del motor gRPC de Caerus.</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-mono font-medium text-primary">tls</TableCell>

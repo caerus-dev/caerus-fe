@@ -78,7 +78,7 @@ export default function DocsDashboardPage() {
               <h3 className="font-semibold text-sm text-foreground">Entornos (Environments)</h3>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Instancias lógicas completamente aisladas (ej: <code>dev</code>, <code>staging</code>, <code>production</code>). Cada entorno tiene sus propias API Keys, base de datos y clúster de caché independientes.
+              Instancias lógicas completamente aisladas (ej: <code>dev</code>, <code>staging</code>, <code>production</code>). Cada entorno cuenta con API Keys, recursos y locks aislados de forma independiente sin interferencia entre sí.
             </p>
           </div>
 
@@ -427,7 +427,7 @@ export default function DocsDashboardPage() {
           Herramientas de Operación y Control
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          El panel de control incluye utilidades avanzadas para acelerar el desarrollo y auditar el comportamiento del clúster:
+          El panel de control incluye utilidades avanzadas para acelerar el desarrollo y auditar el comportamiento de tus recursos:
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
