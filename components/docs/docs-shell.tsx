@@ -5,12 +5,18 @@ import { DocsHeader } from "./docs-header"
 import { DocsSidebar } from "./docs-sidebar"
 import { DocsSearchDialog } from "./docs-search-dialog"
 
-export function DocsShell({ children }: { children: React.ReactNode }) {
+export function DocsShell({
+  children,
+  user,
+}: {
+  children: React.ReactNode
+  user?: any
+}) {
   const [searchOpen, setSearchOpen] = React.useState(false)
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <DocsHeader onSearchClick={() => setSearchOpen(true)} />
+      <DocsHeader onSearchClick={() => setSearchOpen(true)} user={user} />
 
       <div className="mx-auto flex-1 w-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
         <div className="flex gap-8">

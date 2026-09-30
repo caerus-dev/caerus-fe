@@ -630,7 +630,7 @@ export default function ApplicationDashboard({
         </div>
 
         {app.description && (
-          <p className="text-muted-foreground max-w-2xl text-sm line-clamp-3 md:line-clamp-none">
+          <p className="text-muted-foreground max-w-2xl text-sm whitespace-pre-wrap">
             {app.description}
           </p>
         )}

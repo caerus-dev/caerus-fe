@@ -33,6 +33,9 @@ import {
   ExternalLink,
   Loader2,
   Info,
+  Box,
+  FileText,
+  ArrowUpRight,
 } from "lucide-react"
 import { EnvBadge } from "@/components/dashboard/shared/env-badge"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -87,6 +90,7 @@ export default function ApplicationsPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [appToDelete, setAppToDelete] = useState<Application | null>(null)
   const [deleteAppError, setDeleteAppError] = useState<{ message: string, details?: string[] } | null>(null)
+  const [selectedAppForDetails, setSelectedAppForDetails] = useState<Application | null>(null)
 
   useEffect(() => {
     let isMounted = true;
@@ -260,8 +264,8 @@ export default function ApplicationsPage() {
               }}
             >
               <CardHeader className="pb-0">
-                <div className="flex items-start justify-between">
-                  <div className="space-y-1">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1 flex-1 min-w-0">
                     <CardTitle className="text-lg flex flex-wrap items-center gap-2">
                       {app.name}
                       <Badge
@@ -272,9 +276,24 @@ export default function ApplicationsPage() {
                       </Badge>
                       {getRoleBadge(app.myRole || "VIEWER")}
                     </CardTitle>
-                    <CardDescription className={`line-clamp-2 ${!app.description ? "italic text-muted-foreground/50" : ""}`}>
-                      {app.description || "Sin descripción configurada"}
-                    </CardDescription>
+                    <div>
+                      <CardDescription className={`line-clamp-2 leading-relaxed ${!app.description ? "italic text-muted-foreground/50" : ""}`}>
+                        {app.description || "Sin descripción configurada"}
+                      </CardDescription>
+                      {app.description && app.description.length > 85 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedAppForDetails(app);
+                          }}
+                          className="text-primary hover:text-primary/80 font-medium text-xs hover:underline cursor-pointer inline-flex items-center gap-0.5 mt-1 transition-colors"
+                        >
+                          Leer más
+                          <ArrowUpRight className="h-3 w-3" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -395,6 +414,108 @@ export default function ApplicationsPage() {
               </Button>
               <Button variant="destructive" onClick={handleDeleteConfirm}>
                 Eliminar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Modal de Detalle de Aplicación (Pop-up con descripción completa y embellecimiento) */}
+        <Dialog
+          open={!!selectedAppForDetails}
+          onOpenChange={(open) => !open && setSelectedAppForDetails(null)}
+        >
+          <DialogContent className="max-w-lg bg-card/95 backdrop-blur-md border-border/80 shadow-2xl p-6">
+            <DialogHeader className="space-y-3 pb-3 border-b border-border/50 text-left">
+              <div className="flex items-center gap-3">
+                <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0 shadow-sm">
+                  <Box className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <DialogTitle className="text-xl font-bold tracking-tight text-foreground truncate">
+                      {selectedAppForDetails?.name}
+                    </DialogTitle>
+                    <Badge
+                      variant={selectedAppForDetails?.status === "active" ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {selectedAppForDetails?.status === "active" ? "Activa" : "Inactiva"}
+                    </Badge>
+                    {selectedAppForDetails && getRoleBadge(selectedAppForDetails.myRole || "VIEWER")}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Creada el {selectedAppForDetails && formatDate(selectedAppForDetails.createdAt)}
+                  </p>
+                </div>
+              </div>
+            </DialogHeader>
+
+            {/* Contenido: Descripción Completa */}
+            <div className="space-y-2 py-2">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <FileText className="h-3.5 w-3.5 text-primary" />
+                <span>Descripción Completa</span>
+              </div>
+              <div className="rounded-lg bg-muted/40 border border-border/60 p-4 text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed max-h-[220px] overflow-y-auto custom-scrollbar">
+                {selectedAppForDetails?.description || (
+                  <span className="italic text-muted-foreground/60">Sin descripción configurada</span>
+                )}
+              </div>
+            </div>
+
+            {/* Embellecimiento: Entornos y Estadísticas */}
+            {selectedAppForDetails && (
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="rounded-lg bg-secondary/35 border border-border/50 p-3 space-y-1.5">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">
+                    Entornos
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedAppForDetails.environments && selectedAppForDetails.environments.length > 0 ? (
+                      selectedAppForDetails.environments.map((env) => (
+                        <EnvBadge key={env} environment={env} />
+                      ))
+                    ) : (
+                      <span className="text-xs text-muted-foreground italic">Sin entornos</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-lg bg-secondary/35 border border-border/50 p-3 space-y-1.5">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">
+                    Resumen
+                  </span>
+                  <div className="text-xs text-foreground/90 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Colaboradores:</span>
+                      <span className="font-semibold">{selectedAppForDetails.collaborators}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Llamadas API:</span>
+                      <span className="font-semibold">{formatNumber(selectedAppForDetails.apiCalls)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <DialogFooter className="flex items-center justify-between gap-2 pt-4 border-t border-border/50 sm:justify-between">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedAppForDetails(null)}
+              >
+                Cerrar
+              </Button>
+              <Button
+                size="sm"
+                className="glow-primary gap-1.5"
+                asChild
+              >
+                <Link href={`/dashboard/applications/${selectedAppForDetails?.id}`}>
+                  Abrir Aplicación
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
               </Button>
             </DialogFooter>
           </DialogContent>
