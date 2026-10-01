@@ -528,9 +528,9 @@ export default function ApplicationSettingsPage({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Eliminar Aplicación</DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="break-words [overflow-wrap:anywhere] [word-break:break-word]">
                 Esta acción eliminará permanentemente la aplicación{" "}
-                <span className="font-medium text-foreground">
+                <span className="font-medium text-foreground break-words [overflow-wrap:anywhere] [word-break:break-word]">
                   {formData.name}
                 </span>{" "}
                 junto con todas sus configuraciones, API keys, y datos de uso.

@@ -254,7 +254,7 @@ export default function ApplicationsPage() {
           {filteredApps.map((app) => (
             <Card
               key={app.id}
-              className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer flex flex-col min-h-[230px] py-4 gap-4"
+              className="group hover:border-primary/50 hover:bg-accent/5 transition-all duration-200 cursor-pointer flex flex-col min-h-[230px] py-4 gap-4 overflow-hidden"
               onClick={(e) => {
                 const target = e.target as HTMLElement;
                 if (target.closest('[role="menuitem"]') || target.closest('button') || target.closest('[role="button"]')) {
@@ -264,20 +264,24 @@ export default function ApplicationsPage() {
               }}
             >
               <CardHeader className="pb-0">
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start justify-between gap-2 min-w-0">
                   <div className="space-y-1 flex-1 min-w-0">
-                    <CardTitle className="text-lg flex flex-wrap items-center gap-2">
-                      {app.name}
+                    <CardTitle className="text-lg flex flex-wrap items-center gap-2 min-w-0">
+                      <span className="break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0">
+                        {app.name}
+                      </span>
                       <Badge
                         variant={app.status === "active" ? "default" : "secondary"}
-                        className="text-xs"
+                        className="text-xs shrink-0"
                       >
                         {app.status === "active" ? "Activa" : "Inactiva"}
                       </Badge>
-                      {getRoleBadge(app.myRole || "VIEWER")}
+                      <span className="shrink-0">
+                        {getRoleBadge(app.myRole || "VIEWER")}
+                      </span>
                     </CardTitle>
                     <div>
-                      <CardDescription className={`line-clamp-2 leading-relaxed ${!app.description ? "italic text-muted-foreground/50" : ""}`}>
+                      <CardDescription className={`line-clamp-2 leading-relaxed break-words [overflow-wrap:anywhere] [word-break:break-word] ${!app.description ? "italic text-muted-foreground/50" : ""}`}>
                         {app.description || "Sin descripción configurada"}
                       </CardDescription>
                       {app.description && app.description.length > 85 && (
@@ -384,9 +388,9 @@ export default function ApplicationsPage() {
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Eliminar Aplicación</DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="break-words [overflow-wrap:anywhere] [word-break:break-word]">
                 ¿Estás seguro de que deseas eliminar la aplicación{" "}
-                <span className="font-medium text-foreground">
+                <span className="font-medium text-foreground break-words [overflow-wrap:anywhere] [word-break:break-word]">
                   {appToDelete?.name}
                 </span>
                 ? Esta acción no se puede deshacer y eliminará todas las
@@ -424,24 +428,26 @@ export default function ApplicationsPage() {
           open={!!selectedAppForDetails}
           onOpenChange={(open) => !open && setSelectedAppForDetails(null)}
         >
-          <DialogContent className="max-w-lg bg-card/95 backdrop-blur-md border-border/80 shadow-2xl p-6">
+          <DialogContent className="max-w-lg bg-card/95 backdrop-blur-md border-border/80 shadow-2xl p-6 overflow-hidden">
             <DialogHeader className="space-y-3 pb-3 border-b border-border/50 text-left">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0 shadow-sm">
                   <Box className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <DialogTitle className="text-xl font-bold tracking-tight text-foreground truncate">
+                    <DialogTitle className="text-xl font-bold tracking-tight text-foreground break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0">
                       {selectedAppForDetails?.name}
                     </DialogTitle>
                     <Badge
                       variant={selectedAppForDetails?.status === "active" ? "default" : "secondary"}
-                      className="text-xs"
+                      className="text-xs shrink-0"
                     >
                       {selectedAppForDetails?.status === "active" ? "Activa" : "Inactiva"}
                     </Badge>
-                    {selectedAppForDetails && getRoleBadge(selectedAppForDetails.myRole || "VIEWER")}
+                    <span className="shrink-0">
+                      {selectedAppForDetails && getRoleBadge(selectedAppForDetails.myRole || "VIEWER")}
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     Creada el {selectedAppForDetails && formatDate(selectedAppForDetails.createdAt)}
@@ -451,12 +457,12 @@ export default function ApplicationsPage() {
             </DialogHeader>
 
             {/* Contenido: Descripción Completa */}
-            <div className="space-y-2 py-2">
+            <div className="space-y-2 py-2 min-w-0">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 <FileText className="h-3.5 w-3.5 text-primary" />
                 <span>Descripción Completa</span>
               </div>
-              <div className="rounded-lg bg-muted/40 border border-border/60 p-4 text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed max-h-[220px] overflow-y-auto custom-scrollbar">
+              <div className="rounded-lg bg-muted/40 border border-border/60 p-4 text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed max-h-[220px] overflow-y-auto custom-scrollbar break-words [overflow-wrap:anywhere] [word-break:break-word]">
                 {selectedAppForDetails?.description || (
                   <span className="italic text-muted-foreground/60">Sin descripción configurada</span>
                 )}
