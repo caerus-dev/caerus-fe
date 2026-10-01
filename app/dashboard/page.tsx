@@ -15,6 +15,7 @@ import {
   Box,
   Users,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -215,6 +216,33 @@ export default async function DashboardPage() {
         user={userProfile}
         appsCount={appsCount}
       />
+
+      {/* 2.1 Quick Access Card al Playground Interactivo */}
+      <Card className="border-primary/30 bg-gradient-to-r from-primary/10 via-card/70 to-card/50 relative overflow-hidden shadow-sm">
+        <div className="absolute right-0 top-0 translate-x-8 -translate-y-8 w-40 h-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+        <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="bg-primary/20 text-primary border-primary/40 text-[11px] font-semibold py-0.5">
+                <Sparkles className="h-3 w-3 mr-1" />
+                Playground Interactivo
+              </Badge>
+            </div>
+            <h2 className="text-base font-bold text-foreground">
+              Simulá Concurrencia de Butacas y Distributed Locking en Vivo
+            </h2>
+            <p className="text-xs text-muted-foreground max-w-2xl">
+              Probá cómo Caerus resuelve conflictos de reserva (SRE), colas FIFO, expiración por TTL y detección automática de interbloqueos (DLS) con inspección de llamadas al SDK en pantalla dividida.
+            </p>
+          </div>
+          <Button asChild className="shrink-0 gap-1.5 shadow-sm">
+            <Link href="/dashboard/playground">
+              <Sparkles className="h-4 w-4" />
+              Abrir Playground
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* 3. Grid de Estadísticas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

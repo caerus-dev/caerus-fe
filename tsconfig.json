@@ -25,6 +25,9 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@caerus-dev/sdk": [
+        "../caerus-sdk-ts/dist/index.d.ts"
       ]
     }
   },

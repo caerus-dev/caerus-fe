@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useTheme } from "@/components/theme-provider"
-import { Menu, Sun, Moon, BookOpen } from "lucide-react"
+import { Menu, Sun, Moon, BookOpen, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { NotificationDropdown } from "./notifications/notification-dropdown"
 
@@ -12,6 +13,8 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
+  const pathname = usePathname()
+  const isPlayground = pathname === "/dashboard/playground"
   const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
@@ -35,6 +38,23 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Playground button */}
+        {isPlayground ? (
+          <Button asChild variant="outline" size="sm" className="gap-1.5 border-primary/40 text-primary bg-primary/10 hover:bg-primary/20">
+            <Link href="/dashboard/playground">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="hidden sm:inline font-medium">Playground</span>
+            </Link>
+          </Button>
+        ) : (
+          <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1.5">
+            <Link href="/dashboard/playground">
+              <Sparkles className="h-4 w-4" />
+              <span className="hidden sm:inline">Playground</span>
+            </Link>
+          </Button>
+        )}
+
         {/* Docs link */}
         <Button asChild variant="ghost" size="sm" className="text-muted-foreground gap-1.5">
           <Link href="/docs">
