@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Github, LayoutDashboard, Menu, Sun, Moon } from "lucide-react"
+import { Github, LayoutDashboard, Menu, Sun, Moon, Sparkles } from "lucide-react"
 import { docsConfig } from "./docs-config"
 import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
@@ -158,8 +158,15 @@ export function DocsHeader({ onSearchClick, user: initialUser }: DocsHeaderProps
           })}
         </nav>
 
-        {/* Lado Derecho: Dashboard (solo si logueado), GitHub y Theme Toggle */}
+        {/* Lado Derecho: Playground, Dashboard (solo si logueado), GitHub y Theme Toggle */}
         <div className="flex items-center gap-2 md:justify-self-end">
+          <Button asChild variant="ghost" size="sm" className="text-xs gap-1.5 h-8 text-muted-foreground hover:text-foreground">
+            <Link href="/docs/playground">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+              <span className="hidden sm:inline">Playground</span>
+            </Link>
+          </Button>
+
           {user && (
             <Button asChild variant="ghost" size="sm" className="text-xs gap-1.5 h-8">
               <Link href="/dashboard">

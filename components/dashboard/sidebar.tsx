@@ -17,6 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
+  Sparkles,
+  BookOpen,
 } from "lucide-react"
 import { cn, getEnvColors, getUniqueEnvDots } from "@/lib/utils"
 import { useApps } from "./apps-context"
@@ -56,6 +58,19 @@ const navigation = [
 ]
 
 // Mock applications removed to fetch from API dynamically
+
+const resourcesNav = [
+  {
+    name: "Playground",
+    href: "/docs/playground",
+    icon: Sparkles,
+  },
+  {
+    name: "Documentación",
+    href: "/docs",
+    icon: BookOpen,
+  },
+]
 
 const accountNav = [
   {
@@ -286,7 +301,39 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
           </ul>
         </div>
 
-        <div className="mt-auto px-3">
+        {/* RECURSOS Section */}
+        <div className="mt-auto px-3 pt-3 border-t border-border/40">
+          {!isCollapsed && (
+            <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+              Recursos
+            </p>
+          )}
+          <ul className="space-y-1 mb-3">
+            {resourcesNav.map((item) => {
+              const isActive = pathname === item.href || (item.href !== "/docs" && pathname.startsWith(item.href))
+              return (
+                <li key={item.name}>
+                  <Link
+                    href={item.href}
+                    title={isCollapsed ? item.name : undefined}
+                    className={cn(
+                      "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200",
+                      isActive
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground",
+                      isCollapsed && "justify-center px-0"
+                    )}
+                  >
+                    <item.icon className={cn("h-[18px] w-[18px] shrink-0 transition-transform duration-200", !isActive && "group-hover:scale-110")} />
+                    {!isCollapsed && <span>{item.name}</span>}
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+
+        <div className="px-3 pb-2">
            {!isCollapsed && (
             <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
               Cuenta

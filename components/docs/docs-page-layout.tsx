@@ -26,6 +26,7 @@ interface DocsPageLayoutProps {
   badge?: string
   description?: string
   tocItems?: TocItem[]
+  hideToc?: boolean
   children: React.ReactNode
   className?: string
 }
@@ -36,6 +37,7 @@ export function DocsPageLayout({
   badge,
   description,
   tocItems = [],
+  hideToc = false,
   children,
   className,
 }: DocsPageLayoutProps) {
@@ -96,9 +98,11 @@ export function DocsPageLayout({
       </article>
 
       {/* Columna Derecha (TOC & Acciones) */}
-      <aside className="hidden xl:block w-64 shrink-0 sticky top-24 h-[calc(100vh-7rem)] overflow-y-auto pl-2 scrollbar-thin">
-        <DocsToc items={tocItems} />
-      </aside>
+      {!hideToc && tocItems.length > 0 && (
+        <aside className="hidden xl:block w-64 shrink-0 sticky top-24 h-[calc(100vh-7rem)] overflow-y-auto pl-2 scrollbar-thin">
+          <DocsToc items={tocItems} />
+        </aside>
+      )}
     </div>
   )
 }

@@ -56,10 +56,10 @@ export function SrePlayground({
       ? [
           {
             stepIndex: 0,
-            title: "1. Usuario 'Ana' reserva la butaca A1",
+            title: "1. Ana intenta reservar la butaca A1",
             description:
-              "Ana ejecuta unitary('seat_a1').take({ ttlSeconds: 120 }). Caerus genera un lease atómico en estado PENDING con vencimiento en 120s.",
-            actionLabel: "Ejecutar: Ana reserva butaca A1",
+              "Ana selecciona la butaca A1. Caerus genera una reserva temporal exclusiva por 120 segundos (estado PENDING) para que complete el pago.",
+            actionLabel: "Ana reserva butaca A1",
             action: () => {
               simulation.reset()
               const res = simulation.takeSeat("A1", "Ana")
@@ -68,10 +68,10 @@ export function SrePlayground({
           },
           {
             stepIndex: 1,
-            title: "2. Usuario 'Beto' intenta reservar la misma butaca A1",
+            title: "2. Beto intenta reservar la misma butaca A1",
             description:
-              "Beto compite por A1 al mismo milisegundo. Bajo política FAIL, Caerus rechaza de inmediato con ConflictError (Out of stock). Cero sobreventa.",
-            actionLabel: "Ejecutar: Beto solicita A1 simultáneamente",
+              "Beto intenta apartar A1 al mismo tiempo. Al estar configurada la política FAIL, Caerus rechaza la solicitud de inmediato para evitar sobreventas.",
+            actionLabel: "Beto intenta reservar A1",
             action: () => {
               const res = simulation.takeSeat("A1", "Beto")
               onLogGenerated(res.log)
@@ -81,8 +81,8 @@ export function SrePlayground({
             stepIndex: 2,
             title: "3. Ana completa el pago y confirma la compra",
             description:
-              "Ana procede con el checkout y ejecuta confirm(holderAna.id). El TTL se cancela y la butaca pasa a estado SOLD (Vendido).",
-            actionLabel: "Ejecutar: Ana confirma su compra (confirm)",
+              "Ana finaliza el pago. Caerus consolida la compra definitivamente (estado SOLD) y cancela el temporizador de expiración.",
+            actionLabel: "Ana confirma su compra",
             action: () => {
               const logs = simulation.confirmHeldSeats("A1")
               if (logs.length > 0) onLogGenerated(logs)
@@ -90,10 +90,10 @@ export function SrePlayground({
           },
           {
             stepIndex: 3,
-            title: "4. Beto reintenta la compra de A1",
+            title: "4. Beto reintenta la reserva de A1",
             description:
-              "Beto vuelve a intentar take() sobre A1. Caerus vuelve a rechazar: la butaca está vendida definitivamente.",
-            actionLabel: "Ejecutar: Beto reintenta compra",
+              "Beto vuelve a intentar reservar A1. Caerus rechaza la solicitud porque la butaca ya fue vendida de forma permanente.",
+            actionLabel: "Beto reintenta reserva",
             action: () => {
               const res = simulation.takeSeat("A1", "Beto")
               onLogGenerated(res.log)
@@ -103,10 +103,10 @@ export function SrePlayground({
       : [
           {
             stepIndex: 0,
-            title: "1. Usuario 'Ana' reserva la butaca A1",
+            title: "1. Ana intenta reservar la butaca A1",
             description:
-              "Ana ejecuta unitary('seat_a1').take({ ttlSeconds: 120 }). Caerus crea un lease PENDING por 120s para Ana.",
-            actionLabel: "Ejecutar: Ana reserva butaca A1",
+              "Ana selecciona la butaca A1. Caerus genera una reserva temporal por 120 segundos para que complete la compra.",
+            actionLabel: "Ana reserva butaca A1",
             action: () => {
               simulation.reset()
               const res = simulation.takeSeat("A1", "Ana")
@@ -115,10 +115,10 @@ export function SrePlayground({
           },
           {
             stepIndex: 1,
-            title: "2. Usuario 'Beto' compite por A1 y entra en cola FIFO",
+            title: "2. Beto compite por A1 y entra en la fila justa (QUEUE)",
             description:
-              "Beto intenta tomar A1. Con política QUEUE, Caerus no rechaza a Beto: lo estaciona en la cola FIFO en posición #1.",
-            actionLabel: "Ejecutar: Beto entra en cola FIFO",
+              "Beto intenta reservar la misma butaca. Con la política QUEUE, Caerus no lo rechaza: lo coloca en espera en la posición #1 de la fila justa.",
+            actionLabel: "Beto entra en cola FIFO",
             action: () => {
               const res = simulation.takeSeat("A1", "Beto")
               onLogGenerated(res.log)
@@ -126,10 +126,10 @@ export function SrePlayground({
           },
           {
             stepIndex: 2,
-            title: "3. Ana abandona la compra: expiración de TTL y auto-promoción",
+            title: "3. Ana abandona la compra: expiración de TTL y promoción",
             description:
-              "Ana cierra el navegador sin pagar y transcurren los 120s de TTL. El sweeper de Caerus detecta la expiración y transfiere automáticamente la butaca a Beto con un nuevo TTL.",
-            actionLabel: "Ejecutar: Vencer TTL y promover a Beto",
+              "Ana abandona el carrito sin pagar y vence el tiempo límite. Caerus libera la reserva y transfiere automáticamente la butaca a Beto con un nuevo TTL.",
+            actionLabel: "Vencer TTL y promover a Beto",
             action: () => {
               const logs = simulation.advanceTime(130)
               if (logs.length > 0) onLogGenerated(logs)
@@ -139,8 +139,8 @@ export function SrePlayground({
             stepIndex: 3,
             title: "4. Beto realiza el pago y confirma su compra",
             description:
-              "Beto recibe su notificación, efectúa el pago y ejecuta confirm(holderBeto.id). La butaca A1 pasa a estado SOLD a nombre de Beto.",
-            actionLabel: "Ejecutar: Beto confirma su compra (confirm)",
+              "Beto recibe la asignación de su turno y completa el pago. Caerus confirma la butaca a su nombre y cierra la transacción con éxito.",
+            actionLabel: "Beto confirma su compra",
             action: () => {
               const logs = simulation.confirmHeldSeats("A1")
               if (logs.length > 0) onLogGenerated(logs)
@@ -359,12 +359,12 @@ export function SrePlayground({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Sesión de Ana */}
                 <div className="p-3.5 rounded-lg border bg-zinc-900/50 border-zinc-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 font-semibold text-xs text-zinc-200">
-                      <UserCheck className="h-4 w-4 text-zinc-400" />
-                      <span>Sesión 1: Navegador de &apos;Ana&apos;</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 font-semibold text-xs text-zinc-200 min-w-0">
+                      <UserCheck className="h-4 w-4 text-zinc-400 shrink-0" />
+                      <span className="truncate">Sesión 1: Navegador de &apos;Ana&apos;</span>
                     </div>
-                    <Badge variant="outline" className="text-[10px] font-mono border-zinc-700 bg-zinc-800/60 text-zinc-300">
+                    <Badge variant="outline" className="text-[10px] font-mono border-zinc-700 bg-zinc-800/60 text-zinc-300 shrink-0">
                       Cliente A
                     </Badge>
                   </div>
@@ -391,13 +391,13 @@ export function SrePlayground({
 
                 {/* Sesión de Beto */}
                 <div className="p-3.5 rounded-lg border bg-zinc-900/50 border-zinc-800 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 font-semibold text-xs text-zinc-200">
-                      <Users className="h-4 w-4 text-zinc-400" />
-                      <span>Sesión 2: Navegador de &apos;Beto&apos;</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 font-semibold text-xs text-zinc-200 min-w-0">
+                      <Users className="h-4 w-4 text-zinc-400 shrink-0" />
+                      <span className="truncate">Sesión 2: Navegador de &apos;Beto&apos;</span>
                     </div>
-                    <Badge variant="outline" className="text-[10px] font-mono border-zinc-700 bg-zinc-800/60 text-zinc-300">
-                      Cliente B (Concurrente)
+                    <Badge variant="outline" className="text-[10px] font-mono border-zinc-700 bg-zinc-800/60 text-zinc-300 shrink-0">
+                      Cliente B
                     </Badge>
                   </div>
                   <div className="text-xs space-y-1 font-mono text-muted-foreground">
@@ -411,7 +411,7 @@ export function SrePlayground({
                           : a1Queue.some((q) => q.user === "Beto")
                           ? "EN COLA FIFO (Posición #1)"
                           : executedSteps.includes(1) && policy === "FAIL"
-                          ? "RECHAZADO (409 Conflict)"
+                          ? "RECHAZADO (Conflicto)"
                           : "SIN ACCIÓN"}
                       </span>
                     </div>

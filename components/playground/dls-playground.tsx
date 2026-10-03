@@ -295,16 +295,6 @@ export function DlsPlayground({
                         <span>Reiniciar Escenario</span>
                       </Button>
                     )}
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleExecuteCurrentStep}
-                      className="text-xs h-8 text-muted-foreground hover:text-foreground"
-                    >
-                      <RotateCcw className="h-3 w-3 mr-1" />
-                      Re-ejecutar paso
-                    </Button>
                   </>
                 )}
 

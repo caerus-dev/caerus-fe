@@ -39,21 +39,12 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
 
       <div className="flex items-center gap-2">
         {/* Playground button */}
-        {isPlayground ? (
-          <Button asChild variant="outline" size="sm" className="gap-1.5 border-primary/40 text-primary bg-primary/10 hover:bg-primary/20">
-            <Link href="/dashboard/playground">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="hidden sm:inline font-medium">Playground</span>
-            </Link>
-          </Button>
-        ) : (
-          <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1.5">
-            <Link href="/dashboard/playground">
-              <Sparkles className="h-4 w-4" />
-              <span className="hidden sm:inline">Playground</span>
-            </Link>
-          </Button>
-        )}
+        <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1.5">
+          <Link href="/docs/playground">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span className="hidden sm:inline">Playground</span>
+          </Link>
+        </Button>
 
         {/* Docs link */}
         <Button asChild variant="ghost" size="sm" className="text-muted-foreground gap-1.5">

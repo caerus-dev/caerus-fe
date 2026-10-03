@@ -203,11 +203,18 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
         <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
           Diseñamos la demo interactiva <strong>Caerus Cine</strong>, donde puedes pelear en vivo contra ti mismo por la misma butaca en dos pestañas y comparar la política <code>FAIL</code> frente a <code>QUEUE</code> con panel de llamadas en tiempo real.
         </p>
-        <div className="pt-2">
+        <div className="pt-2 flex flex-wrap gap-2">
           <Button asChild className="gap-2 bg-amber-600 hover:bg-amber-700 text-white text-xs">
             <Link href="/docs/sre/demo">
               <span>Abrir Simulación Caerus Cine</span>
               <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+
+          <Button asChild variant="outline" className="gap-2 text-xs bg-background/50">
+            <Link href="/docs/playground">
+              <Sparkles className="h-4 w-4 text-emerald-400" />
+              <span>Playground en Vivo (SRE & DLS)</span>
             </Link>
           </Button>
         </div>

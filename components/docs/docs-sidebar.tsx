@@ -95,6 +95,8 @@ export function DocsSidebar({ onSearchClick, onNavigate, className }: DocsSideba
                               ? "bg-emerald-500/15 text-emerald-500"
                               : item.badge === "DLS"
                               ? "bg-purple-500/15 text-purple-500"
+                              : item.badge === "Live"
+                              ? "bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30"
                               : "bg-muted text-muted-foreground"
                           )}
                         >

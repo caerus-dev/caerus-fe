@@ -1,7 +1,7 @@
 export interface DocItem {
   title: string
   href: string
-  badge?: "Core" | "New" | "Demo" | "SRE" | "DLS" | "Popular"
+  badge?: "Core" | "New" | "Demo" | "SRE" | "DLS" | "Popular" | "Live"
   description?: string
   keywords?: string[]
 }
@@ -36,6 +36,13 @@ export const docsConfig: DocsConfig = {
           badge: "Core",
           description: "Qué es Caerus, modelo de concurrencia distribuida y resolución de carreras.",
           keywords: ["introduccion", "plataforma", "overview", "concurrencia", "consistencia", "rendimiento"],
+        },
+        {
+          title: "Playground en Vivo",
+          href: "/docs/playground",
+          badge: "Live",
+          description: "Simulador interactivo en pantalla dividida de SRE (butacas/recursos) y DLS (locks distribuidos) con inspector de llamadas al SDK.",
+          keywords: ["playground", "simulador", "interactivo", "sre", "dls", "live inspector", "sandbox"],
         },
         {
           title: "Consola Web & Dashboard",

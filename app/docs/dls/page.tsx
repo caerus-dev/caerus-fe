@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, Lock, Key, ShieldCheck, AlertCircle, RefreshCw, Cpu } from "lucide-react"
+import { ArrowRight, Lock, Key, ShieldCheck, AlertCircle, RefreshCw, Cpu, Sparkles } from "lucide-react"
 import { DocsPageLayout } from "@/components/docs/docs-page-layout"
 import { CodeBlock, SignatureBlock } from "@/components/docs/code-block"
 import { Button } from "@/components/ui/button"
@@ -175,11 +175,18 @@ try {
         <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
           Explora cómo interactúan 2 o 3 workers en tiempo real, observa la formación de ciclos en el grafo de dependencias y prueba la estampida concurrente en la demo interactiva del DLS.
         </p>
-        <div className="pt-2">
+        <div className="pt-2 flex flex-wrap gap-2">
           <Button asChild className="gap-2 bg-purple-600 hover:bg-purple-700 text-white text-xs">
             <Link href="/docs/dls/demo">
               <span>Abrir Simulador DLS</span>
               <ArrowRight className="h-4 w-4" />
+            </Link>
+          </Button>
+
+          <Button asChild variant="outline" className="gap-2 text-xs bg-background/50">
+            <Link href="/docs/playground">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span>Playground en Vivo (SRE & DLS)</span>
             </Link>
           </Button>
         </div>
