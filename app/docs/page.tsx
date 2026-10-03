@@ -1,16 +1,18 @@
 import Link from "next/link"
-import { ArrowRight, Layers, Lock, Zap, Server, ShieldCheck, Database } from "lucide-react"
+import { ArrowRight, Layers, Lock, Zap, Server, ShieldCheck, Database, FileCode, Github, ExternalLink } from "lucide-react"
 import { DocsPageLayout } from "@/components/docs/docs-page-layout"
 import { CodeBlock, SignatureBlock } from "@/components/docs/code-block"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { docsConfig } from "@/components/docs/docs-config"
 
 const tocItems = [
   { id: "problema", title: "¿Qué problema resuelve Caerus?" },
   { id: "garantias", title: "Garantías de Consistencia y Rendimiento" },
   { id: "motores", title: "Los Motores: SRE y DLS" },
   { id: "quickstart", title: "Inicio Rápido (SDK)" },
+  { id: "grpc-api", title: "API gRPC & Protobuf (Multi-lenguaje)" },
 ]
 
 export default function DocsOverviewPage() {
@@ -249,6 +251,64 @@ try {
               Probar Demo Caerus Cine
             </Link>
           </Button>
+        </div>
+      </section>
+
+      {/* Sección: API gRPC & Protobuf */}
+      <section id="grpc-api" className="space-y-4 pt-6 border-t border-border/40">
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs font-mono">
+            gRPC / Protobuf
+          </Badge>
+          <span className="text-xs text-muted-foreground font-medium">Python · Rust · C#</span>
+        </div>
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          ¿Desarrollas en otros lenguajes? Conéctate directo vía gRPC
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Toda la infraestructura de Caerus opera de forma nativa sobre <strong>gRPC y HTTP/2</strong> con serialización binaria <strong>Protocol Buffers v3</strong>. Si tu stack backend no utiliza Node.js/TypeScript, puedes compilar tus propios clientes fuertemente tipados a partir de nuestro repositorio de esquemas canónicos.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
+          <Card className="border-border/60 bg-muted/20">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <FileCode className="h-4 w-4 text-primary" />
+                <span>Documentación y Contratos RPC</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 text-xs text-muted-foreground space-y-3">
+              <p>
+                Revisa la firma exhaustiva de los métodos de <code>SharedResourceEngine</code> y <code>DistributedLockingEngine</code>, parámetros de entrada, respuestas y códigos de error.
+              </p>
+              <Button asChild variant="outline" size="sm" className="gap-1.5 text-xs h-8">
+                <Link href="/docs/proto">
+                  <span>Ver Especificación gRPC</span>
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/60 bg-muted/20">
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Github className="h-4 w-4 text-foreground" />
+                <span>Repositorio caerus-protos</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 text-xs text-muted-foreground space-y-3">
+              <p>
+                Clona las definiciones <code>.proto</code> oficiales listas para compilar con <code>protoc</code> o <code>buf</code> en Python, Kotlin, Rust o C#.
+              </p>
+              <Button asChild variant="outline" size="sm" className="gap-1.5 text-xs h-8 bg-background/50">
+                <a href={docsConfig.protoRepoUrl} target="_blank" rel="noopener noreferrer">
+                  <span>Explorar caerus-protos</span>
+                  <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                </a>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </section>
     </DocsPageLayout>

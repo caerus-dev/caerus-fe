@@ -15,6 +15,7 @@ export interface DocsConfig {
   version: string
   repoUrl: string
   sdkRepoUrl: string
+  protoRepoUrl: string
   demoSreRepoUrl: string
   demoDlsRepoUrl: string
   sections: DocSection[]
@@ -24,6 +25,7 @@ export const docsConfig: DocsConfig = {
   version: "v2.1.0",
   repoUrl: "https://github.com/caerus-dev/caerus",
   sdkRepoUrl: "https://github.com/caerus-dev/caerus-sdk-ts",
+  protoRepoUrl: "https://github.com/caerus-dev/caerus-protos",
   demoSreRepoUrl: "https://github.com/caerus-dev/demo-sdk",
   demoDlsRepoUrl: "https://github.com/caerus-dev/demo-dls",
   sections: [
@@ -107,7 +109,7 @@ export const docsConfig: DocsConfig = {
       title: "Referencia y Guías",
       items: [
         {
-          title: "Contratos gRPC & Protobuf",
+          title: "API gRPC & Contratos Proto",
           href: "/docs/proto",
           badge: "Core",
           description: "Especificación formal y agnóstica de todos los RPCs de SharedResourceEngine y DistributedLockingEngine.",

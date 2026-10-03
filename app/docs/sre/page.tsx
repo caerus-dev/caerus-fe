@@ -183,7 +183,7 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
             <span className="font-semibold text-sm text-foreground">Especificación gRPC de bajo nivel</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            ¿Construyendo un cliente en Go, Python, Java o Rust? Consulta los contratos <code>proto3</code> completos de <code>CreateResource</code>, <code>Take</code>, <code>Confirm</code> y <code>Release</code>.
+            ¿Construyendo un cliente en Python, C# o Rust? Consulta los contratos <code>proto3</code> completos de <code>CreateResource</code>, <code>Take</code>, <code>Confirm</code> y <code>Release</code>.
           </p>
         </div>
         <Button asChild variant="outline" size="sm" className="gap-2 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10 text-xs shrink-0">

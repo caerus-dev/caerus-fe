@@ -1,9 +1,11 @@
 import Link from "next/link"
-import { Layers, Lock, Server, FileCode, CheckCircle2, ArrowRight, ShieldCheck, Zap, AlertTriangle } from "lucide-react"
+import { Layers, Lock, Server, FileCode, CheckCircle2, ArrowRight, ShieldCheck, Zap, AlertTriangle, ExternalLink, Github } from "lucide-react"
 import { DocsPageLayout } from "@/components/docs/docs-page-layout"
 import { CodeBlock } from "@/components/docs/code-block"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { docsConfig } from "@/components/docs/docs-config"
 
 const tocItems = [
   { id: "introduccion", title: "Protocolo gRPC & Protobuf" },
@@ -39,8 +41,30 @@ export default function DocsProtoPage() {
           Toda la comunicación de alto rendimiento de Caerus opera bajo el protocolo <strong>gRPC sobre HTTP/2</strong> con serialización binaria <strong>Protocol Buffers v3 (proto3)</strong>.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          Esta especificación describe los métodos RPC, sus parámetros de entrada, mensajes de respuesta y comportamientos semánticos de forma completamente independiente de si utilizas nuestro SDK en TypeScript/Node.js o clientes generados en <strong>Go, Python, Java, C#, Rust o C++</strong>.
+          Esta especificación describe los métodos RPC, sus parámetros de entrada, mensajes de respuesta y comportamientos semánticos de forma completamente independiente de si utilizas nuestro SDK en TypeScript/Node.js o clientes generados en <strong>Python, C#, Rust o C++</strong>.
         </p>
+
+        {/* Banner de Repositorio caerus-protos */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-primary/30 bg-primary/5 my-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 font-mono">
+                caerus-dev/caerus-protos
+              </Badge>
+              <span className="font-semibold text-xs text-foreground">Definiciones canónicas .proto</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Descargá o cloná los esquemas <code>sre_service.proto</code> y <code>dls_service.proto</code> para compilar tus propios clientes con <code>protoc</code> o <code>buf</code>.
+            </p>
+          </div>
+          <Button asChild size="sm" variant="outline" className="gap-2 shrink-0 text-xs h-8 bg-background/50">
+            <a href={docsConfig.protoRepoUrl} target="_blank" rel="noopener noreferrer">
+              <Github className="h-3.5 w-3.5" />
+              <span>Ver en GitHub</span>
+              <ExternalLink className="h-3 w-3 text-muted-foreground" />
+            </a>
+          </Button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
           <Card className="border-border/60 bg-muted/20">
