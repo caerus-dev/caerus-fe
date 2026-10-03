@@ -296,6 +296,7 @@ export default function NewApplicationPage() {
       <SetupPaymentMethodModal
         open={setupModalOpen}
         onOpenChange={setSetupModalOpen}
+        initialStep="payment"
         title="Método de pago requerido"
         description="Para crear aplicaciones propias en Caerus necesitas vincular una tarjeta. No se realizará ningún cobro inicial ($0/mes en Plan Developer)."
         onSuccess={() => {

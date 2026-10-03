@@ -98,7 +98,7 @@ function SetupCardForm({ onSuccess, onBack, selectedPlan }: SetupFormProps) {
 
     try {
       const returnUrl = typeof window !== "undefined"
-        ? `${window.location.origin}/dashboard/billing?setup_success=true`
+        ? `${window.location.origin}${window.location.pathname}?setup_success=true`
         : undefined;
 
       const { error, setupIntent } = await stripe.confirmSetup({
@@ -266,9 +266,9 @@ export function SetupPaymentMethodModal({
   open,
   onOpenChange,
   onSuccess,
-  initialStep = "select-plan",
-  title = "Configurar Suscripción y Método de Pago",
-  description = "Selecciona el plan para tu cuenta y vincula una tarjeta para habilitar la creación de aplicaciones.",
+  initialStep = "payment",
+  title = "Vincular Método de Pago",
+  description = "Registra una tarjeta de crédito o débito para activar tu cuenta en Caerus ($0/mes en Plan Developer).",
 }: SetupPaymentMethodModalProps) {
   const router = useRouter();
   const { resolvedTheme } = useTheme();

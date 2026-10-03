@@ -153,8 +153,9 @@ export function DashboardHeaderAlerts({
       <SetupPaymentMethodModal
         open={modalOpen}
         onOpenChange={setModalOpen}
+        initialStep="payment"
         title="Vincular Tarjeta de Crédito"
-        description="Registra tu método de pago para habilitar la creación de aplicaciones propias en Caerus."
+        description="Registra tu método de pago para activar tu cuenta en Caerus y habilitar la creación de aplicaciones y API keys ($0/mes en Plan Developer)."
       />
     </div>
   );

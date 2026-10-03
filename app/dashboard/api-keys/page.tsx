@@ -21,6 +21,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { toast } from "sonner"
+import { SetupPaymentMethodModal } from "@/components/billing/SetupPaymentMethodModal"
 import { cn } from "@/lib/utils"
 
 const EMPTY_ENVIRONMENTS: any[] = []
@@ -41,6 +43,8 @@ export default function ApiKeysPage() {
   const [createdRawKey, setCreatedRawKey] = useState("")
   const [copiedKey, setCopiedKey] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [isCreatingKey, setIsCreatingKey] = useState(false)
+  const [setupModalOpen, setSetupModalOpen] = useState(false)
 
   // Fetch all applications
   const fetchApps = useCallback(async () => {
@@ -114,7 +118,8 @@ export default function ApiKeysPage() {
   }, [fetchKeys])
 
   const handleCreateApiKey = async () => {
-    if (!selectedEnvId) return
+    if (!selectedEnvId || isCreatingKey) return
+    setIsCreatingKey(true)
     try {
       const res = await fetch(`/api/environments/${selectedEnvId}/api-keys`, {
         method: "POST",
@@ -124,11 +129,23 @@ export default function ApiKeysPage() {
         setCreatedRawKey(data.rawKey)
         setShowCreatedKeyDialog(true)
         setApiKeys((prev) => [data, ...prev])
+        toast.success("API Key generada con éxito")
       } else {
-        console.error("Failed to create API key")
+        const errData = await res.json().catch(() => ({}))
+        if (res.status === 402) {
+          setSetupModalOpen(true)
+          toast.error("Método de pago requerido", {
+            description: "Debes vincular una tarjeta para generar credenciales de API ($0/mes en Plan Developer).",
+          })
+        } else {
+          toast.error(errData.error || errData.message || "Error al crear la API key")
+        }
       }
     } catch (error) {
       console.error("Error creating API key:", error)
+      toast.error("Error de conexión al crear la API key")
+    } finally {
+      setIsCreatingKey(false)
     }
   }
 
@@ -268,9 +285,22 @@ export default function ApiKeysPage() {
           {/* Botón de acción principal alinear a la derecha */}
           {selectedEnvId && selectedAppObj?.myRole !== "VIEWER" && !appsError && !keysError && (
             <div className="lg:self-end pb-0.5">
-              <Button className="glow-primary gap-2 h-10 w-full sm:w-auto font-semibold px-4 cursor-pointer" onClick={handleCreateApiKey}>
-                <Plus className="h-4 w-4" />
-                Generar API Key
+              <Button
+                className="glow-primary gap-2 h-10 w-full sm:w-auto font-semibold px-4 cursor-pointer"
+                onClick={handleCreateApiKey}
+                disabled={isCreatingKey}
+              >
+                {isCreatingKey ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Generando...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="h-4 w-4" />
+                    Generar API Key
+                  </>
+                )}
               </Button>
             </div>
           )}
@@ -341,9 +371,23 @@ export default function ApiKeysPage() {
                 Genera una credencial de acceso para comenzar a interactuar con los motores de concurrencia mediante el SDK o la API de Caerus.
               </p>
               {selectedAppObj?.myRole !== "VIEWER" && (
-                <Button size="lg" className="gap-2 px-5 font-semibold" onClick={handleCreateApiKey}>
-                  <Plus className="h-4 w-4" />
-                  Crear API Key
+                <Button
+                  size="lg"
+                  className="gap-2 px-5 font-semibold"
+                  onClick={handleCreateApiKey}
+                  disabled={isCreatingKey}
+                >
+                  {isCreatingKey ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Generando...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4" />
+                      Crear API Key
+                    </>
+                  )}
                 </Button>
               )}
             </CardContent>
@@ -515,6 +559,17 @@ export default function ApiKeysPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SetupPaymentMethodModal
+        open={setupModalOpen}
+        onOpenChange={setSetupModalOpen}
+        initialStep="payment"
+        title="Método de pago requerido para API Keys"
+        description="Para emitir API Keys y permitir el tráfico gRPC hacia Caerus necesitas registrar una tarjeta ($0/mes en Plan Developer)."
+        onSuccess={() => {
+          fetchKeys()
+        }}
+      />
     </div>
   )
 }

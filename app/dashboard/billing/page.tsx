@@ -1110,6 +1110,7 @@ export default function BillingPage() {
       <SetupPaymentMethodModal
         open={setupModalOpen}
         onOpenChange={setSetupModalOpen}
+        initialStep="payment"
         onSuccess={() => {
           refreshUser();
           fetchInvoices(0);

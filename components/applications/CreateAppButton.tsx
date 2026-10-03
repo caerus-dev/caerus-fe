@@ -101,6 +101,7 @@ export function CreateAppButton({
       <SetupPaymentMethodModal
         open={modalOpen}
         onOpenChange={setModalOpen}
+        initialStep="payment"
         title="Método de pago requerido para crear aplicaciones"
         description="Para crear tus propias aplicaciones e infraestructura en Caerus, añade una tarjeta de crédito o débito. Tu plan continuará siendo Developer ($0/mes) sin cobro inicial."
         onSuccess={() => {

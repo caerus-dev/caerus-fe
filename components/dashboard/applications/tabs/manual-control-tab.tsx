@@ -29,6 +29,7 @@ import {
   Radio,
   Search,
   Save,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -698,10 +699,17 @@ export function ManualControlTab({
       if (matchedT && !matchedT.saveMetadata) {
         setMetadata("");
       } else {
-        setMetadata(targetRes.metadata || "");
+        setMetadata(
+          typeof targetRes.metadata === "object"
+            ? JSON.stringify(targetRes.metadata, null, 2)
+            : targetRes.metadata || ""
+        );
       }
     }
     setSreMethod("UPDATE_RESOURCE");
+    toast.info("Modo de actualización preparado", {
+      description: `Configura los cambios para '${targetKey}' en el panel izquierdo y pulsa en Ejecutar.`,
+    });
   };
 
   const handleForceReleaseHolder = (hId: string, associatedResKey?: string) => {
@@ -1586,26 +1594,52 @@ export function ManualControlTab({
 
                                 if (isUnit) {
                                   return (
-                                    <Badge
-                                      variant="outline"
-                                      className="h-7 text-[10px] border-border/70 text-muted-foreground font-normal px-2"
-                                      title="Recurso unitario: capacidad fija de 1 unidad y no admite modificaciones de stock"
-                                    >
-                                      Unitario (Fijo)
-                                    </Badge>
+                                    <div className="flex items-center gap-1.5">
+                                      <Badge
+                                        variant="outline"
+                                        className="h-7 text-[10px] border-border/70 text-muted-foreground font-normal px-2"
+                                        title="Recurso unitario: capacidad fija de 1 unidad"
+                                      >
+                                        Unitario (Fijo)
+                                      </Badge>
+                                      {!isViewer && (
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="h-7 text-xs gap-1 text-primary hover:text-primary cursor-pointer border-primary/30 hover:border-primary/60 bg-primary/5"
+                                          onClick={() => handlePrepareStockUpdate(res, groupKey)}
+                                          title="Actualizar metadatos o grupo"
+                                        >
+                                          <Pencil className="h-3 w-3" />
+                                          <span>Actualizar</span>
+                                        </Button>
+                                      )}
+                                    </div>
                                   );
                                 }
 
                                 return (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-7 text-xs gap-1 text-primary hover:text-primary"
-                                    onClick={() => handlePrepareStockUpdate(res)}
-                                  >
-                                    <PlusCircle className="h-3 w-3" />
-                                    <span>Modificar Stock</span>
-                                  </Button>
+                                  <div className="flex items-center gap-1.5">
+                                    <Badge
+                                      variant="outline"
+                                      className="h-7 text-[10px] border-border/70 text-muted-foreground font-normal px-2"
+                                      title="Recurso pooled: capacidad variable"
+                                    >
+                                      Pooled
+                                    </Badge>
+                                    {!isViewer && (
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-7 text-xs gap-1 text-primary hover:text-primary cursor-pointer border-primary/30 hover:border-primary/60 bg-primary/5"
+                                        onClick={() => handlePrepareStockUpdate(res, groupKey)}
+                                        title="Modificar stock o metadatos"
+                                      >
+                                        <Pencil className="h-3 w-3" />
+                                        <span>Actualizar</span>
+                                      </Button>
+                                    )}
+                                  </div>
                                 );
                               })()}
                             </div>
@@ -1716,25 +1750,27 @@ export function ManualControlTab({
                         <span>Ver Holders</span>
                       </Button>
                       {sreMethod === "GET_RESOURCE" && (
-                        isCurrentUnitary ? (
+                        <>
                           <Badge
                             variant="outline"
                             className="h-7 text-[11px] border-border/70 text-muted-foreground font-normal px-2.5"
-                            title="Recurso unitario: capacidad fija de 1 unidad y no admite modificaciones de stock"
+                            title={isCurrentUnitary ? "Recurso unitario: capacidad fija de 1 unidad" : "Recurso pooled: capacidad variable"}
                           >
-                            Unitario (Fijo)
+                            {isCurrentUnitary ? "Unitario (Fijo)" : "Pooled"}
                           </Badge>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 text-xs gap-1 text-primary hover:text-primary"
-                            onClick={() => handlePrepareStockUpdate(result)}
-                          >
-                            <PlusCircle className="h-3 w-3" />
-                            <span>Modificar Stock</span>
-                          </Button>
-                        )
+                          {!isViewer && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs gap-1.5 text-primary hover:text-primary border-primary/30 hover:border-primary/60 bg-primary/5 cursor-pointer"
+                              onClick={() => handlePrepareStockUpdate(result)}
+                              title={isCurrentUnitary ? "Actualizar metadatos o groupKey" : "Modificar stock o metadatos"}
+                            >
+                              <Pencil className="h-3 w-3" />
+                              <span>Actualizar</span>
+                            </Button>
+                          )}
+                        </>
                       )}
                       {sreMethod === "UPDATE_RESOURCE" && (
                         <Button
@@ -1848,15 +1884,18 @@ export function ManualControlTab({
                         <Eye className="h-3 w-3" />
                         <span>Ver Recurso</span>
                       </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-7 text-xs gap-1 text-primary hover:text-primary"
-                        onClick={() => handlePrepareStockUpdate(resourceKey)}
-                      >
-                        <PlusCircle className="h-3 w-3" />
-                        <span>Modificar Stock</span>
-                      </Button>
+                      {!isViewer && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs gap-1.5 text-primary hover:text-primary cursor-pointer border-primary/30 hover:border-primary/60 bg-primary/5"
+                          onClick={() => handlePrepareStockUpdate(resourceKey)}
+                          title="Actualizar stock, metadatos o grupo"
+                        >
+                          <Pencil className="h-3 w-3" />
+                          <span>Actualizar Recurso</span>
+                        </Button>
+                      )}
                     </div>
                   </CardHeader>
 

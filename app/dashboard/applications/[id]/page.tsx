@@ -51,6 +51,7 @@ import { WebhookFormDialog } from "@/components/dashboard/applications/tabs/webh
 import { WebhookSecretDialog } from "@/components/dashboard/applications/tabs/webhook-secret-dialog"
 import { DuplicateTemplateDialog } from "@/components/dashboard/applications/duplicate-template-dialog"
 import { DuplicateLockDialog } from "@/components/dashboard/applications/duplicate-lock-dialog"
+import { SetupPaymentMethodModal } from "@/components/billing/SetupPaymentMethodModal"
 import { MetricsTab } from "@/components/dashboard/applications/tabs/metrics-tab"
 import { EventsTab } from "@/components/dashboard/applications/tabs/events-tab"
 import { ManualControlTab } from "@/components/dashboard/applications/tabs/manual-control-tab"
@@ -95,6 +96,8 @@ export default function ApplicationDashboard({
   const [showCreatedKeyDialog, setShowCreatedKeyDialog] = useState(false)
   const [createdRawKey, setCreatedRawKey] = useState("")
   const [copiedKey, setCopiedKey] = useState(false)
+  const [isCreatingKey, setIsCreatingKey] = useState(false)
+  const [setupPaymentModalOpen, setSetupPaymentModalOpen] = useState(false)
 
   const [webhooks, setWebhooks] = useState<any[]>([])
   const [isWebhooksLoading, setIsWebhooksLoading] = useState(true)
@@ -246,7 +249,8 @@ export default function ApplicationDashboard({
   }
 
   const handleCreateApiKey = async () => {
-    if (!currentEnvDetails) return
+    if (!currentEnvDetails || isCreatingKey) return
+    setIsCreatingKey(true)
     try {
       const res = await fetch(`/api/environments/${currentEnvDetails.id}/api-keys`, {
         method: "POST",
@@ -256,11 +260,23 @@ export default function ApplicationDashboard({
         setCreatedRawKey(data.rawKey)
         setShowCreatedKeyDialog(true)
         setApiKeys((prev) => [data, ...prev])
+        toast.success("API Key creada exitosamente")
       } else {
-        console.error("Failed to create API Key")
+        const errData = await res.json().catch(() => ({}))
+        if (res.status === 402) {
+          setSetupPaymentModalOpen(true)
+          toast.error("Método de pago requerido", {
+            description: "Debes vincular una tarjeta para generar credenciales de API ($0/mes en Plan Developer).",
+          })
+        } else {
+          toast.error(errData.error || errData.message || "Error al crear la API key")
+        }
       }
     } catch (error) {
       console.error("Error creating API key:", error)
+      toast.error("Error de conexión al crear la API key")
+    } finally {
+      setIsCreatingKey(false)
     }
   }
 
@@ -755,6 +771,7 @@ export default function ApplicationDashboard({
           <ApiKeysTab
             apiKeys={apiKeys}
             isApiKeysLoading={isApiKeysLoading}
+            isCreatingApiKey={isCreatingKey}
             selectedEnv={selectedEnv}
             currentEnvDetails={currentEnvDetails}
             myRole={app.myRole}
@@ -1025,6 +1042,22 @@ export default function ApplicationDashboard({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SetupPaymentMethodModal
+        open={setupPaymentModalOpen}
+        onOpenChange={setSetupPaymentModalOpen}
+        initialStep="payment"
+        title="Método de pago requerido para API Keys"
+        description="Para emitir API Keys y permitir el tráfico gRPC hacia Caerus necesitas registrar una tarjeta ($0/mes en Plan Developer)."
+        onSuccess={() => {
+          if (currentEnvDetails) {
+            fetch(`/api/environments/${currentEnvDetails.id}/api-keys`)
+              .then((res) => res.ok ? res.json() : [])
+              .then((data) => setApiKeys(Array.isArray(data) ? data : []))
+              .catch(() => {})
+          }
+        }}
+      />
     </div>
   )
 }

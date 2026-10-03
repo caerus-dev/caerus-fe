@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 interface ApiKeysTabProps {
   apiKeys: any[]
   isApiKeysLoading: boolean
+  isCreatingApiKey?: boolean
   selectedEnv: string
   currentEnvDetails?: any
   myRole?: string
@@ -18,6 +19,7 @@ interface ApiKeysTabProps {
 export function ApiKeysTab({
   apiKeys,
   isApiKeysLoading,
+  isCreatingApiKey = false,
   selectedEnv,
   currentEnvDetails,
   myRole,
@@ -38,9 +40,22 @@ export function ApiKeysTab({
           </span>
         </p>
         {!isViewer && (
-          <Button className="gap-2" onClick={onCreateApiKey} disabled={!currentEnvDetails?.id}>
-            <Plus className="h-4 w-4" />
-            Generar API Key
+          <Button
+            className="gap-2"
+            onClick={onCreateApiKey}
+            disabled={!currentEnvDetails?.id || isCreatingApiKey}
+          >
+            {isCreatingApiKey ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Generando...
+              </>
+            ) : (
+              <>
+                <Plus className="h-4 w-4" />
+                Generar API Key
+              </>
+            )}
           </Button>
         )}
       </div>

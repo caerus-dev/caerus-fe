@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
+import { toast } from "sonner"
 import { DashboardSidebar } from "./sidebar"
 import { DashboardHeader } from "./header"
 import { cn } from "@/lib/utils"
+import { triggerUserRefresh } from "@/hooks/use-user"
 
 import { AppsProvider } from "./apps-context"
 import { UserProvider } from "./user-context"
@@ -17,6 +19,21 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setSidebarOpen(false)
   }, [pathname])
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get("setup_success") === "true") {
+        toast.success("Método de pago vinculado exitosamente", {
+          description: "Tu cuenta ha sido activada. Ya puedes crear aplicaciones y operar recursos.",
+        })
+        triggerUserRefresh()
+        params.delete("setup_success")
+        const newSearch = params.toString() ? `?${params.toString()}` : ""
+        window.history.replaceState({}, "", `${window.location.pathname}${newSearch}`)
+      }
+    }
+  }, [])
 
   return (
     <UserProvider>
