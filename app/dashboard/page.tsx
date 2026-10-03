@@ -341,19 +341,21 @@ export default async function DashboardPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {applicationsList.map((app: any) => (
-              <Card key={app.id} className="border-border bg-card/60 hover:border-primary/40 transition-colors">
+              <Card key={app.id} className="border-border bg-card/60 hover:border-primary/40 transition-colors overflow-hidden">
                 <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-1">
-                      <CardTitle className="text-base font-bold flex items-center gap-2">
-                        <Box className="h-4 w-4 text-primary" />
-                        {app.name}
+                  <div className="flex items-start justify-between gap-2 min-w-0">
+                    <div className="space-y-1 min-w-0 flex-1">
+                      <CardTitle className="text-base font-bold flex items-center gap-2 min-w-0">
+                        <Box className="h-4 w-4 text-primary shrink-0" />
+                        <span className="break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0">
+                          {app.name}
+                        </span>
                       </CardTitle>
-                      <CardDescription className="text-xs line-clamp-2">
+                      <CardDescription className="text-xs line-clamp-2 break-words [overflow-wrap:anywhere] [word-break:break-word]">
                         {app.description || "Sin descripción"}
                       </CardDescription>
                     </div>
-                    {getRoleBadge(app.myRole)}
+                    <span className="shrink-0">{getRoleBadge(app.myRole)}</span>
                   </div>
                 </CardHeader>
                 <CardFooter className="pt-2 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">

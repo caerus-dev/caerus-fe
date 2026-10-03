@@ -217,7 +217,7 @@ export default function ApiKeysPage() {
                   <SelectContent>
                     {apps.map((app) => (
                       <SelectItem key={app.id} value={app.id} className="cursor-pointer">
-                        <span className="font-medium">{app.name}</span>
+                        <span className="font-medium truncate block max-w-[280px]">{app.name}</span>
                       </SelectItem>
                     ))}
                   </SelectContent>

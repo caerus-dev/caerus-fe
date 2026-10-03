@@ -563,8 +563,8 @@ export default function ApplicationDashboard({
           Volver a Aplicaciones
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight font-mono">{app.name}</h1>
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <h1 className="text-2xl font-bold tracking-tight font-mono break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0">{app.name}</h1>
           </div>
 
           <div className="flex items-center gap-2">
@@ -630,7 +630,7 @@ export default function ApplicationDashboard({
         </div>
 
         {app.description && (
-          <p className="text-muted-foreground max-w-2xl text-sm whitespace-pre-wrap">
+          <p className="text-muted-foreground max-w-2xl text-sm whitespace-pre-wrap break-words [overflow-wrap:anywhere] [word-break:break-word]">
             {app.description}
           </p>
         )}
