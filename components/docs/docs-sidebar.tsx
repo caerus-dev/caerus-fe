@@ -87,7 +87,7 @@ export function DocsSidebar({ onSearchClick, onNavigate, className }: DocsSideba
                         <span
                           className={cn(
                             "shrink-0 rounded-full px-1.5 py-0.2 text-[10px] font-medium leading-none tracking-tight",
-                            item.badge === "Demo"
+                            item.badge === "Demo" || item.badge === "Sample" || item.badge === "Quickstart"
                               ? "bg-amber-500/15 text-amber-500 font-semibold"
                               : item.badge === "Core"
                               ? "bg-blue-500/15 text-blue-500"

@@ -1,17 +1,16 @@
 import Link from "next/link"
-import { ExternalLink, Github, Sparkles, Cpu, Play, CheckCircle2, ShieldAlert, GitBranch } from "lucide-react"
+import { ExternalLink, Github, Cpu, GitBranch, ShieldAlert } from "lucide-react"
 import { DocsPageLayout } from "@/components/docs/docs-page-layout"
-import { CodeBlock } from "@/components/docs/code-block"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { docsConfig } from "@/components/docs/docs-config"
 
 const tocItems = [
-  { id: "concepto-demo", title: "¿En qué consiste el Simulador DLS?" },
-  { id: "escenarios", title: "Los 4 Escenarios Interactivos" },
-  { id: "grafo-deadlock", title: "Visualización del Grafo y la Víctima" },
-  { id: "correr-local", title: "Correr el Simulador Localmente" },
+  { id: "concepto-sample", title: "Idea Central del Sample" },
+  { id: "escenarios", title: "Los 4 Escenarios de Concurrencia" },
+  { id: "grafo-deadlock", title: "Grafo de Espera y Selección de Víctima" },
+  { id: "repositorio-github", title: "Repositorio Oficial en GitHub" },
 ]
 
 export default function DocsDlsDemoPage() {
@@ -19,57 +18,57 @@ export default function DocsDlsDemoPage() {
     <DocsPageLayout
       breadcrumbs={[
         { label: "DLS", href: "/docs/dls" },
-        { label: "Demo Interactiva: Simulador DLS" },
+        { label: "Quickstart & Sample (Locks)" },
       ]}
-      title="Demo Interactiva: Simulador DLS"
-      badge="DLS Simulation"
-      description="Visualizador interactivo de exclusión mutua distribuida, transacciones concurrentes, detección de deadlocks mediante grafo dirigido y estampidas de procesos en tiempo real."
+      title="Quickstart & Sample: Microservicios DLS"
+      badge="Sample Project"
+      description="Proyecto de microservicios de referencia construido con @caerus-dev/sdk. Demuestra exclusión mutua distribuida, Fencing Tokens monotónicos, adquisición streaming y resolución de deadlocks en tiempo real."
       tocItems={tocItems}
     >
-      {/* Concepto Demo */}
-      <section id="concepto-demo" className="space-y-4">
+      {/* Concepto Sample */}
+      <section id="concepto-sample" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          ¿En qué consiste el Simulador DLS?
+          Idea Central del Sample
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Comprender cómo interactúan múltiples microservicios concurrentes al solicitar locks puede ser abstracto. El <strong>Simulador DLS</strong> provee una representación visual con workers independientes (2 o 3 nodos) que compiten por recursos compartidos (como <code>file:reports_export</code> o <code>network:cloud_uploader</code>).
+          Comprender cómo interactúan múltiples microservicios concurrentes al solicitar locks puede ser complejo. Este proyecto de referencia provee una arquitectura modular con workers independientes (2 o 3 procesos) que compiten por recursos compartidos (como <code>file:reports_export</code> o <code>network:cloud_uploader</code>).
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          Cada evento del simulador refleja las respuestas del motor de Caerus mediante Server-Sent Events (SSE) y grafica el estado de cada worker: <code>IDLE</code>, <code>STARTING_TX</code>, <code>HOLDING</code>, <code>QUEUED</code> o <code>DEADLOCK_ABORTED</code>.
+          Cada evento refleja respuestas del motor de Caerus mediante Server-Sent Events (SSE) y grafica el estado de cada worker: <code>IDLE</code>, <code>STARTING_TX</code>, <code>HOLDING</code>, <code>QUEUED</code> o <code>DEADLOCK_ABORTED</code>.
         </p>
       </section>
 
       {/* Los 4 Escenarios */}
       <section id="escenarios" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Los 4 Escenarios de Prueba
+          Los 4 Escenarios de Concurrencia
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <Badge variant="outline" className="w-fit text-[10px] text-blue-500 mb-1">Lectura Concurrente</Badge>
-              <CardTitle className="text-sm">1. Lectura Compartida (<code>shared_read</code>)</CardTitle>
+              <CardTitle className="text-sm">1. Lectura Compartida (<code>SHARED_READ</code>)</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Muestra cómo múltiples workers adquieren locks <code>SHARED_READ</code> sobre el mismo archivo simultáneamente sin bloquearse entre sí, hasta que un escritor exclusivo solicita el recurso.
+              Muestra cómo múltiples workers adquieren locks <code>SHARED_READ</code> sobre el mismo archivo en paralelo sin bloquearse entre sí, hasta que un escritor exclusivo solicita el recurso.
             </CardContent>
           </Card>
 
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <Badge variant="outline" className="w-fit text-[10px] text-emerald-500 mb-1">Exclusión Mutua</Badge>
-              <CardTitle className="text-sm">2. Tarea Simple (<code>tarea_simple</code>)</CardTitle>
+              <CardTitle className="text-sm">2. Tarea Simple (<code>EXCLUSIVE</code>)</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Ejecuta una transacción exclusiva con generación de <strong>Fencing Token</strong>. El worker toma el lock, escribe en el archivo y libera la transacción de forma segura.
+              Ejecuta una transacción exclusiva con generación de <strong>Fencing Token</strong> monotónico. El worker toma el lock, escribe en el archivo y libera la transacción de forma segura.
             </CardContent>
           </Card>
 
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <Badge variant="outline" className="w-fit text-[10px] text-red-500 mb-1">Ciclo Cruzado</Badge>
-              <CardTitle className="text-sm">3. Detección de Deadlock (<code>deadlock</code>)</CardTitle>
+              <CardTitle className="text-sm">3. Detección de Deadlock (Cruzado)</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
               Worker A retiene el Recurso 1 y solicita el 2; Worker B retiene el 2 y solicita el 1. El motor detecta el ciclo en el grafo y aborta a la víctima designada para desatorar el sistema.
@@ -79,10 +78,10 @@ export default function DocsDlsDemoPage() {
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <Badge variant="outline" className="w-fit text-[10px] text-purple-500 mb-1">Alta Concurrencia</Badge>
-              <CardTitle className="text-sm">4. Estampida (<code>estampida</code>)</CardTitle>
+              <CardTitle className="text-sm">4. Estampida (100 Workers)</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Lanza una ráfaga masiva de solicitudes simultáneas contra un solo recurso para verificar la estabilidad de la cola distribuida y la ausencia de condiciones de carrera.
+              Lanza una ráfaga masiva de solicitudes simultáneas contra un solo recurso para verificar la estabilidad de la cola distribuida, streaming gRPC y ausencia de condiciones de carrera.
             </CardContent>
           </Card>
         </div>
@@ -91,52 +90,58 @@ export default function DocsDlsDemoPage() {
       {/* Grafo de Deadlock */}
       <section id="grafo-deadlock" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Visualización del Grafo y Selección de la Víctima
+          Grafo de Espera y Selección de Víctima
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          En el escenario de Deadlock, el simulador destaca con color ámbar y rojo las aristas que forman el ciclo cerrado (<code>Worker A ➔ Recurso 2 ➔ Worker B ➔ Recurso 1 ➔ Worker A</code>).
+          En el escenario de Deadlock, el inspector destaca con color ámbar y rojo las aristas que forman el ciclo cerrado (<code>Worker A ➔ Recurso 2 ➔ Worker B ➔ Recurso 1 ➔ Worker A</code>).
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          El motor de Caerus selecciona a la víctima con menor prioridad o menor progreso transaccional, envía una señal de aborto para liberar sus recursos retenidos y permite que los workers restantes completen su trabajo de forma transparente.
+          El motor de Caerus selecciona a la víctima con menor prioridad o menor progreso transaccional, emite una señal de aborto para liberar sus recursos retenidos y permite que los workers restantes completen su trabajo de forma transparente.
         </p>
       </section>
 
-      {/* Correr Local */}
-      <section id="correr-local" className="space-y-4">
+      {/* Repositorio en GitHub */}
+      <section id="repositorio-github" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Correr el Simulador Localmente
+          Repositorio Oficial en GitHub
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Puedes clonar el repositorio de la demo del DLS e iniciar el simulador interactivo en tu entorno local:
+          El código completo de los microservicios, el archivo de variables (<code>.env.example</code>) y la guía detallada de configuración y ejecución local se encuentran disponibles en GitHub:
         </p>
 
-        <CodeBlock
-          language="bash"
-          title="Terminal"
-          code={`git clone https://github.com/caerus-dev/demo-dls.git
-cd demo-dls
-pnpm install
-pnpm dev`}
-        />
+        <div className="rounded-xl border border-border/70 bg-muted/20 p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
+                <Github className="h-4 w-4" />
+                <span>caerus-dev/demo-dls</span>
+              </h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Next.js · TypeScript · @caerus-dev/sdk · Server-Sent Events · Fencing Tokens · Deadlocks
+              </p>
+            </div>
+            <Button asChild size="sm" className="gap-2 bg-foreground text-background hover:bg-foreground/90 shrink-0">
+              <a
+                href={docsConfig.demoDlsRepoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Github className="h-4 w-4" />
+                <span>Explorar Repositorio en GitHub</span>
+                <ExternalLink className="h-3 w-3 opacity-70" />
+              </a>
+            </Button>
+          </div>
 
-        <div className="pt-2 flex flex-col sm:flex-row gap-3">
-          <Button asChild className="gap-2 bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto">
-            <a
-              href={docsConfig.demoDlsRepoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Github className="h-4 w-4" />
-              <span>Ver Repositorio caerus-dev/demo-dls</span>
-              <ExternalLink className="h-3.5 w-3.5 opacity-70" />
-            </a>
-          </Button>
-
-          <Button asChild variant="outline" className="w-full sm:w-auto">
-            <Link href="/docs/dls">
-              ← Volver a Conceptos DLS
-            </Link>
-          </Button>
+          <div className="rounded-lg border border-border/50 bg-background/50 p-3.5 text-xs text-muted-foreground leading-relaxed space-y-1">
+            <strong className="text-foreground">💡 ¿Qué encontrarás en el README del repositorio?</strong>
+            <ul className="list-disc list-inside space-y-0.5 pt-1">
+              <li>Pasos de ejecución rápida con <code>pnpm install</code> y <code>pnpm dev</code>.</li>
+              <li>Explicación técnica de la intercepción de llamadas al SDK con <code>AsyncLocalStorage</code>.</li>
+              <li>Configuración de variables de entorno para clúster local gRPC (puerto 9090) o cloud.</li>
+              <li>Parámetros de la plantilla <code>task_processing</code> requerida en el Dashboard.</li>
+            </ul>
+          </div>
         </div>
       </section>
     </DocsPageLayout>

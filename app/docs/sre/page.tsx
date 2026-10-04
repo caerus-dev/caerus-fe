@@ -10,7 +10,7 @@ const tocItems = [
   { id: "ciclo-vida", title: "Ciclo de Vida de una Reserva" },
   { id: "verbos", title: "Verbos: take, confirm y release" },
   { id: "estrategias", title: "Políticas de Conflicto (FAIL vs QUEUE)" },
-  { id: "demo-link", title: "Probar Demo Interactiva" },
+  { id: "recursos-practica", title: "Quickstart & Playground" },
 ]
 
 export default function DocsSrePage() {
@@ -18,7 +18,7 @@ export default function DocsSrePage() {
     <DocsPageLayout
       breadcrumbs={[
         { label: "SRE", href: "/docs/sre" },
-        { label: "Conceptos y Verbos" },
+        { label: "Conceptos Fundamentales" },
       ]}
       title="Shared Resource Engine (SRE)"
       badge="Business Engine"
@@ -194,27 +194,27 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
         </Button>
       </div>
 
-      {/* Enlace a la Demo */}
-      <section id="demo-link" className="rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent p-6 space-y-3">
+      {/* Enlace a Recursos de Práctica */}
+      <section id="recursos-practica" className="rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent p-6 space-y-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-amber-500" />
-          <h3 className="text-base font-semibold text-foreground">¿Quieres ver el SRE en acción?</h3>
+          <h3 className="text-base font-semibold text-foreground">¿Listo para probar el motor SRE?</h3>
         </div>
         <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-          Diseñamos la demo interactiva <strong>Caerus Cine</strong>, donde puedes pelear en vivo contra ti mismo por la misma butaca en dos pestañas y comparar la política <code>FAIL</code> frente a <code>QUEUE</code> con panel de llamadas en tiempo real.
+          Experimenta con reservas concurrentes en vivo directamente en el <strong>Playground interactivo</strong> o explora el código fuente y levanta el sample oficial de <strong>Caerus Cine</strong> en GitHub.
         </p>
         <div className="pt-2 flex flex-wrap gap-2">
-          <Button asChild className="gap-2 bg-amber-600 hover:bg-amber-700 text-white text-xs">
-            <Link href="/docs/sre/demo">
-              <span>Abrir Simulación Caerus Cine</span>
-              <ArrowRight className="h-4 w-4" />
+          <Button asChild className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs">
+            <Link href="/docs/playground">
+              <Sparkles className="h-4 w-4" />
+              <span>Abrir Playground en Vivo</span>
             </Link>
           </Button>
 
           <Button asChild variant="outline" className="gap-2 text-xs bg-background/50">
-            <Link href="/docs/playground">
-              <Sparkles className="h-4 w-4 text-emerald-400" />
-              <span>Playground en Vivo (SRE & DLS)</span>
+            <Link href="/docs/sre/demo">
+              <span>Ver Quickstart & Sample (Cine)</span>
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>

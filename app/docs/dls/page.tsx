@@ -12,7 +12,7 @@ const tocItems = [
   { id: "fencing", title: "Fencing Tokens contra Split-Brain" },
   { id: "deadlocks", title: "Detección y Resolución de Deadlocks" },
   { id: "codigo", title: "Ejemplo de Uso en TypeScript" },
-  { id: "demo-link", title: "Simulador Interactivo DLS" },
+  { id: "recursos-practica", title: "Quickstart & Playground" },
 ]
 
 export default function DocsDlsPage() {
@@ -20,7 +20,7 @@ export default function DocsDlsPage() {
     <DocsPageLayout
       breadcrumbs={[
         { label: "DLS", href: "/docs/dls" },
-        { label: "Locks y Transacciones" },
+        { label: "Conceptos Fundamentales" },
       ]}
       title="Distributed Locking Service (DLS)"
       badge="System Engine"
@@ -166,27 +166,27 @@ try {
         </Button>
       </div>
 
-      {/* Enlace al Simulador DLS */}
-      <section id="demo-link" className="rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-transparent p-6 space-y-3">
+      {/* Enlace a Recursos de Práctica */}
+      <section id="recursos-practica" className="rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-transparent p-6 space-y-3">
         <div className="flex items-center gap-2">
           <Cpu className="h-5 w-5 text-purple-500" />
-          <h3 className="text-base font-semibold text-foreground">Visualizador de Nodos y Deadlocks en Vivo</h3>
+          <h3 className="text-base font-semibold text-foreground">¿Listo para probar el motor DLS?</h3>
         </div>
         <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-          Explora cómo interactúan 2 o 3 workers en tiempo real, observa la formación de ciclos en el grafo de dependencias y prueba la estampida concurrente en la demo interactiva del DLS.
+          Simula locks distribuidos, transacciones cruzadas y resolución de deadlocks directamente en el <strong>Playground interactivo</strong> o clona el proyecto de microservicios de referencia en GitHub.
         </p>
         <div className="pt-2 flex flex-wrap gap-2">
           <Button asChild className="gap-2 bg-purple-600 hover:bg-purple-700 text-white text-xs">
-            <Link href="/docs/dls/demo">
-              <span>Abrir Simulador DLS</span>
-              <ArrowRight className="h-4 w-4" />
+            <Link href="/docs/playground">
+              <Sparkles className="h-4 w-4" />
+              <span>Abrir Playground en Vivo</span>
             </Link>
           </Button>
 
           <Button asChild variant="outline" className="gap-2 text-xs bg-background/50">
-            <Link href="/docs/playground">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span>Playground en Vivo (SRE & DLS)</span>
+            <Link href="/docs/dls/demo">
+              <span>Ver Quickstart & Sample (Locks)</span>
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>

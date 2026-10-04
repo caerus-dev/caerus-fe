@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, Layers, Lock, Zap, Server, ShieldCheck, Database, FileCode, Github, ExternalLink } from "lucide-react"
+import { ArrowRight, Layers, Lock, Zap, Server, ShieldCheck, Database, FileCode, Github, ExternalLink, Sparkles } from "lucide-react"
 import { DocsPageLayout } from "@/components/docs/docs-page-layout"
 import { CodeBlock, SignatureBlock } from "@/components/docs/code-block"
 import { Button } from "@/components/ui/button"
@@ -135,7 +135,7 @@ export default function DocsOverviewPage() {
                 </Button>
                 <Button asChild variant="secondary" size="sm" className="text-xs gap-1 text-amber-500 font-medium">
                   <Link href="/docs/sre/demo">
-                    Demo Cine 🍿
+                    Sample Cine 🍿
                   </Link>
                 </Button>
               </div>
@@ -164,9 +164,9 @@ export default function DocsOverviewPage() {
                     Ver DLS <ArrowRight className="h-3 w-3" />
                   </Link>
                 </Button>
-                <Button asChild variant="secondary" size="sm" className="text-xs gap-1 text-amber-500 font-medium">
+                <Button asChild variant="secondary" size="sm" className="text-xs gap-1 text-purple-500 font-medium">
                   <Link href="/docs/dls/demo">
-                    Simulador DLS ⚡
+                    Sample DLS ⚡
                   </Link>
                 </Button>
               </div>
@@ -239,16 +239,22 @@ try {
 }`}
         />
 
-        <div className="flex items-center gap-3 pt-4">
+        <div className="flex flex-wrap items-center gap-3 pt-4">
           <Button asChild className="gap-2">
             <Link href="/docs/sdk">
               <span>Continuar a la Guía del SDK</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
+          <Button asChild variant="outline" className="gap-2">
+            <Link href="/docs/playground">
+              <Sparkles className="h-4 w-4 text-emerald-500" />
+              <span>Playground en Vivo</span>
+            </Link>
+          </Button>
           <Button asChild variant="outline">
             <Link href="/docs/sre/demo">
-              Probar Demo Caerus Cine
+              Quickstart & Sample Cine
             </Link>
           </Button>
         </div>

@@ -1,7 +1,7 @@
 export interface DocItem {
   title: string
   href: string
-  badge?: "Core" | "New" | "Demo" | "SRE" | "DLS" | "Popular" | "Live"
+  badge?: "Core" | "New" | "Demo" | "Sample" | "Quickstart" | "SRE" | "DLS" | "Popular" | "Live"
   description?: string
   keywords?: string[]
 }
@@ -71,18 +71,18 @@ export const docsConfig: DocsConfig = {
       title: "Shared Resource Engine (SRE)",
       items: [
         {
-          title: "Conceptos y Verbos SRE",
+          title: "Conceptos Fundamentales",
           href: "/docs/sre",
           badge: "SRE",
           description: "Recursos Unitarios vs Pooled, ciclo de vida (take -> confirm/release), TTL y estrategias de conflicto.",
           keywords: ["sre", "unitary", "pooled", "take", "confirm", "release", "ttl", "conflict", "queue", "fail"],
         },
         {
-          title: "Demo Interactiva: Caerus Cine",
+          title: "Quickstart & Sample (Cine)",
           href: "/docs/sre/demo",
-          badge: "Demo",
-          description: "Simulador interactivo de reserva de butacas con políticas FAIL y QUEUE en vivo.",
-          keywords: ["demo", "cine", "simulador", "butacas", "interactive", "sre demo"],
+          badge: "Sample",
+          description: "Aplicación de referencia en Node.js/Next.js: reserva concurrente de butacas con políticas FAIL y QUEUE.",
+          keywords: ["sample", "quickstart", "cine", "demo-sdk", "butacas", "sre sample", "github"],
         },
       ],
     },
@@ -90,18 +90,18 @@ export const docsConfig: DocsConfig = {
       title: "Distributed Locking Service (DLS)",
       items: [
         {
-          title: "Locks y Transacciones DLS",
+          title: "Conceptos Fundamentales",
           href: "/docs/dls",
           badge: "DLS",
           description: "Exclusión mutua, modos Exclusive vs Shared Read, Fencing Tokens y Deadlocks.",
           keywords: ["dls", "distributed lock", "fencing token", "deadlock", "exclusive", "shared read", "transacciones"],
         },
         {
-          title: "Demo Interactiva: Simulador DLS",
+          title: "Quickstart & Sample (Locks)",
           href: "/docs/dls/demo",
-          badge: "Demo",
-          description: "Simulación gráfica de workers, transacciones cruzadas, detección de ciclos y estampidas.",
-          keywords: ["demo", "dls", "simulador", "workers", "grafo", "ciclo", "estampida"],
+          badge: "Sample",
+          description: "Microservicios de referencia: transacciones distribuidas, Fencing Tokens monotónicos y resolución de deadlocks.",
+          keywords: ["sample", "quickstart", "dls", "locks", "workers", "grafo", "deadlock", "github", "demo-dls"],
         },
       ],
     },
