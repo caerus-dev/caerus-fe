@@ -307,7 +307,7 @@ export default function ApplicationDashboard({
   }
 
   const parseApiError = (errData: any, defaultMsg: string) => {
-    let errorMsg = errData?.error || errData?.message || defaultMsg
+    let errorMsg = errData?.message || (errData?.error && errData.error !== "Bad Request" ? errData.error : null) || defaultMsg
     
     if (typeof errorMsg === 'string' && (errorMsg.includes('fieldErrors') || errorMsg.includes('"message"'))) {
       try {
@@ -320,6 +320,10 @@ export default function ApplicationDashboard({
       } catch (e) {}
     } else if (errData?.fieldErrors && errData.fieldErrors.length > 0) {
       errorMsg = errData.fieldErrors.map((f: any) => f.message).join(". ")
+    }
+
+    if (typeof errorMsg === 'string' && errorMsg.includes('already exists')) {
+      return "Ya existe un webhook registrado con esta URL en este entorno."
     }
     
     return errorMsg

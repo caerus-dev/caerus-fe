@@ -39,14 +39,19 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
+import { cn, translateBackendError } from "@/lib/utils"
 
 const formSchema = z.object({
   namespace: z.string().min(2, {
     message: "El Namespace debe tener al menos 2 caracteres.",
+  }).max(100, {
+    message: "El Namespace no puede superar los 100 caracteres.",
   }).regex(/^[a-z0-9_]+$/, {
     message: "El Namespace solo puede contener letras minúsculas, números y guiones bajos.",
   }),
-  description: z.string().optional(),
+  description: z.string().max(500, {
+    message: "La descripción no puede superar los 500 caracteres.",
+  }).optional(),
   type: z.enum(["exclusive", "read-write"]),
   deadlockStrategy: z.enum(["alert", "kill"]),
   acquisitionStrategy: z.enum(["fail", "retry", "queue"]),
@@ -123,14 +128,15 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
       })
 
       if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.error || "Hubo un error al guardar el lock")
+        const errorData = await res.json().catch(() => ({}))
+        const rawMessage = errorData.message || (errorData.error !== "Bad Request" ? errorData.error : null) || "Hubo un error al guardar el lock"
+        setApiError(translateBackendError(rawMessage, values.namespace, "lock"))
+        return
       }
 
       router.push(getReturnUrl())
     } catch (error: any) {
-      console.error(error)
-      setApiError(error.message)
+      setApiError(error.message || "Error inesperado de red")
     } finally {
       setIsSubmitting(false)
     }
@@ -195,9 +201,17 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                   name="namespace"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Namespace (Prefijo de clave)</FormLabel>
+                      <div className="flex justify-between items-center">
+                        <FormLabel>Namespace (Prefijo de clave)</FormLabel>
+                        <span className={cn(
+                          "text-[10px] transition-colors",
+                          (field.value?.length || 0) >= 100 ? "text-destructive font-semibold" : (field.value?.length || 0) >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                        )}>
+                          {field.value?.length || 0} / 100
+                        </span>
+                      </div>
                       <FormControl>
-                        <Input placeholder="ej. order_processing" {...field} disabled={isEditing} />
+                        <Input placeholder="ej. order_processing" maxLength={100} {...field} disabled={isEditing} />
                       </FormControl>
                       <FormDescription>
                         Identificador único para agrupar estos locks.
@@ -237,9 +251,21 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Descripción</FormLabel>
+                    <div className="flex justify-between items-center">
+                      <FormLabel>Descripción</FormLabel>
+                      <span className={cn(
+                        "text-[10px] transition-colors",
+                        (field.value?.length || 0) >= 500 ? "text-destructive font-semibold" : (field.value?.length || 0) >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                      )}>
+                        {field.value?.length || 0} / 500
+                      </span>
+                    </div>
                     <FormControl>
-                      <Textarea placeholder="¿Para qué se utiliza este lock?" {...field} />
+                      <Textarea
+                        placeholder="¿Para qué se utiliza este lock?"
+                        maxLength={500}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

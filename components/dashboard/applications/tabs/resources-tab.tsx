@@ -109,7 +109,7 @@ export function ResourcesTab({
               )}
             >
               <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-3 px-4">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div
                     className={cn(
                       'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
@@ -118,7 +118,7 @@ export function ResourcesTab({
                   >
                     <Box className={cn('h-5 w-5', envColors.text)} />
                   </div>
-                  <div className="space-y-1 min-w-0">
+                  <div className="space-y-1 min-w-0 flex-1">
                     <p className="font-mono font-medium text-sm sm:text-base break-all sm:break-normal">
                       {template.name}
                     </p>
@@ -136,7 +136,7 @@ export function ResourcesTab({
                       <span>Res: {template.conflictResolution}</span>
                     </div>
                     {template.description && (
-                      <p className="text-xs text-muted-foreground italic mt-1 pr-6 line-clamp-1">
+                      <p className="text-xs text-muted-foreground italic mt-1 pr-6 line-clamp-2 break-words [overflow-wrap:anywhere] [word-break:break-word]" title={template.description}>
                         {template.description}
                       </p>
                     )}

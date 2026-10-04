@@ -1,6 +1,7 @@
 "use client"
 
 import { use, useEffect, useState, Suspense } from "react"
+import { useParams } from "next/navigation"
 import { LockForm, LockFormValues } from "@/components/dashboard/lock-form"
 import { Loader2 } from "lucide-react"
 
@@ -62,11 +63,14 @@ function EditLockContainer({ id, lockId }: { id: string; lockId: string }) {
 }
 
 export default function EditLockPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: Promise<{ id: string; lockId: string }>
+  params?: Promise<{ id: string; lockId: string }>
 }) {
-  const { id, lockId } = use(params)
+  const routeParams = useParams()
+  const propParams = paramsPromise ? use(paramsPromise) : null
+  const id = (propParams?.id || routeParams?.id || "") as string
+  const lockId = (propParams?.lockId || routeParams?.lockId || "") as string
 
   return (
     <Suspense

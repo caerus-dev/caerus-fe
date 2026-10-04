@@ -242,3 +242,37 @@ export const formatRelativeTime = (dateInput: string | number | Date): string =>
     month: "short",
   })
 }
+
+export function translateBackendError(raw: any, identifier?: string, entityType?: "lock" | "resource" | "webhook"): string {
+  let msg = ""
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw)
+      msg = parsed.message || (parsed.error && parsed.error !== "Bad Request" ? parsed.error : null) || raw
+    } catch {
+      msg = raw
+    }
+  } else if (raw && typeof raw === "object") {
+    msg = raw.message || (raw.error && raw.error !== "Bad Request" ? raw.error : null) || JSON.stringify(raw)
+  }
+
+  if (typeof msg === "string") {
+    if (msg.includes("already exists")) {
+      if (entityType === "lock") {
+        return `Ya existe una plantilla de lock con el namespace "${identifier || ''}" en este entorno.`
+      }
+      if (entityType === "resource") {
+        return `Ya existe una plantilla de recurso con el nombre "${identifier || ''}" en este entorno.`
+      }
+      if (entityType === "webhook") {
+        return `Ya existe un webhook configurado con esta URL en este entorno.`
+      }
+      return `Ya existe un elemento con el identificador "${identifier || ''}" en este entorno.`
+    }
+    if (msg.includes("not found")) {
+      return "El elemento o entorno solicitado no fue encontrado."
+    }
+  }
+
+  return msg || "Ocurrió un error al procesar la solicitud."
+}

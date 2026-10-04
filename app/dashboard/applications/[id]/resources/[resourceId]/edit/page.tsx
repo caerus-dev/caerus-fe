@@ -1,6 +1,7 @@
 "use client"
 
 import { use, useEffect, useState, Suspense } from "react"
+import { useParams } from "next/navigation"
 import { ResourceForm } from "@/components/dashboard/resource-form"
 import { Loader2 } from "lucide-react"
 
@@ -66,11 +67,14 @@ function EditResourceContainer({ id, resourceId }: { id: string; resourceId: str
 }
 
 export default function EditResourcePage({
-  params,
+  params: paramsPromise,
 }: {
-  params: Promise<{ id: string; resourceId: string }>
+  params?: Promise<{ id: string; resourceId: string }>
 }) {
-  const { id, resourceId } = use(params)
+  const routeParams = useParams()
+  const propParams = paramsPromise ? use(paramsPromise) : null
+  const id = (propParams?.id || routeParams?.id || "") as string
+  const resourceId = (propParams?.resourceId || routeParams?.resourceId || "") as string
 
   return (
     <Suspense

@@ -39,16 +39,23 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
+import { cn, translateBackendError } from "@/lib/utils"
 
 const formSchema = z.object({
   name: z.string().min(2, {
     message: "El nombre del recurso debe tener al menos 2 caracteres.",
+  }).max(100, {
+    message: "El nombre no puede superar los 100 caracteres.",
   }).regex(/^[a-z0-9_]+$/, {
     message: "El nombre solo puede contener letras minúsculas, números y guiones bajos.",
   }),
-  description: z.string().optional(),
+  description: z.string().max(500, {
+    message: "La descripción no puede superar los 500 caracteres.",
+  }).optional(),
   mode: z.enum(["unit", "multiple"]),
-  ttl: z.coerce.number().min(1, { message: "El TTL debe ser de al menos 1 segundo." }),
+  ttl: z.coerce.number()
+    .min(1, { message: "El TTL debe ser de al menos 1 segundo." })
+    .max(86400, { message: "El TTL no puede superar las 24 horas (86.400 segundos)." }),
   saveMetadata: z.boolean().default(false),
   conflictStrategy: z.enum(["fail", "retry", "queue"]),
   retryInterval: z.coerce.number().min(1, {
@@ -143,10 +150,10 @@ export function ResourceForm({
         router.push(getReturnUrl())
       } else {
         const errData = await res.json().catch(() => ({}))
-        setErrorMsg(errData.error || "Ocurrió un error al guardar el recurso.")
+        const rawMessage = errData.message || (errData.error && errData.error !== "Bad Request" ? errData.error : null) || "Ocurrió un error al guardar el recurso."
+        setErrorMsg(translateBackendError(rawMessage, values.name, "resource"))
       }
     } catch (error) {
-      console.error("Error submitting form:", error)
       setErrorMsg("Ocurrió un error inesperado al intentar guardar el recurso.")
     } finally {
       setIsSubmitting(false)
@@ -221,9 +228,17 @@ export function ResourceForm({
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nombre Base (Namespace)</FormLabel>
+                      <div className="flex justify-between items-center">
+                        <FormLabel>Nombre Base (Namespace)</FormLabel>
+                        <span className={cn(
+                          "text-[10px] transition-colors",
+                          (field.value?.length || 0) >= 100 ? "text-destructive font-semibold" : (field.value?.length || 0) >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                        )}>
+                          {field.value?.length || 0} / 100
+                        </span>
+                      </div>
                       <FormControl>
-                        <Input placeholder="ej. seat, trip_capacity" {...field} disabled={isEditing} />
+                        <Input placeholder="ej. seat, trip_capacity" maxLength={100} {...field} disabled={isEditing} />
                       </FormControl>
                       <FormDescription>
                         Identificador único para este tipo de recurso.
@@ -263,9 +278,21 @@ export function ResourceForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Descripción</FormLabel>
+                    <div className="flex justify-between items-center">
+                      <FormLabel>Descripción</FormLabel>
+                      <span className={cn(
+                        "text-[10px] transition-colors",
+                        (field.value?.length || 0) >= 500 ? "text-destructive font-semibold" : (field.value?.length || 0) >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                      )}>
+                        {field.value?.length || 0} / 500
+                      </span>
+                    </div>
                     <FormControl>
-                      <Textarea placeholder="¿Para qué se utiliza este recurso?" {...field} />
+                      <Textarea
+                        placeholder="¿Para qué se utiliza este recurso?"
+                        maxLength={500}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -293,7 +320,7 @@ export function ResourceForm({
                     <FormItem>
                       <FormLabel>TTL por Defecto (segundos)</FormLabel>
                       <FormControl>
-                        <Input type="number" {...field} />
+                        <Input type="number" min={1} max={86400} {...field} />
                       </FormControl>
                       <FormDescription>
                         Tiempo máximo en segundos que una reserva permanece activa antes de liberarse automáticamente.

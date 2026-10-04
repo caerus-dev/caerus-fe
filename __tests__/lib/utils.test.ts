@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cn, getEnvColors, formatPercentage, formatRelativeTime } from '@/lib/utils'
+import { cn, getEnvColors, formatPercentage, formatRelativeTime, translateBackendError } from '@/lib/utils'
 
 describe('lib/utils', () => {
   describe('cn', () => {
@@ -112,6 +112,50 @@ describe('lib/utils', () => {
     it('should format yesterday', () => {
       const date = new Date(Date.now() - 25 * 3600 * 1000)
       expect(formatRelativeTime(date.toISOString())).toBe('Ayer')
+    })
+  })
+
+  describe('translateBackendError', () => {
+    it('should translate already exists for lock template', () => {
+      const backendError = {
+        timestamp: "2026-10-04T16:44:47.332377Z",
+        status: 400,
+        error: "Bad Request",
+        message: "A template with the namespace 'aaa' already exists.",
+        fieldErrors: [],
+        details: []
+      }
+      const result = translateBackendError(backendError, 'aaa', 'lock')
+      expect(result).toBe('Ya existe una plantilla de lock con el namespace "aaa" en este entorno.')
+    })
+
+    it('should translate already exists for resource template', () => {
+      const backendError = {
+        status: 400,
+        error: "Bad Request",
+        message: "A template with the name 'seat_a1' already exists."
+      }
+      const result = translateBackendError(backendError, 'seat_a1', 'resource')
+      expect(result).toBe('Ya existe una plantilla de recurso con el nombre "seat_a1" en este entorno.')
+    })
+
+    it('should translate already exists for webhook', () => {
+      const backendError = {
+        error: "Bad Request",
+        message: "A webhook with the url 'https://example.com' already exists."
+      }
+      const result = translateBackendError(backendError, 'https://example.com', 'webhook')
+      expect(result).toBe('Ya existe un webhook configurado con esta URL en este entorno.')
+    })
+
+    it('should translate not found error', () => {
+      const result = translateBackendError('Resource not found', 'item', 'resource')
+      expect(result).toBe('El elemento o entorno solicitado no fue encontrado.')
+    })
+
+    it('should return raw message when no specific pattern matches', () => {
+      const result = translateBackendError({ message: 'Invalid payload configuration' }, 'item', 'lock')
+      expect(result).toBe('Invalid payload configuration')
     })
   })
 })

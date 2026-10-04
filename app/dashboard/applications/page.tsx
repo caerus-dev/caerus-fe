@@ -430,6 +430,7 @@ export default function ApplicationsPage() {
         >
           <DialogContent className="max-w-lg bg-card/95 backdrop-blur-md border-border/80 shadow-2xl p-6 overflow-hidden">
             <DialogHeader className="space-y-3 pb-3 border-b border-border/50 text-left">
+              <DialogDescription className="sr-only">Detalles y descripción completa de la aplicación</DialogDescription>
               <div className="flex items-center gap-3 min-w-0">
                 <div className="h-11 w-11 rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center text-primary shrink-0 shadow-sm">
                   <Box className="h-5 w-5" />

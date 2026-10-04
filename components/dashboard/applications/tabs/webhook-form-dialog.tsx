@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 
 interface WebhookFormDialogProps {
   open: boolean
@@ -143,16 +144,26 @@ export function WebhookFormDialog({
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://tu-dominio.com/webhooks"
+                maxLength={500}
                 required
               />
               {urlError && <p className="text-sm text-destructive">{urlError}</p>}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Descripción (Opcional)</label>
+              <div className="flex justify-between items-center">
+                <label className="text-sm font-medium">Descripción (Opcional)</label>
+                <span className={cn(
+                  "text-[10px] transition-colors",
+                  description.length >= 500 ? "text-destructive font-semibold" : description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                )}>
+                  {description.length} / 500
+                </span>
+              </div>
               <Input
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                maxLength={500}
                 placeholder="Ej. Webhook para notificar sobre recursos SRE"
               />
             </div>

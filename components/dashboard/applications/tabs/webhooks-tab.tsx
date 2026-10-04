@@ -158,7 +158,8 @@ export function WebhooksTab({
                     {webhook.description && (
                       <p
                         onClick={() => setSelectedWebhookId(webhook.id)}
-                        className="text-sm font-medium cursor-pointer hover:text-primary transition-colors truncate"
+                        className="text-sm font-medium cursor-pointer hover:text-primary transition-colors line-clamp-2 break-words [overflow-wrap:anywhere] [word-break:break-word]"
+                        title={webhook.description}
                       >
                         {webhook.description}
                       </p>

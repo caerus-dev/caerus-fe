@@ -332,7 +332,7 @@ export function WebhookDeliveriesView({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <h2 className="text-xl font-bold tracking-tight font-mono truncate max-w-[320px] sm:max-w-[500px]">
+              <h2 className="text-xl font-bold tracking-tight font-mono truncate max-w-[320px] sm:max-w-[500px]" title={webhook.description || webhook.url}>
                 {webhook.description || webhook.url}
               </h2>
               <span

@@ -434,7 +434,7 @@ export default function ApplicationSettingsPage({
                             {env.name}
                           </Badge>
                           {env.description && (
-                            <p className="text-xs text-muted-foreground truncate italic">
+                            <p className="text-xs text-muted-foreground truncate italic" title={env.description}>
                               {env.description}
                             </p>
                           )}
@@ -587,7 +587,15 @@ export default function ApplicationSettingsPage({
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="envName">Nombre del Entorno *</Label>
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="envName">Nombre del Entorno *</Label>
+                  <span className={cn(
+                    "text-[10px] transition-colors",
+                    envForm.name.length >= 100 ? "text-destructive font-semibold" : envForm.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                  )}>
+                    {envForm.name.length} / 100
+                  </span>
+                </div>
                 <Input
                   id="envName"
                   value={envForm.name}
@@ -619,7 +627,15 @@ export default function ApplicationSettingsPage({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="envDesc">Descripción</Label>
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="envDesc">Descripción</Label>
+                  <span className={cn(
+                    "text-[10px] transition-colors",
+                    envForm.description.length >= 500 ? "text-destructive font-semibold" : envForm.description.length >= 450 ? "text-yellow-500 font-medium" : "text-muted-foreground"
+                  )}>
+                    {envForm.description.length} / 500
+                  </span>
+                </div>
                 <Textarea
                   id="envDesc"
                   value={envForm.description}
