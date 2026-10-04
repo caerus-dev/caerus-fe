@@ -1,6 +1,6 @@
 {
   "name": "caerus-fe",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "packageManager": "pnpm@11.18.0",
   "private": true,
   "scripts": {
