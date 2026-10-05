@@ -211,6 +211,26 @@ export const formatTtl = (ms: any): string => {
   return `${days.toFixed(days % 1 === 0 ? 0 : 1)} d`
 }
 
+export function formatNumber(
+  value: number | string | null | undefined,
+  options?: Intl.NumberFormatOptions
+): string {
+  if (value === null || value === undefined || value === "") return "0"
+  const num = typeof value === "number" ? value : Number(value)
+  if (isNaN(num)) return String(value)
+  return num.toLocaleString("es-AR", options)
+}
+
+export function formatDateTime(
+  dateInput: string | number | Date | null | undefined,
+  options?: Intl.DateTimeFormatOptions
+): string {
+  if (!dateInput) return ""
+  const date = new Date(dateInput)
+  if (isNaN(date.getTime())) return ""
+  return date.toLocaleString("es-AR", options)
+}
+
 export const formatPercentage = (val: number): string => {
   if (!val || isNaN(val)) return '0'
   if (val >= 100) return Math.round(val).toString()

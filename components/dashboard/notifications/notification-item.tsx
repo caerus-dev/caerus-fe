@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { NotificationItem } from "@/types/notification";
-import { formatRelativeTime, cn } from "@/lib/utils";
+import { formatRelativeTime, cn, formatNumber } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 
 interface NotificationItemRowProps {
@@ -112,14 +112,14 @@ export function NotificationItemRow({
   // Formatear números con separador de miles y evitar repetición de porcentajes en mensaje
   const formattedMessage = React.useMemo(() => {
     if (isBilling && metadata?.consumed !== undefined && metadata?.included !== undefined) {
-      const consumed = Number(metadata.consumed).toLocaleString("es-ES");
-      const included = Number(metadata.included).toLocaleString("es-ES");
+      const consumed = formatNumber(metadata.consumed);
+      const included = formatNumber(metadata.included);
       const plan = metadata.planName || "Developer";
       return `Has consumido ${consumed} de las ${included} requests incluidas en tu plan ${plan}.`;
     }
     return message
       .replace(/\s*\(\d+%\)/g, "")
-      .replace(/\b\d{4,}\b/g, (num) => Number(num).toLocaleString("es-ES"));
+      .replace(/\b\d{4,}\b/g, (num) => formatNumber(num));
   }, [isBilling, metadata, message]);
 
   return (

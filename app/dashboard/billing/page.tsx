@@ -64,7 +64,7 @@ import {
 } from "@/types/billing";
 import { useUser, triggerUserRefresh } from "@/hooks/use-user";
 import { SetupPaymentMethodModal } from "@/components/billing/SetupPaymentMethodModal";
-import { formatPercentage } from "@/lib/utils";
+import { formatPercentage, formatNumber } from "@/lib/utils";
 
 export default function BillingPage() {
   const router = useRouter();
@@ -441,7 +441,7 @@ export default function BillingPage() {
                   ) : currentPlan?.code === "ENTERPRISE" ? (
                     "Incluido en el plan"
                   ) : currentPlan?.overageBlockPrice && currentPlan.overageBlockPrice.amount > 0 ? (
-                    `${formatMoney(currentPlan.overageBlockPrice.amount)} por cada ${(currentPlan.overageBlockSize || 10000).toLocaleString()} requests`
+                    `${formatMoney(currentPlan.overageBlockPrice.amount)} por cada ${formatNumber(currentPlan.overageBlockSize || 10000)} requests`
                   ) : (
                     "Incluido en el plan"
                   )}
@@ -457,7 +457,7 @@ export default function BillingPage() {
                     Consumo del Período ({usage?.period || new Date().toISOString().slice(0, 7)})
                   </span>
                   <div className="text-muted-foreground font-mono">
-                    {(usage?.consumedUnits ?? 0).toLocaleString()} requests consumidas
+                    {formatNumber(usage?.consumedUnits ?? 0)} requests consumidas
                   </div>
                 </div>
                 <div className="p-2.5 rounded-lg border border-purple-500/20 bg-purple-500/5 text-xs text-muted-foreground flex items-center gap-2">
@@ -475,7 +475,7 @@ export default function BillingPage() {
                     {isUserLoading ? (
                       <Skeleton className="h-4 w-28" />
                     ) : (
-                      `${(usage?.consumedUnits ?? 0).toLocaleString()} / ${(usage?.includedUnits ?? 0).toLocaleString()} requests (${formatPercentage(percentage)}%)`
+                      `${formatNumber(usage?.consumedUnits ?? 0)} / ${formatNumber(usage?.includedUnits ?? 0)} requests (${formatPercentage(percentage)}%)`
                     )}
                   </div>
                 </div>
@@ -821,7 +821,7 @@ export default function BillingPage() {
                         <div className="flex items-center justify-between text-muted-foreground">
                           <span>Requests incluidas:</span>
                           <strong className="text-foreground font-semibold">
-                            {isEnterprise ? "A medida / Ilimitadas" : `${p.includedBillingUnits.toLocaleString()} reqs`}
+                            {isEnterprise ? "A medida / Ilimitadas" : `${formatNumber(p.includedBillingUnits)} reqs`}
                           </strong>
                         </div>
                         <div className="flex items-center justify-between text-muted-foreground">
@@ -840,7 +840,7 @@ export default function BillingPage() {
                             {isEnterprise
                               ? "SLA Dedicado"
                               : p.overageBlockPrice.amount > 0
-                              ? `${formatMoney(p.overageBlockPrice.amount)} / ${(p.overageBlockSize || 10000).toLocaleString()} reqs`
+                              ? `${formatMoney(p.overageBlockPrice.amount)} / ${formatNumber(p.overageBlockSize || 10000)} reqs`
                               : "Incluido"}
                           </strong>
                         </div>

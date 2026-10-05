@@ -26,7 +26,7 @@ import { CreateAppButton } from "@/components/applications/CreateAppButton";
 import { fetchBackend } from "@/lib/api";
 import { auth0 } from "@/lib/auth0";
 import { UserResponse } from "@/types/billing";
-import { formatPercentage, formatRelativeTime } from "@/lib/utils";
+import { formatPercentage, formatRelativeTime, formatNumber } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const session = await auth0.getSession();
@@ -242,7 +242,7 @@ export default async function DashboardPage() {
                 <CardDescription className="text-xs text-muted-foreground mt-0.5">
                   {isEnterprise
                     ? "Límite incluido en tu plan Enterprise: Capacidad a medida según contrato"
-                    : `Límite incluido en tu plan ${userProfile?.billingPlan?.name || "Developer"}: ${includedUnits.toLocaleString()} requests`}
+                    : `Límite incluido en tu plan ${userProfile?.billingPlan?.name || "Developer"}: ${formatNumber(includedUnits)} requests`}
                 </CardDescription>
               </div>
               <Button asChild variant="outline" size="sm" className="text-xs h-8">
@@ -256,7 +256,7 @@ export default async function DashboardPage() {
             {isEnterprise ? (
               <div className="flex items-center justify-between text-xs py-1">
                 <span className="text-muted-foreground">
-                  <strong className="text-foreground font-mono">{consumedUnits.toLocaleString()}</strong> requests consumidas este período
+                  <strong className="text-foreground font-mono">{formatNumber(consumedUnits)}</strong> requests consumidas este período
                 </span>
                 <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20 text-[10px] font-semibold">
                   Sin límite estricto
@@ -266,8 +266,8 @@ export default async function DashboardPage() {
               <>
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">
-                    <strong className="text-foreground font-mono">{consumedUnits.toLocaleString()}</strong> de{" "}
-                    <span className="font-mono">{includedUnits.toLocaleString()}</span> requests consumidas
+                    <strong className="text-foreground font-mono">{formatNumber(consumedUnits)}</strong> de{" "}
+                    <span className="font-mono">{formatNumber(includedUnits)}</span> requests consumidas
                   </span>
                   <span className="font-mono font-bold text-foreground">
                     {formatPercentage(usagePercentage)}%

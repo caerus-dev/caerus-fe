@@ -40,9 +40,9 @@ export function MetricMainGraph({ metric, data }: MetricMainGraphProps) {
   const formatStat = (num: number) => {
     if (num === 0) return "0"
     if (Math.abs(num) < 1) {
-      return new Intl.NumberFormat("en-US", { maximumSignificantDigits: 2 }).format(num)
+      return new Intl.NumberFormat("es-AR", { maximumSignificantDigits: 2 }).format(num)
     }
-    return new Intl.NumberFormat("en-US", { notation: "compact", compactDisplay: "short", maximumFractionDigits: 1 }).format(num)
+    return new Intl.NumberFormat("es-AR", { notation: "compact", compactDisplay: "short", maximumFractionDigits: 1 }).format(num)
   }
 
   return (
@@ -93,7 +93,7 @@ export function MetricMainGraph({ metric, data }: MetricMainGraphProps) {
                   axisLine={false} 
                   tickMargin={10} 
                   width={50} 
-                  tickFormatter={(tick) => new Intl.NumberFormat("en-US", { notation: "compact", compactDisplay: "short", maximumFractionDigits: 1 }).format(tick)}
+                  tickFormatter={(tick) => new Intl.NumberFormat("es-AR", { notation: "compact", compactDisplay: "short", maximumFractionDigits: 1 }).format(tick)}
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Area

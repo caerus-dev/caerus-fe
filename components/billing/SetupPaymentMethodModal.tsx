@@ -38,6 +38,7 @@ import {
 import { triggerUserRefresh, useUser } from "@/hooks/use-user";
 import { BillingPlan, PlanCode } from "@/types/billing";
 import { DEFAULT_BILLING_PLANS } from "@/lib/billing-plans";
+import { formatNumber } from "@/lib/utils";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ||
@@ -581,7 +582,7 @@ export function SetupPaymentMethodModal({
                           <p className="flex items-center justify-between">
                             <span>Requests:</span>
                             <strong className="text-foreground font-semibold">
-                              {isEnterprise ? "Personalizadas" : p.includedBillingUnits.toLocaleString()}
+                              {isEnterprise ? "Personalizadas" : formatNumber(p.includedBillingUnits)}
                             </strong>
                           </p>
                           <p className="flex items-center justify-between">
@@ -596,7 +597,7 @@ export function SetupPaymentMethodModal({
                               {isEnterprise
                                 ? "SLA 99.99% Dedicado"
                                 : p.overageBlockPrice.amount > 0
-                                ? `$${(p.overageBlockPrice.amount / 100).toFixed(2)} / ${p.overageBlockSize.toLocaleString()}u`
+                                ? `$${(p.overageBlockPrice.amount / 100).toFixed(2)} / ${formatNumber(p.overageBlockSize)}u`
                                 : "Incluido"}
                             </span>
                           </p>

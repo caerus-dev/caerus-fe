@@ -117,7 +117,7 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
           <div className="divide-y divide-border/40 font-mono text-xs">
             {logs.map((log) => {
               const isWebhookOpen = expandedWebhooks[log.id] ?? false
-              const timeString = new Date(log.timestamp).toLocaleTimeString()
+              const timeString = new Date(log.timestamp).toLocaleTimeString("es-AR")
 
               return (
                 <div key={log.id} className="p-3 hover:bg-zinc-900/40 transition-colors">

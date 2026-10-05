@@ -39,7 +39,7 @@ import {
 import { useUser } from "@/hooks/use-user"
 import { useApps } from "@/components/dashboard/apps-context"
 import { toast } from "sonner"
-import { formatPercentage } from "@/lib/utils"
+import { formatPercentage, formatNumber } from "@/lib/utils"
 
 export default function UsagePage() {
   const [timeRange, setTimeRange] = useState("30d")
@@ -189,7 +189,7 @@ export default function UsagePage() {
         ["Requests Incluidas", includedUnits.toString()],
         ["Porcentaje de Uso", `${formatPercentage(usagePercentage)}%`],
         ["Aplicaciones Activas", applications.map((a) => a.name).join("; ") || "Ninguna"],
-        ["Fecha de Generación", new Date().toLocaleString("es-ES")],
+        ["Fecha de Generación", new Date().toLocaleString("es-AR")],
       ]
       const escapeCsvCell = (cell: string) => {
         const neutralized = /^[=+\-@\t\r]/.test(cell) ? `'${cell}` : cell
@@ -294,7 +294,7 @@ export default function UsagePage() {
             ) : (
               <div>
                 <div className="text-3xl font-bold text-primary">
-                  {consumedUnits.toLocaleString()}
+                  {formatNumber(consumedUnits)}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Período {period}
@@ -361,7 +361,7 @@ export default function UsagePage() {
                     {formatPercentage(usagePercentage)}%
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {consumedUnits.toLocaleString()} / {includedUnits.toLocaleString()} requests
+                    {formatNumber(consumedUnits)} / {formatNumber(includedUnits)} requests
                   </span>
                 </div>
                 <div className="h-2 rounded-full bg-secondary overflow-hidden">
@@ -384,7 +384,7 @@ export default function UsagePage() {
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    Límite de {includedUnits.toLocaleString()} requests mensuales.
+                    Límite de {formatNumber(includedUnits)} requests mensuales.
                   </p>
                 )}
               </div>
@@ -457,7 +457,7 @@ export default function UsagePage() {
                 Desglose diario no disponible para este período
               </p>
               <p className="text-xs text-muted-foreground max-w-sm mt-1">
-                Se registraron {consumedUnits.toLocaleString()} requests en el período de facturación actual, pero no se encontraron métricas diarias detalladas para el rango seleccionado.
+                Se registraron {formatNumber(consumedUnits)} requests en el período de facturación actual, pero no se encontraron métricas diarias detalladas para el rango seleccionado.
               </p>
             </div>
           ) : (
@@ -545,7 +545,7 @@ export default function UsagePage() {
                         ) : hasUsage ? (
                           <div>
                             <span className="font-semibold text-foreground">
-                              {appCalls.toLocaleString()}
+                              {formatNumber(appCalls)}
                             </span>{" "}
                             <span className="text-muted-foreground">requests</span>
                             {appCalls > 0 && (

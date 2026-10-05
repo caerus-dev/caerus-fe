@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { cn, getEnvColors, formatPercentage, formatRelativeTime, translateBackendError } from '@/lib/utils'
+import { cn, getEnvColors, formatPercentage, formatRelativeTime, translateBackendError, formatNumber, formatDateTime } from '@/lib/utils'
 
 describe('lib/utils', () => {
   describe('cn', () => {
@@ -156,6 +156,37 @@ describe('lib/utils', () => {
     it('should return raw message when no specific pattern matches', () => {
       const result = translateBackendError({ message: 'Invalid payload configuration' }, 'item', 'lock')
       expect(result).toBe('Invalid payload configuration')
+    })
+  })
+
+  describe('formatNumber', () => {
+    it('should format numbers with dot as thousand separator in es-AR', () => {
+      expect(formatNumber(1088)).toBe('1.088')
+      expect(formatNumber(10000)).toBe('10.000')
+      expect(formatNumber(100000)).toBe('100.000')
+      expect(formatNumber(0)).toBe('0')
+    })
+
+    it('should handle string numbers, null and undefined', () => {
+      expect(formatNumber('1088')).toBe('1.088')
+      expect(formatNumber(null)).toBe('0')
+      expect(formatNumber(undefined)).toBe('0')
+      expect(formatNumber('')).toBe('0')
+      expect(formatNumber('invalid')).toBe('invalid')
+    })
+  })
+
+  describe('formatDateTime', () => {
+    it('should format date in es-AR', () => {
+      const date = new Date('2026-10-04T12:00:00Z')
+      const formatted = formatDateTime(date)
+      expect(formatted).toContain('2026')
+    })
+
+    it('should return empty string for invalid date or falsy input', () => {
+      expect(formatDateTime(null)).toBe('')
+      expect(formatDateTime(undefined)).toBe('')
+      expect(formatDateTime('invalid-date')).toBe('')
     })
   })
 })

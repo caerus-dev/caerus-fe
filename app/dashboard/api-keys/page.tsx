@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { SetupPaymentMethodModal } from "@/components/billing/SetupPaymentMethodModal"
-import { cn } from "@/lib/utils"
+import { cn, formatDateTime } from "@/lib/utils"
 
 const EMPTY_ENVIRONMENTS: any[] = []
 
@@ -418,8 +418,8 @@ export default function ApiKeysPage() {
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Creada el: {new Date(key.createdAt).toLocaleString()} 
-                        {key.revokedAt && ` • Revocada el: ${new Date(key.revokedAt).toLocaleString()}`}
+                        Creada el: {formatDateTime(key.createdAt)} 
+                        {key.revokedAt && ` • Revocada el: ${formatDateTime(key.revokedAt)}`}
                       </p>
                     </div>
                   </div>

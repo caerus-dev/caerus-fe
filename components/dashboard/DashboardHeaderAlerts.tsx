@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { UserResponse } from "@/types/billing";
 import { useUser } from "@/hooks/use-user";
 import { SetupPaymentMethodModal } from "@/components/billing/SetupPaymentMethodModal";
-import { formatPercentage } from "@/lib/utils";
+import { formatPercentage, formatNumber } from "@/lib/utils";
 
 export interface DashboardHeaderAlertsProps {
   user?: UserResponse | null;
@@ -34,8 +34,8 @@ export function DashboardHeaderAlerts({
   const hasPaymentMethod = Boolean(user.hasValidPaymentMethod);
   const usage = user.billingUsage;
   const percentage = usage?.percentage ?? 0;
-  const consumedUnits = usage?.consumedUnits?.toLocaleString() ?? "0";
-  const includedUnits = usage?.includedUnits?.toLocaleString() ?? "0";
+  const consumedUnits = formatNumber(usage?.consumedUnits);
+  const includedUnits = formatNumber(usage?.includedUnits);
 
   return (
     <div className={`space-y-4 ${className}`}>

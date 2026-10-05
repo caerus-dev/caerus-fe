@@ -2,7 +2,7 @@ import React from 'react'
 import { Key, Plus, Trash2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { cn, getEnvColors } from '@/lib/utils'
+import { cn, getEnvColors, formatDateTime } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 
 interface ApiKeysTabProps {
@@ -137,8 +137,8 @@ export function ApiKeysTab({
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Creada el: {new Date(key.createdAt).toLocaleString()}
-                      {key.revokedAt && ` • Revocada el: ${new Date(key.revokedAt).toLocaleString()}`}
+                      Creada el: {formatDateTime(key.createdAt)}
+                      {key.revokedAt && ` • Revocada el: ${formatDateTime(key.revokedAt)}`}
                     </p>
                   </div>
                 </div>
