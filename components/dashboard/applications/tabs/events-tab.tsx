@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { format, formatDistanceToNow, subDays, subHours } from "date-fns";
+import { es } from "date-fns/locale";
 import {
   Search,
   Filter,
@@ -617,7 +618,7 @@ export function EventsTab({
                           {format(dateObj, "dd/MM/yyyy HH:mm:ss")}
                         </div>
                         <div className="text-[10px] text-muted-foreground">
-                          {formatDistanceToNow(dateObj, { addSuffix: true })}
+                          {formatDistanceToNow(dateObj, { addSuffix: true, locale: es })}
                         </div>
                       </TableCell>
 

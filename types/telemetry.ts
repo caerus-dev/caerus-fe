@@ -18,7 +18,7 @@ export interface LiveResourcesPageResponse {
 export interface LiveHolderResponse {
   holderId: string;
   resourceId: string;
-  status: string; // "ACTIVE" | "PENDING" | "CONFIRMED" | "RELEASED" | "EXPIRED"
+  status: string; // "PENDING" | "CONFIRMED" | "RELEASED" | "QUEUED" | "EXPIRED"
   amount: number;
   expiresAt: number;
   metadata?: string | null;

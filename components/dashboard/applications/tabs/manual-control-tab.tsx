@@ -67,6 +67,7 @@ import {
   LiveTransactionStatusResponse,
 } from "@/types/telemetry";
 import { format, formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface ManualControlTabProps {
   appId: string;
@@ -112,11 +113,12 @@ export function ManualControlTab({
       const num = Number(timestamp);
       const d = !isNaN(num) && num > 0 ? new Date(num) : new Date(timestamp);
       if (isNaN(d.getTime())) return "-";
-      return formatDistanceToNow(d, { addSuffix: true });
+      return formatDistanceToNow(d, { addSuffix: true, locale: es });
     } catch {
       return "-";
     }
   };
+
 
   // Helper para verificar si un holder está en un estado final
   const isHolderFinalStatus = (status?: string, expiresAt?: number) => {
@@ -127,6 +129,34 @@ export function ManualControlTab({
       if (expMs < Date.now()) return true;
     }
     return false;
+  };
+
+  // Helper para traducir errores conocidos del backend a mensajes legibles
+  const translateBackendError = (msg?: string | null) => {
+    if (!msg) return "Error desconocido.";
+    const trimmed = msg.trim();
+    if (trimmed.includes("ResourceHolder is not in a valid state to be released")) {
+      return "El holder ya no está en un estado válido para ser liberado (probablemente ya expiró o fue liberado).";
+    }
+    if (trimmed.includes("ResourceHolder is not in a valid state to be extended")) {
+      return "El holder ya no está en un estado válido para ser extendido (probablemente ya expiró o fue liberado).";
+    }
+    if (trimmed.includes("ResourceHolder") && trimmed.includes("not found")) {
+      return "El holder especificado no existe o ya fue depurado.";
+    }
+    if (trimmed.includes("Resource not found") || (trimmed.includes("Resource") && trimmed.includes("not found"))) {
+      return "El recurso especificado no fue encontrado.";
+    }
+    if (trimmed.includes("Transaction is not active") || trimmed.includes("Cannot renew transaction in state")) {
+      return "La transacción no está activa.";
+    }
+    if (trimmed.includes("Transaction was modified concurrently")) {
+      return "La transacción fue modificada concurrentemente por otro proceso.";
+    }
+    if (trimmed.includes("Cannot renew an aborted transaction")) {
+      return "No se puede renovar una transacción abortada.";
+    }
+    return trimmed;
   };
 
   // Producto activo: SRE o DLS inicializado desde initialPreselect si existe
@@ -256,7 +286,6 @@ export function ManualControlTab({
           const data = await res.json();
           if (data && (data.key === cleanKey || data.resourceId === cleanKey)) {
             setResolvedResource(data);
-            setResult((prev: any) => (prev ? prev : data));
             if (data.templateId) {
               const hasTpl = localTemplates.some((t: any) => t.id === data.templateId);
               if (!hasTpl) {
@@ -333,6 +362,24 @@ export function ManualControlTab({
   );
 
   const isUnitaryBlocked = Boolean(isCurrentUnitary && cannotSaveMetadata);
+
+  // Determinar si la plantilla asociada permite encolamiento (QUEUE)
+  const allowsQueue = useMemo(() => {
+    if (!currentResourceTemplate) return true;
+    const strat = (
+      (currentResourceTemplate as any).conflictResolution ||
+      (currentResourceTemplate as any).conflictStrategy ||
+      ""
+    ).toString().toUpperCase();
+    return strat === "QUEUE";
+  }, [currentResourceTemplate]);
+
+  // Si la plantilla no admite colas y el filtro estaba en QUEUED, revertir a ALL
+  useEffect(() => {
+    if (!allowsQueue && sreStatusFilter === "QUEUED") {
+      setSreStatusFilter("ALL");
+    }
+  }, [allowsQueue, sreStatusFilter]);
 
   // Referencia para no re-ejecutar la misma preselección si el componente o su padre se re-renderiza
   const executedSignatureRef = useRef<string | null>(null);
@@ -584,19 +631,21 @@ export function ManualControlTab({
             }
           }
         }
-        setErrorMessage(errText);
-        toast.error(`Error en la llamada: ${errText}`);
+        const friendlyError = translateBackendError(errText);
+        setErrorMessage(friendlyError);
+        toast.error(`Error en la llamada: ${friendlyError}`);
       } else {
         if (res.status === 204) {
-          const targetResKey = (
+          const curHolderId = options?.overrideParams?.holderId || holderId;
+          const rawTargetResKey = (
             options?.overrideParams?.resourceKey ||
             resourceKey ||
-            (result && typeof result.resourceId === "string" ? result.resourceId : "") ||
             ""
           ).trim();
 
+          const targetResKey = rawTargetResKey !== curHolderId ? rawTargetResKey : "";
+
           if (currentProduct === "SRE" && currentMethod === "RELEASE_HOLDER" && targetResKey) {
-            const curHolderId = options?.overrideParams?.holderId || holderId;
             setLastReleasedHolderInfo({
               holderId: curHolderId,
               resourceKey: targetResKey,
@@ -623,8 +672,35 @@ export function ManualControlTab({
           toast.success("Operación ejecutada exitosamente.");
         } else {
           const data = await res.json();
-          setResult(data);
-          toast.success("Consulta completada.");
+          if (currentMethod === "ABORT_TRANSACTION") {
+            const curTx = options?.overrideParams?.transactionId || transactionId;
+            setResult({
+              success: true,
+              message: `Transacción '${curTx}' abortada con éxito en el motor DLS. Todos los locks asociados fueron liberados.`,
+            });
+            toast.success(`Transacción '${curTx}' abortada con éxito.`);
+          } else {
+            setResult(data);
+            if (currentMethod === "GET_TRANSACTION_STATUS") {
+              toast.success("Estado de la transacción obtenido.");
+            } else if (currentMethod === "GET_LOCK_STATUS") {
+              toast.success("Estado del lock obtenido.");
+            } else if (currentMethod === "GET_RESOURCE") {
+              toast.success("Telemetría del recurso cargada.");
+            } else if (currentMethod === "GET_RESOURCE_HOLDERS") {
+              toast.success("Lista de holders cargada.");
+            } else if (currentMethod === "GET_HOLDER") {
+              toast.success("Detalle del holder cargado.");
+            } else if (currentMethod === "GET_RESOURCES_BY_GROUP") {
+              toast.success("Recursos del grupo cargados.");
+            } else if (currentMethod === "UPDATE_RESOURCE") {
+              toast.success("Recurso actualizado con éxito.");
+            } else if (currentMethod === "RELEASE_LOCK" || currentMethod === "RELEASE_TRANSACTION_LOCKS") {
+              toast.success("Lock(s) liberado(s) con éxito.");
+            } else {
+              toast.success("Operación ejecutada exitosamente.");
+            }
+          }
         }
       }
     } catch (err: any) {
@@ -713,12 +789,8 @@ export function ManualControlTab({
   };
 
   const handleForceReleaseHolder = (hId: string, associatedResKey?: string) => {
-    const targetResKey = (
-      associatedResKey ||
-      resourceKey ||
-      (result && typeof result.resourceId === "string" ? result.resourceId : "") ||
-      ""
-    ).trim();
+    const rawTarget = (associatedResKey || resourceKey || "").trim();
+    const targetResKey = rawTarget !== hId ? rawTarget : "";
 
     handleRequestDangerousAction(
       "Liberar Holder Forzosamente",
@@ -728,7 +800,7 @@ export function ManualControlTab({
         await executeCall({
           overrideProduct: "SRE",
           overrideMethod: "RELEASE_HOLDER",
-          overrideParams: { holderId: hId, resourceKey: targetResKey },
+          overrideParams: { holderId: hId, resourceKey: targetResKey || undefined },
         });
       }
     );
@@ -805,7 +877,7 @@ export function ManualControlTab({
       } else if (product === "DLS" && dlsMethod === "ABORT_TRANSACTION") {
         handleRequestDangerousAction(
           "Abortar Transacción Distribuida",
-          `¿Estás seguro de abortar la transacción '${transactionId}'? Se liberarán todos sus bloqueos.`,
+          `¿Estás seguro de abortar la transacción '${transactionId}'? Se liberarán todos sus locks.`,
           () => executeCall()
         );
       }
@@ -1034,6 +1106,21 @@ export function ManualControlTab({
                       </div>
                     )}
 
+                    {sreMethod === "RELEASE_HOLDER" && (
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-medium text-muted-foreground flex items-center justify-between">
+                          <span>Resource Key</span>
+                          <span className="text-[10px] text-muted-foreground/60">Opcional: para inspeccionar stock al liberar</span>
+                        </label>
+                        <Input
+                          placeholder="ej. stripe-payments, seat-vip-12"
+                          value={resourceKey === holderId ? "" : resourceKey}
+                          onChange={(e) => setResourceKey(e.target.value)}
+                          className="h-8 text-xs font-mono"
+                        />
+                      </div>
+                    )}
+
                     {sreMethod === "UPDATE_RESOURCE" && (
                       <>
                         {isCurrentUnitary && (
@@ -1213,10 +1300,10 @@ export function ManualControlTab({
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="ALL">Todos</SelectItem>
-                              <SelectItem value="ACTIVE">ACTIVE</SelectItem>
                               <SelectItem value="PENDING">PENDING</SelectItem>
                               <SelectItem value="CONFIRMED">CONFIRMED</SelectItem>
                               <SelectItem value="RELEASED">RELEASED</SelectItem>
+                              {allowsQueue && <SelectItem value="QUEUED">QUEUED</SelectItem>}
                               <SelectItem value="EXPIRED">EXPIRED</SelectItem>
                             </SelectContent>
                           </Select>
@@ -1923,6 +2010,8 @@ export function ManualControlTab({
                                         ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10"
                                         : isPending
                                         ? "border-amber-500/40 text-amber-400 bg-amber-500/10"
+                                        : h.status === "QUEUED"
+                                        ? "border-purple-500/40 text-purple-400 bg-purple-500/10"
                                         : "border-muted-foreground/40 text-muted-foreground"
                                     )}
                                   >
@@ -1951,7 +2040,7 @@ export function ManualControlTab({
                                     size="sm"
                                     className="h-7 text-xs gap-1"
                                     disabled={isViewer}
-                                    onClick={() => handleForceReleaseHolder(h.holderId, h.resourceId || resourceKey)}
+                                    onClick={() => handleForceReleaseHolder(h.holderId, resourceKey)}
                                   >
                                     <Trash2 className="h-3 w-3" />
                                     <span>Liberar Holder</span>
@@ -2032,7 +2121,7 @@ export function ManualControlTab({
                         size="sm"
                         className="h-7 text-xs gap-1"
                         disabled={isViewer}
-                        onClick={() => handleForceReleaseHolder(result.holderId || holderId, result.resourceId || resourceKey)}
+                        onClick={() => handleForceReleaseHolder(result.holderId || holderId, (resourceKey && resourceKey !== (result.holderId || holderId)) ? resourceKey : "")}
                       >
                         <Trash2 className="h-3 w-3" />
                         <span>Liberar este Holder</span>
@@ -2054,6 +2143,8 @@ export function ManualControlTab({
                               ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10"
                               : result.status === "PENDING"
                               ? "border-amber-500/40 text-amber-400 bg-amber-500/10"
+                              : result.status === "QUEUED"
+                              ? "border-purple-500/40 text-purple-400 bg-purple-500/10"
                               : "border-muted-foreground/40 text-muted-foreground"
                           )}
                         >
@@ -2151,12 +2242,27 @@ export function ManualControlTab({
                         {result.activeHolders.map((h: any, idx: number) => {
                           const expMs = h.expiresAt > 0 ? (h.expiresAt > 1e11 ? h.expiresAt : h.expiresAt * 1000) : null;
                           return (
-                            <div key={idx} className="p-2.5 flex items-center justify-between gap-2 text-xs font-mono">
-                              <span className="truncate max-w-[200px] text-foreground">
-                                Lock ID: {h.lockId}
-                              </span>
-                              <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-                                <span>Fencing Token: <strong>{h.fencingToken}</strong></span>
+                            <div key={idx} className="p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
+                              <div className="flex items-center gap-1.5 min-w-0">
+                                <span className="text-muted-foreground shrink-0 text-[11px]">Lock ID:</span>
+                                <span className="text-foreground truncate max-w-[220px] sm:max-w-[280px]" title={h.lockId}>
+                                  {h.lockId}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-5 w-5 shrink-0 text-muted-foreground hover:text-foreground cursor-pointer"
+                                  title="Copiar Lock ID"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(h.lockId || "");
+                                    toast.success("Lock ID copiado al portapapeles");
+                                  }}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </Button>
+                              </div>
+                              <div className="flex items-center gap-2 text-[11px] text-muted-foreground shrink-0">
+                                <span>Fencing Token: <strong className="text-foreground">{h.fencingToken}</strong></span>
                                 {expMs && (
                                   <span>• Expira: {formatDistanceSafe(expMs)}</span>
                                 )}
@@ -2294,14 +2400,14 @@ export function ManualControlTab({
                     </div>
                   ) : (
                     <p className="text-xs text-muted-foreground italic">
-                      No hay bloqueos registrados en esta transacción.
+                      No hay locks registrados en esta transacción.
                     </p>
                   )}
                 </Card>
               )}
 
               {/* CASO 7: Resultado Genérico / Confirmación 204 */}
-              {(sreMethod === "RELEASE_HOLDER" || dlsMethod === "ABORT_TRANSACTION" || result?.success === true || (result?.message && !result?.key && !result?.status)) && (
+              {(result?.success === true || (result?.message && !result?.key && !result?.status && !result?.holders && !result?.resources)) && (
                 <Card className="bg-emerald-500/10 border-emerald-500/30 p-4 space-y-3">
                   <div className="flex items-center gap-2.5 text-emerald-400">
                     <CheckCircle2 className="h-5 w-5 shrink-0" />
@@ -2314,7 +2420,7 @@ export function ManualControlTab({
                       </p>
                     </div>
                   </div>
-                  {product === "SRE" && resourceKey && (
+                  {product === "SRE" && resourceKey && resourceKey !== holderId && (
                     <div className="pt-2 border-t border-emerald-500/20 flex items-center justify-between gap-2 flex-wrap">
                       <span className="text-xs text-muted-foreground">
                         Recurso en formulario: <strong className="font-mono text-foreground">{resourceKey}</strong>
@@ -2348,7 +2454,7 @@ export function ManualControlTab({
                 (product === "SRE" && (sreMethod === "GET_HOLDER" || (result && result.holderId && typeof result.amount === "number" && !Array.isArray(result.holders)))) ||
                 (product === "DLS" && (dlsMethod === "GET_LOCK_STATUS" || (result && typeof result.isHeld === "boolean" && Array.isArray(result.activeHolders)))) ||
                 (product === "DLS" && (dlsMethod === "GET_TRANSACTION_STATUS" || (result && result.status && Array.isArray(result.locks)))) ||
-                (sreMethod === "RELEASE_HOLDER" || dlsMethod === "ABORT_TRANSACTION" || result?.success === true || (result?.message && !result?.key && !result?.status))
+                (result?.success === true || (result?.message && !result?.key && !result?.status && !result?.holders && !result?.resources))
               ) && (
                 <Card className="bg-card/60 border-border p-4 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-semibold text-foreground">

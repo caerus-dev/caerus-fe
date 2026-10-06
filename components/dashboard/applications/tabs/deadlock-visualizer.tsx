@@ -51,7 +51,21 @@ export function DeadlockVisualizer({
     rawStrategy.toLowerCase().includes("manual");
 
   const strategy = rawStrategy || (isAlertOnly ? "ALERT_ONLY" : "VICTIM_ABORT");
-  const reason = payload.reason;
+  const rawReason = payload.reason;
+
+  const translateDeadlockReason = (r?: string | null) => {
+    if (!r) return "";
+    const trimmed = r.trim();
+    if (trimmed === "Deadlock cycle detected with ALERT resolution strategy") {
+      return "Ciclo de interbloqueo detectado con estrategia de resolución ALERT.";
+    }
+    if (trimmed === "Deadlock cycle detected and victim transaction marked for abort") {
+      return "Ciclo de interbloqueo detectado. Transacción víctima marcada para abortar.";
+    }
+    return trimmed;
+  };
+
+  const reason = translateDeadlockReason(rawReason);
 
   return (
     <Card className="border-destructive/40 bg-destructive/5 dark:bg-destructive/10 overflow-hidden max-w-full min-w-0 shadow-xs">
@@ -160,7 +174,7 @@ export function DeadlockVisualizer({
               }}
             >
               <Ban className="h-3 w-3" />
-              <span>{isAlertOnly ? "Resolver en Control Manual" : "Inspeccionar Transacción"}</span>
+              <span>{isAlertOnly ? "Gestionar en Control Manual" : "Inspeccionar Transacción"}</span>
             </Button>
           </div>
         )}

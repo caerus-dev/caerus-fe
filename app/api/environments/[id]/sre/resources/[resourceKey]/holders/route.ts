@@ -25,7 +25,7 @@ export async function GET(
     const queryParts = [`page=${encodeURIComponent(page)}`];
     if (pageSize) queryParts.push(`pageSize=${encodeURIComponent(pageSize)}`);
     if (sortDirection) queryParts.push(`sortDirection=${encodeURIComponent(sortDirection)}`);
-    if (statusFilter && statusFilter !== "ALL") {
+    if (statusFilter && statusFilter !== "ALL" && statusFilter !== "ACTIVE") {
       queryParts.push(`statusFilter=${encodeURIComponent(statusFilter)}`);
     }
 
