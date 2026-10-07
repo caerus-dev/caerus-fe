@@ -36,10 +36,18 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts"
+import { ChartConfig, ChartContainer } from "@/components/ui/chart"
 import { useUser } from "@/hooks/use-user"
 import { useApps } from "@/components/dashboard/apps-context"
 import { toast } from "sonner"
 import { formatPercentage, formatNumber } from "@/lib/utils"
+
+const chartConfig = {
+  calls: {
+    label: "Consumo",
+    color: "var(--primary)",
+  },
+} satisfies ChartConfig
 
 export default function UsagePage() {
   const [timeRange, setTimeRange] = useState("30d")
@@ -409,44 +417,56 @@ export default function UsagePage() {
             </div>
           ) : totalDailyCalls > 0 ? (
             <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={dailyUsageData}>
+              <ChartContainer config={chartConfig} className="h-full w-full">
+                <AreaChart data={dailyUsageData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorCalls" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.35} />
+                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" strokeOpacity={0.4} />
                   <XAxis 
                     dataKey="date" 
-                    stroke="hsl(var(--muted-foreground))"
+                    stroke="var(--muted-foreground)"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                    minTickGap={24}
                     fontSize={12}
                   />
                   <YAxis 
-                    stroke="hsl(var(--muted-foreground))"
-                    fontSize={12}
+                    stroke="var(--muted-foreground)"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
                     allowDecimals={false}
+                    fontSize={12}
+                    width={45}
+                    tickFormatter={(val) => formatNumber(val)}
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
+                      backgroundColor: "var(--card)",
+                      borderColor: "var(--border)",
                       borderRadius: "8px",
+                      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.4)",
                     }}
-                    labelStyle={{ color: "hsl(var(--foreground))" }}
-                    formatter={(val: any) => [`${val} requests`, "Consumo"]}
+                    labelStyle={{ color: "var(--foreground)", fontWeight: 600, marginBottom: "4px" }}
+                    itemStyle={{ color: "var(--primary)" }}
+                    formatter={(val: any) => [`${formatNumber(Number(val))} requests`, "Consumo"]}
                   />
                   <Area
                     type="monotone"
                     dataKey="calls"
-                    stroke="hsl(var(--primary))"
+                    stroke="var(--primary)"
+                    strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#colorCalls)"
-                    strokeWidth={2}
+                    activeDot={{ r: 5, fill: "var(--primary)", stroke: "var(--background)", strokeWidth: 2 }}
                   />
                 </AreaChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             </div>
           ) : consumedUnits > 0 ? (
             <div className="h-[300px] flex flex-col items-center justify-center text-center p-6 border border-dashed rounded-lg bg-muted/20">

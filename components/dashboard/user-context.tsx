@@ -121,6 +121,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
     };
   }, [fetchUser, fetchSessionUser]);
 
+  const refreshUser = useCallback(() => fetchUser(), [fetchUser]);
+
   return (
     <UserContext.Provider
       value={{
@@ -128,7 +130,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         sessionUser,
         isLoading,
         error,
-        refreshUser: () => fetchUser(),
+        refreshUser,
         hasValidPaymentMethod: Boolean(user?.hasValidPaymentMethod),
       }}
     >
