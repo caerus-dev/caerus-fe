@@ -44,6 +44,7 @@ import {
   Calendar,
   X
 } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 interface Collaborator {
   id: string
@@ -460,17 +461,20 @@ export default function TeamPage({
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
+                <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                   <Badge
                     variant="outline"
-                    className={`${roleLabels[collaborator.role]?.color}`}
+                    className={cn(
+                      "min-w-[95px] justify-center text-center font-medium",
+                      roleLabels[collaborator.role]?.color
+                    )}
                   >
                     {roleLabels[collaborator.role]?.label}
                   </Badge>
-                  {myRole === "OWNER" && collaborator.role !== "OWNER" && (
+                  {myRole === "OWNER" && collaborator.role !== "OWNER" ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 cursor-pointer shrink-0">
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -491,6 +495,8 @@ export default function TeamPage({
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
+                  ) : (
+                    <div className="w-8 h-8 shrink-0" aria-hidden="true" />
                   )}
                 </div>
               </div>

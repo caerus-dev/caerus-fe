@@ -320,11 +320,9 @@ export default function UsagePage() {
                   <span className="text-3xl font-bold text-foreground">
                     {currentPlan?.name || "Sin plan"}
                   </span>
-                  {currentPlan?.code && (
-                    <Badge variant="secondary" className="font-mono text-xs">
-                      {currentPlan.code}
-                    </Badge>
-                  )}
+                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-xs font-semibold">
+                    Activo
+                  </Badge>
                 </div>
                 <div className="mt-1">
                   <Link
@@ -361,7 +359,7 @@ export default function UsagePage() {
                     {formatPercentage(usagePercentage)}%
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {formatNumber(consumedUnits)} / {formatNumber(includedUnits)} requests
+                    {formatNumber(consumedUnits)} / {formatNumber(includedUnits)} reqs / mes
                   </span>
                 </div>
                 <div className="h-2 rounded-full bg-secondary overflow-hidden">
@@ -384,7 +382,7 @@ export default function UsagePage() {
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    Límite de {formatNumber(includedUnits)} requests mensuales.
+                    Límite de {formatNumber(includedUnits)} reqs / mes.
                   </p>
                 )}
               </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   CreditCard,
   Zap,
@@ -178,11 +179,18 @@ export default function BillingPage() {
         router.refresh();
       } else {
         const errData = await res.json().catch(() => ({}));
-        setPlanChangeError(
+        let rawError =
           errData.message ||
-            errData.error ||
-            "No fue posible cambiar el plan. Por favor verifica los requisitos."
-        );
+          errData.error ||
+          "No fue posible cambiar el plan. Por favor verifica los requisitos.";
+        if (
+          rawError.includes("Cannot downgrade") ||
+          rawError.includes("remove collaborators before downgrading")
+        ) {
+          rawError =
+            "No es posible descender al plan Developer. Tienes colaboradores activos en tus aplicaciones; debes removerlos antes de descender de plan.";
+        }
+        setPlanChangeError(rawError);
       }
     } catch (err: any) {
       console.error("Error changing plan:", err);
@@ -317,7 +325,7 @@ export default function BillingPage() {
           <AlertTitle className="font-semibold text-sm">Tu cuenta está en el plan gratuito Developer (Pendiente de Activación)</AlertTitle>
           <AlertDescription className="text-xs text-muted-foreground mt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <span>
-              Tienes 50.000 requests mensuales incluidas sin costo ($0/mes). Para activar tu cuenta y habilitar el despliegue de aplicaciones, registra una tarjeta de respaldo.
+              Tienes 50.000 reqs / mes incluidas sin costo ($0/mes). Para activar tu cuenta y habilitar el despliegue de aplicaciones, registra una tarjeta de respaldo.
             </span>
             <Button
               size="sm"
@@ -350,8 +358,8 @@ export default function BillingPage() {
                       currentPlan?.name || "Developer"
                     )}
                   </CardTitle>
-                  <Badge variant="secondary" className="font-mono text-xs">
-                    {currentPlan?.code || "DEVELOPER"}
+                  <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-xs font-semibold">
+                    Activo
                   </Badge>
                   {!hasPaymentMethod && !isUserLoading && (
                     <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 text-xs font-semibold">
@@ -441,7 +449,7 @@ export default function BillingPage() {
                   ) : currentPlan?.code === "ENTERPRISE" ? (
                     "Incluido en el plan"
                   ) : currentPlan?.overageBlockPrice && currentPlan.overageBlockPrice.amount > 0 ? (
-                    `${formatMoney(currentPlan.overageBlockPrice.amount)} por cada ${formatNumber(currentPlan.overageBlockSize || 10000)} requests`
+                    `${formatMoney(currentPlan.overageBlockPrice.amount)} por cada ${formatNumber(currentPlan.overageBlockSize || 10000)} reqs`
                   ) : (
                     "Incluido en el plan"
                   )}
@@ -457,7 +465,7 @@ export default function BillingPage() {
                     Consumo del Período ({usage?.period || new Date().toISOString().slice(0, 7)})
                   </span>
                   <div className="text-muted-foreground font-mono">
-                    {formatNumber(usage?.consumedUnits ?? 0)} requests consumidas
+                    {formatNumber(usage?.consumedUnits ?? 0)} reqs consumidas
                   </div>
                 </div>
                 <div className="p-2.5 rounded-lg border border-purple-500/20 bg-purple-500/5 text-xs text-muted-foreground flex items-center gap-2">
@@ -475,7 +483,7 @@ export default function BillingPage() {
                     {isUserLoading ? (
                       <Skeleton className="h-4 w-28" />
                     ) : (
-                      `${formatNumber(usage?.consumedUnits ?? 0)} / ${formatNumber(usage?.includedUnits ?? 0)} requests (${formatPercentage(percentage)}%)`
+                      `${formatNumber(usage?.consumedUnits ?? 0)} / ${formatNumber(usage?.includedUnits ?? 0)} reqs / mes (${formatPercentage(percentage)}%)`
                     )}
                   </div>
                 </div>
@@ -743,7 +751,7 @@ export default function BillingPage() {
 
       {/* Modal Comparativo de Cambio de Plan */}
       <Dialog open={planModalOpen} onOpenChange={setPlanModalOpen}>
-        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-card border-border">
+        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto bg-card border-border">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold flex items-center gap-2 text-foreground">
               <Rocket className="h-5 w-5 text-primary" />
@@ -764,12 +772,12 @@ export default function BillingPage() {
             </Alert>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 py-4 items-stretch">
             {isPlansLoading && plans.length === 0 ? (
               <>
-                <Skeleton className="h-80 w-full" />
-                <Skeleton className="h-80 w-full" />
-                <Skeleton className="h-80 w-full" />
+                <Skeleton className="h-96 w-full" />
+                <Skeleton className="h-96 w-full" />
+                <Skeleton className="h-96 w-full" />
               </>
             ) : (
               plans.map((p) => {
@@ -780,7 +788,7 @@ export default function BillingPage() {
                 return (
                   <Card
                     key={p.id || p.code}
-                    className={`flex flex-col justify-between border-2 transition-all relative ${
+                    className={`flex flex-col justify-between h-full border-2 transition-all relative ${
                       isCurrent
                         ? "border-primary bg-primary/5"
                         : "border-border hover:border-primary/50"
@@ -797,7 +805,7 @@ export default function BillingPage() {
                         {getPlanIcon(p.code)}
                         <CardTitle className="text-lg font-bold">{p.name}</CardTitle>
                       </div>
-                      <div className="pt-2">
+                      <div className="pt-2 min-h-[58px] flex flex-col justify-end">
                         {isEnterprise ? (
                           <div>
                             <span className="text-2xl font-bold text-foreground">Personalizado</span>
@@ -805,28 +813,33 @@ export default function BillingPage() {
                           </div>
                         ) : (
                           <div>
-                            <span className="text-3xl font-extrabold text-foreground">
-                              {p.monthlyBasePrice.amount === 0
-                                ? "$0"
-                                : formatMoney(p.monthlyBasePrice.amount, p.monthlyBasePrice.currency)}
-                            </span>
-                            <span className="text-xs text-muted-foreground ml-1">/ mes</span>
+                            <div className="flex items-baseline">
+                              <span className="text-3xl font-extrabold text-foreground">
+                                {p.monthlyBasePrice.amount === 0
+                                  ? "$0"
+                                  : formatMoney(p.monthlyBasePrice.amount, p.monthlyBasePrice.currency)}
+                              </span>
+                              <span className="text-xs text-muted-foreground ml-1">/ mes</span>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                              {p.monthlyBasePrice.amount === 0 ? "Gratis para siempre" : "Facturado mensualmente"}
+                            </p>
                           </div>
                         )}
                       </div>
                     </CardHeader>
 
-                    <CardContent className="space-y-3 text-xs flex-1">
-                      <div className="border-t border-border/60 pt-3 space-y-2">
-                        <div className="flex items-center justify-between text-muted-foreground">
-                          <span>Requests incluidas:</span>
-                          <strong className="text-foreground font-semibold">
-                            {isEnterprise ? "A medida / Ilimitadas" : `${formatNumber(p.includedBillingUnits)} reqs`}
+                    <CardContent className="space-y-4 text-xs flex-1 flex flex-col justify-between">
+                      <div className="border-t border-border/60 pt-3 space-y-2.5">
+                        <div className="flex items-center justify-between text-muted-foreground min-h-[22px]">
+                          <span className="shrink-0">Requests:</span>
+                          <strong className="text-foreground font-semibold text-right">
+                            {isEnterprise ? "A medida / Ilimitadas" : `${formatNumber(p.includedBillingUnits)} reqs / mes`}
                           </strong>
                         </div>
-                        <div className="flex items-center justify-between text-muted-foreground">
-                          <span>Miembros del equipo:</span>
-                          <strong className="text-foreground">
+                        <div className="flex items-center justify-between text-muted-foreground min-h-[22px]">
+                          <span className="shrink-0">Colaboradores:</span>
+                          <strong className="text-foreground text-right">
                             {isEnterprise || p.maxCollaborators === null
                               ? "Ilimitados"
                               : p.maxCollaborators === 1
@@ -834,9 +847,9 @@ export default function BillingPage() {
                               : `Hasta ${p.maxCollaborators} miembros`}
                           </strong>
                         </div>
-                        <div className="flex items-center justify-between text-muted-foreground">
-                          <span>Excedente:</span>
-                          <strong className="text-foreground text-[11px]">
+                        <div className="flex items-center justify-between text-muted-foreground min-h-[22px]">
+                          <span className="shrink-0">Excedente:</span>
+                          <strong className="text-foreground text-[11px] text-right">
                             {isEnterprise
                               ? "SLA Dedicado"
                               : p.overageBlockPrice.amount > 0
@@ -846,7 +859,7 @@ export default function BillingPage() {
                         </div>
                       </div>
 
-                      <div className="pt-2 border-t border-border/40 space-y-1.5 text-muted-foreground">
+                      <div className="pt-3 border-t border-border/40 space-y-2 text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <Check className="h-3.5 w-3.5 text-primary shrink-0" />
                           <span>Distributed Locks (DLS)</span>
@@ -859,16 +872,20 @@ export default function BillingPage() {
                           <Check className="h-3.5 w-3.5 text-primary shrink-0" />
                           <span>Event Explorer & Webhooks</span>
                         </div>
-                        {p.code !== "DEVELOPER" && (
-                          <div className="flex items-center gap-2 text-foreground font-medium">
-                            <Check className="h-3.5 w-3.5 text-primary shrink-0" />
-                            <span>{isEnterprise ? "SLA 99.99% & Soporte 24/7" : "Soporte Prioritario"}</span>
-                          </div>
-                        )}
+                        <div className="flex items-center gap-2 text-foreground font-medium">
+                          <Check className="h-3.5 w-3.5 text-primary shrink-0" />
+                          <span>
+                            {p.code === "DEVELOPER"
+                              ? "Soporte Comunitario"
+                              : isEnterprise
+                              ? "SLA 99.99% & Soporte 24/7"
+                              : "Soporte Prioritario"}
+                          </span>
+                        </div>
                       </div>
                     </CardContent>
 
-                    <CardFooter className="pt-2">
+                    <CardFooter className="pt-3">
                       {isEnterprise ? (
                         <Button
                           className="w-full font-semibold text-xs border-purple-500/40 text-purple-400 hover:bg-purple-500/10"
@@ -944,7 +961,7 @@ export default function BillingPage() {
                       Tu cuenta pasará a tener el plan <strong className="text-foreground font-semibold">Startup ($49.00 USD / mes)</strong>.
                     </p>
                     <ul className="list-disc pl-4 space-y-1 text-foreground/85">
-                      <li>5.000.000 requests mensuales incluidas.</li>
+                      <li>5.000.000 reqs / mes incluidas.</li>
                       <li>Hasta 5 colaboradores en tus aplicaciones.</li>
                       <li>Tarifa reducida por bloque de excedente ($0.20 / 10.000u).</li>
                     </ul>
@@ -955,7 +972,7 @@ export default function BillingPage() {
                       Tu cuenta pasará al plan gratuito <strong className="text-foreground font-semibold">Developer ($0 / mes)</strong>.
                     </p>
                     <ul className="list-disc pl-4 space-y-1 text-foreground/85">
-                      <li>50.000 requests mensuales incluidas.</li>
+                      <li>50.000 reqs / mes incluidas.</li>
                       <li>Hasta 1 colaborador (el propietario).</li>
                     </ul>
                     <p className="text-amber-500 font-medium">
@@ -976,7 +993,26 @@ export default function BillingPage() {
             <Alert variant="destructive" className="my-2 text-xs">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>No se pudo cambiar el plan</AlertTitle>
-              <AlertDescription className="mt-1">{planChangeError}</AlertDescription>
+              <AlertDescription className="mt-1 space-y-2">
+                <p>{planChangeError}</p>
+                {planChangeError.toLowerCase().includes("colaborador") && (
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="w-full h-7 text-xs border-destructive/40 text-foreground hover:bg-destructive/10 cursor-pointer mt-1"
+                    onClick={() => {
+                      setConfirmPlanModalOpen(false);
+                      setPlanModalOpen(false);
+                    }}
+                  >
+                    <Link href="/dashboard/applications">
+                      <Users className="h-3.5 w-3.5 mr-1.5" />
+                      Ir a Aplicaciones para gestionar equipo
+                    </Link>
+                  </Button>
+                )}
+              </AlertDescription>
             </Alert>
           )}
 
@@ -991,7 +1027,7 @@ export default function BillingPage() {
               Cancelar
             </AlertDialogCancel>
             <Button
-              disabled={Boolean(changingPlanCode)}
+              disabled={Boolean(changingPlanCode) || Boolean(planChangeError)}
               onClick={() => {
                 if (targetPlanToConfirm) {
                   executePlanChange(targetPlanToConfirm.code);
@@ -1110,7 +1146,7 @@ export default function BillingPage() {
       <SetupPaymentMethodModal
         open={setupModalOpen}
         onOpenChange={setSetupModalOpen}
-        initialStep="payment"
+        initialStep={hasPaymentMethod ? "payment" : "select-plan"}
         onSuccess={() => {
           refreshUser();
           fetchInvoices(0);

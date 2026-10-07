@@ -56,7 +56,7 @@ export function DashboardHeaderAlerts({
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Has utilizado {consumedUnits} de {includedUnits} requests incluidas en tu plan. Se aplicarán tarifas de excedente sobre el uso adicional.
+                Has utilizado {consumedUnits} de {includedUnits} reqs / mes incluidas en tu plan. Se aplicarán tarifas de excedente sobre el uso adicional.
               </p>
             </div>
           </div>
@@ -86,7 +86,7 @@ export function DashboardHeaderAlerts({
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Has consumido {consumedUnits} de {includedUnits} requests. Considera mejorar tu plan para evitar interrupciones o costos por excedente.
+                Has consumido {consumedUnits} de {includedUnits} reqs / mes. Considera mejorar tu plan para evitar interrupciones o costos por excedente.
               </p>
             </div>
           </div>
@@ -153,9 +153,9 @@ export function DashboardHeaderAlerts({
       <SetupPaymentMethodModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        initialStep="payment"
-        title="Vincular Tarjeta de Crédito"
-        description="Registra tu método de pago para activar tu cuenta en Caerus y habilitar la creación de aplicaciones y API keys ($0/mes en Plan Developer)."
+        initialStep="select-plan"
+        title="Vincular Método de Pago"
+        description="Selecciona tu plan y vincula una tarjeta para activar tu cuenta en Caerus ($0/mes en Plan Developer)."
       />
     </div>
   );

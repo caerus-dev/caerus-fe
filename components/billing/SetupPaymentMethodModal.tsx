@@ -169,8 +169,8 @@ function SetupCardForm({ onSuccess, onBack, selectedPlan }: SetupFormProps) {
           </div>
           <p className="text-[11px] text-muted-foreground leading-relaxed">
             {isStartup
-              ? "Suscripción mensual de $49.00 USD. Incluye 5.000.000 requests/mes y hasta 5 colaboradores."
-              : "No se te cobrará nada hoy ($0). La tarjeta valida tu cuenta como desarrollador y cubre consumos si superas 50.000 requests."}
+              ? "Suscripción mensual de $49.00 USD. Incluye 5.000.000 reqs / mes y hasta 5 colaboradores."
+              : "No se te cobrará nada hoy ($0). La tarjeta valida tu cuenta como desarrollador y cubre consumos si superas 50.000 reqs / mes."}
           </p>
         </div>
         <Button
@@ -267,9 +267,9 @@ export function SetupPaymentMethodModal({
   open,
   onOpenChange,
   onSuccess,
-  initialStep = "payment",
+  initialStep = "select-plan",
   title = "Vincular Método de Pago",
-  description = "Registra una tarjeta de crédito o débito para activar tu cuenta en Caerus ($0/mes en Plan Developer).",
+  description = "Selecciona tu plan y registra una tarjeta para activar tu cuenta en Caerus ($0/mes en Plan Developer).",
 }: SetupPaymentMethodModalProps) {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
@@ -582,7 +582,7 @@ export function SetupPaymentMethodModal({
                           <p className="flex items-center justify-between">
                             <span>Requests:</span>
                             <strong className="text-foreground font-semibold">
-                              {isEnterprise ? "Personalizadas" : formatNumber(p.includedBillingUnits)}
+                              {isEnterprise ? "Personalizadas" : `${formatNumber(p.includedBillingUnits)} reqs / mes`}
                             </strong>
                           </p>
                           <p className="flex items-center justify-between">

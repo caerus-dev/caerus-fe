@@ -563,9 +563,9 @@ export default function ApiKeysPage() {
       <SetupPaymentMethodModal
         open={setupModalOpen}
         onOpenChange={setSetupModalOpen}
-        initialStep="payment"
+        initialStep="select-plan"
         title="Método de pago requerido para API Keys"
-        description="Para emitir API Keys y permitir el tráfico gRPC hacia Caerus necesitas registrar una tarjeta ($0/mes en Plan Developer)."
+        description="Selecciona tu plan y registra una tarjeta para emitir API Keys ($0/mes en Plan Developer)."
         onSuccess={() => {
           fetchKeys()
         }}

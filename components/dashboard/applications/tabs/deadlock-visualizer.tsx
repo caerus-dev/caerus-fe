@@ -9,6 +9,7 @@ import {
   RotateCcw,
   AlertTriangle,
   Ban,
+  Eye,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ import { DeadlockPayload } from "@/types/events";
 
 interface DeadlockVisualizerProps {
   payload: DeadlockPayload | any;
+  myRole?: string;
   onNavigateToManualControl?: (preselect: {
     product: "SRE" | "DLS";
     method: string;
@@ -29,6 +31,7 @@ interface DeadlockVisualizerProps {
 
 export function DeadlockVisualizer({
   payload,
+  myRole,
   onNavigateToManualControl,
   onCloseSheet,
 }: DeadlockVisualizerProps) {
@@ -160,7 +163,7 @@ export function DeadlockVisualizer({
             </div>
 
             <Button
-              variant={isAlertOnly ? "destructive" : "outline"}
+              variant={isAlertOnly && myRole !== "VIEWER" ? "destructive" : "outline"}
               size="sm"
               className="h-7 px-2.5 gap-1.5 text-xs font-medium shrink-0 self-end sm:self-center"
               onClick={() => {
@@ -173,8 +176,17 @@ export function DeadlockVisualizer({
                 });
               }}
             >
-              <Ban className="h-3 w-3" />
-              <span>{isAlertOnly ? "Gestionar en Control Manual" : "Inspeccionar Transacción"}</span>
+              {isAlertOnly && myRole !== "VIEWER" ? (
+                <>
+                  <Ban className="h-3 w-3" />
+                  <span>Gestionar en Control Manual</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="h-3 w-3" />
+                  <span>Inspeccionar Transacción</span>
+                </>
+              )}
             </Button>
           </div>
         )}

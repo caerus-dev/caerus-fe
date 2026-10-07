@@ -51,7 +51,7 @@ export const PLAN_MARKETING_METADATA: Record<PlanCode, (plan: BillingPlan) => Pl
     ctaText: "Comenzar Gratis",
     ctaHref: "/auth/login?screen_hint=signup&returnTo=/dashboard",
     features: [
-      `${plan.includedBillingUnits.toLocaleString("es-AR")} llamadas a la API mensuales`,
+      `${plan.includedBillingUnits.toLocaleString("es-AR")} reqs / mes incluidas`,
       "1 colaborador (Solo Owner)",
       `Excedente: $${(plan.overageBlockPrice.amount / 100).toFixed(2)} USD cada ${plan.overageBlockSize.toLocaleString("es-AR")} llamadas`,
       "SRE: Retenciones temporales y confirmación",
@@ -66,7 +66,7 @@ export const PLAN_MARKETING_METADATA: Record<PlanCode, (plan: BillingPlan) => Pl
     ctaText: "Elegir Plan Startup",
     ctaHref: "/auth/login?screen_hint=signup&returnTo=/dashboard",
     features: [
-      `${plan.includedBillingUnits.toLocaleString("es-AR")} llamadas a la API mensuales`,
+      `${plan.includedBillingUnits.toLocaleString("es-AR")} reqs / mes incluidas`,
       `Hasta ${plan.maxCollaborators} colaboradores de equipo`,
       `Excedente optimizado: $${(plan.overageBlockPrice.amount / 100).toFixed(2)} USD cada ${plan.overageBlockSize.toLocaleString("es-AR")} llamadas`,
       "Métricas avanzadas y logs de eventos en vivo",

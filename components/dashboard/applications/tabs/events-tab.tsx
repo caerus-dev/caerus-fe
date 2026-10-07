@@ -75,6 +75,7 @@ export function EventsTab({
   appId,
   selectedEnv,
   currentEnvDetails,
+  myRole,
   onNavigateToManualControl,
 }: EventsTabProps) {
   const envId = currentEnvDetails?.id;
@@ -761,6 +762,7 @@ export function EventsTab({
         catalogItem={selectedCatalogItem}
         open={sheetOpen}
         onOpenChange={setSheetOpen}
+        myRole={myRole}
         onNavigateToManualControl={onNavigateToManualControl}
       />
     </div>

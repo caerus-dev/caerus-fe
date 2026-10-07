@@ -115,7 +115,7 @@ export function NotificationItemRow({
       const consumed = formatNumber(metadata.consumed);
       const included = formatNumber(metadata.included);
       const plan = metadata.planName || "Developer";
-      return `Has consumido ${consumed} de las ${included} requests incluidas en tu plan ${plan}.`;
+      return `Has consumido ${consumed} de las ${included} reqs / mes incluidas en tu plan ${plan}.`;
     }
     return message
       .replace(/\s*\(\d+%\)/g, "")

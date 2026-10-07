@@ -510,7 +510,8 @@ export function WebhookDeliveriesView({
                 <div className="divide-y divide-border/60 max-h-[580px] overflow-y-auto [scrollbar-width:thin]">
                   {filteredDeliveries.map((delivery) => {
                     const isSelected = selectedDelivery?.id === delivery.id;
-                    const dateObj = new Date(delivery.createdAt);
+                    const latestTimestamp = delivery.lastDeliveredAt || delivery.createdAt;
+                    const dateObj = new Date(latestTimestamp);
                     const formattedTime = !isNaN(dateObj.getTime())
                       ? format(dateObj, "HH:mm:ss")
                       : "--:--";
@@ -634,12 +635,21 @@ export function WebhookDeliveriesView({
                         </div>
 
                         <div className="space-y-1">
-                          <span className="text-muted-foreground">Fecha del intento:</span>
+                          <span className="text-muted-foreground">
+                            {selectedDelivery.attempts > 1 ? "Fecha del último intento:" : "Fecha del intento:"}
+                          </span>
                           <p className="font-mono text-foreground">
-                            {format(new Date(selectedDelivery.createdAt), "dd MMM yyyy, HH:mm:ss", {
-                              locale: es,
-                            })}
+                            {format(
+                              new Date(selectedDelivery.lastDeliveredAt || selectedDelivery.createdAt),
+                              "dd MMM yyyy, HH:mm:ss",
+                              { locale: es }
+                            )}
                           </p>
+                          {selectedDelivery.attempts > 1 && selectedDelivery.lastDeliveredAt && (
+                            <p className="text-[10px] text-muted-foreground font-mono">
+                              Evento originado: {format(new Date(selectedDelivery.createdAt), "HH:mm:ss", { locale: es })}
+                            </p>
+                          )}
                         </div>
 
                         <div className="space-y-1">

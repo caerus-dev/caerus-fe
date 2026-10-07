@@ -37,6 +37,7 @@ interface EventDetailSheetProps {
   catalogItem?: EventTypeCatalogItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  myRole?: string;
   onNavigateToManualControl?: (preselect: {
     product: "SRE" | "DLS";
     method: string;
@@ -50,6 +51,7 @@ export function EventDetailSheet({
   catalogItem,
   open,
   onOpenChange,
+  myRole,
   onNavigateToManualControl,
 }: EventDetailSheetProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -146,6 +148,7 @@ export function EventDetailSheet({
           {isDeadlock && (
             <DeadlockVisualizer
               payload={parsedPayload}
+              myRole={myRole}
               onNavigateToManualControl={onNavigateToManualControl}
               onCloseSheet={() => onOpenChange(false)}
             />
@@ -315,7 +318,7 @@ export function EventDetailSheet({
                         holderStatusUpper === "EXPIRED" ||
                         isExpired;
 
-                      if (isFinalStatus) return null;
+                      if (isFinalStatus || myRole === "VIEWER") return null;
 
                       return (
                         <Button
