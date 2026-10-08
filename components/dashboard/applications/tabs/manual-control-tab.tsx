@@ -539,8 +539,11 @@ export function ManualControlTab({
             if (!isCurrentUnitary) {
               if (deltaAmount.trim() !== "") {
                 deltaNum = Number(deltaAmount);
-                if (isNaN(deltaNum)) {
+                if (isNaN(deltaNum) || !Number.isInteger(deltaNum)) {
                   throw new Error("El campo 'Delta Amount' debe ser un número entero (+ o -).");
+                }
+                if (deltaNum < -1000000000 || deltaNum > 1000000000) {
+                  throw new Error("El valor de Delta Amount excede el rango permitido (-1.000.000.000 a 1.000.000.000).");
                 }
               }
               const hasMetadata = Boolean(metadata.trim());

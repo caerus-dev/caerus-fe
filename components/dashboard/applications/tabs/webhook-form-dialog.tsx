@@ -71,8 +71,30 @@ export function WebhookFormDialog({
     setUrlError('')
     setApiError(null)
     
+    const trimmedUrl = url.trim()
+    if (!trimmedUrl) {
+      setUrlError('La URL es requerida.')
+      return
+    }
+
     try {
-      await onSubmit({ url, description, eventTypes: selectedEventTypes })
+      const parsed = new URL(trimmedUrl)
+      if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+        setUrlError('La URL debe comenzar con http:// o https://')
+        return
+      }
+    } catch {
+      setUrlError('Ingresa una URL válida (ej: https://mi-dominio.com/webhook)')
+      return
+    }
+
+    if (selectedEventTypes.length === 0) {
+      setApiError('Debes seleccionar al menos un tipo de evento para suscribir.')
+      return
+    }
+
+    try {
+      await onSubmit({ url: trimmedUrl, description, eventTypes: selectedEventTypes })
     } catch (err: any) {
       setApiError(err.message || 'Error inesperado al guardar el webhook')
     }

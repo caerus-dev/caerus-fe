@@ -60,8 +60,8 @@ const formSchema = z.object({
   conflictStrategy: z.enum(["fail", "retry", "queue"]),
   retryInterval: z.coerce.number().min(1, {
     message: "El intervalo de reintento debe ser de al menos 1 segundo."
-  }).max(10, {
-    message: "El intervalo de reintento no puede superar los 10 segundos."
+  }).max(5, {
+    message: "El intervalo de reintento no puede superar los 5 segundos."
   }).optional(),
   maxRetries: z.coerce.number().min(1, {
     message: "El número máximo de reintentos debe ser de al menos 1."
@@ -378,15 +378,15 @@ export function ResourceForm({
                 />
 
                 {conflictStrategy === "retry" && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 rounded-lg bg-secondary/30 border border-border md:col-start-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 rounded-lg bg-secondary/30 border border-border md:col-start-2 items-start">
                     <FormField
                       control={form.control}
                       name="retryInterval"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Intervalo de Reintento (segundos)</FormLabel>
+                        <FormItem className="space-y-2">
+                          <FormLabel className="text-sm">Intervalo de Reintento (segundos)</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} />
+                            <Input type="number" min={1} max={5} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -396,10 +396,10 @@ export function ResourceForm({
                       control={form.control}
                       name="maxRetries"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Máximo de Reintentos</FormLabel>
+                        <FormItem className="space-y-2">
+                          <FormLabel className="text-sm">Máximo de Reintentos</FormLabel>
                           <FormControl>
-                            <Input type="number" {...field} />
+                            <Input type="number" min={1} max={5} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

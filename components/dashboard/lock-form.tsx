@@ -55,9 +55,27 @@ const formSchema = z.object({
   type: z.enum(["exclusive", "read-write"]),
   deadlockStrategy: z.enum(["alert", "kill"]),
   acquisitionStrategy: z.enum(["fail", "retry", "queue"]),
-  retryInterval: z.coerce.number().min(10).optional(),
-  maxRetries: z.coerce.number().min(1).optional(),
+  retryInterval: z.coerce.number()
+    .min(10, { message: "El intervalo debe ser de al menos 10 ms." })
+    .max(30000, { message: "El intervalo no puede superar los 30.000 ms (30 segundos)." })
+    .optional(),
+  maxRetries: z.coerce.number()
+    .min(1, { message: "El número de reintentos debe ser de al menos 1." })
+    .max(10, { message: "El número máximo de reintentos no puede superar los 10." })
+    .optional(),
   requireFencingToken: z.boolean().default(true),
+}).superRefine((data, ctx) => {
+  if (data.acquisitionStrategy === "retry") {
+    const interval = data.retryInterval ?? 100;
+    const retries = data.maxRetries ?? 5;
+    if (interval * retries > 30000) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "El tiempo total de espera acumulado (intervalo x reintentos) no debe superar los 30.000 ms. Usa la estrategia Cola (queue).",
+        path: ["retryInterval"],
+      });
+    }
+  }
 })
 
 export type LockFormValues = z.infer<typeof formSchema>
@@ -358,10 +376,10 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                     control={form.control}
                     name="retryInterval"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="space-y-2">
                         <FormLabel>Intervalo de Reintento (ms)</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number" min={10} max={30000} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -371,10 +389,10 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                     control={form.control}
                     name="maxRetries"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="space-y-2">
                         <FormLabel>Máximo de Reintentos</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input type="number" min={1} max={10} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
