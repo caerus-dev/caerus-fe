@@ -62,21 +62,17 @@ export default async function PricingPage() {
                 ? "$0"
                 : `$${(plan.monthlyBasePrice.amount / 100).toFixed(0)}`
 
-              const periodDisplay = isEnterprise ? "consultar" : "al mes"
+              const periodDisplay = isEnterprise ? null : "al mes"
 
               const ctaHref = session?.user
-                ? isEnterprise
-                  ? meta.ctaHref
-                  : "/dashboard/billing"
+                ? "/dashboard/billing"
                 : meta.ctaHref
 
               const ctaText = session?.user
-                ? isEnterprise
-                  ? meta.ctaText
-                  : isFree
-                  ? "Gestionar Plan"
-                  : "Actualizar a Startup"
+                ? "Gestionar Plan"
                 : meta.ctaText
+
+              const isExternal = session?.user ? false : Boolean(meta.isExternalLink)
 
               return (
                 <div
@@ -97,20 +93,17 @@ export default async function PricingPage() {
                   )}
 
                   <div className="mb-6">
-                    <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="mb-2">
                       <h2 className="text-2xl font-bold">{plan.name}</h2>
-                      {!meta.highlight && (
-                        <Badge variant="secondary" className="text-[11px] font-normal">
-                          {meta.badge}
-                        </Badge>
-                      )}
                     </div>
                     <p className="text-sm text-muted-foreground min-h-[40px]">{meta.description}</p>
                   </div>
 
-                  <div className="flex items-baseline gap-1.5 mb-8">
-                    <span className="text-5xl font-extrabold tracking-tight">{priceDisplay}</span>
-                    <span className="text-sm text-muted-foreground">{periodDisplay}</span>
+                  <div className="flex items-baseline gap-2 mb-8">
+                    <span className="text-4xl sm:text-5xl font-extrabold tracking-tight">{priceDisplay}</span>
+                    {periodDisplay && (
+                      <span className="text-sm text-muted-foreground">{periodDisplay}</span>
+                    )}
                   </div>
 
                   <div className="space-y-3.5 mb-8 flex-1">
@@ -127,7 +120,7 @@ export default async function PricingPage() {
                     ))}
                   </div>
 
-                  {meta.isExternalLink ? (
+                  {isExternal ? (
                     <Button
                       asChild
                       className="w-full h-12 text-sm font-semibold mt-auto"

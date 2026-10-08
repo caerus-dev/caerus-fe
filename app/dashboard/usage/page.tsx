@@ -8,10 +8,8 @@ import {
   Activity,
   Calendar,
   Download,
-  Filter,
   Zap,
   ArrowUpRight,
-  Clock,
   AlertTriangle,
   AlertCircle,
   RefreshCw,
@@ -68,6 +66,12 @@ export default function UsagePage() {
   const [dailyUsageData, setDailyUsageData] = useState<{ date: string; calls: number }[]>([])
   const [appUsageData, setAppUsageData] = useState<Record<string, number>>({})
   const [isChartLoading, setIsChartLoading] = useState(false)
+
+  // Actualiza el perfil de usuario automáticamente al acceder desde la sidebar
+  useEffect(() => {
+    refreshUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     let isMounted = true
@@ -493,135 +497,100 @@ export default function UsagePage() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Application breakdown */}
-        <Card className="bg-card/50 border-border">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              Consumo por Aplicación
-            </CardTitle>
-            <CardDescription>
-              Distribución de llamadas a la API entre tus aplicaciones
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isAppsLoading || isChartLoading ? (
-              <div className="space-y-3 py-2">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-              </div>
-            ) : applications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
-                <p className="text-sm font-medium">No tienes aplicaciones registradas todavía.</p>
-                <p className="text-xs mt-1 text-muted-foreground">
-                  Crea tu primera aplicación para comenzar a monitorear su consumo.
-                </p>
-                <Button asChild variant="outline" size="sm" className="mt-3 text-xs">
-                  <Link href="/dashboard">Ir al Dashboard</Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {applications.map((app) => {
-                  const appCalls = appUsageData[app.name] ?? 0
-                  const hasUsage = totalDailyCalls > 0
-                  const isUnavailable = totalDailyCalls === 0 && consumedUnits > 0
-
-                  return (
-                    <div
-                      key={app.name}
-                      className="flex items-center justify-between p-2.5 rounded-lg border border-border/50 bg-background/50 hover:bg-muted/40 transition-colors"
-                    >
-                      <div className="min-w-0">
-                        <Link
-                          href={app.href}
-                          className="text-sm font-medium hover:underline text-foreground truncate block"
-                        >
-                          {app.name}
-                        </Link>
-                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                          {app.environments.map((env) => (
-                            <span
-                              key={env}
-                              className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
-                                env.toLowerCase() === "production" || env.toLowerCase() === "prod"
-                                  ? "bg-primary/15 text-primary"
-                                  : "bg-secondary text-muted-foreground"
-                              }`}
-                            >
-                              {env}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0 text-xs font-mono">
-                        {isUnavailable ? (
-                          <span className="text-muted-foreground italic text-xs font-sans">
-                            No disponible
-                          </span>
-                        ) : hasUsage ? (
-                          <div>
-                            <span className="font-semibold text-foreground">
-                              {formatNumber(appCalls)}
-                            </span>{" "}
-                            <span className="text-muted-foreground">requests</span>
-                            {appCalls > 0 && (
-                              <div className="text-[10px] text-muted-foreground font-sans">
-                                {((appCalls / totalDailyCalls) * 100).toFixed(1)}% del total
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-muted-foreground">0 requests</span>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-                <p className="text-xs text-muted-foreground pt-2 text-center">
-                  {totalDailyCalls === 0 && consumedUnits > 0
-                    ? "El desglose por aplicación no está disponible para este período de telemetría."
-                    : "El desglose por aplicación se calcula a partir de los registros de telemetría de tus entornos."}
-                </p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Event log */}
-        <Card className="bg-card/50 border-border">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Registro de Eventos
-                </CardTitle>
-                <CardDescription>Flujo de actividad reciente en tiempo real</CardDescription>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2 text-xs"
-                onClick={() => toast.info("No hay filtros disponibles en este momento.")}
-              >
-                <Filter className="h-3.5 w-3.5" />
-                Filtrar
+      {/* Application breakdown */}
+      <Card className="bg-card/50 border-border">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BarChart3 className="h-5 w-5" />
+            Consumo por Aplicación
+          </CardTitle>
+          <CardDescription>
+            Distribución de llamadas a la API entre tus aplicaciones
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isAppsLoading || isChartLoading ? (
+            <div className="space-y-3 py-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : applications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+              <p className="text-sm font-medium">No tienes aplicaciones registradas todavía.</p>
+              <p className="text-xs mt-1 text-muted-foreground">
+                Crea tu primera aplicación para comenzar a monitorear su consumo.
+              </p>
+              <Button asChild variant="outline" size="sm" className="mt-3 text-xs">
+                <Link href="/dashboard">Ir al Dashboard</Link>
               </Button>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
-              <Activity className="h-8 w-8 mb-2 opacity-40 text-muted-foreground" />
-              <p className="text-sm font-medium">No hay actividad reciente registrada.</p>
-              <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                Las adquisiciones, confirmaciones y liberaciones de locks ejecutadas mediante el SDK se registrarán aquí.
+          ) : (
+            <div className="space-y-3">
+              {applications.map((app) => {
+                const appCalls = appUsageData[app.name] ?? 0
+                const hasUsage = totalDailyCalls > 0
+                const isUnavailable = totalDailyCalls === 0 && consumedUnits > 0
+
+                return (
+                  <div
+                    key={app.name}
+                    className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background/50 hover:bg-muted/40 transition-colors"
+                  >
+                    <div className="min-w-0">
+                      <Link
+                        href={app.href}
+                        className="text-sm font-medium hover:underline text-foreground truncate block"
+                      >
+                        {app.name}
+                      </Link>
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        {app.environments.map((env) => (
+                          <span
+                            key={env}
+                            className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
+                              env.toLowerCase() === "production" || env.toLowerCase() === "prod"
+                                ? "bg-primary/15 text-primary"
+                                : "bg-secondary text-muted-foreground"
+                            }`}
+                          >
+                            {env}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0 text-xs font-mono">
+                      {isUnavailable ? (
+                        <span className="text-muted-foreground italic text-xs font-sans">
+                          No disponible
+                        </span>
+                      ) : hasUsage ? (
+                        <div>
+                          <span className="font-semibold text-foreground text-sm">
+                            {formatNumber(appCalls)}
+                          </span>{" "}
+                          <span className="text-muted-foreground">requests</span>
+                          {appCalls > 0 && (
+                            <div className="text-[10px] text-muted-foreground font-sans">
+                              {((appCalls / totalDailyCalls) * 100).toFixed(1)}% del total
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">0 requests</span>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+              <p className="text-xs text-muted-foreground pt-2 text-center">
+                {totalDailyCalls === 0 && consumedUnits > 0
+                  ? "El desglose por aplicación no está disponible para este período de telemetría."
+                  : "El desglose por aplicación se calcula a partir de los registros de telemetría de tus entornos."}
               </p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
         </>
       )}
     </div>
