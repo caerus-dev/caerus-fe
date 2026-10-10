@@ -276,7 +276,7 @@ export default function ApplicationsPage() {
                       >
                         {app.status === "active" ? "Activa" : "Inactiva"}
                       </Badge>
-                      <span className="shrink-0">
+                      <span className="inline-flex shrink-0 items-center">
                         {getRoleBadge(app.myRole || "VIEWER")}
                       </span>
                     </CardTitle>
