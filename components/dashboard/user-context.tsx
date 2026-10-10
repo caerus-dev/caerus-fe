@@ -69,6 +69,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
           if (!checkMounted || checkMounted()) {
             setUser(null);
           }
+          if (res.status === 401 && typeof window !== "undefined") {
+            const returnTo = window.location.pathname + window.location.search;
+            window.location.href = `/auth/login?returnTo=${encodeURIComponent(returnTo)}`;
+          }
           return null;
         }
         const errJson = await res.json().catch(() => ({}));

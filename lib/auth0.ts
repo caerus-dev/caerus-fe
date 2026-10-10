@@ -11,4 +11,9 @@ export const auth0 = new Auth0Client({
     audience: process.env.AUTH0_AUDIENCE,
     scope: "openid profile email offline_access",
   },
+  session: {
+    rolling: true,
+    inactivityDuration: 7 * 24 * 60 * 60, // 7 días de inactividad
+    absoluteDuration: 30 * 24 * 60 * 60,  // 30 días absoluto
+  },
 });
