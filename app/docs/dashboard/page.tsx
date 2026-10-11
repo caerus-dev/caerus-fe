@@ -17,7 +17,6 @@ import {
   AlertTriangle,
   Clock,
   Shuffle,
-  ShieldAlert,
   FolderTree,
 } from "lucide-react"
 import { DocsPageLayout } from "@/components/docs/docs-page-layout"
@@ -146,26 +145,14 @@ export default function DocsDashboardPage() {
           Cada entorno representa un ciclo de despliegue con <strong>aislamiento criptográfico y de almacenamiento absoluto</strong>: una reserva efectuada en <code>dev</code> jamás colisionará ni consumirá stock de <code>production</code>.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
-            <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-              <Sliders className="h-4 w-4 text-primary" />
-              <span>Configuración y Colores</span>
-            </h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Desde <strong>Configuración de la Aplicación</strong> (<code>/dashboard/applications/[id]/settings</code>), puedes agregar nuevos entornos (por ejemplo, <code>qa</code>, <code>local</code> o <code>canary</code>) y asignarles una etiqueta de color (<em>Slate, Blue, Emerald, Amber, Rose, Purple</em>) para identificarlos de inmediato en la barra superior del Dashboard.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
-            <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
-              <ShieldAlert className="h-4 w-4 text-amber-500" />
-              <span>Pausa y Deshabilitación</span>
-            </h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Cada entorno cuenta con un interruptor de activación. Al deshabilitar un entorno temporalmente, todos los endpoints y llamadas gRPC hacia ese entorno son bloqueados de inmediato, lo que resulta útil durante ventanas de mantenimiento preventivo.
-            </p>
-          </div>
+        <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2 my-4">
+          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+            <Sliders className="h-4 w-4 text-primary" />
+            <span>Configuración y Colores</span>
+          </h4>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Desde <strong>Configuración de la Aplicación</strong> (<code>/dashboard/applications/[id]/settings</code>), puedes agregar nuevos entornos (por ejemplo, <code>qa</code>, <code>local</code> o <code>canary</code>) y asignarles una etiqueta de color (<em>Slate, Blue, Emerald, Amber, Rose, Purple</em>) para identificarlos de inmediato en la barra superior del Dashboard.
+          </p>
         </div>
       </section>
 
