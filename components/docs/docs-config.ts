@@ -15,6 +15,7 @@ export interface DocsConfig {
   version: string
   repoUrl: string
   sdkRepoUrl: string
+  sdkJavaRepoUrl?: string
   protoRepoUrl: string
   demoSreRepoUrl: string
   demoDlsRepoUrl: string
@@ -25,6 +26,7 @@ export const docsConfig: DocsConfig = {
   version: "v2.1.0",
   repoUrl: "https://github.com/caerus-dev/caerus",
   sdkRepoUrl: "https://github.com/caerus-dev/caerus-sdk-ts",
+  sdkJavaRepoUrl: "https://github.com/caerus-dev/caerus-sdk-java",
   protoRepoUrl: "https://github.com/caerus-dev/caerus-protos",
   demoSreRepoUrl: "https://github.com/caerus-dev/demo-sdk",
   demoDlsRepoUrl: "https://github.com/caerus-dev/demo-dls",
@@ -35,35 +37,26 @@ export const docsConfig: DocsConfig = {
         {
           title: "Visión General de la Plataforma",
           href: "/docs",
-          badge: "Core",
           description: "Qué es Caerus, modelo de concurrencia distribuida y resolución de carreras.",
           keywords: ["introduccion", "plataforma", "overview", "concurrencia", "consistencia", "rendimiento"],
         },
         {
+          title: "SDKs Oficiales",
+          href: "/docs/sdk",
+          description: "Clientes oficiales para TypeScript / Node.js y Java 17+. Configuración, API keys, TLS y opciones.",
+          keywords: ["sdk", "typescript", "node", "java", "maven", "gradle", "caerusclient", "javascript"],
+        },
+        {
           title: "Playground en Vivo",
           href: "/docs/playground",
-          badge: "Live",
           description: "Simulador interactivo en pantalla dividida de SRE (butacas/recursos) y DLS (locks distribuidos) con inspector de llamadas al SDK.",
           keywords: ["playground", "simulador", "interactivo", "sre", "dls", "live inspector", "sandbox"],
         },
         {
           title: "Consola Web & Dashboard",
           href: "/docs/dashboard",
-          badge: "New",
           description: "Guía paso a paso: creación de aplicaciones, gestión de entornos y configuración de plantillas SRE y DLS.",
           keywords: ["dashboard", "consola", "aplicacion", "entornos", "templates", "plantillas", "sre", "dls", "api keys", "web"],
-        },
-      ],
-    },
-    {
-      title: "SDK TypeScript / Node.js",
-      items: [
-        {
-          title: "Instalación y Conexión",
-          href: "/docs/sdk",
-          badge: "Core",
-          description: "Configuración del cliente @caerus-dev/sdk, API keys, TLS y endpoints locales.",
-          keywords: ["sdk", "instalacion", "caerusclient", "npm", "pnpm", "node", "typescript", "tls"],
         },
       ],
     },
@@ -73,14 +66,12 @@ export const docsConfig: DocsConfig = {
         {
           title: "Conceptos Fundamentales",
           href: "/docs/sre",
-          badge: "SRE",
           description: "Recursos Unitarios vs Pooled, ciclo de vida (take -> confirm/release), TTL y estrategias de conflicto.",
           keywords: ["sre", "unitary", "pooled", "take", "confirm", "release", "ttl", "conflict", "queue", "fail"],
         },
         {
           title: "Quickstart & Sample (Cine)",
           href: "/docs/sre/demo",
-          badge: "Sample",
           description: "Aplicación de referencia en Node.js/Next.js: reserva concurrente de butacas con políticas FAIL y QUEUE.",
           keywords: ["sample", "quickstart", "cine", "demo-sdk", "butacas", "sre sample", "github"],
         },
@@ -92,14 +83,12 @@ export const docsConfig: DocsConfig = {
         {
           title: "Conceptos Fundamentales",
           href: "/docs/dls",
-          badge: "DLS",
           description: "Exclusión mutua, modos Exclusive vs Shared Read, Fencing Tokens y Deadlocks.",
           keywords: ["dls", "distributed lock", "fencing token", "deadlock", "exclusive", "shared read", "transacciones"],
         },
         {
           title: "Quickstart & Sample (Locks)",
           href: "/docs/dls/demo",
-          badge: "Sample",
           description: "Microservicios de referencia: transacciones distribuidas, Fencing Tokens monotónicos y resolución de deadlocks.",
           keywords: ["sample", "quickstart", "dls", "locks", "workers", "grafo", "deadlock", "github", "demo-dls"],
         },
@@ -111,7 +100,6 @@ export const docsConfig: DocsConfig = {
         {
           title: "API gRPC & Contratos Proto",
           href: "/docs/proto",
-          badge: "Core",
           description: "Especificación formal y agnóstica de todos los RPCs de SharedResourceEngine y DistributedLockingEngine.",
           keywords: ["grpc", "proto", "protobuf", "rpc", "sre", "dls", "createresource", "begintransaction", "acquirelock", "contratos"],
         },

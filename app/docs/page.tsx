@@ -201,20 +201,42 @@ export default function DocsOverviewPage() {
         </div>
 
         <p className="text-muted-foreground leading-relaxed">
-          Instala el SDK en tu aplicación Node.js o TypeScript y empieza a reservar recursos en minutos:
+          Instala el SDK en tu aplicación backend (Node.js o Java) y empieza a coordinar recursos en minutos:
         </p>
 
-        <CodeBlock code="npm install @caerus-dev/sdk" language="bash" title="Terminal" />
+        <CodeBlock
+          snippets={{
+            typescript: {
+              language: "bash",
+              title: "Terminal",
+              label: "TypeScript / Node.js",
+              code: "npm install @caerus-dev/sdk",
+            },
+            java: {
+              language: "xml",
+              title: "pom.xml",
+              label: "Java (Maven)",
+              code: `<dependency>
+    <groupId>io.github.caerus-dev</groupId>
+    <artifactId>caerus-sdk</artifactId>
+    <version>0.1.0</version>
+</dependency>`,
+            },
+          }}
+        />
 
         <p className="text-xs text-muted-foreground pt-1">
           Ejemplo de retención de recurso unitario con pago y confirmación:
         </p>
 
         <CodeBlock
-          title="server.ts"
-          language="typescript"
           showLineNumbers
-          code={`import { CaerusClient } from '@caerus-dev/sdk';
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "server.ts",
+              label: "TypeScript",
+              code: `import { CaerusClient } from '@caerus-dev/sdk';
 
 const caerus = new CaerusClient({
   apiKey: process.env.CAERUS_API_KEY!,
@@ -236,7 +258,41 @@ try {
 } catch (error) {
   // 4. Si el pago falla, liberar inmediatamente para otros clientes
   await caerus.release(holder.id);
-}`}
+}`,
+            },
+            java: {
+              language: "java",
+              title: "Main.java",
+              label: "Java",
+              code: `import dev.caerus.CaerusClient;
+import dev.caerus.CaerusClientOptions;
+import dev.caerus.model.ResourceHolder;
+import dev.caerus.model.TakeOptions;
+import java.util.Map;
+
+CaerusClient caerus = new CaerusClient(CaerusClientOptions.builder()
+    .apiKey(System.getenv("CAERUS_API_KEY"))
+    .build());
+
+// 1. Apartar el asiento durante 5 minutos
+ResourceHolder holder = caerus.unitary("asiento-B14").take(TakeOptions.builder()
+    .ttlSeconds(300)
+    .metadata(Map.of("clienteId", "usr_948"))
+    .build());
+
+try {
+    // 2. Procesar el cobro en la pasarela de pagos
+    procesarPagoTarjeta(holder.id());
+
+    // 3. Confirmar la venta de forma definitiva
+    caerus.confirm(holder.id());
+    System.out.println("Compra confirmada con éxito: " + holder.id());
+} catch (Exception error) {
+    // 4. Si el pago falla, liberar inmediatamente para otros clientes
+    caerus.release(holder.id());
+}`,
+            },
+          }}
         />
 
         <div className="flex flex-wrap items-center gap-3 pt-4">

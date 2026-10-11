@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, Terminal, Shield, CheckCircle2, AlertTriangle } from "lucide-react"
+import { ArrowRight, Terminal, Shield, CheckCircle2, AlertTriangle, ExternalLink, Code2, Cpu, Lock } from "lucide-react"
 import { DocsPageLayout } from "@/components/docs/docs-page-layout"
 import { CodeBlock, SignatureBlock } from "@/components/docs/code-block"
 import { Button } from "@/components/ui/button"
@@ -11,19 +11,28 @@ const tocItems = [
   { id: "inicializacion", title: "Inicialización del Cliente" },
   { id: "conexion-local", title: "Conexión Local (Roadmap)" },
   { id: "opciones", title: "Tabla de Opciones" },
+  { id: "sre", title: "Uso con SRE (Inventario)" },
+  { id: "dls", title: "Uso con DLS (Locks Distribuidos)" },
+  { id: "testing", title: "Mocks y Testing" },
+  { id: "repositorios", title: "Repositorios Oficiales" },
   { id: "siguiente-paso", title: "Siguientes Pasos" },
 ]
 
 export default function DocsSdkPage() {
   return (
     <DocsPageLayout
-      breadcrumbs={[{ label: "SDK", href: "/docs/sdk" }, { label: "Instalación y Conexión" }]}
-      title="@caerus-dev/sdk"
-      badge="TypeScript / Node.js"
-      description="El cliente oficial de Caerus para aplicaciones backend. Administra reservas de inventario y locks distribuidos con tipado estricto y comunicación gRPC de alto rendimiento."
+      breadcrumbs={[{ label: "Comenzando", href: "/docs" }, { label: "SDKs Oficiales" }]}
+      title="SDKs Oficiales de Caerus"
+      badge="TypeScript & Java"
+      description="Clientes oficiales para integrar Caerus en tus microservicios backend. Soporte para Node.js / TypeScript y Java 17+, con tipado estricto, comunicación gRPC de alto rendimiento y selección unificada de lenguaje."
       tocItems={tocItems}
     >
-      <SignatureBlock signature="const caerus = new CaerusClient(options: CaerusClientOptions);" />
+      <SignatureBlock
+        signatures={{
+          typescript: "const caerus = new CaerusClient(options: CaerusClientOptions);",
+          java: "CaerusClient caerus = new CaerusClient(CaerusClientOptions.builder().apiKey(key).build());",
+        }}
+      />
 
       {/* Instalación */}
       <section id="instalacion" className="space-y-4">
@@ -31,15 +40,53 @@ export default function DocsSdkPage() {
           Instalación
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          El paquete requiere <strong>Node.js 20 o superior</strong>. Incluye definiciones TypeScript completas y soporte nativo para ES Modules y CommonJS:
+          Selecciona tu lenguaje preferido. Los SDKs oficiales se distribuyen a través de sus registros estándar (npm para Node.js/TypeScript y Maven Central para Java):
         </p>
 
-        <CodeBlock code="npm install @caerus-dev/sdk" language="bash" title="npm" />
-        <CodeBlock code="pnpm add @caerus-dev/sdk" language="bash" title="pnpm" />
+        <CodeBlock
+          snippets={{
+            typescript: {
+              language: "bash",
+              title: "npm / pnpm / yarn / bun",
+              label: "TypeScript",
+              code: `npm install @caerus-dev/sdk
+# O con tu gestor preferido:
+# pnpm add @caerus-dev/sdk
+# yarn add @caerus-dev/sdk
+# bun add @caerus-dev/sdk`,
+            },
+            java: {
+              language: "xml",
+              title: "pom.xml / build.gradle",
+              label: "Java",
+              code: `<!-- Maven (pom.xml) -->
+<dependency>
+    <groupId>io.github.caerus-dev</groupId>
+    <artifactId>caerus-sdk</artifactId>
+    <version>0.1.0</version>
+</dependency>
 
-        <div className="rounded-xl border border-border/70 bg-muted/20 p-4 text-xs text-muted-foreground leading-relaxed">
-          <span className="font-semibold text-foreground">Nota de seguridad: </span>
-          El SDK corre exclusivamente en el <strong>servidor</strong> de tu aplicación. La API Key nunca debe exponerse en el navegador o en código frontend.
+// Gradle (build.gradle)
+// implementation 'io.github.caerus-dev:caerus-sdk:0.1.0'`,
+            },
+          }}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-muted-foreground pt-1">
+          <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 space-y-1">
+            <span className="font-semibold text-foreground flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              TypeScript / Node.js
+            </span>
+            <p>Requiere Node.js 20 o superior. Incluye tipos completos de TypeScript y empaquetado dual ESM y CommonJS.</p>
+          </div>
+          <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 space-y-1">
+            <span className="font-semibold text-foreground flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              Java 17+
+            </span>
+            <p>Compatible con Java 17 o superior. Empaqueta gRPC (Netty) y Protobuf sin exponer dependencias conflictivas.</p>
+          </div>
         </div>
       </section>
 
@@ -49,17 +96,37 @@ export default function DocsSdkPage() {
           Inicialización del Cliente
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          La API Key identifica a tu organización y entorno (e.g. Producción, Staging), por lo que el SDK sabe automáticamente a qué tenant pertenece cada operación:
+          La API Key identifica a tu organización y entorno (e.g. Producción, Staging). El cliente gestiona un canal multiplexado gRPC thread-safe y reutilizable:
         </p>
 
         <CodeBlock
-          language="typescript"
-          title="caerus.ts"
-          code={`import { CaerusClient } from '@caerus-dev/sdk';
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "caerus.ts",
+              label: "TypeScript",
+              code: `import { CaerusClient } from '@caerus-dev/sdk';
 
 export const caerus = new CaerusClient({
   apiKey: process.env.CAERUS_API_KEY!,
-});`}
+});`,
+            },
+            java: {
+              language: "java",
+              title: "CaerusService.java",
+              label: "Java",
+              code: `import dev.caerus.CaerusClient;
+import dev.caerus.CaerusClientOptions;
+
+public class CaerusService {
+    public static final CaerusClient client = new CaerusClient(
+        CaerusClientOptions.builder()
+            .apiKey(System.getenv("CAERUS_API_KEY"))
+            .build()
+    );
+}`,
+            },
+          }}
         />
       </section>
 
@@ -78,13 +145,30 @@ export const caerus = new CaerusClient({
         </p>
 
         <CodeBlock
-          language="typescript"
-          title="caerus.local.ts"
-          code={`const caerus = new CaerusClient({
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "caerus.local.ts",
+              label: "TypeScript",
+              code: `const caerus = new CaerusClient({
   endpoint: 'localhost:9090',
   apiKey: process.env.CAERUS_API_KEY!,
-  tls: false, // Un motor local corre en texto plano sin certificado SSL
-});`}
+  tls: false, // Un motor local corre sin certificado TLS
+});`,
+            },
+            java: {
+              language: "java",
+              title: "CaerusLocal.java",
+              label: "Java",
+              code: `CaerusClient caerus = new CaerusClient(
+    CaerusClientOptions.builder()
+        .endpoint("localhost:9090")
+        .apiKey(System.getenv("CAERUS_API_KEY"))
+        .tls(false) // Un motor local corre sin certificado TLS
+        .build()
+);`,
+            },
+          }}
         />
 
         <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-xs text-amber-600 dark:text-amber-400 space-y-2">
@@ -117,12 +201,12 @@ export const caerus = new CaerusClient({
               <TableRow>
                 <TableCell className="font-mono font-medium text-primary">apiKey</TableCell>
                 <TableCell className="font-mono text-muted-foreground">—</TableCell>
-                <TableCell>Requerido. Clave de API obtenida del dashboard de Caerus.</TableCell>
+                <TableCell>Requerido. Clave de API obtenida de la consola web de Caerus.</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-mono font-medium text-primary">endpoint</TableCell>
                 <TableCell className="font-mono text-muted-foreground">Cloud Caerus</TableCell>
-                <TableCell>Dirección <code>host:port</code> del motor gRPC de Caerus.</TableCell>
+                <TableCell>Dirección <code>host:port</code> del cluster gRPC de Caerus.</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-mono font-medium text-primary">tls</TableCell>
@@ -136,6 +220,191 @@ export const caerus = new CaerusClient({
               </TableRow>
             </TableBody>
           </Table>
+        </div>
+      </section>
+
+      {/* SRE */}
+      <section id="sre" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Uso con SRE (Inventario & Recursos Compartidos)
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Flujo de reserva transaccional en dos fases: adquirir una reserva temporal (<code>take</code>) sujeta a TTL y luego confirmarla (<code>confirm</code>) o liberarla (<code>release</code>):
+        </p>
+
+        <CodeBlock
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "reserva.ts",
+              label: "TypeScript",
+              code: `// 1. Adquirir reserva temporal con TTL e idempotencia
+const holder = await caerus.unitary('seat-A12').take({
+  ttlSeconds: 60,
+  idempotencyKey: 'checkout-session-123',
+});
+
+// 2. Procesar cobro en tu pasarela...
+// 3. Confirmar la reserva de inventario
+await holder.confirm();`,
+            },
+            java: {
+              language: "java",
+              title: "ReservaService.java",
+              label: "Java",
+              code: `// 1. Adquirir reserva temporal con TTL e idempotencia
+ResourceHolder holder = caerus.unitary("seat-A12").take(
+    TakeOptions.builder()
+        .ttlSeconds(60)
+        .idempotencyKey("checkout-session-123")
+        .build()
+);
+
+// 2. Procesar cobro en tu pasarela...
+// 3. Confirmar la reserva de inventario
+holder.confirm(ConfirmOptions.builder().build());`,
+            },
+          }}
+        />
+      </section>
+
+      {/* DLS */}
+      <section id="dls" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Uso con DLS (Locks Distribuidos)
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Sincronización y exclusión mutua distribuida entre workers concurrentes mediante transacciones y Fencing Tokens:
+        </p>
+
+        <CodeBlock
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "dls-worker.ts",
+              label: "TypeScript",
+              code: `import { Dls } from '@caerus-dev/sdk';
+
+const dls = new Dls.DlsClient({ apiKey: process.env.CAERUS_API_KEY! });
+const tx = await dls.beginTransaction({ timeoutMs: 10000 });
+
+const lock = await dls.acquireLock(
+  'billing-jobs',
+  'monthly-billing',
+  tx.transactionId,
+  'EXCLUSIVE'
+);
+
+try {
+  console.log('Fencing Token:', lock.fencingToken);
+  // Ejecutar tarea crítica...
+} finally {
+  await dls.releaseTransactionLocks(tx.transactionId);
+}`,
+            },
+            java: {
+              language: "java",
+              title: "BillingWorker.java",
+              label: "Java",
+              code: `import dev.caerus.dls.DlsClient;
+import dev.caerus.dls.DlsClientOptions;
+import dev.caerus.dls.model.*;
+
+DlsClient dls = new DlsClient(DlsClientOptions.builder()
+    .apiKey(System.getenv("CAERUS_API_KEY"))
+    .build());
+
+dls.withTransaction(tx -> {
+    LockHolder lock = tx.acquireLock(
+        "billing-jobs",
+        "monthly-billing",
+        LockMode.EXCLUSIVE,
+        AcquireLockOptions.builder().timeoutMs(10_000L).build()
+    );
+
+    long token = lock.fencingToken().getAsLong();
+    System.out.println("Fencing Token: " + token);
+    return token;
+});`,
+            },
+          }}
+        />
+      </section>
+
+      {/* Testing */}
+      <section id="testing" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Mocks y Testing
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Para pruebas unitarias rápidas sin depender de conexión a internet o red:
+        </p>
+
+        <CodeBlock
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "order-service.spec.ts",
+              label: "TypeScript",
+              code: `import { CaerusClient } from '@caerus-dev/sdk';
+
+// Puedes inyectar un cliente de prueba o mockear con Jest / Vitest:
+const testClient = new CaerusClient({
+  apiKey: 'test-key',
+});`,
+            },
+            java: {
+              language: "java",
+              title: "OrderServiceTest.java",
+              label: "Java",
+              code: `import dev.caerus.testing.InMemoryCaerusClient;
+import dev.caerus.testing.InMemoryDlsClient;
+
+// Clientes mock incluidos nativamente en el artefacto caerus-sdk:
+InMemoryCaerusClient mockCaerus = new InMemoryCaerusClient();
+InMemoryDlsClient mockDls = new InMemoryDlsClient();`,
+            },
+          }}
+        />
+      </section>
+
+      {/* Repositorios Oficiales */}
+      <section id="repositorios" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Repositorios Oficiales en GitHub
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="rounded-xl border border-border/70 bg-muted/20 p-4 space-y-3">
+            <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
+              <Code2 className="h-4 w-4 text-primary" />
+              <span>caerus-sdk-ts (TypeScript)</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Repositorio de Node.js / TypeScript. Código fuente, tipados y ejemplos para Next.js y Express.
+            </p>
+            <Button asChild variant="outline" size="sm" className="gap-1.5 text-xs">
+              <Link href="https://github.com/caerus-dev/caerus-sdk-ts" target="_blank" rel="noopener noreferrer">
+                <span>Ver en GitHub</span>
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            </Button>
+          </div>
+
+          <div className="rounded-xl border border-border/70 bg-muted/20 p-4 space-y-3">
+            <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
+              <Cpu className="h-4 w-4 text-purple-400" />
+              <span>caerus-sdk-java (Java)</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Repositorio oficial de Java 17+. Artefactos Maven, tests de integración y mocks en memoria.
+            </p>
+            <Button asChild variant="outline" size="sm" className="gap-1.5 text-xs">
+              <Link href="https://github.com/caerus-dev/caerus-sdk-java" target="_blank" rel="noopener noreferrer">
+                <span>Ver en GitHub</span>
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 

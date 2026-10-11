@@ -25,7 +25,12 @@ export default function DocsSrePage() {
       description="El motor transaccional para reservas temporales de recursos limitados. Diseñado para cines, venta de tickets, reservas de turnos y stock de e-commerce."
       tocItems={tocItems}
     >
-      <SignatureBlock signature="const holder = await caerus.unitary(resourceKey).take(options);" />
+      <SignatureBlock
+        signatures={{
+          typescript: "const holder = await caerus.unitary(resourceKey).take(options);",
+          java: "ResourceHolder holder = caerus.unitary(resourceKey).take(options);",
+        }}
+      />
 
       {/* Conceptos: Unitary vs Pooled */}
       <section id="conceptos" className="space-y-4">
@@ -33,7 +38,7 @@ export default function DocsSrePage() {
           Recursos Unitarios vs Pooled (Con Cupo)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          En Caerus, la distinción entre un recurso del que hay <em>exactamente uno</em> y un recurso del que hay <em>múltiples unidades intercambiables</em> es una diferencia en el sistema de tipos de TypeScript:
+          En Caerus, la distinción entre un recurso del que hay <em>exactamente uno</em> y un recurso del que hay <em>múltiples unidades intercambiables</em> es una distinción formal en el sistema de tipos de los SDKs (TypeScript y Java):
         </p>
 
         <div className="grid grid-cols-1 gap-6 my-4">
@@ -46,11 +51,28 @@ export default function DocsSrePage() {
               Existe exactamente una unidad en todo momento. Ejemplo: la butaca <code>neon_D9</code> o el turno con un doctor a las 15:30.
             </p>
             <CodeBlock
-              language="typescript"
-              code={`// Toma exactamente 1 unidad
+              snippets={{
+                typescript: {
+                  language: "typescript",
+                  title: "unitary.ts",
+                  label: "TypeScript",
+                  code: `// Toma exactamente 1 unidad
 await caerus.unitary('butaca-D9').take({ ttlSeconds: 180 });
 
-// caerus.unitary('...').takeMany(3); // ✗ No compila`}
+// caerus.unitary('...').takeMany(3); // ✗ No compila`,
+                },
+                java: {
+                  language: "java",
+                  title: "Unitary.java",
+                  label: "Java",
+                  code: `// Toma exactamente 1 unidad
+ResourceHolder holder = caerus.unitary("butaca-D9").take(
+    TakeOptions.builder().ttlSeconds(180).build()
+);
+
+// caerus.unitary("...").takeMany(3); // ✗ No compila en la API unitaria`,
+                },
+              }}
             />
           </div>
 
@@ -63,9 +85,24 @@ await caerus.unitary('butaca-D9').take({ ttlSeconds: 180 });
               Mantiene un saldo o inventario de unidades intercambiables. Ejemplo: 50 combos de pochoclos o 30 vacantes de un curso.
             </p>
             <CodeBlock
-              language="typescript"
-              code={`// Toma 3 unidades de las disponibles
-await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
+              snippets={{
+                typescript: {
+                  language: "typescript",
+                  title: "pooled.ts",
+                  label: "TypeScript",
+                  code: `// Toma 3 unidades de las disponibles
+await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`,
+                },
+                java: {
+                  language: "java",
+                  title: "Pooled.java",
+                  label: "Java",
+                  code: `// Toma 3 unidades de las disponibles
+ResourceHolder holder = caerus.pooled("combo-grande").takeMany(3,
+    TakeOptions.builder().ttlSeconds(300).build()
+);`,
+                },
+              }}
             />
           </div>
         </div>
@@ -106,12 +143,30 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
               Aparta las unidades solicitadas. Si la plantilla exige clave de idempotencia, debes incluir <code>idempotencyKey</code> para garantizar que peticiones duplicadas devuelvan el mismo holder sin restar inventario doble.
             </p>
             <CodeBlock
-              language="typescript"
-              code={`const holder = await caerus.unitary('butaca_A4').take({
+              snippets={{
+                typescript: {
+                  language: "typescript",
+                  title: "take.ts",
+                  label: "TypeScript",
+                  code: `const holder = await caerus.unitary('butaca_A4').take({
   ttlSeconds: 120, // Expira a los 2 minutos si no se confirma
   idempotencyKey: 'req_order_9981',
   metadata: { cliente: 'ana@example.com' }
-});`}
+});`,
+                },
+                java: {
+                  language: "java",
+                  title: "Take.java",
+                  label: "Java",
+                  code: `ResourceHolder holder = caerus.unitary("butaca_A4").take(
+    TakeOptions.builder()
+        .ttlSeconds(120) // Expira a los 2 minutos si no se confirma
+        .idempotencyKey("req_order_9981")
+        .metadata(Map.of("cliente", "ana@example.com"))
+        .build()
+);`,
+                },
+              }}
             />
           </div>
 
@@ -121,8 +176,20 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
               Fija la reserva de manera permanente una vez recibido el pago o confirmación del usuario.
             </p>
             <CodeBlock
-              language="typescript"
-              code={`await caerus.confirm(holder.id);`}
+              snippets={{
+                typescript: {
+                  language: "typescript",
+                  title: "confirm.ts",
+                  label: "TypeScript",
+                  code: `await caerus.confirm(holder.id);`,
+                },
+                java: {
+                  language: "java",
+                  title: "Confirm.java",
+                  label: "Java",
+                  code: `caerus.confirm(holder.id());`,
+                },
+              }}
             />
           </div>
 
@@ -132,8 +199,20 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`}
               Cancela la retención de inmediato y devuelve el recurso a la venta sin esperar al vencimiento del TTL.
             </p>
             <CodeBlock
-              language="typescript"
-              code={`await caerus.release(holder.id);`}
+              snippets={{
+                typescript: {
+                  language: "typescript",
+                  title: "release.ts",
+                  label: "TypeScript",
+                  code: `await caerus.release(holder.id);`,
+                },
+                java: {
+                  language: "java",
+                  title: "Release.java",
+                  label: "Java",
+                  code: `caerus.release(holder.id());`,
+                },
+              }}
             />
           </div>
         </div>
