@@ -5,7 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Search, ChevronDown, Sparkles, Layers, Lock, BookOpen, FileCode, Terminal } from "lucide-react"
 import { docsConfig, DocSection } from "./docs-config"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
@@ -83,26 +82,6 @@ export function DocsSidebar({ onSearchClick, onNavigate, className }: DocsSideba
                       )}
                     >
                       <span className="truncate">{item.title}</span>
-                      {item.badge && (
-                        <span
-                          className={cn(
-                            "shrink-0 rounded-full px-1.5 py-0.2 text-[10px] font-medium leading-none tracking-tight",
-                            item.badge === "Demo" || item.badge === "Sample" || item.badge === "Quickstart"
-                              ? "bg-amber-500/15 text-amber-500 font-semibold"
-                              : item.badge === "Core"
-                              ? "bg-blue-500/15 text-blue-500"
-                              : item.badge === "SRE"
-                              ? "bg-emerald-500/15 text-emerald-500"
-                              : item.badge === "DLS"
-                              ? "bg-purple-500/15 text-purple-500"
-                              : item.badge === "Live"
-                              ? "bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30"
-                              : "bg-muted text-muted-foreground"
-                          )}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
                     </Link>
                   </li>
                 )
