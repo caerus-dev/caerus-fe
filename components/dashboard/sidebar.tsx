@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import {
-  LayoutDashboard,
   Layers,
   Key,
   Users,
@@ -35,11 +34,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const navigation = [
-  {
-    name: "Inicio",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
   {
     name: "Aplicaciones",
     href: "/dashboard/applications",
@@ -194,7 +188,7 @@ export function DashboardSidebar({ isCollapsed = false, setIsCollapsed }: Dashbo
           )}
           <ul className="space-y-1">
             {navigation.map((item) => {
-              const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href))
+              const isActive = pathname.startsWith(item.href)
               return (
                 <li key={item.name}>
                   <Link

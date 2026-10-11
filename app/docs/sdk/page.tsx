@@ -141,7 +141,7 @@ public class CaerusService {
           </Badge>
         </div>
         <p className="text-muted-foreground leading-relaxed">
-          Actualmente Caerus opera como servicio centralizado en la nube. A futuro, estará disponible una distribución e imagen oficial de Docker para levantar un servidor local en tu propia máquina (puerto <code>9090</code>) para pruebas unitarias, integración continua o desarrollo offline:
+          Actualmente Caerus opera como servicio centralizado en la nube. A futuro, estará disponible una distribución e imagen oficial de Docker para levantar un servidor de Caerus en tu propia máquina (puerto <code>9090</code>) para pruebas unitarias, integración continua o desarrollo offline:
         </p>
 
         <CodeBlock
@@ -174,10 +174,10 @@ public class CaerusService {
         <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-xs text-amber-600 dark:text-amber-400 space-y-2">
           <div className="flex items-center gap-2 font-semibold">
             <AlertTriangle className="h-4 w-4 shrink-0" />
-            <span>Formato de endpoint y TLS (Soporte preparado en los SDKs)</span>
+            <span>Formato de endpoint y TLS (Soporte preparado en el SDK)</span>
           </div>
           <p className="leading-relaxed">
-            El <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (sin prefijo <code>http://</code> ni <code>https://</code>). Ambos clientes ya soportan endpoints personalizados y <code>tls: false</code>, listos para cuando la imagen Docker esté disponible.
+            El <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (sin prefijo <code>http://</code> ni <code>https://</code>). El cliente SDK ya cuenta con soporte para endpoints personalizados y <code>tls: false</code>, listo para cuando la imagen Docker local esté disponible públicamente.
           </p>
         </div>
       </section>
