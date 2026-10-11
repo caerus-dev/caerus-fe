@@ -3,12 +3,13 @@ import { ArrowRight, Terminal, Shield, CheckCircle2, AlertTriangle } from "lucid
 import { DocsPageLayout } from "@/components/docs/docs-page-layout"
 import { CodeBlock, SignatureBlock } from "@/components/docs/code-block"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 const tocItems = [
   { id: "instalacion", title: "Instalación" },
   { id: "inicializacion", title: "Inicialización del Cliente" },
-  { id: "conexion-local", title: "Conexión a un Caerus Local" },
+  { id: "conexion-local", title: "Conexión Local (Roadmap)" },
   { id: "opciones", title: "Tabla de Opciones" },
   { id: "siguiente-paso", title: "Siguientes Pasos" },
 ]
@@ -64,11 +65,16 @@ export const caerus = new CaerusClient({
 
       {/* Conexión Local */}
       <section id="conexion-local" className="space-y-4">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Conexión a un Caerus Local (Docker)
-        </h2>
+        <div className="flex items-center gap-3 border-b border-border/40 pb-2 flex-wrap">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">
+            Conexión a un Caerus Local (Docker)
+          </h2>
+          <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/30 text-xs font-medium">
+            A futuro / En Roadmap
+          </Badge>
+        </div>
         <p className="text-muted-foreground leading-relaxed">
-          Para pruebas unitarias, integración o desarrollo offline con Caerus levantado en tu máquina (puerto <code>9090</code>):
+          Actualmente Caerus opera como servicio centralizado en la nube. A futuro, estará disponible una distribución e imagen oficial de Docker para levantar un servidor de Caerus en tu propia máquina (puerto <code>9090</code>) para pruebas unitarias, integración continua o desarrollo offline:
         </p>
 
         <CodeBlock
@@ -84,10 +90,10 @@ export const caerus = new CaerusClient({
         <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-xs text-amber-600 dark:text-amber-400 space-y-2">
           <div className="flex items-center gap-2 font-semibold">
             <AlertTriangle className="h-4 w-4 shrink-0" />
-            <span>Formato de endpoint y TLS</span>
+            <span>Formato de endpoint y TLS (Soporte preparado en el SDK)</span>
           </div>
           <p className="leading-relaxed">
-            El <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (sin prefijo <code>http://</code> ni <code>https://</code>). Además, recuerda que <code>tls: false</code> es obligatorio en local; de lo contrario OpenSSL arrojará un error de versión de protocolo.
+            El <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (sin prefijo <code>http://</code> ni <code>https://</code>). El cliente SDK ya cuenta con soporte para endpoints personalizados y <code>tls: false</code>, listo para cuando la imagen Docker local esté disponible públicamente.
           </p>
         </div>
       </section>
@@ -121,7 +127,7 @@ export const caerus = new CaerusClient({
               <TableRow>
                 <TableCell className="font-mono font-medium text-primary">tls</TableCell>
                 <TableCell className="font-mono text-muted-foreground">true</TableCell>
-                <TableCell>Habilita encriptación TLS. Desactivar solo con <code>false</code> explícito en local.</TableCell>
+                <TableCell>Habilita encriptación TLS. Desactivar solo con <code>false</code> explícito en conexiones locales (roadmap).</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell className="font-mono font-medium text-primary">timeoutMs</TableCell>
