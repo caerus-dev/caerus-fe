@@ -84,9 +84,12 @@ export default function DocsErrorsPage() {
         </p>
 
         <CodeBlock
-          language="typescript"
-          title="manejo-conflicto.ts"
-          code={`import { ConflictError } from '@caerus-dev/sdk';
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "manejo-conflicto.ts",
+              label: "TypeScript",
+              code: `import { ConflictError } from '@caerus-dev/sdk';
 
 try {
   const holder = await caerus.unitary('butaca_A1').take();
@@ -98,7 +101,26 @@ try {
   } else {
     throw error;
   }
-}`}
+}`,
+            },
+            java: {
+              language: "java",
+              title: "ManejoConflicto.java",
+              label: "Java",
+              code: `import dev.caerus.error.ConflictError;
+import dev.caerus.error.CaerusError;
+
+try {
+    ResourceHolder holder = caerus.unitary("butaca_A1").take();
+    // Continuar flujo de compra
+} catch (ConflictError error) {
+    System.err.println("Asiento ocupado o sin cupo: " + error.getMessage());
+    // Informar amistosamente al cliente para que elija otra butaca
+} catch (CaerusError error) {
+    throw error;
+}`,
+            },
+          }}
         />
       </section>
 
@@ -112,9 +134,12 @@ try {
         </p>
 
         <CodeBlock
-          language="typescript"
-          title="manejo-idempotencia.ts"
-          code={`import { ValidationError } from '@caerus-dev/sdk';
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "manejo-idempotencia.ts",
+              label: "TypeScript",
+              code: `import { ValidationError } from '@caerus-dev/sdk';
 
 try {
   // Envía siempre una clave idempotente única asociada a la operación del usuario
@@ -127,7 +152,30 @@ try {
   } else {
     throw error;
   }
-}`}
+}`,
+            },
+            java: {
+              language: "java",
+              title: "ManejoIdempotencia.java",
+              label: "Java",
+              code: `import dev.caerus.error.ValidationError;
+import dev.caerus.error.CaerusError;
+import dev.caerus.model.TakeOptions;
+
+try {
+    // Envía siempre una clave idempotente única asociada a la operación
+    ResourceHolder holder = caerus.unitary("butaca_A1").take(
+        TakeOptions.builder().idempotencyKey("req_" + orderId).build()
+    );
+} catch (ValidationError error) {
+    if ("IDEMPOTENCY_KEY_REQUIRED".equals(error.reason().orElse(null))) {
+        System.err.println("Clave de idempotencia requerida: " + error.getMessage());
+    } else {
+        throw error;
+    }
+}`,
+            },
+          }}
         />
       </section>
 
@@ -141,9 +189,12 @@ try {
         </p>
 
         <CodeBlock
-          language="typescript"
-          title="manejo-not-found.ts"
-          code={`import { ResourceNotFoundError } from '@caerus-dev/sdk';
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "manejo-not-found.ts",
+              label: "TypeScript",
+              code: `import { ResourceNotFoundError } from '@caerus-dev/sdk';
 
 try {
   await caerus.confirm(holderId);
@@ -154,7 +205,25 @@ try {
   } else {
     throw error;
   }
-}`}
+}`,
+            },
+            java: {
+              language: "java",
+              title: "ManejoNotFound.java",
+              label: "Java",
+              code: `import dev.caerus.error.ResourceNotFoundError;
+import dev.caerus.error.CaerusError;
+
+try {
+    caerus.confirm(holderId);
+} catch (ResourceNotFoundError error) {
+    System.err.println("Holder o recurso no encontrado: " + error.getMessage());
+    // Notificar al cliente que la reserva no existe o ya caducó
+} catch (CaerusError error) {
+    throw error;
+}`,
+            },
+          }}
         />
       </section>
 

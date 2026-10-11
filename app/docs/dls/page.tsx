@@ -27,7 +27,12 @@ export default function DocsDlsPage() {
       description="Sincronización a bajo nivel y exclusión mutua distribuida para microservicios. Evita condiciones de carrera, doble facturación y escritura concurrente en almacenamiento compartido."
       tocItems={tocItems}
     >
-      <SignatureBlock signature="const lock = await client.acquireLock(namespace, key, txId, 'EXCLUSIVE');" />
+      <SignatureBlock
+        signatures={{
+          typescript: "const lock = await client.acquireLock(namespace, key, txId, 'EXCLUSIVE');",
+          java: "LockHolder lock = tx.acquireLock(namespace, key, LockMode.EXCLUSIVE, options);",
+        }}
+      />
 
       {/* Conceptos */}
       <section id="conceptos" className="space-y-4">
@@ -111,14 +116,17 @@ export default function DocsDlsPage() {
       {/* Ejemplo de Código */}
       <section id="codigo" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Ejemplo de Uso en TypeScript
+          Ejemplo de Uso con el SDK
         </h2>
 
         <CodeBlock
-          language="typescript"
-          title="dls-worker.ts"
           showLineNumbers
-          code={`import { Dls } from '@caerus-dev/sdk';
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "dls-worker.ts",
+              label: "TypeScript",
+              code: `import { Dls } from '@caerus-dev/sdk';
 
 const client = new Dls.DlsClient({
   apiKey: process.env.CAERUS_API_KEY!,
@@ -130,7 +138,7 @@ const tx = await client.beginTransaction({ timeoutMs: 10000 });
 // 2. Adquirir lock exclusivo con Fencing Token
 const lock = await client.acquireLock(
   'billing-jobs',
-  'subscription-monthly-september',
+  'monthly-billing-job',
   tx.transactionId,
   'EXCLUSIVE'
 );
@@ -138,12 +146,49 @@ const lock = await client.acquireLock(
 try {
   console.log('Lock adquirido. Fencing Token:', lock.fencingToken);
 
-  // 3. Ejecutar tarea crítica pasando el fencing token al storage
-  await procesarFacturacionMensual({ fencingToken: lock.fencingToken });
+  // 3. Ejecutar tarea crítica pasando el fencing token
+  await procesarFacturacion({
+    fencingToken: lock.fencingToken,
+  });
 } finally {
-  // 4. Liberar todos los locks de la transacción
+  // 4. Liberar locks de la transacción
   await client.releaseTransactionLocks(tx.transactionId);
-}`}
+}`,
+            },
+            java: {
+              language: "java",
+              title: "BillingJob.java",
+              label: "Java",
+              code: `import dev.caerus.dls.DlsClient;
+import dev.caerus.dls.DlsClientOptions;
+import dev.caerus.dls.model.*;
+
+DlsClient client = new DlsClient(DlsClientOptions.builder()
+    .apiKey(System.getenv("CAERUS_API_KEY"))
+    .build());
+
+// withTransaction gestiona transacción y liberación
+String resultado = client.withTransaction(tx -> {
+    // Adquirir lock exclusivo con Fencing Token
+    LockHolder lock = tx.acquireLock(
+        "billing-jobs",
+        "monthly-billing-job",
+        LockMode.EXCLUSIVE,
+        AcquireLockOptions.builder()
+            .timeoutMs(10_000L)
+            .build()
+    );
+
+    long fencingToken = lock.fencingToken().getAsLong();
+    System.out.println("Lock adquirido. Fencing Token: " + fencingToken);
+
+    // Ejecutar tarea crítica pasando el fencing token
+    return procesarFacturacion(fencingToken);
+}, TransactionOptions.builder()
+    .timeoutMs(15_000L)
+    .build());`,
+            },
+          }}
         />
       </section>
 

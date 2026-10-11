@@ -4,6 +4,7 @@ import * as React from "react"
 import { DocsHeader } from "./docs-header"
 import { DocsSidebar } from "./docs-sidebar"
 import { DocsSearchDialog } from "./docs-search-dialog"
+import { DocsLanguageProvider } from "./language-context"
 
 export function DocsShell({
   children,
@@ -15,8 +16,9 @@ export function DocsShell({
   const [searchOpen, setSearchOpen] = React.useState(false)
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <DocsHeader onSearchClick={() => setSearchOpen(true)} user={user} />
+    <DocsLanguageProvider>
+      <div className="min-h-screen flex flex-col bg-background text-foreground">
+        <DocsHeader onSearchClick={() => setSearchOpen(true)} user={user} />
 
       <div className="mx-auto flex-1 w-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
         <div className="flex gap-8">
@@ -34,5 +36,6 @@ export function DocsShell({
 
       <DocsSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </div>
+  </DocsLanguageProvider>
   )
 }

@@ -15,6 +15,7 @@ export interface DocsConfig {
   version: string
   repoUrl: string
   sdkRepoUrl: string
+  sdkJavaRepoUrl?: string
   protoRepoUrl: string
   demoSreRepoUrl: string
   demoDlsRepoUrl: string
@@ -25,6 +26,7 @@ export const docsConfig: DocsConfig = {
   version: "v2.1.0",
   repoUrl: "https://github.com/caerus-dev/caerus",
   sdkRepoUrl: "https://github.com/caerus-dev/caerus-sdk-ts",
+  sdkJavaRepoUrl: "https://github.com/caerus-dev/caerus-sdk-java",
   protoRepoUrl: "https://github.com/caerus-dev/caerus-protos",
   demoSreRepoUrl: "https://github.com/caerus-dev/demo-sdk",
   demoDlsRepoUrl: "https://github.com/caerus-dev/demo-dls",
@@ -56,14 +58,21 @@ export const docsConfig: DocsConfig = {
       ],
     },
     {
-      title: "SDK TypeScript / Node.js",
+      title: "SDKs",
       items: [
         {
-          title: "Instalación y Conexión",
+          title: "TypeScript / Node.js",
           href: "/docs/sdk",
           badge: "Core",
-          description: "Configuración del cliente @caerus-dev/sdk, API keys, TLS y endpoints locales.",
-          keywords: ["sdk", "instalacion", "caerusclient", "npm", "pnpm", "node", "typescript", "tls"],
+          description: "Configuración del cliente @caerus-dev/sdk, API keys, TLS y endpoints.",
+          keywords: ["sdk", "typescript", "node", "npm", "pnpm", "caerusclient", "javascript"],
+        },
+        {
+          title: "Java",
+          href: "/docs/sdk/java",
+          badge: "New",
+          description: "Cliente oficial io.github.caerus-dev:caerus-sdk para Java 17+, Maven y Gradle.",
+          keywords: ["sdk", "java", "maven", "gradle", "caerusclient", "grpc", "pom.xml"],
         },
       ],
     },
