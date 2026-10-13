@@ -29,6 +29,7 @@ export default function DocsSrePage() {
         signatures={{
           typescript: "const holder = await caerus.unitary(resourceKey).take(options);",
           java: "ResourceHolder holder = caerus.unitary(resourceKey).take(options);",
+          go: "holder, err := caerus.Unitary(resourceKey).Take(ctx, options)",
         }}
       />
 
@@ -38,7 +39,7 @@ export default function DocsSrePage() {
           Recursos Unitarios vs Pooled (Con Cupo)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          En Caerus, la distinción entre un recurso del que hay <em>exactamente uno</em> y un recurso del que hay <em>múltiples unidades intercambiables</em> es una distinción formal en el sistema de tipos de los SDKs (TypeScript y Java):
+          En Caerus, la distinción entre un recurso del que hay <em>exactamente uno</em> y un recurso del que hay <em>múltiples unidades intercambiables</em> es una distinción formal en el sistema de tipos de los SDKs (TypeScript, Java y Go):
         </p>
 
         <div className="grid grid-cols-1 gap-6 my-4">
@@ -72,6 +73,17 @@ ResourceHolder holder = caerus.unitary("butaca-D9").take(
 
 // caerus.unitary("...").takeMany(3); // ✗ No compila en la API unitaria`,
                 },
+                go: {
+                  language: "go",
+                  title: "unitary.go",
+                  label: "Go",
+                  code: `// Toma exactamente 1 unidad
+holder, err := caerus.Unitary("butaca-D9").Take(ctx, &sre.TakeOptions{
+    TTL: 180 * time.Second,
+})
+
+// caerus.Unitary("...").TakeMany(ctx, 3, ...); // ✗ No existe en la API unitaria`,
+                },
               }}
             />
           </div>
@@ -101,6 +113,15 @@ await caerus.pooled('combo-grande').takeMany(3, { ttlSeconds: 300 });`,
 ResourceHolder holder = caerus.pooled("combo-grande").takeMany(3,
     TakeOptions.builder().ttlSeconds(300).build()
 );`,
+                },
+                go: {
+                  language: "go",
+                  title: "pooled.go",
+                  label: "Go",
+                  code: `// Toma 3 unidades de las disponibles
+holder, err := caerus.Pooled("combo-grande").TakeMany(ctx, 3, &sre.TakeOptions{
+    TTL: 300 * time.Second,
+})`,
                 },
               }}
             />
@@ -166,6 +187,16 @@ ResourceHolder holder = caerus.pooled("combo-grande").takeMany(3,
         .build()
 );`,
                 },
+                go: {
+                  language: "go",
+                  title: "take.go",
+                  label: "Go",
+                  code: `holder, err := caerus.Unitary("butaca_A4").Take(ctx, &sre.TakeOptions{
+    TTL:            120 * time.Second, // Expira a los 2 minutos si no se confirma
+    IdempotencyKey: "req_order_9981",
+    Metadata:       map[string]any{"cliente": "ana@example.com"},
+})`,
+                },
               }}
             />
           </div>
@@ -189,6 +220,12 @@ ResourceHolder holder = caerus.pooled("combo-grande").takeMany(3,
                   label: "Java",
                   code: `caerus.confirm(holder.id());`,
                 },
+                go: {
+                  language: "go",
+                  title: "confirm.go",
+                  label: "Go",
+                  code: `_, err := caerus.Confirm(ctx, holder.ID, nil)`,
+                },
               }}
             />
           </div>
@@ -211,6 +248,12 @@ ResourceHolder holder = caerus.pooled("combo-grande").takeMany(3,
                   title: "Release.java",
                   label: "Java",
                   code: `caerus.release(holder.id());`,
+                },
+                go: {
+                  language: "go",
+                  title: "release.go",
+                  label: "Go",
+                  code: `err := caerus.Release(ctx, holder.ID)`,
                 },
               }}
             />
@@ -262,7 +305,7 @@ ResourceHolder holder = caerus.pooled("combo-grande").takeMany(3,
             <span className="font-semibold text-sm text-foreground">Especificación gRPC de bajo nivel</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            ¿Construyendo un cliente en Python, C# o Rust? Consulta los contratos <code>proto3</code> completos de <code>CreateResource</code>, <code>Take</code>, <code>Confirm</code> y <code>Release</code>.
+            ¿Construyendo un cliente en Python, C#, Rust, Ruby o cualquier otro lenguaje? Consulta los contratos <code>proto3</code> completos de <code>CreateResource</code>, <code>Take</code>, <code>Confirm</code> y <code>Release</code>.
           </p>
         </div>
         <Button asChild variant="outline" size="sm" className="gap-2 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/10 text-xs shrink-0">

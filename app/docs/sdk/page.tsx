@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowRight, Terminal, Shield, CheckCircle2, AlertTriangle, ExternalLink, Code2, Cpu, Lock } from "lucide-react"
+import { ArrowRight, Terminal, Shield, CheckCircle2, AlertTriangle, ExternalLink, Code2, Cpu, Lock, Server } from "lucide-react"
 import { DocsPageLayout } from "@/components/docs/docs-page-layout"
 import { CodeBlock, SignatureBlock } from "@/components/docs/code-block"
 import { Button } from "@/components/ui/button"
@@ -23,14 +23,15 @@ export default function DocsSdkPage() {
     <DocsPageLayout
       breadcrumbs={[{ label: "Comenzando", href: "/docs" }, { label: "SDKs Oficiales" }]}
       title="SDKs Oficiales de Caerus"
-      badge="TypeScript & Java"
-      description="Clientes oficiales para integrar Caerus en tus microservicios backend. Soporte para Node.js / TypeScript y Java 17+, con tipado estricto, comunicación gRPC de alto rendimiento y selección unificada de lenguaje."
+      badge="TypeScript, Java & Go"
+      description="Clientes oficiales para integrar Caerus en tus microservicios backend. Soporte para Node.js / TypeScript, Java 17+ y Go 1.26+, con tipado estricto, comunicación gRPC de alto rendimiento y selección unificada de lenguaje."
       tocItems={tocItems}
     >
       <SignatureBlock
         signatures={{
           typescript: "const caerus = new CaerusClient(options: CaerusClientOptions);",
           java: "CaerusClient caerus = new CaerusClient(CaerusClientOptions.builder().apiKey(key).build());",
+          go: "client, err := sre.NewClient(sre.ClientOptions{APIKey: key})",
         }}
       />
 
@@ -40,7 +41,7 @@ export default function DocsSdkPage() {
           Instalación
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Selecciona tu lenguaje preferido. Los SDKs oficiales se distribuyen a través de sus registros estándar (npm para Node.js/TypeScript y Maven Central para Java):
+          Selecciona tu lenguaje preferido. Los SDKs oficiales se distribuyen a través de sus registros estándar (npm para Node.js/TypeScript, Maven Central para Java y módulos de Go):
         </p>
 
         <CodeBlock
@@ -69,10 +70,16 @@ export default function DocsSdkPage() {
 // Gradle (build.gradle)
 // implementation 'io.github.caerus-dev:caerus-sdk:0.1.0'`,
             },
+            go: {
+              language: "bash",
+              title: "go get",
+              label: "Go",
+              code: `go get github.com/caerus-dev/caerus-sdk-go`,
+            },
           }}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-muted-foreground pt-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-muted-foreground pt-1">
           <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 space-y-1">
             <span className="font-semibold text-foreground flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4 text-emerald-500" />
@@ -86,6 +93,13 @@ export default function DocsSdkPage() {
               Java 17+
             </span>
             <p>Compatible con Java 17 o superior. Empaqueta gRPC (Netty) y Protobuf sin exponer dependencias conflictivas.</p>
+          </div>
+          <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 space-y-1">
+            <span className="font-semibold text-foreground flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              Go 1.26+
+            </span>
+            <p>Compatible con Go moderno. Diseñado con contextos bloqueantes, soporte nativo de cancelaciones y sin exponer gRPC en la API pública.</p>
           </div>
         </div>
       </section>
@@ -125,6 +139,22 @@ public class CaerusService {
             .build()
     );
 }`,
+            },
+            go: {
+              language: "go",
+              title: "caerus.go",
+              label: "Go",
+              code: `package main
+
+import (
+	"os"
+
+	"github.com/caerus-dev/caerus-sdk-go/sre"
+)
+
+var client, _ = sre.NewClient(sre.ClientOptions{
+	APIKey: os.Getenv("CAERUS_API_KEY"),
+})`,
             },
           }}
         />
@@ -168,16 +198,26 @@ public class CaerusService {
         .build()
 );`,
             },
+            go: {
+              language: "go",
+              title: "caerus.local.go",
+              label: "Go",
+              code: `client, err := sre.NewClient(sre.ClientOptions{
+	Endpoint: "localhost:9090",
+	APIKey:   os.Getenv("CAERUS_API_KEY"),
+	TLS:      caerus.Bool(false), // Texto plano para entorno local
+})`,
+            },
           }}
         />
 
-        <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-xs text-amber-600 dark:text-amber-400 space-y-2">
-          <div className="flex items-center gap-2 font-semibold">
-            <AlertTriangle className="h-4 w-4 shrink-0" />
-            <span>Formato de endpoint y TLS (Soporte preparado en el SDK)</span>
+        <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-xs text-muted-foreground space-y-1.5">
+          <div className="flex items-center gap-2 font-semibold text-foreground">
+            <Server className="h-4 w-4 text-primary shrink-0" />
+            <span>Formato de endpoint y TLS</span>
           </div>
           <p className="leading-relaxed">
-            El <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (sin prefijo <code>http://</code> ni <code>https://</code>). El cliente SDK ya cuenta con soporte para endpoints personalizados y <code>tls: false</code>, listo para cuando la imagen Docker local esté disponible públicamente.
+            Al apuntar a un host personalizado o motor local, el <code>endpoint</code> debe ser únicamente <code>host:puerto</code> (por ejemplo <code>localhost:9090</code>, sin prefijo <code>http://</code> ni <code>https://</code>) y acompañarse de <code>tls: false</code> para comunicación en texto plano.
           </p>
         </div>
       </section>
@@ -246,7 +286,7 @@ const holder = await caerus.unitary('seat-A12').take({
 
 // 2. Procesar cobro en tu pasarela...
 // 3. Confirmar la reserva de inventario
-await holder.confirm();`,
+await caerus.confirm(holder.id);`,
             },
             java: {
               language: "java",
@@ -262,7 +302,24 @@ ResourceHolder holder = caerus.unitary("seat-A12").take(
 
 // 2. Procesar cobro en tu pasarela...
 // 3. Confirmar la reserva de inventario
-holder.confirm(ConfirmOptions.builder().build());`,
+caerus.confirm(holder.id());`,
+            },
+            go: {
+              language: "go",
+              title: "reserva.go",
+              label: "Go",
+              code: `// 1. Adquirir reserva temporal con TTL e idempotencia
+holder, err := caerus.Unitary("seat-A12").Take(ctx, &sre.TakeOptions{
+	TTL:            60 * time.Second,
+	IdempotencyKey: "checkout-session-123",
+})
+if err != nil {
+	return err
+}
+
+// 2. Procesar cobro en tu pasarela...
+// 3. Confirmar la reserva de inventario
+_, err = caerus.Confirm(ctx, holder.ID, nil)`,
             },
           }}
         />
@@ -286,21 +343,19 @@ holder.confirm(ConfirmOptions.builder().build());`,
               code: `import { Dls } from '@caerus-dev/sdk';
 
 const dls = new Dls.DlsClient({ apiKey: process.env.CAERUS_API_KEY! });
-const tx = await dls.beginTransaction({ timeoutMs: 10000 });
 
-const lock = await dls.acquireLock(
-  'billing-jobs',
-  'monthly-billing',
-  tx.transactionId,
-  'EXCLUSIVE'
-);
+// withTransaction orquesta la transacción, heartbeat automático y liberación en finally
+await dls.withTransaction(async (tx) => {
+  const lock = await tx.acquireLock(
+    'billing-jobs',
+    'monthly-billing',
+    'EXCLUSIVE',
+    { timeoutMs: 10000 }
+  );
 
-try {
   console.log('Fencing Token:', lock.fencingToken);
   // Ejecutar tarea crítica...
-} finally {
-  await dls.releaseTransactionLocks(tx.transactionId);
-}`,
+}, { timeoutMs: 15000 });`,
             },
             java: {
               language: "java",
@@ -326,6 +381,32 @@ dls.withTransaction(tx -> {
     System.out.println("Fencing Token: " + token);
     return token;
 });`,
+            },
+            go: {
+              language: "go",
+              title: "billing_worker.go",
+              label: "Go",
+              code: `import (
+	"context"
+	"fmt"
+	"time"
+
+	"github.com/caerus-dev/caerus-sdk-go/dls"
+)
+
+// WithTransaction orquesta la transacción, heartbeat automático y libera todos los locks al salir
+err := locks.WithTransaction(ctx, func(ctx context.Context, tx dls.Tx) error {
+	lock, err := tx.AcquireLock(ctx, "billing-jobs", "monthly-billing", dls.Exclusive, &dls.AcquireLockOptions{
+		Timeout: 10 * time.Second,
+	})
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Fencing Token:", lock.FencingToken)
+	// Ejecutar tarea crítica...
+	return nil
+}, &dls.TransactionOptions{Timeout: 15 * time.Second})`,
             },
           }}
         />
@@ -364,6 +445,21 @@ import dev.caerus.testing.InMemoryDlsClient;
 InMemoryCaerusClient mockCaerus = new InMemoryCaerusClient();
 InMemoryDlsClient mockDls = new InMemoryDlsClient();`,
             },
+            go: {
+              language: "go",
+              title: "order_test.go",
+              label: "Go",
+              code: `import (
+	"github.com/caerus-dev/caerus-sdk-go/dls"
+	"github.com/caerus-dev/caerus-sdk-go/sre"
+)
+
+// Clientes en memoria para tests unitarios sin backend ni red:
+mockCaerus := sre.NewInMemoryClient(&sre.MockOptions{
+	Resources: []sre.MockResourceSeed{{Key: "seat-A12", AvailableAmount: 1}},
+})
+mockDls := dls.NewInMemoryClient()`,
+            },
           }}
         />
       </section>
@@ -373,7 +469,7 @@ InMemoryDlsClient mockDls = new InMemoryDlsClient();`,
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
           Repositorios Oficiales en GitHub
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="rounded-xl border border-border/70 bg-muted/20 p-4 space-y-3">
             <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
               <Code2 className="h-4 w-4 text-primary" />
@@ -400,6 +496,22 @@ InMemoryDlsClient mockDls = new InMemoryDlsClient();`,
             </p>
             <Button asChild variant="outline" size="sm" className="gap-1.5 text-xs">
               <Link href="https://github.com/caerus-dev/caerus-sdk-java" target="_blank" rel="noopener noreferrer">
+                <span>Ver en GitHub</span>
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            </Button>
+          </div>
+
+          <div className="rounded-xl border border-border/70 bg-muted/20 p-4 space-y-3">
+            <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
+              <Code2 className="h-4 w-4 text-emerald-400" />
+              <span>caerus-sdk-go (Go)</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Repositorio oficial de Go 1.26+. Concurrencia idiomática, soporte de contextos y testing en memoria.
+            </p>
+            <Button asChild variant="outline" size="sm" className="gap-1.5 text-xs">
+              <Link href="https://github.com/caerus-dev/caerus-sdk-go" target="_blank" rel="noopener noreferrer">
                 <span>Ver en GitHub</span>
                 <ExternalLink className="h-3 w-3" />
               </Link>

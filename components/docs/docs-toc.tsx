@@ -93,6 +93,28 @@ export function DocsToc({ items = [], className }: DocsTocProps) {
             <span>SDK TypeScript (@caerus-dev/sdk)</span>
             <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100" />
           </a>
+          {docsConfig.sdkJavaRepoUrl && (
+            <a
+              href={docsConfig.sdkJavaRepoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between text-xs text-muted-foreground hover:text-foreground py-1 px-2 rounded-md hover:bg-muted transition-colors group"
+            >
+              <span>SDK Java (caerus-sdk)</span>
+              <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100" />
+            </a>
+          )}
+          {docsConfig.sdkGoRepoUrl && (
+            <a
+              href={docsConfig.sdkGoRepoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between text-xs text-muted-foreground hover:text-foreground py-1 px-2 rounded-md hover:bg-muted transition-colors group"
+            >
+              <span>SDK Go (caerus-sdk-go)</span>
+              <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100" />
+            </a>
+          )}
           <a
             href={docsConfig.demoSreRepoUrl}
             target="_blank"
@@ -109,6 +131,15 @@ export function DocsToc({ items = [], className }: DocsTocProps) {
             className="flex items-center justify-between text-xs text-muted-foreground hover:text-foreground py-1 px-2 rounded-md hover:bg-muted transition-colors group"
           >
             <span>Demo DLS (Lock Simulator)</span>
+            <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100" />
+          </a>
+          <a
+            href={docsConfig.protoRepoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between text-xs text-muted-foreground hover:text-foreground py-1 px-2 rounded-md hover:bg-muted transition-colors group"
+          >
+            <span>Contratos gRPC (caerus-protos)</span>
             <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100" />
           </a>
         </div>

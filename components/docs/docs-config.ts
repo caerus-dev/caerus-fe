@@ -16,6 +16,7 @@ export interface DocsConfig {
   repoUrl: string
   sdkRepoUrl: string
   sdkJavaRepoUrl?: string
+  sdkGoRepoUrl?: string
   protoRepoUrl: string
   demoSreRepoUrl: string
   demoDlsRepoUrl: string
@@ -27,6 +28,7 @@ export const docsConfig: DocsConfig = {
   repoUrl: "https://github.com/caerus-dev/caerus",
   sdkRepoUrl: "https://github.com/caerus-dev/caerus-sdk-ts",
   sdkJavaRepoUrl: "https://github.com/caerus-dev/caerus-sdk-java",
+  sdkGoRepoUrl: "https://github.com/caerus-dev/caerus-sdk-go",
   protoRepoUrl: "https://github.com/caerus-dev/caerus-protos",
   demoSreRepoUrl: "https://github.com/caerus-dev/demo-sdk",
   demoDlsRepoUrl: "https://github.com/caerus-dev/demo-dls",
@@ -43,8 +45,8 @@ export const docsConfig: DocsConfig = {
         {
           title: "SDKs Oficiales",
           href: "/docs/sdk",
-          description: "Clientes oficiales para TypeScript / Node.js y Java 17+. Configuración, API keys, TLS y opciones.",
-          keywords: ["sdk", "typescript", "node", "java", "maven", "gradle", "caerusclient", "javascript"],
+          description: "Clientes oficiales para TypeScript / Node.js, Java 17+ y Go 1.26+. Configuración, API keys, TLS y opciones.",
+          keywords: ["sdk", "typescript", "node", "java", "go", "golang", "maven", "gradle", "caerusclient", "javascript"],
         },
         {
           title: "Playground en Vivo",

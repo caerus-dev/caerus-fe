@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 
-export type SupportedLanguage = "typescript" | "java"
+export type SupportedLanguage = "typescript" | "java" | "go"
 
 interface DocsLanguageContextType {
   language: SupportedLanguage
@@ -20,7 +20,7 @@ export function DocsLanguageProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     try {
       const saved = localStorage.getItem("caerus_docs_lang") as SupportedLanguage | null
-      if (saved === "typescript" || saved === "java") {
+      if (saved === "typescript" || saved === "java" || saved === "go") {
         setLanguageState(saved)
       }
     } catch {

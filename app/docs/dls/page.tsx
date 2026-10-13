@@ -11,7 +11,7 @@ const tocItems = [
   { id: "modos", title: "Modos: Exclusive vs Shared Read" },
   { id: "fencing", title: "Fencing Tokens contra Split-Brain" },
   { id: "deadlocks", title: "Detección y Resolución de Deadlocks" },
-  { id: "codigo", title: "Ejemplo de Uso en TypeScript" },
+  { id: "codigo", title: "Ejemplo de Uso con el SDK" },
   { id: "recursos-practica", title: "Quickstart & Playground" },
 ]
 
@@ -29,8 +29,9 @@ export default function DocsDlsPage() {
     >
       <SignatureBlock
         signatures={{
-          typescript: "const lock = await client.acquireLock(namespace, key, txId, 'EXCLUSIVE');",
+          typescript: "const lock = await tx.acquireLock(namespace, key, 'EXCLUSIVE', options);",
           java: "LockHolder lock = tx.acquireLock(namespace, key, LockMode.EXCLUSIVE, options);",
+          go: "lock, err := tx.AcquireLock(ctx, namespace, key, dls.Exclusive, options)",
         }}
       />
 
@@ -128,32 +129,27 @@ export default function DocsDlsPage() {
               label: "TypeScript",
               code: `import { Dls } from '@caerus-dev/sdk';
 
-const client = new Dls.DlsClient({
+const dls = new Dls.DlsClient({
   apiKey: process.env.CAERUS_API_KEY!,
 });
 
-// 1. Abrir transacción con timeout
-const tx = await client.beginTransaction({ timeoutMs: 10000 });
+// withTransaction orquesta la transacción, heartbeat automático y liberación en finally
+await dls.withTransaction(async (tx) => {
+  // Adquirir lock exclusivo con Fencing Token
+  const lock = await tx.acquireLock(
+    'billing-jobs',
+    'monthly-billing-job',
+    'EXCLUSIVE',
+    { timeoutMs: 10000 }
+  );
 
-// 2. Adquirir lock exclusivo con Fencing Token
-const lock = await client.acquireLock(
-  'billing-jobs',
-  'monthly-billing-job',
-  tx.transactionId,
-  'EXCLUSIVE'
-);
-
-try {
   console.log('Lock adquirido. Fencing Token:', lock.fencingToken);
 
-  // 3. Ejecutar tarea crítica pasando el fencing token
+  // Ejecutar tarea crítica pasando el fencing token
   await procesarFacturacion({
     fencingToken: lock.fencingToken,
   });
-} finally {
-  // 4. Liberar locks de la transacción
-  await client.releaseTransactionLocks(tx.transactionId);
-}`,
+}, { timeoutMs: 15000 });`,
             },
             java: {
               language: "java",
@@ -167,7 +163,7 @@ DlsClient client = new DlsClient(DlsClientOptions.builder()
     .apiKey(System.getenv("CAERUS_API_KEY"))
     .build());
 
-// withTransaction gestiona transacción y liberación
+// withTransaction gestiona transacción, heartbeat y liberación
 String resultado = client.withTransaction(tx -> {
     // Adquirir lock exclusivo con Fencing Token
     LockHolder lock = tx.acquireLock(
@@ -188,6 +184,51 @@ String resultado = client.withTransaction(tx -> {
     .timeoutMs(15_000L)
     .build());`,
             },
+            go: {
+              language: "go",
+              title: "billing_job.go",
+              label: "Go",
+              code: `package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/caerus-dev/caerus-sdk-go/dls"
+)
+
+func main() {
+	ctx := context.Background()
+	locks, err := dls.NewClient(dls.ClientOptions{
+		APIKey: os.Getenv("CAERUS_API_KEY"),
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer locks.Close()
+
+	// WithTransaction orquesta la transacción, heartbeat automático y libera todos los locks al salir
+	err = locks.WithTransaction(ctx, func(ctx context.Context, tx dls.Tx) error {
+		// Adquirir lock exclusivo con Fencing Token
+		lock, err := tx.AcquireLock(ctx, "billing-jobs", "monthly-billing-job", dls.Exclusive, &dls.AcquireLockOptions{
+			Timeout: 10 * time.Second,
+		})
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("Lock adquirido. Fencing Token:", lock.FencingToken)
+
+		// Ejecutar tarea crítica pasando el fencing token
+		return procesarFacturacion(ctx, lock.FencingToken)
+	}, &dls.TransactionOptions{Timeout: 15 * time.Second})
+	if err != nil {
+		panic(err)
+	}
+}`,
+            },
           }}
         />
       </section>
@@ -200,7 +241,7 @@ String resultado = client.withTransaction(tx -> {
             <span className="font-semibold text-sm text-foreground">Especificación gRPC de bajo nivel</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Consulta los contratos <code>proto3</code> completos de <code>BeginTransaction</code>, <code>AcquireLock</code> (server streaming), <code>ReleaseLock</code> y <code>GetTransactionStatus</code>.
+            Consulta los contratos <code>proto3</code> completos de <code>BeginTransaction</code>, <code>AcquireLock</code> (server streaming), <code>ReleaseLock</code> y <code>GetTransactionStatus</code> en Python, Rust, C#, Ruby o cualquier otro lenguaje.
           </p>
         </div>
         <Button asChild variant="outline" size="sm" className="gap-2 border-purple-500/30 text-purple-500 hover:bg-purple-500/10 text-xs shrink-0">

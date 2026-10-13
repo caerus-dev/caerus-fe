@@ -23,6 +23,7 @@ export interface CodeBlockProps {
   snippets?: {
     typescript?: CodeSnippetItem | string
     java?: CodeSnippetItem | string
+    go?: CodeSnippetItem | string
     [key: string]: CodeSnippetItem | string | undefined
   }
   defaultLanguage?: string
@@ -67,9 +68,9 @@ export function highlightCodeLine(line: string, lineIndex: number): React.ReactN
       "('(?:\\\\.|[^'])*')" +
       "|(\"(?:\\\\.|[^\"])*\")" +
       "|(`(?:\\\\.|[^`])*`)" +
-      "|(\\b(?:import|from|const|let|var|new|await|async|try|catch|finally|throw|if|else|return|function|type|interface|export|default|class|extends|typeof|instanceof|public|private|protected|static|final|void|package|record|boolean|int|long|double|float|byte|short|char|synchronized|volatile|transient|implements|throws|abstract|super|this|null|true|false)\\b)" +
+      "|(\\b(?:import|from|const|let|var|new|await|async|try|catch|finally|throw|if|else|return|function|func|type|interface|struct|package|go|defer|chan|map|select|case|default|switch|for|range|break|continue|fallthrough|nil|make|export|class|extends|typeof|instanceof|public|private|protected|static|final|void|record|boolean|bool|int|int64|long|double|float|byte|short|char|synchronized|volatile|transient|implements|throws|abstract|super|this|null|true|false)\\b)" +
       "|(\\b\\d+[L|f|d]?\\b)" +
-      "|(\\b(?:CaerusClient|DlsClient|Dls|ConflictError|ValidationError|ResourceNotFoundError|Error|Promise|Console|Record|Set|Map|Array|String|Number|Boolean|ResourceHolder|LockHolder|CaerusClientOptions|DlsClientOptions|TakeOptions|ConfirmOptions|CreateResourceOptions|AcquireLockOptions|TransactionOptions|LockMode|CaerusError|DlsError|TimeoutError|AuthenticationError|OutOfStockError|DeadlockAbortedError|LockDeniedError|Optional|Long|Integer|List|System)\\b)" +
+      "|(\\b(?:CaerusClient|DlsClient|Dls|Client|Tx|LockHolder|ResourceHolder|ConflictError|ValidationError|ResourceNotFoundError|Error|Promise|Console|Record|Set|Map|Array|String|Number|Boolean|CaerusClientOptions|DlsClientOptions|TakeOptions|ConfirmOptions|CreateResourceOptions|AcquireLockOptions|TransactionOptions|LockMode|LockStatus|Exclusive|SharedRead|CaerusError|DlsError|TimeoutError|AuthenticationError|OutOfStockError|DeadlockAbortedError|LockDeniedError|Optional|Long|Integer|List|System|Context|time|Duration|sre|dls|webhooks|caerus)\\b)" +
       "|(\\.[a-zA-Z_$][a-zA-Z0-9_$]*)" +
       "|([a-zA-Z_$][a-zA-Z0-9_$]*)" +
       "|([^\\s\\w'\"`]+)" +
@@ -84,16 +85,16 @@ export function highlightCodeLine(line: string, lineIndex: number): React.ReactN
 
       if (token.startsWith("'") || token.startsWith('"') || token.startsWith("`")) {
         tokens.push(<span key={key} className="text-chart-3">{token}</span>)
-      } else if (/^(?:import|from|const|let|var|new|await|async|try|catch|finally|throw|if|else|return|function|type|interface|export|default|class|extends|typeof|instanceof|public|private|protected|static|final|void|package|record|boolean|int|long|double|float|byte|short|char|synchronized|volatile|transient|implements|throws|abstract|super|this|null|true|false)$/.test(token)) {
+      } else if (/^(?:import|from|const|let|var|new|await|async|try|catch|finally|throw|if|else|return|function|func|type|interface|struct|package|go|defer|chan|map|select|case|default|switch|for|range|break|continue|fallthrough|nil|make|export|class|extends|typeof|instanceof|public|private|protected|static|final|void|record|boolean|bool|int|int64|long|double|float|byte|short|char|synchronized|volatile|transient|implements|throws|abstract|super|this|null|true|false)$/.test(token)) {
         tokens.push(<span key={key} className="text-chart-2 font-medium">{token}</span>)
       } else if (/^\d+[L|f|d]?$/.test(token)) {
         tokens.push(<span key={key} className="text-amber-500">{token}</span>)
-      } else if (/^(?:CaerusClient|DlsClient|Dls|ConflictError|ValidationError|ResourceNotFoundError|Error|Promise|Console|Record|Set|Map|Array|String|Number|Boolean|ResourceHolder|LockHolder|CaerusClientOptions|DlsClientOptions|TakeOptions|ConfirmOptions|CreateResourceOptions|AcquireLockOptions|TransactionOptions|LockMode|CaerusError|DlsError|TimeoutError|AuthenticationError|OutOfStockError|DeadlockAbortedError|LockDeniedError|Optional|Long|Integer|List|System)$/.test(token)) {
+      } else if (/^(?:CaerusClient|DlsClient|Dls|Client|Tx|LockHolder|ResourceHolder|ConflictError|ValidationError|ResourceNotFoundError|Error|Promise|Console|Record|Set|Map|Array|String|Number|Boolean|CaerusClientOptions|DlsClientOptions|TakeOptions|ConfirmOptions|CreateResourceOptions|AcquireLockOptions|TransactionOptions|LockMode|LockStatus|Exclusive|SharedRead|CaerusError|DlsError|TimeoutError|AuthenticationError|OutOfStockError|DeadlockAbortedError|LockDeniedError|Optional|Long|Integer|List|System|Context|time|Duration|sre|dls|webhooks|caerus)$/.test(token)) {
         tokens.push(<span key={key} className="text-chart-3 font-medium">{token}</span>)
       } else if (token.startsWith(".")) {
         tokens.push(<span key={key} className="text-foreground">.</span>)
         tokens.push(<span key={`${key}-m`} className="text-primary">{token.slice(1)}</span>)
-      } else if (/^(?:unitary|pooled|take|takeMany|confirm|release|extend|chargeCard|beginTransaction|acquireLock|withTransaction|releaseTransactionLocks|processPayment|getResource|getResourcesByGroup|builder|build|apiKey|endpoint|tls|timeoutMs|idempotencyKey|ttlSeconds|fencingToken|getAsLong|orElse|constructEvent|println|log|warn|error)$/.test(token)) {
+      } else if (/^(?:unitary|pooled|take|takeMany|confirm|release|extend|Unitary|Pooled|Take|TakeMany|Confirm|Release|Extend|chargeCard|beginTransaction|acquireLock|withTransaction|releaseTransactionLocks|BeginTransaction|AcquireLock|WithTransaction|RenewTransaction|ReleaseLock|ReleaseTransactionLocks|GetLockStatus|GetTransactionStatus|NewClient|NewInMemoryClient|processPayment|getResource|getResourcesByGroup|builder|build|apiKey|endpoint|tls|timeoutMs|idempotencyKey|ttlSeconds|fencingToken|getAsLong|orElse|constructEvent|println|Println|Printf|log|warn|error|Close)$/.test(token)) {
         tokens.push(<span key={key} className="text-primary">{token}</span>)
       } else {
         tokens.push(<span key={key} className="text-foreground/90">{token}</span>)
@@ -121,6 +122,8 @@ function normalizeSnippet(raw: CodeSnippetItem | string | undefined, defaultLang
 const DEFAULT_LABELS: Record<string, string> = {
   typescript: "TypeScript",
   java: "Java",
+  go: "Go",
+  golang: "Go",
   npm: "npm",
   pnpm: "pnpm",
   maven: "Maven",
@@ -174,7 +177,7 @@ export function CodeBlock({
 
   const handleTabChange = (key: string) => {
     setLocalTab(key)
-    if (key === "typescript" || key === "java") {
+    if (key === "typescript" || key === "java" || key === "go") {
       setGlobalLang(key as SupportedLanguage)
     }
   }
@@ -288,6 +291,7 @@ interface SignatureBlockProps {
   signatures?: {
     typescript?: string
     java?: string
+    go?: string
     [key: string]: string | undefined
   }
   badge?: string

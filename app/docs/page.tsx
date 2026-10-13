@@ -201,7 +201,7 @@ export default function DocsOverviewPage() {
         </div>
 
         <p className="text-muted-foreground leading-relaxed">
-          Instala el SDK en tu aplicación backend (Node.js o Java) y empieza a coordinar recursos en minutos:
+          Instala el SDK en tu aplicación backend (Node.js/TypeScript, Java o Go) y empieza a coordinar recursos en minutos:
         </p>
 
         <CodeBlock
@@ -221,6 +221,12 @@ export default function DocsOverviewPage() {
     <artifactId>caerus-sdk</artifactId>
     <version>0.1.0</version>
 </dependency>`,
+            },
+            go: {
+              language: "bash",
+              title: "Terminal",
+              label: "Go",
+              code: "go get github.com/caerus-dev/caerus-sdk-go",
             },
           }}
         />
@@ -292,6 +298,55 @@ try {
     caerus.release(holder.id());
 }`,
             },
+            go: {
+              language: "go",
+              title: "main.go",
+              label: "Go",
+              code: `package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/caerus-dev/caerus-sdk-go/sre"
+)
+
+func main() {
+	ctx := context.Background()
+	caerus, err := sre.NewClient(sre.ClientOptions{
+		APIKey: os.Getenv("CAERUS_API_KEY"),
+	})
+	if err != nil {
+		panic(err)
+	}
+	defer caerus.Close()
+
+	// 1. Apartar el asiento durante 5 minutos
+	holder, err := caerus.Unitary("asiento-B14").Take(ctx, &sre.TakeOptions{
+		TTL:      5 * time.Minute,
+		Metadata: map[string]any{"clienteId": "usr_948"},
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	// 2. Procesar el cobro en la pasarela de pagos
+	if err := procesarPagoTarjeta(holder.ID); err != nil {
+		// 4. Si el pago falla, liberar inmediatamente para otros clientes
+		_ = caerus.Release(ctx, holder.ID)
+		return
+	}
+
+	// 3. Confirmar la venta de forma definitiva
+	_, err = caerus.Confirm(ctx, holder.ID, nil)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Compra confirmada con éxito:", holder.ID)
+}`,
+            },
           }}
         />
 
@@ -322,13 +377,13 @@ try {
           <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-xs font-mono">
             gRPC / Protobuf
           </Badge>
-          <span className="text-xs text-muted-foreground font-medium">Python · Rust · C#</span>
+          <span className="text-xs text-muted-foreground font-medium">Python · Rust · C# · Ruby · etc.</span>
         </div>
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
           ¿Desarrollas en otros lenguajes? Conéctate directo vía gRPC
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Toda la infraestructura de Caerus opera de forma nativa sobre <strong>gRPC y HTTP/2</strong> con serialización binaria <strong>Protocol Buffers v3</strong>. Si tu stack backend no utiliza Node.js/TypeScript, puedes compilar tus propios clientes fuertemente tipados a partir de nuestro repositorio de esquemas canónicos.
+          Toda la infraestructura de Caerus opera de forma nativa sobre <strong>gRPC y HTTP/2</strong> con serialización binaria <strong>Protocol Buffers v3</strong>. Si tu stack backend no utiliza TypeScript, Java o Go, puedes compilar tus propios clientes fuertemente tipados a partir de nuestro repositorio de esquemas canónicos.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
