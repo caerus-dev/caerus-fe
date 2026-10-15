@@ -206,7 +206,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Lock className="h-5 w-5 text-chart-2" />
-                Configuración del Lock
+                Configuración del lock
               </CardTitle>
               <CardDescription>
                 Define el comportamiento de este namespace de lock.
@@ -243,7 +243,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo de Lock</FormLabel>
+                      <FormLabel>Tipo de lock</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -317,7 +317,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
 
           <Card className="bg-card/50 border-border">
             <CardHeader>
-              <CardTitle className="text-lg">Adquisición y Resolución de Deadlocks</CardTitle>
+              <CardTitle className="text-lg">Adquisición y resolución de deadlocks</CardTitle>
               <CardDescription>
                 Configura cómo los workers adquieren locks y cómo se resuelven los bloqueos mutuos.
               </CardDescription>
@@ -329,7 +329,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                   name="acquisitionStrategy"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estrategia de Adquisición</FormLabel>
+                      <FormLabel>Estrategia de adquisición</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -339,7 +339,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                         <SelectContent>
                           <SelectItem value="fail">Fallo inmediato</SelectItem>
                           <SelectItem value="retry">Reintento automático</SelectItem>
-                          <SelectItem value="queue">Encolar (Queue / FIFO)</SelectItem>
+                          <SelectItem value="queue">Encolar (cola / FIFO)</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -352,7 +352,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                   name="deadlockStrategy"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estrategia de Resolución de Deadlocks</FormLabel>
+                      <FormLabel>Estrategia de resolución de deadlocks</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -377,7 +377,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                     name="retryInterval"
                     render={({ field }) => (
                       <FormItem className="space-y-2">
-                        <FormLabel>Intervalo de Reintento (ms)</FormLabel>
+                        <FormLabel>Intervalo de reintento (ms)</FormLabel>
                         <FormControl>
                           <Input type="number" min={10} max={30000} {...field} />
                         </FormControl>
@@ -390,7 +390,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                     name="maxRetries"
                     render={({ field }) => (
                       <FormItem className="space-y-2">
-                        <FormLabel>Máximo de Reintentos</FormLabel>
+                        <FormLabel>Máximo de reintentos</FormLabel>
                         <FormControl>
                           <Input type="number" min={1} max={10} {...field} />
                         </FormControl>
@@ -409,7 +409,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                 <AlertDialogTrigger asChild>
                   <Button type="button" variant="destructive" className="gap-2" disabled={isSubmitting}>
                     <Trash2 className="h-4 w-4" />
-                    Eliminar Plantilla
+                    Eliminar plantilla
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -440,7 +440,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
               </Button>
               <Button type="submit" disabled={isSubmitting} className="gap-2 bg-chart-2 text-chart-2-foreground hover:bg-chart-2/90">
                 <Save className="h-4 w-4" />
-                {isEditing ? "Guardar Cambios" : "Crear Configuración de Lock"}
+                {isEditing ? "Guardar cambios" : "Crear plantilla de lock"}
               </Button>
             </div>
           </div>

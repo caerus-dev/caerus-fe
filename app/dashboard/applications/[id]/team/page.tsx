@@ -96,7 +96,7 @@ export default function TeamPage({
       // Fetch application details to check user's role
       const appRes = await fetch(`/api/applications/${id}`)
       let role = "VIEWER"
-      let ownerEmail = "Propietario de la Aplicación"
+      let ownerEmail = "Propietario de la aplicación"
       let appData: any = null
       if (appRes.ok) {
         appData = await appRes.json()
@@ -159,7 +159,7 @@ export default function TeamPage({
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(inviteEmail)) {
-      setInviteError("Por favor ingresa un correo electrónico válido")
+      setInviteError("Por favor, ingresa un correo electrónico válido.")
       return
     }
 
@@ -330,12 +330,12 @@ export default function TeamPage({
             <DialogTrigger asChild>
               <Button className="w-full sm:w-auto">
                 <UserPlus className="w-4 h-4 mr-2" />
-                Invitar Colaborador
+                Invitar colaborador
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Invitar Colaborador</DialogTitle>
+                <DialogTitle>Invitar colaborador</DialogTitle>
                 <DialogDescription>
                   Ingresa el correo electrónico del desarrollador que deseas invitar a colaborar en esta aplicación
                 </DialogDescription>
@@ -353,7 +353,7 @@ export default function TeamPage({
                           href="/dashboard/billing"
                           className="inline-flex items-center gap-1 text-xs font-semibold text-primary underline hover:text-primary/80 transition-colors"
                         >
-                          Ver Planes y Facturación →
+                          Ver planes y facturación →
                         </Link>
                       </div>
                     )}
@@ -361,7 +361,7 @@ export default function TeamPage({
                 )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="invite-email">Correo Electrónico</Label>
+                    <Label htmlFor="invite-email">Correo electrónico</Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
@@ -395,7 +395,7 @@ export default function TeamPage({
                         <SelectItem value="VIEWER">
                           <div className="flex items-center gap-2">
                             <Users className="w-4 h-4 text-zinc-400" />
-                            Lector (Solo lectura)
+                            Lector (solo lectura)
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -422,7 +422,7 @@ export default function TeamPage({
                       Enviando...
                     </>
                   ) : (
-                    "Enviar Invitación"
+                    "Enviar invitación"
                   )}
                 </Button>
               </DialogFooter>
@@ -484,14 +484,14 @@ export default function TeamPage({
                           className="cursor-pointer"
                         >
                           <Shield className="w-4 h-4 mr-2" />
-                          Cambiar Rol
+                          Cambiar rol
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive focus:text-destructive cursor-pointer"
                           onClick={() => handleRemoveClick(collaborator)}
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
-                          Remover Acceso
+                          Eliminar acceso
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -511,10 +511,10 @@ export default function TeamPage({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="w-5 h-5" />
-              Invitaciones Pendientes ({invitations.length})
+              Invitaciones pendientes ({invitations.length})
             </CardTitle>
             <CardDescription>
-              Desarrolladores que han sido invitados pero aún no aceptan el correo
+              Desarrolladores que han sido invitados pero aún no han aceptado la invitación
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -556,7 +556,7 @@ export default function TeamPage({
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-destructive hover:bg-destructive/10 cursor-pointer"
-                          title="Cancelar Invitación"
+                          title="Cancelar invitación"
                           onClick={() => handleCancelInvitation(invite.id)}
                           disabled={isActionLoading}
                         >
@@ -578,9 +578,9 @@ export default function TeamPage({
       <Dialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Remover Colaborador</DialogTitle>
+            <DialogTitle>Eliminar colaborador</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro de que deseas remover a{" "}
+              ¿Estás seguro de que deseas eliminar a{" "}
               <span className="font-semibold text-foreground">
                 {collaboratorToRemove?.email}
               </span>{" "}
@@ -603,10 +603,10 @@ export default function TeamPage({
               {isActionLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Removiendo...
+                  Eliminando...
                 </>
               ) : (
-                "Remover Acceso"
+                "Eliminar acceso"
               )}
             </Button>
           </DialogFooter>
@@ -617,7 +617,7 @@ export default function TeamPage({
       <Dialog open={changeRoleDialogOpen} onOpenChange={setChangeRoleDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Cambiar Rol de Colaborador</DialogTitle>
+            <DialogTitle>Cambiar rol del colaborador</DialogTitle>
             <DialogDescription>
               Selecciona el nuevo rol para{" "}
               <span className="font-semibold text-foreground">
@@ -638,7 +638,7 @@ export default function TeamPage({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ADMIN">Administrador</SelectItem>
-                  <SelectItem value="VIEWER">Lector (Solo lectura)</SelectItem>
+                  <SelectItem value="VIEWER">Lector (solo lectura)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -661,7 +661,7 @@ export default function TeamPage({
                   Guardando...
                 </>
               ) : (
-                "Actualizar Rol"
+                "Actualizar rol"
               )}
             </Button>
           </DialogFooter>

@@ -178,7 +178,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-destructive">
             <Trash2 className="h-5 w-5" />
-            Zona de Peligro
+            Zona de peligro
           </CardTitle>
           <CardDescription>
             Acciones irreversibles y destructivas
@@ -187,7 +187,7 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="font-medium">Eliminar Cuenta</p>
+              <p className="font-medium">Eliminar cuenta</p>
               <p className="text-sm text-muted-foreground">
                 Eliminar permanentemente tu cuenta de usuario y todos tus datos asociados
               </p>
@@ -195,7 +195,7 @@ export default function SettingsPage() {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" disabled={isDeletingAccount}>
-                  {isDeletingAccount ? "Eliminando..." : "Eliminar Cuenta"}
+                  {isDeletingAccount ? "Eliminando..." : "Eliminar cuenta"}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -205,7 +205,7 @@ export default function SettingsPage() {
                     <div className="space-y-3 pt-1 text-sm text-muted-foreground">
                       <p>
                         Esta acción no se puede deshacer. Esto eliminará permanentemente tu
-                        cuenta, todas tus aplicaciones, entornos, API keys y removerá todo acceso como colaborador.
+                        cuenta, todas tus aplicaciones, entornos, API keys y revocará todo acceso como colaborador.
                       </p>
                       <div className="flex items-start gap-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-amber-600 dark:text-amber-400 text-xs leading-relaxed">
                         <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />

@@ -47,7 +47,7 @@ type DateRange = {
 }
 
 const DLS_METRICS = [
-  { key: "dlsAcquireAttempts", label: "Intentos de Acquire", color: "var(--chart-1)", description: "Número total de veces que se intentó adquirir un lock distribuido." },
+  { key: "dlsAcquireAttempts", label: "Intentos de adquisición (Acquire)", color: "var(--chart-1)", description: "Número total de veces que se intentó adquirir un lock distribuido." },
   { key: "dlsContentionFailures", label: "Fallos por Contención", color: "var(--chart-2)", description: "Cantidad de intentos de adquisición que fallaron porque el lock ya estaba en uso." },
   { key: "dlsContentionRate", label: "Tasa de Contención", color: "var(--chart-4)", description: "Proporción de intentos de adquisición que resultaron en fallos por contención." },
   { key: "dlsDeadlocks", label: "Deadlocks", color: "var(--destructive)", description: "Número de interbloqueos (deadlocks) detectados y resueltos por el sistema." },
@@ -201,7 +201,7 @@ export function MetricsTab({ appId, selectedEnv, currentEnvDetails }: MetricsTab
                 <Card className="h-full flex flex-col">
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <div className="space-y-1">
-                      <CardTitle>Top Recursos</CardTitle>
+                      <CardTitle>Recursos más utilizados</CardTitle>
                       <CardDescription>Los recursos SRE más utilizados</CardDescription>
                     </div>
                     <Select value={topLimit} onValueChange={setTopLimit}>
@@ -279,7 +279,7 @@ export function MetricsTab({ appId, selectedEnv, currentEnvDetails }: MetricsTab
             <MetricMainGraph 
               metric={{ 
                 key: "totalBillingUnits", 
-                label: "Unidades de Facturación", 
+                label: "Unidades de facturación", 
                 color: "var(--chart-5)",
                 description: "Cantidad total de unidades de facturación generadas por el uso de la plataforma en este período."
               }} 

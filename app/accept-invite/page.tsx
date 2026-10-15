@@ -42,7 +42,7 @@ export default function AcceptInvitePage({
       } catch (error: any) {
         console.error("Error accepting invitation:", error)
         setStatus("error")
-        setErrorMessage("Hubo un problema al procesar la invitación. Por favor intenta de nuevo.")
+        setErrorMessage("Hubo un problema al procesar la invitación. Por favor, intenta de nuevo.")
       }
     }
 
@@ -82,7 +82,7 @@ export default function AcceptInvitePage({
                 <CheckCircle2 className="h-8 w-8" />
               </div>
               <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-                ¡Invitación Aceptada!
+                ¡Invitación aceptada!
               </CardTitle>
               <CardDescription className="text-muted-foreground mt-1.5">
                 Te has unido con éxito como colaborador de la aplicación.
@@ -98,7 +98,7 @@ export default function AcceptInvitePage({
                 onClick={() => router.push("/dashboard/applications")}
                 className="w-full gap-2 glow-primary font-semibold py-6 text-base cursor-pointer"
               >
-                Ir al Dashboard
+                Ir a mis aplicaciones
                 <ArrowRight className="w-4 h-4" />
               </Button>
             </CardFooter>
@@ -120,7 +120,7 @@ export default function AcceptInvitePage({
             </CardHeader>
             <CardContent className="text-center pb-8">
               <p className="text-sm text-muted-foreground">
-                Si consideras que esto es un error, por favor solicita al propietario que te envíe una nueva invitación.
+                Si consideras que esto es un error, por favor, solicita al propietario que te envíe una nueva invitación.
               </p>
             </CardContent>
             <CardFooter className="pt-2">
@@ -129,7 +129,7 @@ export default function AcceptInvitePage({
                 onClick={() => router.push("/dashboard")}
                 className="w-full py-6 text-base font-semibold cursor-pointer"
               >
-                Volver al Inicio
+                Volver al inicio
               </Button>
             </CardFooter>
           </>

@@ -215,7 +215,7 @@ export function ResourceForm({
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <Box className="h-5 w-5 text-primary" />
-                Identidad del Recurso
+                Identidad del recurso
               </CardTitle>
               <CardDescription>
                 Define cómo se identifica y describe este recurso.
@@ -229,7 +229,7 @@ export function ResourceForm({
                   render={({ field }) => (
                     <FormItem>
                       <div className="flex justify-between items-center">
-                        <FormLabel>Nombre Base (Namespace)</FormLabel>
+                        <FormLabel>Nombre base (namespace)</FormLabel>
                         <span className={cn(
                           "text-[10px] transition-colors",
                           (field.value?.length || 0) >= 100 ? "text-destructive font-semibold" : (field.value?.length || 0) >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
@@ -252,7 +252,7 @@ export function ResourceForm({
                   name="mode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Modo del Recurso</FormLabel>
+                      <FormLabel>Modo del recurso</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -303,22 +303,22 @@ export function ResourceForm({
 
           <Card className="bg-card/50 border-border">
             <CardHeader>
-              <CardTitle className="text-lg">Ciclo de Vida y Concurrencia</CardTitle>
+              <CardTitle className="text-lg">Ciclo de vida y concurrencia</CardTitle>
               <CardDescription>
                 Controla cuánto dura una reserva, cómo te avisamos de sus eventos, y cómo el motor maneja conflictos.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 items-start">
-                <p className="text-sm font-semibold text-muted-foreground">Ciclo de Vida y Notificaciones</p>
-                <p className="text-sm font-semibold text-muted-foreground">Concurrencia y Fiabilidad</p>
+                <p className="text-sm font-semibold text-muted-foreground">Ciclo de vida y notificaciones</p>
+                <p className="text-sm font-semibold text-muted-foreground">Concurrencia y fiabilidad</p>
 
                 <FormField
                   control={form.control}
                   name="ttl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>TTL por Defecto (segundos)</FormLabel>
+                      <FormLabel>TTL por defecto (segundos)</FormLabel>
                       <FormControl>
                         <Input type="number" min={1} max={86400} {...field} />
                       </FormControl>
@@ -335,7 +335,7 @@ export function ResourceForm({
                   name="conflictStrategy"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Estrategia de Conflicto</FormLabel>
+                      <FormLabel>Estrategia de conflicto</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -384,7 +384,7 @@ export function ResourceForm({
                       name="retryInterval"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-sm">Intervalo de Reintento (segundos)</FormLabel>
+                          <FormLabel className="text-sm">Intervalo de reintento (segundos)</FormLabel>
                           <FormControl>
                             <Input type="number" min={1} max={5} {...field} />
                           </FormControl>
@@ -397,7 +397,7 @@ export function ResourceForm({
                       name="maxRetries"
                       render={({ field }) => (
                         <FormItem className="space-y-2">
-                          <FormLabel className="text-sm">Máximo de Reintentos</FormLabel>
+                          <FormLabel className="text-sm">Máximo de reintentos</FormLabel>
                           <FormControl>
                             <Input type="number" min={1} max={5} {...field} />
                           </FormControl>
@@ -415,7 +415,7 @@ export function ResourceForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4 shadow-sm">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Guardar Metadatos</FormLabel>
+                      <FormLabel className="text-base">Guardar metadatos</FormLabel>
                       <FormDescription>
                         Permitir almacenar datos JSON contextuales con las reservas.
                       </FormDescription>
@@ -438,7 +438,7 @@ export function ResourceForm({
                 <AlertDialogTrigger asChild>
                   <Button type="button" variant="destructive" className="gap-2" disabled={isSubmitting}>
                     <Trash2 className="h-4 w-4" />
-                    Eliminar Plantilla
+                    Eliminar plantilla
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -469,7 +469,7 @@ export function ResourceForm({
               </Button>
               <Button type="submit" disabled={isSubmitting} className="gap-2">
                 <Save className="h-4 w-4" />
-                {isEditing ? "Guardar Cambios" : "Crear Recurso"}
+                {isEditing ? "Guardar cambios" : "Crear plantilla de recurso"}
               </Button>
             </div>
           </div>

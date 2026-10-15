@@ -109,7 +109,7 @@ export default function NewApplicationPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Nueva Aplicación</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Nueva aplicación</h1>
           <p className="text-muted-foreground">
             Configura una nueva aplicación para empezar a gestionar sus recursos.
           </p>
@@ -121,7 +121,7 @@ export default function NewApplicationPage() {
           <div className="flex items-center gap-3">
             <CreditCard className="h-5 w-5 text-amber-500 shrink-0" />
             <p className="text-xs text-foreground">
-              <strong>Método de pago requerido:</strong> Para registrar aplicaciones en Caerus debes vincular una tarjeta a tu cuenta ($0/mes en Plan Developer).
+              <strong>Método de pago requerido:</strong> Para registrar aplicaciones en Caerus debes vincular una tarjeta a tu cuenta ($0/mes en el plan Developer).
             </p>
           </div>
           <Button
@@ -131,7 +131,7 @@ export default function NewApplicationPage() {
             className="shrink-0 text-xs gap-1.5 font-medium"
           >
             <CreditCard className="h-3.5 w-3.5" />
-            Vincular Tarjeta ($0/mes)
+            Vincular tarjeta ($0/mes)
           </Button>
         </div>
       )}
@@ -139,7 +139,7 @@ export default function NewApplicationPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle>Información Básica</CardTitle>
+            <CardTitle>Información básica</CardTitle>
             <CardDescription>
               Define el nombre y descripción de tu aplicación
             </CardDescription>
@@ -154,7 +154,7 @@ export default function NewApplicationPage() {
 
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <Label htmlFor="name">Nombre de la Aplicación *</Label>
+                <Label htmlFor="name">Nombre de la aplicación *</Label>
                 <span className={cn(
                   "text-[10px] transition-colors",
                   formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
@@ -198,9 +198,9 @@ export default function NewApplicationPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Entornos Iniciales</CardTitle>
+            <CardTitle>Entornos iniciales</CardTitle>
             <CardDescription>
-              Selecciona los entornos que deseas crear inicialmente. Podrás añadir o remover entornos posteriormente.
+              Selecciona los entornos que deseas crear inicialmente. Podrás añadir o eliminar entornos posteriormente.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -287,7 +287,7 @@ export default function NewApplicationPage() {
                 Creando...
               </>
             ) : (
-              "Crear Aplicación"
+              "Crear aplicación"
             )}
           </Button>
         </div>
@@ -298,7 +298,7 @@ export default function NewApplicationPage() {
         onOpenChange={setSetupModalOpen}
         initialStep="select-plan"
         title="Método de pago requerido"
-        description="Selecciona tu plan y vincula una tarjeta para crear aplicaciones ($0/mes en Plan Developer)."
+        description="Selecciona tu plan y vincula una tarjeta para crear aplicaciones ($0/mes en el plan Developer)."
         onSuccess={() => {
           refreshUser();
           setSetupModalOpen(false);

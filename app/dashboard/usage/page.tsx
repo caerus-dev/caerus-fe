@@ -197,8 +197,8 @@ export default function UsagePage() {
         ["Período", period],
         ["Plan", currentPlan?.name || "Sin plan"],
         ["Código de Plan", currentPlan?.code || "-"],
-        ["Requests Consumidas", consumedUnits.toString()],
-        ["Requests Incluidas", includedUnits.toString()],
+        ["Solicitudes consumidas", consumedUnits.toString()],
+        ["Solicitudes incluidas", includedUnits.toString()],
         ["Porcentaje de Uso", `${formatPercentage(usagePercentage)}%`],
         ["Aplicaciones Activas", applications.map((a) => a.name).join("; ") || "Ninguna"],
         ["Fecha de Generación", new Date().toLocaleString("es-AR")],
@@ -296,7 +296,7 @@ export default function UsagePage() {
         <Card className="bg-card/50 border-border">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-normal text-muted-foreground flex items-center justify-between">
-              <span>Requests Consumidas</span>
+              <span>Solicitudes consumidas</span>
               <Activity className="h-4 w-4 text-primary" />
             </CardTitle>
           </CardHeader>
@@ -371,7 +371,7 @@ export default function UsagePage() {
                     {formatPercentage(usagePercentage)}%
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {formatNumber(consumedUnits)} / {formatNumber(includedUnits)} reqs / mes
+                    {formatNumber(consumedUnits)} / {formatNumber(includedUnits)} solicitudes / mes
                   </span>
                 </div>
                 <div className="h-2 rounded-full bg-secondary overflow-hidden">
@@ -385,7 +385,7 @@ export default function UsagePage() {
                 {isOverLimit ? (
                   <p className="text-xs text-destructive flex items-center gap-1 font-medium">
                     <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                    Has superado las requests incluidas.
+                    Has superado las solicitudes incluidas.
                   </p>
                 ) : isNearLimit ? (
                   <p className="text-xs text-amber-500 flex items-center gap-1 font-medium">
@@ -394,7 +394,7 @@ export default function UsagePage() {
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    Límite de {formatNumber(includedUnits)} reqs / mes.
+                    Límite de {formatNumber(includedUnits)} solicitudes / mes.
                   </p>
                 )}
               </div>
@@ -408,7 +408,7 @@ export default function UsagePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Llamadas a la API en el Tiempo
+            Llamadas a la API a lo largo del tiempo
           </CardTitle>
           <CardDescription>
             Volumen diario de llamadas a la API durante el período seleccionado
@@ -458,7 +458,7 @@ export default function UsagePage() {
                     }}
                     labelStyle={{ color: "var(--foreground)", fontWeight: 600, marginBottom: "4px" }}
                     itemStyle={{ color: "var(--primary)" }}
-                    formatter={(val: any) => [`${formatNumber(Number(val))} requests`, "Consumo"]}
+                    formatter={(val: any) => [`${formatNumber(Number(val))} solicitudes`, "Consumo"]}
                   />
                   <Area
                     type="monotone"
@@ -479,7 +479,7 @@ export default function UsagePage() {
                 Desglose diario no disponible para este período
               </p>
               <p className="text-xs text-muted-foreground max-w-sm mt-1">
-                Se registraron {formatNumber(consumedUnits)} requests en el período de facturación actual, pero no se encontraron métricas diarias detalladas para el rango seleccionado.
+                Se registraron {formatNumber(consumedUnits)} solicitudes en el período de facturación actual, pero no se encontraron métricas diarias detalladas para el rango seleccionado.
               </p>
             </div>
           ) : (
@@ -502,7 +502,7 @@ export default function UsagePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
-            Consumo por Aplicación
+            Consumo por aplicación
           </CardTitle>
           <CardDescription>
             Distribución de llamadas a la API entre tus aplicaciones
@@ -521,7 +521,7 @@ export default function UsagePage() {
                 Crea tu primera aplicación para comenzar a monitorear su consumo.
               </p>
               <Button asChild variant="outline" size="sm" className="mt-3 text-xs">
-                <Link href="/dashboard">Ir al Dashboard</Link>
+                <Link href="/dashboard/applications">Ir a mis aplicaciones</Link>
               </Button>
             </div>
           ) : (
@@ -568,7 +568,7 @@ export default function UsagePage() {
                           <span className="font-semibold text-foreground text-sm">
                             {formatNumber(appCalls)}
                           </span>{" "}
-                          <span className="text-muted-foreground">requests</span>
+                          <span className="text-muted-foreground">solicitudes</span>
                           {appCalls > 0 && (
                             <div className="text-[10px] text-muted-foreground font-sans">
                               {((appCalls / totalDailyCalls) * 100).toFixed(1)}% del total
@@ -576,7 +576,7 @@ export default function UsagePage() {
                           )}
                         </div>
                       ) : (
-                        <span className="text-muted-foreground">0 requests</span>
+                        <span className="text-muted-foreground">0 solicitudes</span>
                       )}
                     </div>
                   </div>

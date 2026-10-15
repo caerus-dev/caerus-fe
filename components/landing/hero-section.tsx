@@ -36,13 +36,13 @@ export function HeroSection() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto">
           <Button asChild size="lg" className="glow-primary gap-2 text-base px-8 w-full sm:w-auto">
             <Link href="/dashboard">
-              Comenzar Gratis
+              Comenzar gratis
               <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="gap-2 text-base px-8 w-full sm:w-auto">
             <Link href="/docs">
-              Ver Documentación
+              Ver documentación
             </Link>
           </Button>
         </div>

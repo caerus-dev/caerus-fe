@@ -229,7 +229,7 @@ export default function ApiKeysPage() {
               ) : (
                 <Select value={selectedAppId} onValueChange={setSelectedAppId}>
                   <SelectTrigger id="appSelect" className="h-10 bg-secondary/40 border-border/80 hover:bg-secondary/60 transition-colors font-medium cursor-pointer">
-                    <SelectValue placeholder="Seleccionar Aplicación" />
+                    <SelectValue placeholder="Seleccionar aplicación" />
                   </SelectTrigger>
                   <SelectContent>
                     {apps.map((app) => (
@@ -258,7 +258,7 @@ export default function ApiKeysPage() {
               ) : (
                 <Select value={selectedEnvId} onValueChange={setSelectedEnvId}>
                   <SelectTrigger id="envSelect" className="h-10 bg-secondary/40 border-border/80 hover:bg-secondary/60 transition-colors font-medium cursor-pointer">
-                    <SelectValue placeholder="Seleccionar Entorno" />
+                    <SelectValue placeholder="Seleccionar entorno" />
                   </SelectTrigger>
                   <SelectContent>
                     {environments.map((env: any) => (
@@ -446,9 +446,9 @@ export default function ApiKeysPage() {
       {/* Quick start code */}
       <Card className="bg-card/50 border-border">
         <CardHeader>
-          <CardTitle className="text-lg">Quick Start</CardTitle>
+          <CardTitle className="text-lg">Inicio rápido</CardTitle>
           <CardDescription>
-            Usa tu API key para autenticar requests
+            Usa tu API key para autenticar solicitudes
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -530,7 +530,7 @@ export default function ApiKeysPage() {
       <Dialog open={showCreatedKeyDialog} onOpenChange={setShowCreatedKeyDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>API Key Generada</DialogTitle>
+            <DialogTitle>API Key generada</DialogTitle>
             <DialogDescription>
               Copia esta API key ahora. Por motivos de seguridad, no se volverá a mostrar.
             </DialogDescription>
@@ -554,7 +554,7 @@ export default function ApiKeysPage() {
               variant="secondary"
               onClick={() => setShowCreatedKeyDialog(false)}
             >
-              Cerrar y Listo
+              Cerrar y continuar
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -565,7 +565,7 @@ export default function ApiKeysPage() {
         onOpenChange={setSetupModalOpen}
         initialStep="select-plan"
         title="Método de pago requerido para API Keys"
-        description="Selecciona tu plan y registra una tarjeta para emitir API Keys ($0/mes en Plan Developer)."
+        description="Selecciona tu plan y registra una tarjeta para emitir API Keys ($0/mes en el plan Developer)."
         onSuccess={() => {
           fetchKeys()
         }}

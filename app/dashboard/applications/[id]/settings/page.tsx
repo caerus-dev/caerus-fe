@@ -335,7 +335,7 @@ export default function ApplicationSettingsPage({
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-foreground">
-            Configuración de Aplicación
+            Configuración de la aplicación
           </h1>
           <p className="text-muted-foreground">
             Modifica la configuración de tu aplicación
@@ -347,7 +347,7 @@ export default function ApplicationSettingsPage({
         <div className="w-full lg:w-[340px] shrink-0">
           <Card>
             <CardHeader>
-              <CardTitle>Información General</CardTitle>
+              <CardTitle>Información general</CardTitle>
               <CardDescription>
                 Actualiza el nombre y descripción de tu aplicación
               </CardDescription>
@@ -355,7 +355,7 @@ export default function ApplicationSettingsPage({
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="name">Nombre de la Aplicación</Label>
+                  <Label htmlFor="name">Nombre de la aplicación</Label>
                   <span className={cn(
                     "text-[10px] transition-colors",
                     formData.name.length >= 100 ? "text-destructive font-semibold" : formData.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
@@ -407,7 +407,7 @@ export default function ApplicationSettingsPage({
                 </div>
                 <Button type="button" variant="outline" size="sm" onClick={handleOpenCreateEnv}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Agregar Entorno
+                  Agregar entorno
                 </Button>
               </div>
             </CardHeader>
@@ -474,7 +474,7 @@ export default function ApplicationSettingsPage({
           <CardHeader>
             <CardTitle className="text-destructive flex items-center gap-2">
               <AlertTriangle className="w-5 h-5" />
-              Zona de Peligro
+              Zona de peligro
             </CardTitle>
             <CardDescription>
               Acciones irreversibles para tu aplicación
@@ -484,7 +484,7 @@ export default function ApplicationSettingsPage({
             <div className="flex items-center justify-between p-4 rounded-lg border border-destructive/30 bg-destructive/5">
               <div>
                 <p className="font-medium text-foreground">
-                  Eliminar Aplicación
+                  Eliminar aplicación
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Elimina permanentemente esta aplicación y todos sus datos
@@ -515,7 +515,7 @@ export default function ApplicationSettingsPage({
                 Guardando...
               </>
             ) : (
-              "Guardar Cambios"
+              "Guardar cambios"
             )}
           </Button>
         </div>
@@ -527,7 +527,7 @@ export default function ApplicationSettingsPage({
         }}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Eliminar Aplicación</DialogTitle>
+              <DialogTitle>Eliminar aplicación</DialogTitle>
               <DialogDescription className="break-words [overflow-wrap:anywhere] [word-break:break-word]">
                 Esta acción eliminará permanentemente la aplicación{" "}
                 <span className="font-medium text-foreground break-words [overflow-wrap:anywhere] [word-break:break-word]">
@@ -560,7 +560,7 @@ export default function ApplicationSettingsPage({
                 Cancelar
               </Button>
               <Button variant="destructive" onClick={handleDelete}>
-                Eliminar Permanentemente
+                Eliminar permanentemente
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -574,7 +574,7 @@ export default function ApplicationSettingsPage({
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {envDialogMode === "create" ? "Crear Entorno" : "Editar Entorno"}
+                {envDialogMode === "create" ? "Crear entorno" : "Editar entorno"}
               </DialogTitle>
               <DialogDescription>
                 Define el nombre y la descripción para el entorno de tu aplicación.
@@ -588,7 +588,7 @@ export default function ApplicationSettingsPage({
               )}
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="envName">Nombre del Entorno *</Label>
+                  <Label htmlFor="envName">Nombre del entorno *</Label>
                   <span className={cn(
                     "text-[10px] transition-colors",
                     envForm.name.length >= 100 ? "text-destructive font-semibold" : envForm.name.length >= 90 ? "text-yellow-500 font-medium" : "text-muted-foreground"
@@ -606,7 +606,7 @@ export default function ApplicationSettingsPage({
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">Color del Entorno</Label>
+                <Label className="text-xs text-muted-foreground">Color del entorno</Label>
                 <div className="flex items-center gap-3 pt-1 flex-wrap">
                   {ENV_COLOR_PRESETS.map((preset) => {
                     const isSelected = envForm.color === preset.id
@@ -677,7 +677,7 @@ export default function ApplicationSettingsPage({
         }}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Eliminar Entorno</DialogTitle>
+              <DialogTitle>Eliminar entorno</DialogTitle>
               <DialogDescription>
                 ¿Estás seguro de que deseas eliminar el entorno{" "}
                 <span className="font-semibold text-foreground">{selectedEnvForDelete?.name}</span>?

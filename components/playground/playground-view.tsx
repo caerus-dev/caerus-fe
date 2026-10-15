@@ -135,15 +135,15 @@ export function PlaygroundView({
               </Link>
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-xs gap-1 py-0.5">
                 <Sparkles className="h-3 w-3" />
-                Simulador Interactivo
+                Simulador interactivo
               </Badge>
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
               Caerus Live Playground
             </h1>
             <p className="text-sm text-muted-foreground max-w-2xl">
-              Experimentá con la gestión de concurrencia y locking distribuido.
-              Visualizá cómo responde el SDK, los estados de reserva y la emisión de eventos en tiempo real.
+              Experimenta con la gestión de concurrencia y locking distribuido.
+              Visualiza cómo responde el SDK, los estados de reserva y la emisión de eventos en tiempo real.
             </p>
           </div>
 
@@ -162,7 +162,7 @@ export function PlaygroundView({
             <Button asChild variant="outline" size="sm" className="text-xs gap-1.5">
               <Link href="/docs">
                 <BookOpen className="h-3.5 w-3.5" />
-                Ver Documentación
+                Ver documentación
               </Link>
             </Button>
           </div>
@@ -175,11 +175,11 @@ export function PlaygroundView({
           <TabsList className="bg-muted/60 p-1">
             <TabsTrigger value="sre" className="gap-2 text-xs sm:text-sm font-medium">
               <Ticket className="h-4 w-4 text-emerald-400" />
-              SRE · Butacas & Recursos
+              SRE · Butacas y recursos
             </TabsTrigger>
             <TabsTrigger value="dls" className="gap-2 text-xs sm:text-sm font-medium">
               <Lock className="h-4 w-4 text-primary" />
-              DLS · Distributed Locking
+              DLS · Locks distribuidos
             </TabsTrigger>
           </TabsList>
 
@@ -192,14 +192,14 @@ export function PlaygroundView({
               title="Reiniciar el simulador activo"
             >
               <RotateCcw className="h-3.5 w-3.5" />
-              <span>Reiniciar Simulación</span>
+              <span>Reiniciar simulación</span>
             </Button>
 
             {!showTopHeader && (
               <Button asChild variant="ghost" size="sm" className="text-xs gap-1.5 h-8 text-muted-foreground">
                 <Link href={activeTab === "sre" ? "/docs/sre" : "/docs/dls"}>
                   <BookOpen className="h-3.5 w-3.5" />
-                  <span>Ver Verbos {activeTab.toUpperCase()}</span>
+                  <span>Ver verbos de {activeTab.toUpperCase()}</span>
                 </Link>
               </Button>
             )}

@@ -162,7 +162,7 @@ export function DuplicateTemplateDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
             <Copy className="h-5 w-5 text-primary" />
-            Duplicar Recurso Compartido
+            Duplicar recurso compartido
           </DialogTitle>
           <DialogDescription className="text-sm">
             Copia la configuración del recurso{" "}
@@ -172,7 +172,7 @@ export function DuplicateTemplateDialog({
 
         <div className="space-y-3 py-1">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Seleccionar Entornos de Destino
+            Seleccionar entornos de destino
           </p>
 
           {targetEnvironments.length === 0 ? (

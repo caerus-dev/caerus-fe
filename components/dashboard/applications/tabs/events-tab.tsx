@@ -363,7 +363,7 @@ export function EventsTab({
             {/* Filtro Tipo de Evento */}
             <div className="space-y-1">
               <label className="text-[11px] font-medium text-muted-foreground">
-                Tipo de Evento
+                Tipo de evento
               </label>
               <Select
                 value={eventTypeFilter}
@@ -386,7 +386,7 @@ export function EventsTab({
             {/* Filtro Rango de Fechas */}
             <div className="space-y-1">
               <label className="text-[11px] font-medium text-muted-foreground">
-                Rango Temporal
+                Rango temporal
               </label>
               <Select
                 value={datePreset}
@@ -408,7 +408,7 @@ export function EventsTab({
             {/* Búsqueda por Object ID */}
             <div className="space-y-1">
               <label className="text-[11px] font-medium text-muted-foreground">
-                ID u Objeto Afectado
+                ID u objeto afectado
               </label>
               <div className="flex items-center w-full rounded-md border border-border bg-input/60 h-8 px-3 shadow-xs transition-all focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]">
                 <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0 mr-1" />
@@ -573,10 +573,10 @@ export function EventsTab({
               <TableHeader className="bg-muted/30">
                 <TableRow>
                   <TableHead className="w-[180px] text-xs font-semibold">
-                    Fecha y Hora
+                    Fecha y hora
                   </TableHead>
                   <TableHead className="text-xs font-semibold">
-                    Tipo de Evento
+                    Tipo de evento
                   </TableHead>
                   <TableHead className="w-[90px] text-xs font-semibold">
                     Producto

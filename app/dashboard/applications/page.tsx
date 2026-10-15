@@ -309,7 +309,7 @@ export default function ApplicationsPage() {
                       <DropdownMenuItem asChild>
                         <Link href={`/dashboard/applications/${app.id}`}>
                           <ExternalLink className="w-4 h-4 mr-2" />
-                          Ver Detalles
+                          Ver detalles
                         </Link>
                       </DropdownMenuItem>
                       {app.myRole !== "VIEWER" && (
@@ -362,13 +362,13 @@ export default function ApplicationsPage() {
                     <p className="text-lg font-semibold text-foreground">
                       {formatNumber(app.apiCalls)}
                     </p>
-                    <p className="text-xs text-muted-foreground">Llamadas API</p>
+                    <p className="text-xs text-muted-foreground">Llamadas a la API</p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm font-semibold text-foreground h-7 flex items-center justify-center whitespace-nowrap">
                       {formatDate(app.createdAt)}
                     </p>
-                    <p className="text-xs text-muted-foreground">Creado</p>
+                    <p className="text-xs text-muted-foreground">Creada</p>
                   </div>
                 </div>
               </CardContent>
@@ -387,7 +387,7 @@ export default function ApplicationsPage() {
         }}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Eliminar Aplicación</DialogTitle>
+              <DialogTitle>Eliminar aplicación</DialogTitle>
               <DialogDescription className="break-words [overflow-wrap:anywhere] [word-break:break-word]">
                 ¿Estás seguro de que deseas eliminar la aplicación{" "}
                 <span className="font-medium text-foreground break-words [overflow-wrap:anywhere] [word-break:break-word]">
@@ -461,7 +461,7 @@ export default function ApplicationsPage() {
             <div className="space-y-2 py-2 min-w-0">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 <FileText className="h-3.5 w-3.5 text-primary" />
-                <span>Descripción Completa</span>
+                <span>Descripción completa</span>
               </div>
               <div className="rounded-lg bg-muted/40 border border-border/60 p-4 text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed max-h-[220px] overflow-y-auto custom-scrollbar break-words [overflow-wrap:anywhere] [word-break:break-word]">
                 {selectedAppForDetails?.description || (
@@ -498,7 +498,7 @@ export default function ApplicationsPage() {
                       <span className="font-semibold">{selectedAppForDetails.collaborators}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Llamadas API:</span>
+                      <span className="text-muted-foreground">Llamadas a la API:</span>
                       <span className="font-semibold">{formatNumber(selectedAppForDetails.apiCalls)}</span>
                     </div>
                   </div>
@@ -520,7 +520,7 @@ export default function ApplicationsPage() {
                 asChild
               >
                 <Link href={`/dashboard/applications/${selectedAppForDetails?.id}`}>
-                  Abrir Aplicación
+                  Abrir aplicación
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </Button>

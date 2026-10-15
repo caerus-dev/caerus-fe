@@ -176,10 +176,10 @@ export function EventDetailSheet({
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 text-cyan-400 font-semibold text-xs">
                       <SlidersHorizontal className="h-4 w-4" />
-                      <span>Acciones de Control Manual (DLS)</span>
+                      <span>Acciones de control manual (DLS)</span>
                     </div>
                     <Badge variant="outline" className="border-cyan-500/40 text-cyan-400 font-mono text-[10px]">
-                      Telemetría en Vivo
+                      Telemetría en vivo
                     </Badge>
                   </div>
                   <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -201,7 +201,7 @@ export function EventDetailSheet({
                         }}
                       >
                         <SlidersHorizontal className="h-3.5 w-3.5" />
-                        <span>Ver Transacción en Control Manual</span>
+                        <span>Ver transacción en control manual</span>
                       </Button>
                     )}
                     {dlsLockKey && (
@@ -220,7 +220,7 @@ export function EventDetailSheet({
                         }}
                       >
                         <SlidersHorizontal className="h-3.5 w-3.5" />
-                        <span>Ver Lock en Control Manual</span>
+                        <span>Ver lock en control manual</span>
                       </Button>
                     )}
                   </div>
@@ -258,10 +258,10 @@ export function EventDetailSheet({
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 text-purple-400 font-semibold text-xs">
                       <SlidersHorizontal className="h-4 w-4" />
-                      <span>Acciones de Control Manual (SRE)</span>
+                      <span>Acciones de control manual (SRE)</span>
                     </div>
                     <Badge variant="outline" className="border-purple-500/40 text-purple-400 font-mono text-[10px]">
-                      Telemetría en Vivo
+                      Telemetría en vivo
                     </Badge>
                   </div>
                   <p className="text-[11px] text-muted-foreground leading-relaxed">
@@ -284,7 +284,7 @@ export function EventDetailSheet({
                           }}
                         >
                           <SlidersHorizontal className="h-3.5 w-3.5" />
-                          <span>Ver este Recurso en Vivo</span>
+                          <span>Ver este recurso en vivo</span>
                         </Button>
                         <Button
                           variant="outline"
@@ -301,7 +301,7 @@ export function EventDetailSheet({
                           }}
                         >
                           <Eye className="h-3.5 w-3.5" />
-                          <span>Ver Holders de Recurso</span>
+                          <span>Ver holders del recurso</span>
                         </Button>
                       </>
                     )}
@@ -339,7 +339,7 @@ export function EventDetailSheet({
                           }}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
-                          <span>Liberar Holder Manualmente</span>
+                          <span>Liberar holder manualmente</span>
                         </Button>
                       );
                     })()}
@@ -352,7 +352,7 @@ export function EventDetailSheet({
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <Info className="h-3.5 w-3.5 text-primary" />
-              Información del Evento
+              Información del evento
             </h4>
 
             <div className="rounded-xl border border-border/70 bg-background/50 divide-y divide-border/50 text-xs overflow-hidden">
@@ -388,7 +388,7 @@ export function EventDetailSheet({
               <div className="p-3.5 sm:p-4 flex flex-col gap-1.5">
                 <div className="flex items-center justify-between text-muted-foreground">
                   <span className="font-semibold text-xs text-foreground/80">
-                    Objeto Afectado {event.objectType ? `(${event.objectType})` : ""}
+                    Objeto afectado {event.objectType ? `(${event.objectType})` : ""}
                   </span>
                   {event.objectId && (
                     <Button
@@ -451,7 +451,7 @@ export function EventDetailSheet({
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <Layers className="h-3.5 w-3.5 text-primary" />
-              Origen y Autenticación
+              Origen y autenticación
             </h4>
 
             <div className="rounded-xl border border-border/70 bg-background/50 divide-y divide-border/50 text-xs overflow-hidden">
@@ -475,7 +475,7 @@ export function EventDetailSheet({
               {/* API Key Prefix si existe */}
               {event.apiKeyPrefix && (
                 <div className="p-3.5 sm:p-4 flex items-center justify-between gap-2 flex-wrap">
-                  <span className="text-muted-foreground font-medium">API Key Prefix:</span>
+                  <span className="text-muted-foreground font-medium">Prefijo de API Key:</span>
                   <span className="font-mono text-foreground font-semibold px-2.5 py-1 rounded-md bg-muted text-xs border border-border/50">
                     {event.apiKeyPrefix}
                   </span>
@@ -525,7 +525,7 @@ export function EventDetailSheet({
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                 <FileJson className="h-3.5 w-3.5 text-primary" />
-                Payload del Evento
+                Payload del evento
               </h4>
               <Button
                 variant="outline"

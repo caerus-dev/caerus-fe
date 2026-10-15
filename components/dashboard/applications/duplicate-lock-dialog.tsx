@@ -49,11 +49,11 @@ function parseAndTranslateError(raw: any, templateName?: string, failedEnvNames:
       return `Ya existe una plantilla de lock con el nombre "${templateName || ''}" en ${envsLabel}.`
     }
     if (msg.includes("not found")) {
-      return `El recurso o ${envsLabel} no fue encontrado.`
+      return `La plantilla o ${envsLabel} no fue encontrada.`
     }
   }
 
-  return msg || `Ocurrió un error al duplicar el recurso en ${envsLabel}.`
+  return msg || `Ocurrió un error al duplicar la plantilla en ${envsLabel}.`
 }
 
 export function DuplicateLockDialog({
@@ -139,11 +139,11 @@ export function DuplicateLockDialog({
         if (successfulEnvs.length > 0) {
           const successNames = successfulEnvs.map((s) => s.name).join(", ")
           setSuccessMessage(`Se duplicó exitosamente en: ${successNames}`)
-          toast.success(`Plantilla de Lock "${template?.namespace}" duplicada exitosamente en: ${successNames}`)
+          toast.success(`Plantilla de lock "${template?.namespace}" duplicada exitosamente en: ${successNames}`)
         }
       } else {
         const successNames = successfulEnvs.map((s) => s.name).join(", ")
-        toast.success(`Plantilla de Lock "${template?.namespace}" duplicada exitosamente en ${successfulEnvs.length === 1 ? "el entorno" : "los entornos"}: ${successNames}`)
+        toast.success(`Plantilla de lock "${template?.namespace}" duplicada exitosamente en ${successfulEnvs.length === 1 ? "el entorno" : "los entornos"}: ${successNames}`)
         onOpenChange(false)
         setSelectedEnvIds([])
       }
@@ -161,7 +161,7 @@ export function DuplicateLockDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-bold">
             <Copy className="h-5 w-5 text-primary" />
-            Duplicar Plantilla de Lock Distribuido
+            Duplicar plantilla de lock distribuido
           </DialogTitle>
           <DialogDescription className="text-sm">
             Copia la configuración de la plantilla{" "}
@@ -171,7 +171,7 @@ export function DuplicateLockDialog({
 
         <div className="space-y-3 py-1">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Seleccionar Entornos de Destino
+            Seleccionar entornos de destino
           </p>
 
           {targetEnvironments.length === 0 ? (

@@ -17,7 +17,7 @@ const features = [
   },
   {
     icon: RefreshCw,
-    title: "Retry & Queue Strategies",
+    title: "Estrategias de reintento y cola",
     description:
       "Configura estrategias de reintento automático o encolado cuando los recursos no están disponibles.",
     badge: "Config",
@@ -57,7 +57,7 @@ export function FeaturesSection() {
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Dos módulos principales que cubren los casos de uso más comunes en
-            sistemas distribuidos
+            sistemas distribuidos.
           </p>
         </div>
 
