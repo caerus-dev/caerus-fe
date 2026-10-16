@@ -6,7 +6,7 @@ import { NotFoundTerminal } from "@/components/not-found/not-found-terminal"
 
 export const metadata: Metadata = {
   title: "Página no encontrada | Caerus",
-  description: "La página que buscás no existe o fue movida.",
+  description: "La página que buscas no existe o fue movida.",
 }
 
 const shortcuts = [
@@ -37,7 +37,7 @@ export default function NotFound() {
           Este recurso no está disponible
         </h2>
         <p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto mb-8 text-pretty leading-relaxed">
-          La página que buscás no existe o fue movida. Revisá la dirección o volvé a un lugar conocido.
+          La página que buscas no existe o fue movida. Revisa la dirección o vuelve a un lugar conocido.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto mb-10">

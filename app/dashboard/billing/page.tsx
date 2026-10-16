@@ -188,7 +188,7 @@ export default function BillingPage() {
           rawError.includes("remove collaborators before downgrading")
         ) {
           rawError =
-            "No es posible descender al plan Developer. Tienes colaboradores activos en tus aplicaciones; debes removerlos antes de descender de plan.";
+            "No es posible cambiar al plan Developer. Tienes colaboradores activos en tus aplicaciones; debes eliminarlos antes de cambiar a un plan inferior.";
         }
         setPlanChangeError(rawError);
       }
@@ -325,7 +325,7 @@ export default function BillingPage() {
           <AlertTitle className="font-semibold text-sm">Tu cuenta está en el plan gratuito Developer (Pendiente de Activación)</AlertTitle>
           <AlertDescription className="text-xs text-muted-foreground mt-1 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <span>
-              Tienes 50.000 reqs / mes incluidas sin costo ($0/mes). Para activar tu cuenta y habilitar el despliegue de aplicaciones, registra una tarjeta de respaldo.
+              Tienes 50.000 solicitudes / mes incluidas sin costo ($0/mes). Para activar tu cuenta y habilitar el despliegue de aplicaciones, registra una tarjeta de respaldo.
             </span>
             <Button
               size="sm"
@@ -434,7 +434,7 @@ export default function BillingPage() {
                   ) : currentPlan?.maxCollaborators === null ? (
                     "Ilimitados"
                   ) : currentPlan?.maxCollaborators === 1 ? (
-                    "1 (Solo Owner)"
+                    "1 (solo propietario)"
                   ) : (
                     `Hasta ${currentPlan?.maxCollaborators} miembros`
                   )}
@@ -449,7 +449,7 @@ export default function BillingPage() {
                   ) : currentPlan?.code === "ENTERPRISE" ? (
                     "Incluido en el plan"
                   ) : currentPlan?.overageBlockPrice && currentPlan.overageBlockPrice.amount > 0 ? (
-                    `${formatMoney(currentPlan.overageBlockPrice.amount)} por cada ${formatNumber(currentPlan.overageBlockSize || 10000)} reqs`
+                    `${formatMoney(currentPlan.overageBlockPrice.amount)} por cada ${formatNumber(currentPlan.overageBlockSize || 10000)} solicitudes`
                   ) : (
                     "Incluido en el plan"
                   )}
@@ -465,7 +465,7 @@ export default function BillingPage() {
                     Consumo del Período ({usage?.period || new Date().toISOString().slice(0, 7)})
                   </span>
                   <div className="text-muted-foreground font-mono">
-                    {formatNumber(usage?.consumedUnits ?? 0)} reqs consumidas
+                    {formatNumber(usage?.consumedUnits ?? 0)} solicitudes consumidas
                   </div>
                 </div>
                 <div className="p-2.5 rounded-lg border border-purple-500/20 bg-purple-500/5 text-xs text-muted-foreground flex items-center gap-2">
@@ -483,7 +483,7 @@ export default function BillingPage() {
                     {isUserLoading ? (
                       <Skeleton className="h-4 w-28" />
                     ) : (
-                      `${formatNumber(usage?.consumedUnits ?? 0)} / ${formatNumber(usage?.includedUnits ?? 0)} reqs / mes (${formatPercentage(percentage)}%)`
+                      `${formatNumber(usage?.consumedUnits ?? 0)} / ${formatNumber(usage?.includedUnits ?? 0)} solicitudes / mes (${formatPercentage(percentage)}%)`
                     )}
                   </div>
                 </div>
@@ -498,7 +498,7 @@ export default function BillingPage() {
                 {percentage >= 100 ? (
                   <p className="text-xs text-destructive flex items-center gap-1 font-medium mt-1">
                     <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                    Has superado el 100% de las requests incluidas. Se está aplicando tarifa por bloque de excedente.
+                    Has superado el 100% de las solicitudes incluidas. Se está aplicando tarifa por bloque de excedente.
                   </p>
                 ) : percentage >= 80 ? (
                   <p className="text-xs text-amber-500 flex items-center gap-1 font-medium mt-1">
@@ -507,7 +507,7 @@ export default function BillingPage() {
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground mt-1">
-                    Las requests se renuevan automáticamente al inicio de cada período mensual.
+                    Las solicitudes se renuevan automáticamente al inicio de cada período mensual.
                   </p>
                 )}
               </div>
@@ -521,7 +521,7 @@ export default function BillingPage() {
                 {currentPlan?.maxCollaborators === null
                   ? `${1 + (user?.activeCollaboratorsCount ?? 0)} (Ilimitados)`
                   : currentPlan?.maxCollaborators === 1
-                  ? "1 de 1 (Solo Owner)"
+                  ? "1 de 1 (solo propietario)"
                   : `${1 + (user?.activeCollaboratorsCount ?? 0)} de ${currentPlan?.maxCollaborators} miembros`}
               </strong>
             </span>
@@ -832,9 +832,9 @@ export default function BillingPage() {
                     <CardContent className="space-y-4 text-xs flex-1 flex flex-col justify-between">
                       <div className="border-t border-border/60 pt-3 space-y-2.5">
                         <div className="flex items-center justify-between text-muted-foreground min-h-[22px]">
-                          <span className="shrink-0">Requests:</span>
+                          <span className="shrink-0">Solicitudes:</span>
                           <strong className="text-foreground font-semibold text-right">
-                            {isEnterprise ? "A medida / Ilimitadas" : `${formatNumber(p.includedBillingUnits)} reqs / mes`}
+                            {isEnterprise ? "A medida / Ilimitadas" : `${formatNumber(p.includedBillingUnits)} solicitudes / mes`}
                           </strong>
                         </div>
                         <div className="flex items-center justify-between text-muted-foreground min-h-[22px]">
@@ -843,7 +843,7 @@ export default function BillingPage() {
                             {isEnterprise || p.maxCollaborators === null
                               ? "Ilimitados"
                               : p.maxCollaborators === 1
-                              ? "1 (Solo Owner)"
+                              ? "1 (solo propietario)"
                               : `Hasta ${p.maxCollaborators} miembros`}
                           </strong>
                         </div>
@@ -853,7 +853,7 @@ export default function BillingPage() {
                             {isEnterprise
                               ? "SLA Dedicado"
                               : p.overageBlockPrice.amount > 0
-                              ? `${formatMoney(p.overageBlockPrice.amount)} / ${formatNumber(p.overageBlockSize || 10000)} reqs`
+                              ? `${formatMoney(p.overageBlockPrice.amount)} / ${formatNumber(p.overageBlockSize || 10000)} solicitudes`
                               : "Incluido"}
                           </strong>
                         </div>
@@ -870,16 +870,16 @@ export default function BillingPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Check className="h-3.5 w-3.5 text-primary shrink-0" />
-                          <span>Event Explorer & Webhooks</span>
+                          <span>Explorador de eventos y webhooks</span>
                         </div>
                         <div className="flex items-center gap-2 text-foreground font-medium">
                           <Check className="h-3.5 w-3.5 text-primary shrink-0" />
                           <span>
                             {p.code === "DEVELOPER"
-                              ? "Soporte Comunitario"
+                              ? "Soporte comunitario"
                               : isEnterprise
                               ? "SLA 99.99% & Soporte 24/7"
-                              : "Soporte Prioritario"}
+                              : "Soporte prioritario"}
                           </span>
                         </div>
                       </div>
@@ -961,7 +961,7 @@ export default function BillingPage() {
                       Tu cuenta pasará a tener el plan <strong className="text-foreground font-semibold">Startup ($49.00 USD / mes)</strong>.
                     </p>
                     <ul className="list-disc pl-4 space-y-1 text-foreground/85">
-                      <li>5.000.000 reqs / mes incluidas.</li>
+                      <li>5.000.000 solicitudes / mes incluidas.</li>
                       <li>Hasta 5 colaboradores en tus aplicaciones.</li>
                       <li>Tarifa reducida por bloque de excedente ($0.20 / 10.000u).</li>
                     </ul>
@@ -972,15 +972,15 @@ export default function BillingPage() {
                       Tu cuenta pasará al plan gratuito <strong className="text-foreground font-semibold">Developer ($0 / mes)</strong>.
                     </p>
                     <ul className="list-disc pl-4 space-y-1 text-foreground/85">
-                      <li>50.000 reqs / mes incluidas.</li>
+                      <li>50.000 solicitudes / mes incluidas.</li>
                       <li>Hasta 1 colaborador (el propietario).</li>
                     </ul>
                     <p className="text-amber-500 font-medium">
-                      Aviso: Si tienes más de 1 colaborador activo en tus aplicaciones, deberás removerlos antes de descender de plan.
+                      Aviso: Si tienes más de 1 colaborador activo en tus aplicaciones, deberás eliminarlos antes de cambiar a un plan inferior.
                     </p>
                     {user?.billingPlan?.code === "STARTUP" && (
                       <p className="text-xs text-amber-500 font-medium">
-                        Aviso: Al descender a Developer, se liquidará en tu tarjeta el abono y consumo del período actual de Startup.
+                        Aviso: Al cambiar al plan Developer, se liquidará en tu tarjeta el abono y consumo del período actual de Startup.
                       </p>
                     )}
                   </>
@@ -1041,7 +1041,7 @@ export default function BillingPage() {
                   Actualizando...
                 </>
               ) : (
-                "Confirmar Cambio"
+                "Confirmar cambio"
               )}
             </Button>
           </AlertDialogFooter>
@@ -1100,7 +1100,7 @@ export default function BillingPage() {
                     }
                   }}
                 >
-                  Ver Historial de Facturas ↓
+                  Ver historial de facturas ↓
                 </Button>
               ) : (
                 <Button
@@ -1110,7 +1110,7 @@ export default function BillingPage() {
                   className="w-full text-xs font-semibold"
                   onClick={() => router.push("/dashboard/applications")}
                 >
-                  Ir a Mis Aplicaciones →
+                  Ir a mis aplicaciones →
                 </Button>
               )}
             </div>
@@ -1134,7 +1134,7 @@ export default function BillingPage() {
               ) : (
                 <>
                   <Trash2 className="h-4 w-4" />
-                  Confirmar Desvinculación
+                  Confirmar desvinculación
                 </>
               )}
             </Button>

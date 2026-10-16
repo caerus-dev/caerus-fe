@@ -144,7 +144,7 @@ export function Navbar({ user }: { user?: NavbarUser }) {
                   <DropdownMenuItem asChild className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
                     <a href="/auth/logout" className="flex w-full items-center">
                       <LogOut className="mr-2 h-4 w-4" />
-                      <span>Cerrar Sesión</span>
+                      <span>Cerrar sesión</span>
                     </a>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -153,10 +153,10 @@ export function Navbar({ user }: { user?: NavbarUser }) {
           ) : (
             <>
               <a href="/auth/login?returnTo=/dashboard" className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                Iniciar Sesión
+                Iniciar sesión
               </a>
               <a href="/auth/login?screen_hint=signup&returnTo=/dashboard" className={cn(buttonVariants({ size: "sm" }), "glow-primary")}>
-                Comenzar Gratis
+                Comenzar gratis
               </a>
             </>
           )}
@@ -167,7 +167,7 @@ export function Navbar({ user }: { user?: NavbarUser }) {
           className="md:hidden"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          <span className="sr-only">Toggle menu</span>
+          <span className="sr-only">Alternar menú</span>
           {mobileMenuOpen ? (
             <X className="h-6 w-6" />
           ) : (
@@ -226,16 +226,16 @@ export function Navbar({ user }: { user?: NavbarUser }) {
                   </Link>
                   <a href="/auth/logout" className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive")}>
                     <LogOut className="h-4 w-4" />
-                    Cerrar Sesión
+                    Cerrar sesión
                   </a>
                 </>
               ) : (
                 <>
                   <a href="/auth/login?returnTo=/dashboard" className={cn(buttonVariants({ variant: "ghost" }), "w-full justify-start")}>
-                    Iniciar Sesión
+                    Iniciar sesión
                   </a>
                   <a href="/auth/login?screen_hint=signup&returnTo=/dashboard" className={cn(buttonVariants(), "w-full justify-start glow-primary")}>
-                    Comenzar Gratis
+                    Comenzar gratis
                   </a>
                 </>
               )}

@@ -23,7 +23,7 @@ export interface CreateAppButtonProps extends ButtonProps {
 export function CreateAppButton({
   hasValidPaymentMethod: propHasValidPayment,
   href = "/dashboard/applications/new",
-  tooltipText = "Debes registrar un método de pago para crear aplicaciones propias ($0/mes en Plan Developer).",
+  tooltipText = "Debes registrar un método de pago para crear aplicaciones propias ($0/mes en el plan Developer).",
   showLockIcon = true,
   children,
   className,
@@ -65,7 +65,7 @@ export function CreateAppButton({
       ) : (
         <Plus className="w-4 h-4 mr-2" />
       )}
-      Nueva Aplicación
+      Nueva aplicación
     </>
   );
 
@@ -103,7 +103,7 @@ export function CreateAppButton({
         onOpenChange={setModalOpen}
         initialStep="select-plan"
         title="Método de pago requerido para crear aplicaciones"
-        description="Selecciona tu plan y añade una tarjeta para comenzar a desplegar aplicaciones ($0/mes en Plan Developer)."
+        description="Selecciona tu plan y añade una tarjeta para comenzar a desplegar aplicaciones ($0/mes en el plan Developer)."
         onSuccess={() => {
           setModalOpen(false);
           if (href) {

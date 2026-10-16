@@ -169,8 +169,8 @@ function SetupCardForm({ onSuccess, onBack, selectedPlan }: SetupFormProps) {
           </div>
           <p className="text-[11px] text-muted-foreground leading-relaxed">
             {isStartup
-              ? "Suscripción mensual de $49.00 USD. Incluye 5.000.000 reqs / mes y hasta 5 colaboradores."
-              : "No se te cobrará nada hoy ($0). La tarjeta valida tu cuenta como desarrollador y cubre consumos si superas 50.000 reqs / mes."}
+              ? "Suscripción mensual de $49.00 USD. Incluye 5.000.000 solicitudes / mes y hasta 5 colaboradores."
+              : "No se te cobrará nada hoy ($0). La tarjeta valida tu cuenta como desarrollador y cubre consumos si superas 50.000 solicitudes / mes."}
           </p>
         </div>
         <Button
@@ -230,7 +230,7 @@ function SetupCardForm({ onSuccess, onBack, selectedPlan }: SetupFormProps) {
           className="gap-1 text-xs"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          Volver a Planes
+          Volver a planes
         </Button>
         <Button
           type="submit"
@@ -245,7 +245,7 @@ function SetupCardForm({ onSuccess, onBack, selectedPlan }: SetupFormProps) {
           ) : (
             <span className="flex items-center gap-1.5">
               <CreditCard className="h-4 w-4" />
-              {isStartup ? "Guardar Tarjeta y Suscribir ($49/mes)" : "Guardar Tarjeta y Activar ($0)"}
+              {isStartup ? "Guardar tarjeta y suscribir ($49/mes)" : "Guardar tarjeta y activar ($0)"}
             </span>
           )}
         </Button>
@@ -268,8 +268,8 @@ export function SetupPaymentMethodModal({
   onOpenChange,
   onSuccess,
   initialStep = "select-plan",
-  title = "Vincular Método de Pago",
-  description = "Selecciona tu plan y registra una tarjeta para activar tu cuenta en Caerus ($0/mes en Plan Developer).",
+  title = "Vincular método de pago",
+  description = "Selecciona tu plan y registra una tarjeta para activar tu cuenta en Caerus ($0/mes en el plan Developer).",
 }: SetupPaymentMethodModalProps) {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
@@ -450,12 +450,12 @@ export function SetupPaymentMethodModal({
               {step === "select-plan" ? (
                 <>
                   <Rocket className="h-5 w-5 text-primary" />
-                  Paso 1: Elige tu Plan de Suscripción
+                  Paso 1: Elige tu plan de suscripción
                 </>
               ) : (
                 <>
                   <CreditCard className="h-5 w-5 text-primary" />
-                  Paso 2: Registrar Método de Pago
+                  Paso 2: Registrar método de pago
                 </>
               )}
             </DialogTitle>
@@ -529,17 +529,17 @@ export function SetupPaymentMethodModal({
                     >
                       {p.code === "DEVELOPER" && (
                         <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-[9px] font-bold uppercase tracking-wider py-0.5 px-2.5 rounded-full">
-                          Comienza Gratis
+                          Comienza gratis
                         </span>
                       )}
                       {p.code === "STARTUP" && (
                         <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[9px] font-bold uppercase tracking-wider py-0.5 px-2.5 rounded-full">
-                          Más Popular
+                          Más popular
                         </span>
                       )}
                       {isEnterprise && (
                         <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-[9px] font-bold uppercase tracking-wider py-0.5 px-2.5 rounded-full">
-                          A Medida
+                          A medida
                         </span>
                       )}
 
@@ -580,9 +580,9 @@ export function SetupPaymentMethodModal({
 
                         <div className="space-y-1.5 text-xs text-muted-foreground border-t border-border/50 pt-2.5">
                           <p className="flex items-center justify-between">
-                            <span>Requests:</span>
+                            <span>Solicitudes:</span>
                             <strong className="text-foreground font-semibold">
-                              {isEnterprise ? "Personalizadas" : `${formatNumber(p.includedBillingUnits)} reqs / mes`}
+                              {isEnterprise ? "Personalizadas" : `${formatNumber(p.includedBillingUnits)} solicitudes / mes`}
                             </strong>
                           </p>
                           <p className="flex items-center justify-between">
@@ -650,7 +650,7 @@ export function SetupPaymentMethodModal({
                   ¿Por qué se requiere tarjeta incluso para el plan Developer ($0/mes)?
                 </p>
                 <p className="mt-0.5 leading-relaxed">
-                  Caerus opera bajo un modelo de facturación basado en uso (Usage-Based). El plan Developer incluye 50.000 requests gratuitas cada mes. La tarjeta valida tu cuenta como desarrollador y solo se utilizará si superas este límite mensual.
+                  Caerus opera bajo un modelo de facturación basado en el uso (Usage-based). El plan Developer incluye 50.000 solicitudes gratuitas cada mes. La tarjeta valida tu cuenta como desarrollador y solo se utilizará si superas este límite mensual.
                 </p>
               </div>
             </div>
@@ -690,10 +690,10 @@ export function SetupPaymentMethodModal({
                 </Alert>
                 <div className="flex justify-between gap-2">
                   <Button variant="outline" onClick={() => setStep("select-plan")}>
-                    ← Volver a Planes
+                    ← Volver a planes
                   </Button>
                   <Button onClick={fetchSetupIntent}>
-                    Reintentar Conexión
+                    Reintentar conexión
                   </Button>
                 </div>
               </div>

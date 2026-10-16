@@ -58,7 +58,7 @@ export function LocksTab({
           <Button asChild className="gap-2">
             <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
               <Plus className="h-4 w-4" />
-              Nuevo Lock
+              Nuevo lock
             </Link>
           </Button>
         )}
@@ -99,7 +99,7 @@ export function LocksTab({
               <Button asChild className="gap-2" disabled={!currentEnvDetails?.id}>
                 <Link href={`/dashboard/applications/${appId}/locks/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
                   <Plus className="h-4 w-4" />
-                  Crear Primer Lock
+                  Crear primer lock
                 </Link>
               </Button>
             )}
@@ -119,11 +119,11 @@ export function LocksTab({
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-muted-foreground">
                           <span className="capitalize">Tipo {lock.lockType === "EXCLUSIVE" ? "exclusivo" : "lectura-escritura"}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span>Tipo de Adquisición: {{'FAIL': 'Fallo', 'RETRY': 'Reintento', 'QUEUE': 'Encolar'}[lock.conflictResolution as string] || lock.conflictResolution}</span>
+                          <span>Tipo de adquisición: {{'FAIL': 'Fallo', 'RETRY': 'Reintento', 'QUEUE': 'Encolar'}[lock.conflictResolution as string] || lock.conflictResolution}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
                           <span>Deadlocks: {lock.deadlockResolutionStrategy}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span>Fencing Tokens: {lock.fencingTokenRequired ? "Activado" : "Desactivado"}</span>
+                          <span>Fencing tokens: {lock.fencingTokenRequired ? "Activado" : "Desactivado"}</span>
                         </div>
                         {lock.description && (
                           <p className="text-xs text-muted-foreground italic mt-1 pr-6 line-clamp-2 break-words [overflow-wrap:anywhere] [word-break:break-word]" title={lock.description}>
@@ -159,7 +159,7 @@ export function LocksTab({
                                 }
                               >
                                 <SlidersHorizontal className="h-4 w-4 mr-2 text-primary shrink-0" />
-                                <span>Ver en Control Manual...</span>
+                                <span>Ver en control manual...</span>
                               </DropdownMenuItem>
                             )}
                             {onOpenDuplicateLock && (

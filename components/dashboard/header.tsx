@@ -33,7 +33,7 @@ export function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           onClick={onMenuClick}
         >
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Toggle menu</span>
+          <span className="sr-only">Alternar menú</span>
         </Button>
       </div>
 

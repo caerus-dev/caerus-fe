@@ -580,7 +580,7 @@ export default function ApplicationDashboard({
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
-          Volver a Aplicaciones
+          Volver a aplicaciones
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -624,7 +624,7 @@ export default function ApplicationDashboard({
                     <DropdownMenuItem asChild className="cursor-pointer text-sm py-2 px-2.5 text-muted-foreground hover:text-primary">
                       <Link href={`/dashboard/applications/${id}/settings?action=create_env&env=${encodeURIComponent(selectedEnv)}`} className="flex items-center gap-2.5 w-full">
                         <Plus className="h-4 w-4" />
-                        <span>Nuevo Entorno</span>
+                        <span>Nuevo entorno</span>
                       </Link>
                     </DropdownMenuItem>
                   </>
@@ -673,7 +673,7 @@ export default function ApplicationDashboard({
           <div className="flex items-center justify-between space-y-0 pb-1.5">
             <span className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
               <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-              Configuraciones de Locks
+              Plantillas de locks
             </span>
           </div>
           <div>
@@ -848,11 +848,11 @@ export default function ApplicationDashboard({
       <Dialog open={confirmDeleteTemplateOpen} onOpenChange={setConfirmDeleteTemplateOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Eliminar Plantilla de Recurso</DialogTitle>
+            <DialogTitle>Eliminar plantilla de recurso</DialogTitle>
             <DialogDescription>
               ¿Estás seguro de que deseas eliminar la plantilla de recurso{" "}
               <span className="font-semibold text-foreground">{templateToDelete?.name}</span>?
-              Esta acción es irreversible y revocaría el acceso a este recurso en el motor SRE.
+              Esta acción es irreversible y revocará el acceso a este recurso en el motor SRE.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -904,7 +904,7 @@ export default function ApplicationDashboard({
       <Dialog open={showCreatedKeyDialog} onOpenChange={setShowCreatedKeyDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>API Key Generada</DialogTitle>
+            <DialogTitle>API Key generada</DialogTitle>
             <DialogDescription>
               Copia esta API key ahora. Por motivos de seguridad, no se volverá a mostrar.
             </DialogDescription>
@@ -928,7 +928,7 @@ export default function ApplicationDashboard({
               variant="secondary"
               onClick={() => setShowCreatedKeyDialog(false)}
             >
-              Cerrar y Listo
+              Cerrar y continuar
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -936,7 +936,7 @@ export default function ApplicationDashboard({
       <Dialog open={confirmDeleteLockOpen} onOpenChange={setConfirmDeleteLockOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Eliminar Plantilla de Lock</DialogTitle>
+            <DialogTitle>Eliminar plantilla de lock</DialogTitle>
             <DialogDescription>
               ¿Estás seguro de que deseas eliminar la plantilla de lock{" "}
               <span className="font-semibold text-foreground">{lockToDelete?.namespace}</span>?
@@ -986,7 +986,7 @@ export default function ApplicationDashboard({
       <Dialog open={confirmDeleteWebhookOpen} onOpenChange={setConfirmDeleteWebhookOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Eliminar Webhook</DialogTitle>
+            <DialogTitle>Eliminar webhook</DialogTitle>
             <DialogDescription>
               ¿Estás seguro de que deseas eliminar el webhook con URL{" "}
               <span className="font-semibold text-foreground">{webhookToDelete?.url}</span>?
@@ -1018,7 +1018,7 @@ export default function ApplicationDashboard({
       <Dialog open={confirmRotateWebhookOpen} onOpenChange={setConfirmRotateWebhookOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Rotar Secreto de Webhook</DialogTitle>
+            <DialogTitle>Rotar secreto del webhook</DialogTitle>
             <DialogDescription>
               ¿Estás seguro de que deseas rotar el secreto del webhook con URL{" "}
               <span className="font-semibold text-foreground">{webhookToRotate?.url}</span>?
@@ -1041,7 +1041,7 @@ export default function ApplicationDashboard({
               variant="default"
               onClick={handleRotateWebhookConfirm}
             >
-              Rotar Secreto
+              Rotar secreto
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1052,7 +1052,7 @@ export default function ApplicationDashboard({
         onOpenChange={setSetupPaymentModalOpen}
         initialStep="select-plan"
         title="Método de pago requerido para API Keys"
-        description="Selecciona tu plan y registra una tarjeta para emitir API Keys ($0/mes en Plan Developer)."
+        description="Selecciona tu plan y registra una tarjeta para emitir API Keys ($0/mes en el plan Developer)."
         onSuccess={() => {
           if (currentEnvDetails) {
             fetch(`/api/environments/${currentEnvDetails.id}/api-keys`)

@@ -14,7 +14,7 @@ interface CodeExample {
 const codeExamples: CodeExample[] = [
   {
     id: "reserve",
-    label: "Reservar Recurso",
+    label: "Reservar recurso",
     language: "typescript",
     code: `import { CaerusClient } from '@caerus-dev/sdk'
 
@@ -274,8 +274,8 @@ export function CodeExamplesSection() {
             Integración en <span className="text-primary">minutos</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            SDK intuitivo con ejemplos claros. De configuración a producción sin
-            fricción.
+            SDK intuitivo con ejemplos claros. Desde la configuración hasta producción
+            sin fricción.
           </p>
         </div>
 

@@ -16,12 +16,12 @@ const faqs = [
   {
     question: "¿Qué ocurre si supero el límite mensual de llamadas?",
     answer:
-      "Tu servicio nunca se interrumpe: tanto en el plan Developer como en Startup las llamadas adicionales se tarifan por bloques transparentes ($0.50 y $0.20 USD por cada 10.000 requests respectivamente).",
+      "Tu servicio nunca se interrumpe: tanto en el plan Developer como en Startup las llamadas adicionales se tarifan por bloques transparentes ($0.50 y $0.20 USD por cada 10.000 solicitudes respectivamente).",
   },
   {
     question: "¿Puedo cambiar de plan o cancelar en cualquier momento?",
     answer:
-      "Sí, puedes subir, bajar o cancelar tu suscripción en cualquier momento desde la sección de Facturación dentro de tu dashboard.",
+      "Sí, puedes subir, bajar o cancelar tu suscripción en cualquier momento desde la sección de Facturación dentro de tu panel.",
   },
 ]
 
@@ -57,7 +57,7 @@ export default async function PricingPage() {
               const isFree = plan.monthlyBasePrice.amount === 0
 
               const priceDisplay = isEnterprise
-                ? "A Medida"
+                ? "A medida"
                 : isFree
                 ? "$0"
                 : `$${(plan.monthlyBasePrice.amount / 100).toFixed(0)}`
@@ -69,7 +69,7 @@ export default async function PricingPage() {
                 : meta.ctaHref
 
               const ctaText = session?.user
-                ? "Gestionar Plan"
+                ? "Gestionar plan"
                 : meta.ctaText
 
               const isExternal = session?.user ? false : Boolean(meta.isExternalLink)

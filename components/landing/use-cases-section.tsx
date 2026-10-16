@@ -12,8 +12,8 @@ const useCases = [
     icon: ShoppingCart,
     title: "E-commerce & Stock",
     description:
-      "Gestiona inventario de forma segura. Reserva productos durante checkout para evitar vender unidades inexistentes.",
-    example: "Tiendas Online, Marketplaces",
+      "Gestiona inventario de forma segura. Reserva productos durante el checkout para evitar vender unidades inexistentes.",
+    example: "Tiendas online, marketplaces",
   },
   {
     icon: Calendar,
@@ -42,7 +42,7 @@ export function UseCasesSection() {
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Desde startups hasta empresas, resolvemos problemas reales de
-            concurrencia
+            concurrencia.
           </p>
         </div>
 

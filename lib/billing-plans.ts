@@ -45,14 +45,14 @@ export interface PlanFeatureMeta {
 
 export const PLAN_MARKETING_METADATA: Record<PlanCode, (plan: BillingPlan) => PlanFeatureMeta> = {
   DEVELOPER: (plan) => ({
-    badge: "Para siempre gratis",
+    badge: "Gratis para siempre",
     description: "Ideal para desarrolladores individuales, prototipos y proyectos en etapa inicial.",
     highlight: false,
-    ctaText: "Comenzar Gratis",
+    ctaText: "Comenzar gratis",
     ctaHref: "/auth/login?screen_hint=signup&returnTo=/dashboard",
     features: [
-      `${plan.includedBillingUnits.toLocaleString("es-AR")} reqs / mes incluidas`,
-      "1 colaborador (Solo Owner)",
+      `${plan.includedBillingUnits.toLocaleString("es-AR")} solicitudes / mes incluidas`,
+      "1 colaborador (solo propietario)",
       `Excedente: $${(plan.overageBlockPrice.amount / 100).toFixed(2)} USD cada ${plan.overageBlockSize.toLocaleString("es-AR")} llamadas`,
       "SRE: Retenciones temporales y confirmación",
       "DLS: Bloqueos distribuidos con fencing tokens",
@@ -60,13 +60,13 @@ export const PLAN_MARKETING_METADATA: Record<PlanCode, (plan: BillingPlan) => Pl
     ],
   }),
   STARTUP: (plan) => ({
-    badge: "Más Popular",
+    badge: "Más popular",
     description: "Diseñado para startups y aplicaciones en producción con tráfico concurrente real.",
     highlight: true,
-    ctaText: "Elegir Plan Startup",
+    ctaText: "Elegir plan Startup",
     ctaHref: "/auth/login?screen_hint=signup&returnTo=/dashboard",
     features: [
-      `${plan.includedBillingUnits.toLocaleString("es-AR")} reqs / mes incluidas`,
+      `${plan.includedBillingUnits.toLocaleString("es-AR")} solicitudes / mes incluidas`,
       `Hasta ${plan.maxCollaborators} colaboradores de equipo`,
       `Excedente optimizado: $${(plan.overageBlockPrice.amount / 100).toFixed(2)} USD cada ${plan.overageBlockSize.toLocaleString("es-AR")} llamadas`,
       "Métricas avanzadas y logs de eventos en vivo",
@@ -76,12 +76,12 @@ export const PLAN_MARKETING_METADATA: Record<PlanCode, (plan: BillingPlan) => Pl
     ],
   }),
   ENTERPRISE: () => ({
-    badge: "A Medida",
+    badge: "A medida",
     description: "Para empresas y plataformas de misión crítica con grandes volúmenes de transacciones.",
     highlight: false,
-    ctaText: "Contactar Ventas",
+    ctaText: "Contactar ventas",
     ctaHref:
-      "mailto:enterprise@caerus.dev?subject=Consulta%20Plan%20Enterprise%20Caerus&body=Hola%20equipo%20de%20Caerus%2C%0A%0AQuisiera%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20el%20plan%20Enterprise%20para%20nuestra%20organizaci%C3%B3n.%0A%0AOrganizaci%C3%B3n%3A%20%0AVolumen%20estimado%20de%20requests%2Fmes%3A%20%0A%0AGracias.",
+      "mailto:enterprise@caerus.dev?subject=Consulta%20Plan%20Enterprise%20Caerus&body=Hola%20equipo%20de%20Caerus%2C%0A%0AQuisiera%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20el%20plan%20Enterprise%20para%20nuestra%20organizaci%C3%B3n.%0A%0AOrganizaci%C3%B3n%3A%20%0AVolumen%20estimado%20de%20solicitudes%2Fmes%3A%20%0A%0AGracias.",
     isExternalLink: true,
     features: [
       "Volumen de llamadas personalizable a medida",

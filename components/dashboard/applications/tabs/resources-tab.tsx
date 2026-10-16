@@ -53,7 +53,7 @@ export function ResourcesTab({
           <Button asChild className="gap-2" disabled={!currentEnvDetails?.id}>
             <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
               <Plus className="h-4 w-4" />
-              Nuevo Recurso
+              Nuevo recurso
             </Link>
           </Button>
         )}
@@ -92,7 +92,7 @@ export function ResourcesTab({
               <Button asChild className="gap-2" disabled={!currentEnvDetails?.id}>
                 <Link href={`/dashboard/applications/${appId}/resources/new?envId=${currentEnvDetails?.id}&env=${selectedEnv}`}>
                   <Plus className="h-4 w-4" />
-                  Crear Primer Recurso
+                  Crear primer recurso
                 </Link>
               </Button>
             )}

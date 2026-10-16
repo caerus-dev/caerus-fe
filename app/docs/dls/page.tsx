@@ -96,7 +96,7 @@ export default function DocsDlsPage() {
             <span>Garantía de Secuencia Monótona (Consenso Distribuido)</span>
           </div>
           <p>
-            Caerus genera un <strong>Fencing Token</strong>: un número entero estrictamente incremental (otorgado mediante consenso distribuido garantizado) junto a cada adquisición exitosa. Al escribir en tu base de datos o almacenamiento, verificás que el token sea mayor al último aceptado; si el proceso se quedó dormido, su token viejo será rechazado inmediatamente.
+            Caerus genera un <strong>Fencing Token</strong>: un número entero estrictamente incremental (otorgado mediante consenso distribuido garantizado) junto a cada adquisición exitosa. Al escribir en tu base de datos o almacenamiento, verificas que el token sea mayor al último aceptado; si el proceso se quedó dormido, su token viejo será rechazado inmediatamente.
           </p>
         </div>
       </section>
