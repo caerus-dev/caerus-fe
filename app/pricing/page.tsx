@@ -72,7 +72,9 @@ export default async function PricingPage() {
                 ? "Gestionar plan"
                 : meta.ctaText
 
-              const isExternal = session?.user ? false : Boolean(meta.isExternalLink)
+              const isExternal = session?.user
+                ? false
+                : Boolean(meta.isExternalLink) || ctaHref.startsWith("/auth/")
 
               return (
                 <div
