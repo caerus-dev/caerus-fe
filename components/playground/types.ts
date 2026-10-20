@@ -23,7 +23,7 @@ export interface SdkCallLog {
   }
 }
 
-export type SeatStatus = 'AVAILABLE' | 'HELD_BY_ME' | 'HELD_BY_OTHER' | 'QUEUED' | 'SOLD'
+export type SeatStatus = 'AVAILABLE' | 'HELD_BY_ME' | 'HELD_BY_OTHER' | 'SOLD'
 
 export interface SeatState {
   id: string

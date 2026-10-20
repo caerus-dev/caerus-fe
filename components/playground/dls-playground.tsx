@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import {
   Lock,
   FileText,
@@ -18,12 +17,22 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { DlsSimulation, DlsScenario, WorkerState, ResourceLockState } from "./dls-simulation"
 import { SdkCallLog } from "./types"
+import {
+  DlsStepperState,
+  advanceStep,
+  markExecuted,
+  resetStepper,
+  selectDlsScenario,
+  selectStep,
+} from "./stepper-state"
 
 interface DlsPlaygroundProps {
   simulation: DlsSimulation
   onLogGenerated: (logs: SdkCallLog | SdkCallLog[]) => void
   onStateChanged: () => void
   onResetLogs?: () => void
+  stepper: DlsStepperState
+  onStepperChange: (next: DlsStepperState) => void
 }
 
 export function DlsPlayground({
@@ -31,10 +40,12 @@ export function DlsPlayground({
   onLogGenerated,
   onStateChanged,
   onResetLogs,
+  stepper,
+  onStepperChange,
 }: DlsPlaygroundProps) {
-  const [activeScenario, setActiveScenario] = useState<DlsScenario>("deadlock")
-  const [currentStepIndex, setCurrentStepIndex] = useState<number>(0)
-  const [executedSteps, setExecutedSteps] = useState<number[]>([])
+  const activeScenario = stepper.scenario
+  const currentStepIndex = stepper.index
+  const executedSteps = stepper.executed
 
   const workers = simulation.getWorkers()
   const resources = simulation.getResources()
@@ -43,9 +54,7 @@ export function DlsPlayground({
 
   const handleSelectScenario = (scenario: DlsScenario) => {
     simulation.reset()
-    setActiveScenario(scenario)
-    setCurrentStepIndex(0)
-    setExecutedSteps([])
+    onStepperChange(selectDlsScenario(stepper, scenario))
     onResetLogs?.()
     onStateChanged()
   }
@@ -53,34 +62,28 @@ export function DlsPlayground({
   const handleExecuteCurrentStep = () => {
     const log = simulation.executeStep(activeScenario, currentStepIndex)
     onLogGenerated(log)
-    setExecutedSteps((prev) => (prev.includes(currentStepIndex) ? prev : [...prev, currentStepIndex]))
+    onStepperChange(markExecuted(stepper))
     onStateChanged()
   }
 
   const handleStepClick = (index: number) => {
-    if (executedSteps.includes(index) || index === 0) {
-      setCurrentStepIndex(index)
-      return
+    const { state, replayUpTo } = selectStep(stepper, index)
+    if (replayUpTo !== null) {
+      // Jumping forward to an unexecuted step: replay cleanly up to that point
+      simulation.reset()
+      const logs: SdkCallLog[] = []
+      for (let i = 0; i <= replayUpTo; i++) {
+        logs.push(simulation.executeStep(activeScenario, i))
+      }
+      onLogGenerated(logs)
+      onStateChanged()
     }
-    // Si salta hacia adelante a un paso no ejecutado, simula limpiamente hasta ese punto
-    simulation.reset()
-    const newExecuted: number[] = []
-    const logs: SdkCallLog[] = []
-    for (let i = 0; i <= index; i++) {
-      const log = simulation.executeStep(activeScenario, i)
-      logs.push(log)
-      newExecuted.push(i)
-    }
-    onLogGenerated(logs)
-    setExecutedSteps(newExecuted)
-    setCurrentStepIndex(index)
-    onStateChanged()
+    onStepperChange(state)
   }
 
   const handleReset = () => {
     simulation.reset()
-    setCurrentStepIndex(0)
-    setExecutedSteps([])
+    onStepperChange(resetStepper(stepper))
     onResetLogs?.()
     onStateChanged()
   }
@@ -278,7 +281,7 @@ export function DlsPlayground({
                     {currentStepIndex < steps.length - 1 ? (
                       <Button
                         size="sm"
-                        onClick={() => setCurrentStepIndex((prev) => prev + 1)}
+                        onClick={() => onStepperChange(advanceStep(stepper, steps.length))}
                         className="gap-1.5 text-xs h-8"
                       >
                         <span>Avanzar al Paso {currentStepIndex + 2}</span>

@@ -16,12 +16,21 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { SreSimulation, ConflictPolicy } from "./sre-simulation"
 import { SdkCallLog, SeatStatus } from "./types"
+import {
+  StepperState,
+  advanceStep,
+  markExecuted,
+  resetStepper,
+  selectStep,
+} from "./stepper-state"
 
 interface SrePlaygroundProps {
   simulation: SreSimulation
   onLogGenerated: (logs: SdkCallLog | SdkCallLog[]) => void
   onStateChanged: () => void
   onResetLogs?: () => void
+  stepper: StepperState
+  onStepperChange: (next: StepperState) => void
 }
 
 export function SrePlayground({
@@ -29,10 +38,12 @@ export function SrePlayground({
   onLogGenerated,
   onStateChanged,
   onResetLogs,
+  stepper,
+  onStepperChange,
 }: SrePlaygroundProps) {
   const [policy, setPolicy] = useState<ConflictPolicy>(simulation.getPolicy())
-  const [stepperIndex, setStepperIndex] = useState(0)
-  const [executedSteps, setExecutedSteps] = useState<number[]>([])
+  const stepperIndex = stepper.index
+  const executedSteps = stepper.executed
 
   const seats = simulation.getSeats()
 
@@ -44,8 +55,7 @@ export function SrePlayground({
 
   const handleReset = () => {
     simulation.reset()
-    setStepperIndex(0)
-    setExecutedSteps([])
+    onStepperChange(resetStepper(stepper))
     onResetLogs?.()
     onStateChanged()
   }
@@ -153,25 +163,21 @@ export function SrePlayground({
 
   const handleExecuteStepperStep = () => {
     currentStep.action()
-    setExecutedSteps((prev) => (prev.includes(stepperIndex) ? prev : [...prev, stepperIndex]))
+    onStepperChange(markExecuted(stepper))
     onStateChanged()
   }
 
   const handleStepClick = (index: number) => {
-    if (executedSteps.includes(index) || index === 0) {
-      setStepperIndex(index)
-      return
+    const { state, replayUpTo } = selectStep(stepper, index)
+    if (replayUpTo !== null) {
+      // Replay sequentially up to the clicked step from a clean engine
+      simulation.reset()
+      for (let i = 0; i <= replayUpTo; i++) {
+        stepperSteps[i].action()
+      }
+      onStateChanged()
     }
-    // Simula secuencialmente hasta el paso clickeado
-    simulation.reset()
-    const newExecuted: number[] = []
-    for (let i = 0; i <= index; i++) {
-      stepperSteps[i].action()
-      newExecuted.push(i)
-    }
-    setExecutedSteps(newExecuted)
-    setStepperIndex(index)
-    onStateChanged()
+    onStepperChange(state)
   }
 
   // Counters
@@ -191,8 +197,6 @@ export function SrePlayground({
       case "HELD_BY_ME":
       case "HELD_BY_OTHER":
         return "bg-zinc-800/90 text-zinc-100 border-zinc-400 shadow-[0_0_12px_rgba(255,255,255,0.08)] animate-pulse"
-      case "QUEUED":
-        return "bg-zinc-900 text-zinc-300 border-dashed border-zinc-600"
       case "SOLD":
         return "bg-zinc-950 text-zinc-600 border-zinc-900 line-through opacity-75"
     }
@@ -316,7 +320,7 @@ export function SrePlayground({
                         {stepperIndex < stepperSteps.length - 1 ? (
                           <Button
                             size="sm"
-                            onClick={() => setStepperIndex((prev) => prev + 1)}
+                            onClick={() => onStepperChange(advanceStep(stepper, stepperSteps.length))}
                             className="gap-1.5 text-xs h-8"
                           >
                             <span>Avanzar al Paso {stepperIndex + 2}</span>
