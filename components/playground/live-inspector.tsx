@@ -69,7 +69,7 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
   }
 
   return (
-    <Card className="flex flex-col h-full bg-card border-border shadow-xl overflow-hidden">
+    <Card className="flex flex-col h-full min-w-0 bg-card border-border shadow-xl overflow-hidden">
       {/* Inspector Header */}
       <CardHeader className="py-3 px-4 border-b border-border/60 flex flex-row items-center justify-between space-y-0 bg-muted/60">
         <div className="flex items-center gap-2">

@@ -232,7 +232,7 @@ export function SrePlayground({
       <Card className="bg-card/60 border-border">
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div data-tour="sre-overview">
+            <div data-tour="sre-overview" className="min-w-0">
               <CardTitle className="text-base font-bold flex items-center gap-2">
                 <Ticket className="h-4 w-4 text-primary" />
                 Single Resource Execution (SRE) · Venta de Butacas
@@ -243,8 +243,8 @@ export function SrePlayground({
             </div>
 
             {/* Selector de Política y Botón Reiniciar */}
-            <div className="flex items-center gap-2">
-              <div data-tour="sre-policy" className="flex items-center gap-2 bg-muted/40 p-1 rounded-lg border border-border/60">
+            <div className="flex flex-wrap items-center gap-2">
+              <div data-tour="sre-policy" className="flex flex-wrap items-center gap-2 bg-muted/40 p-1 rounded-lg border border-border/60">
                 <span className="text-xs text-muted-foreground font-medium pl-1">Política:</span>
                 <Button
                   variant={policy === "FAIL" ? "default" : "ghost"}
@@ -283,8 +283,8 @@ export function SrePlayground({
           {/* Stepper View */}
           <div className="space-y-4">
               {/* Stepper Pill Bar */}
-              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/80 space-y-3">
-                <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+              <div className="min-w-0 p-3.5 rounded-xl bg-muted/40 border border-border/80 space-y-3">
+                <div className="flex max-w-full items-center gap-1.5 overflow-x-auto pb-1">
                   {stepperSteps.map((st, i) => {
                     const isExecuted = executedSteps.includes(i)
                     const isCurrent = i === stepperIndex
@@ -314,8 +314,8 @@ export function SrePlayground({
 
                 {/* Step Description Card */}
                 <div data-tour="sre-step-card" className="p-3.5 rounded-lg bg-muted/50 border border-border space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-xs text-foreground font-mono">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-semibold text-xs text-foreground font-mono min-w-0 break-words">
                       {currentStep.title}
                     </span>
                     <Badge variant="outline" className="text-[10px] font-mono">
@@ -398,7 +398,7 @@ export function SrePlayground({
                     </Badge>
                   </div>
                   <div className="text-xs space-y-1 font-mono text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center gap-x-1.5">
                       <span>Estado en A1:</span>
                       <span className="font-semibold text-foreground">
                         {a1Seat?.holderUser === "Ana"
@@ -430,7 +430,7 @@ export function SrePlayground({
                     </Badge>
                   </div>
                   <div className="text-xs space-y-1 font-mono text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center gap-x-1.5">
                       <span>Estado en A1:</span>
                       <span className="font-semibold text-foreground">
                         {a1Seat?.holderUser === "Beto"

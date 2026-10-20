@@ -166,7 +166,7 @@ export function PlaygroundView({
 
   return (
     <TourRegistryContext.Provider value={tourRegistry}>
-    <div className="space-y-6">
+    <div className="space-y-6 min-w-0">
       {/* Top Header Bar (solo si showTopHeader es true, ej: en Dashboard) */}
       {showTopHeader && (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/60 pb-5">
@@ -193,7 +193,7 @@ export function PlaygroundView({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <Button asChild variant="outline" size="sm" className="text-xs gap-1.5">
               <Link href="/docs">
                 <BookOpen className="h-3.5 w-3.5" />
@@ -209,7 +209,7 @@ export function PlaygroundView({
       {/* Tabs & Split-Screen Playground */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <TabsList data-tour="playground-tabs" className="bg-muted/60 p-1">
+          <TabsList data-tour="playground-tabs" className="bg-muted/60 p-1 max-w-full max-sm:h-auto max-sm:flex-wrap max-sm:justify-start">
             <TabsTrigger value="sre" className="gap-2 text-xs sm:text-sm font-medium">
               <Ticket className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
               SRE · Butacas y recursos
@@ -220,7 +220,7 @@ export function PlaygroundView({
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -258,7 +258,7 @@ export function PlaygroundView({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left Visual Simulation Panel (7 cols) */}
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-7 min-w-0 space-y-4">
             <TabsContent value="sre" className="m-0 focus-visible:outline-none">
               {sreEngineRef.current && (
                 <SrePlayground
@@ -287,7 +287,7 @@ export function PlaygroundView({
           </div>
 
           {/* Right Live SDK Inspector Panel (5 cols) */}
-          <div className="lg:col-span-5 sticky top-20">
+          <div className="lg:col-span-5 min-w-0 sticky top-20">
             <LiveInspector
               logs={activeTab === "sre" ? sreLogs : dlsLogs}
               onClear={handleClearInspector}

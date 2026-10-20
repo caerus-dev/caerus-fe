@@ -159,7 +159,7 @@ export function DlsPlayground({
       <Card className="bg-card/60 border-border">
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div data-tour="dls-overview">
+            <div data-tour="dls-overview" className="min-w-0">
               <CardTitle className="text-base font-bold flex items-center gap-2">
                 <Lock className="h-4 w-4 text-primary" />
                 Distributed Locking System (DLS)
@@ -245,9 +245,9 @@ export function DlsPlayground({
           </div>
 
           {/* Stepper Walkthrough (Similar a Google UCP Playground) */}
-          <div className="p-4 rounded-xl bg-muted/40 border border-border/80 space-y-3">
+          <div className="min-w-0 p-4 rounded-xl bg-muted/40 border border-border/80 space-y-3">
             {/* Stepper Pill Bar */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+            <div className="flex max-w-full items-center gap-1.5 overflow-x-auto pb-1">
               {steps.map((st, i) => {
                 const isExecuted = executedSteps.includes(i)
                 const isCurrent = i === currentStepIndex
@@ -277,8 +277,8 @@ export function DlsPlayground({
 
             {/* Current Step Description Card */}
             <div data-tour="dls-step-card" className="p-3.5 rounded-lg bg-muted/50 border border-border space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-xs text-foreground font-mono">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-semibold text-xs text-foreground font-mono min-w-0 break-words">
                   {currentStep.title}
                 </span>
                 <Badge variant="outline" className="text-[10px] font-mono">
@@ -358,14 +358,14 @@ export function DlsPlayground({
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
                         {res.type === "FILE" ? (
                           <FileText className="h-4 w-4 text-primary" />
                         ) : (
                           <Network className="h-4 w-4 text-purple-700 dark:text-purple-400" />
                         )}
                         <div>
-                          <div className="font-mono font-bold text-xs text-foreground">{res.name}</div>
+                          <div className="font-mono font-bold text-xs text-foreground break-all">{res.name}</div>
                           <div className="text-[10px] text-muted-foreground">ID: {res.id}</div>
                         </div>
                       </div>
@@ -416,12 +416,12 @@ export function DlsPlayground({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {workers.map((w) => (
                 <div key={w.id} className="p-3 rounded-lg border bg-muted/50 border-border space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-1">
                     <span className="font-semibold text-xs text-foreground">{w.name}</span>
                     {getWorkerStatusBadge(w.status)}
                   </div>
 
-                  <div className="text-[11px] space-y-1 font-mono text-muted-foreground">
+                  <div className="text-[11px] space-y-1 font-mono text-muted-foreground break-words">
                     <div>
                       Locks activos:{" "}
                       <span className="text-foreground">
