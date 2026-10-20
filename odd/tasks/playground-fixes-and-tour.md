@@ -29,6 +29,7 @@ Part 2 - tour
 - T1: 47e8f6d (tsc clean)
 - T2/T3/T4/T6: 86d263b (RED observed on missing module, then GREEN; stepper state lifted into PlaygroundView)
 - T4/T5: 073b84f (docs copy, runScenario removed); QUEUED seat status and Gamma comment removed in the same series
+- T11: fec59ad (zinc/black hardcoded colors replaced by theme tokens; -400 accents get light variants)
 - Checks: `npx tsc --noEmit` clean; `npx vitest run` 107 passed
 
 ## Next step
