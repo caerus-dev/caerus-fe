@@ -20,17 +20,21 @@ Part 1 - fixes
 - [x] T6 Tests for reset/stepper sync
 - [x] T11 Playground readable in light mode (theme tokens)
 Part 2 - tour
-- [ ] T7 Tour engine (spotlight + popover, next/back/skip, keyboard, a11y)
-- [ ] T8 Steps for SRE and DLS (control steps + "look here" steps) with data-tour anchors
-- [ ] T9 First-run detection (localStorage, try/catch) + "Ver tutorial" button + tab handoff
-- [ ] T10 Tests for tour step config and persistence logic
+- [x] T7 Tour engine (spotlight + popover, next/back/skip, keyboard, a11y)
+- [x] T8 Steps for SRE and DLS (control steps + "look here" steps) with data-tour anchors
+- [x] T9 First-run detection (localStorage, try/catch) + "Ver tutorial" button + tab handoff
+- [x] T10 Tests for tour step config and persistence logic
 
 ## Progress / evidence
 - T1: 47e8f6d (tsc clean)
 - T2/T3/T4/T6: 86d263b (RED observed on missing module, then GREEN; stepper state lifted into PlaygroundView)
 - T4/T5: 073b84f (docs copy, runScenario removed); QUEUED seat status and Gamma comment removed in the same series
 - T11: fec59ad (zinc/black hardcoded colors replaced by theme tokens; -400 accents get light variants)
-- Checks: `npx tsc --noEmit` clean; `npx vitest run` 107 passed
+- T7: 334768a (tour-state/overlay/use-tour/tour-context; RED observed on missing modules, then GREEN; manual fixed-position popover, backdrop blocks clicks)
+- T8: 3269dad (23 steps: 12 SRE + 11 DLS, control and observe kinds; data-tour anchors; runners registered via context)
+- T9: 69cd716 (auto-start on first visit, localStorage key caerus_playground_tour_v1 in try/catch, "Ver tutorial" button)
+- T10: tests in 334768a (tour-state) and 3269dad (tour-steps)
+- Checks: `npx tsc --noEmit` clean for src (only stale .next/dev generated type errors); `npx vitest run` 129 passed
 
 ## Next step
-T7
+Visual verification in browser + open PRs
