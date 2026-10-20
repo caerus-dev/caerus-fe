@@ -22,7 +22,9 @@ import {
   markExecuted,
   resetStepper,
   selectStep,
+  planStepRun,
 } from "./stepper-state"
+import { useRegisterTourRunner } from "./tour/tour-context"
 
 interface SrePlaygroundProps {
   simulation: SreSimulation
@@ -180,6 +182,28 @@ export function SrePlayground({
     onStepperChange(state)
   }
 
+  // Guided tour: drive the same handlers the UI uses
+  useRegisterTourRunner("sre", {
+    runStep: (index) => {
+      const plan = planStepRun(stepper, index)
+      if (plan.kind === "noop") {
+        onStepperChange({ ...stepper, index })
+      } else if (plan.kind === "run") {
+        stepperSteps[index].action()
+        onStepperChange(markExecuted({ ...stepper, index }))
+        onStateChanged()
+      } else {
+        simulation.reset()
+        for (let i = 0; i <= plan.upTo; i++) stepperSteps[i].action()
+        onStepperChange({ ...stepper, index, executed: Array.from({ length: index + 1 }, (_, i) => i) })
+        onStateChanged()
+      }
+    },
+    setOption: (value) => {
+      if ((value === "FAIL" || value === "QUEUE") && value !== policy) handlePolicyChange(value)
+    },
+  })
+
   // Counters
   const availableCount = seats.filter((s) => s.status === "AVAILABLE").length
   const myHeldCount = seats.filter((s) => s.status === "HELD_BY_ME").length
@@ -208,7 +232,7 @@ export function SrePlayground({
       <Card className="bg-card/60 border-border">
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
+            <div data-tour="sre-overview">
               <CardTitle className="text-base font-bold flex items-center gap-2">
                 <Ticket className="h-4 w-4 text-primary" />
                 Single Resource Execution (SRE) · Venta de Butacas
@@ -220,7 +244,7 @@ export function SrePlayground({
 
             {/* Selector de Política y Botón Reiniciar */}
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 bg-muted/40 p-1 rounded-lg border border-border/60">
+              <div data-tour="sre-policy" className="flex items-center gap-2 bg-muted/40 p-1 rounded-lg border border-border/60">
                 <span className="text-xs text-muted-foreground font-medium pl-1">Política:</span>
                 <Button
                   variant={policy === "FAIL" ? "default" : "ghost"}
@@ -241,6 +265,7 @@ export function SrePlayground({
               </div>
 
               <Button
+                data-tour="sre-reset"
                 variant="ghost"
                 size="sm"
                 onClick={handleReset}
@@ -288,7 +313,7 @@ export function SrePlayground({
                 </div>
 
                 {/* Step Description Card */}
-                <div className="p-3.5 rounded-lg bg-muted/50 border border-border space-y-2">
+                <div data-tour="sre-step-card" className="p-3.5 rounded-lg bg-muted/50 border border-border space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-semibold text-xs text-foreground font-mono">
                       {currentStep.title}
@@ -360,9 +385,9 @@ export function SrePlayground({
               </div>
 
               {/* Dos Sesiones Concurrentes: Ana vs Beto */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div data-tour="sre-sessions" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Sesión de Ana */}
-                <div className="p-3.5 rounded-lg border bg-muted/50 border-border space-y-2">
+                <div data-tour="sre-session-ana" className="p-3.5 rounded-lg border bg-muted/50 border-border space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 font-semibold text-xs text-foreground min-w-0">
                       <UserCheck className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -394,7 +419,7 @@ export function SrePlayground({
                 </div>
 
                 {/* Sesión de Beto */}
-                <div className="p-3.5 rounded-lg border bg-muted/50 border-border space-y-2">
+                <div data-tour="sre-session-beto" className="p-3.5 rounded-lg border bg-muted/50 border-border space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 font-semibold text-xs text-foreground min-w-0">
                       <Users className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -440,7 +465,7 @@ export function SrePlayground({
             </div>
 
           {/* Counters Legend */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
+          <div data-tour="sre-stats" className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
             <div className="p-2 rounded bg-muted/50 border border-border">
               <span className="text-muted-foreground block text-[10px]">Disponibles</span>
               <span className="font-bold text-foreground text-sm font-mono">{availableCount}</span>
@@ -471,7 +496,7 @@ export function SrePlayground({
             </div>
 
             {/* 24 Seats Grid */}
-            <div className="grid grid-cols-8 gap-2.5 sm:gap-3 max-w-md w-full">
+            <div data-tour="sre-seat-grid" className="grid grid-cols-8 gap-2.5 sm:gap-3 max-w-md w-full">
               {seats.map((seat) => {
                 const queueForSeat = simulation.getQueueForSeat(seat.code)
                 const hasQueue = queueForSeat.length > 0 && seat.status !== "SOLD"
@@ -479,6 +504,7 @@ export function SrePlayground({
                 return (
                   <div
                     key={seat.code}
+                    data-tour={seat.code === "A1" ? "sre-seat-a1" : undefined}
                     className={`aspect-square rounded-md border flex flex-col items-center justify-center text-xs font-mono font-bold transition-all relative cursor-default ${getSeatColor(seat.status)}`}
                     title={`${seat.code} · ${seat.status}${hasQueue ? ` · (${queueForSeat.length} en cola)` : ""}`}
                   >

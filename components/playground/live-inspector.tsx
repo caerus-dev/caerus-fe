@@ -115,12 +115,16 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
           </div>
         ) : (
           <div className="divide-y divide-border/40 font-mono text-xs">
-            {logs.map((log) => {
+            {logs.map((log, index) => {
               const isWebhookOpen = expandedWebhooks[log.id] ?? false
               const timeString = new Date(log.timestamp).toLocaleTimeString("es-AR")
 
               return (
-                <div key={log.id} className="p-3 hover:bg-muted/50 transition-colors">
+                <div
+                  key={log.id}
+                  data-tour={index === 0 ? "inspector-latest-log" : undefined}
+                  className="p-3 hover:bg-muted/50 transition-colors"
+                >
                   {/* Top Bar: Timestamp, Method, Status, Latency */}
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-2 overflow-hidden">
