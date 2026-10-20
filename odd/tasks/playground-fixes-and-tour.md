@@ -39,4 +39,4 @@ Part 2 - tour
 - Checks: `npx tsc --noEmit` clean for src (only stale .next/dev generated type errors); `npx vitest run` 129 passed
 
 ## Next step
-Visual verification in browser + open PRs
+Visual verification done in browser (desktop light/dark, mobile 375px, first-run + replay + persistence). Open PRs: A (feature/playground-fixes-and-tour -> main), then B (feature/playground-tour -> A). Not pushed yet; waiting for user.
