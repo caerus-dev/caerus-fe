@@ -24,6 +24,7 @@ Part 2 - tour
 - [x] T8 Steps for SRE and DLS (control steps + "look here" steps) with data-tour anchors
 - [x] T9 First-run detection (localStorage, try/catch) + "Ver tutorial" button + tab handoff
 - [x] T10 Tests for tour step config and persistence logic
+- [x] T12 No horizontal overflow on mobile; tour sheet stays in viewport
 
 ## Progress / evidence
 - T1: 47e8f6d (tsc clean)
@@ -34,6 +35,7 @@ Part 2 - tour
 - T8: 3269dad (23 steps: 12 SRE + 11 DLS, control and observe kinds; data-tour anchors; runners registered via context)
 - T9: 69cd716 (auto-start on first visit, localStorage key caerus_playground_tour_v1 in try/catch, "Ver tutorial" button)
 - T10: tests in 334768a (tour-state) and 3269dad (tour-steps)
+- T12: 1b622f4 (min-w-0 on grid children, wrapping headers/toolbars/policy row) + 0229b2e (resolveViewportSize via clientWidth/visualViewport; docked sheet uses left/right 8px insets; RED observed on missing export, then GREEN)
 - Checks: `npx tsc --noEmit` clean for src (only stale .next/dev generated type errors); `npx vitest run` 129 passed
 
 ## Next step
