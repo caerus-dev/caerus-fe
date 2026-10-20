@@ -1,5 +1,6 @@
-import type { LockMode } from '@caerus-dev/sdk'
 import { SdkCallLog } from './types'
+
+export type LockMode = 'SHARED_READ' | 'EXCLUSIVE'
 
 export type DlsScenario = 'shared_read' | 'exclusive' | 'deadlock'
 
