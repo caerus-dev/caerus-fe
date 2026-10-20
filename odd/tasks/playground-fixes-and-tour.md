@@ -8,7 +8,7 @@ Fix confirmed playground defects and add a first-run guided tour (own component,
 - UI copy in Spanish (matches existing UI); code/comments/commits in English.
 - Test runner: `npx vitest run` (pnpm test tries to reinstall). Known unrelated check: none expected after T1 (`npx tsc --noEmit`).
 - TDD: applies where logic is extractable as pure functions (reset sync, tour persistence/step config); UI-only changes get structural checks + tsc.
-- Delivery: forecast >400 changed lines -> two slices: A = T1-T6 (fixes), B = T7-T10 (tour). Chain strategy to be confirmed with the user before the next commit past the threshold.
+- Delivery: strategy `feature-branch-chain` (chosen by user). Integration branch `feature/playground-guided-experience` (from main, empty for now). Slice A = branch `feature/playground-fixes-and-tour` (T1-T6, T11) -> PR into integration. Slice B = branch `feature/playground-tour` (from A; T7-T10) -> PR into integration. Integration -> main at the end. Nothing is pushed yet. User declined running the native review preflight for slice A on 2026-10-20; do not run review commands unless asked.
 
 ## Tasks
 Part 1 - fixes
