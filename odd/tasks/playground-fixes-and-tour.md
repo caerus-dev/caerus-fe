@@ -18,6 +18,7 @@ Part 1 - fixes
 - [x] T4 Copy: clarify it is a simulation (no real SDK calls); fix "operaciones visuales" promise
 - [x] T5 Remove dead code (runScenario, unused QUEUED state, stale "Gamma" comment)
 - [x] T6 Tests for reset/stepper sync
+- [x] T11 Playground readable in light mode (theme tokens)
 Part 2 - tour
 - [ ] T7 Tour engine (spotlight + popover, next/back/skip, keyboard, a11y)
 - [ ] T8 Steps for SRE and DLS (control steps + "look here" steps) with data-tour anchors

@@ -18,33 +18,33 @@ function getStatusBadge(status: SdkCallStatus) {
     case "SUCCESS":
     case "CONFIRMED":
       return (
-        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-xs font-mono font-medium">
+        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20 text-xs font-mono font-medium">
           {status}
         </Badge>
       )
     case "PENDING":
       return (
-        <Badge variant="outline" className="bg-sky-500/10 text-sky-400 border-sky-500/20 text-xs font-mono font-medium">
+        <Badge variant="outline" className="bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20 text-xs font-mono font-medium">
           {status}
         </Badge>
       )
     case "CONFLICT":
       return (
-        <Badge variant="outline" className="bg-rose-500/10 text-rose-400 border-rose-500/20 text-xs font-mono font-medium">
+        <Badge variant="outline" className="bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20 text-xs font-mono font-medium">
           {status}
         </Badge>
       )
     case "RELEASED":
     case "EXPIRED":
       return (
-        <Badge variant="outline" className="bg-zinc-500/10 text-zinc-400 border-zinc-500/20 text-xs font-mono font-medium">
+        <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-xs font-mono font-medium">
           {status}
         </Badge>
       )
     case "ERROR":
     default:
       return (
-        <Badge variant="outline" className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-xs font-mono font-medium">
+        <Badge variant="outline" className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20 text-xs font-mono font-medium">
           {status}
         </Badge>
       )
@@ -69,9 +69,9 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
   }
 
   return (
-    <Card className="flex flex-col h-full bg-zinc-950/80 border-border shadow-xl backdrop-blur-md overflow-hidden">
+    <Card className="flex flex-col h-full bg-card border-border shadow-xl overflow-hidden">
       {/* Inspector Header */}
-      <CardHeader className="py-3 px-4 border-b border-border/60 flex flex-row items-center justify-between space-y-0 bg-zinc-900/60">
+      <CardHeader className="py-3 px-4 border-b border-border/60 flex flex-row items-center justify-between space-y-0 bg-muted/60">
         <div className="flex items-center gap-2">
           <Terminal className="h-4 w-4 text-primary" />
           <CardTitle className="text-sm font-semibold tracking-tight text-foreground flex items-center gap-2">
@@ -120,7 +120,7 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
               const timeString = new Date(log.timestamp).toLocaleTimeString("es-AR")
 
               return (
-                <div key={log.id} className="p-3 hover:bg-zinc-900/40 transition-colors">
+                <div key={log.id} className="p-3 hover:bg-muted/50 transition-colors">
                   {/* Top Bar: Timestamp, Method, Status, Latency */}
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-2 overflow-hidden">
@@ -137,7 +137,7 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
                       title="Copiar snippet de llamada SDK"
                     >
                       {copiedId === log.id ? (
-                        <Check className="h-3 w-3 text-emerald-400" />
+                        <Check className="h-3 w-3 text-emerald-700 dark:text-emerald-400" />
                       ) : (
                         <Copy className="h-3 w-3" />
                       )}
@@ -146,20 +146,20 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
                   </div>
 
                   {/* Code Snippet Box */}
-                  <div className="bg-black/60 border border-zinc-800 rounded p-2 overflow-x-auto text-[11px] text-emerald-400">
+                  <div className="bg-muted/60 border border-border rounded p-2 overflow-x-auto text-[11px] text-emerald-700 dark:text-emerald-400">
                     <pre className="font-mono leading-relaxed whitespace-pre-wrap">{log.method}</pre>
                   </div>
 
                   {/* Summary / Result / Error */}
                   {log.resultSummary && (
-                    <div className="mt-1.5 text-[11px] text-zinc-300 flex items-start gap-1">
-                      <span className="text-emerald-500 font-bold">↳</span>
+                    <div className="mt-1.5 text-[11px] text-foreground flex items-start gap-1">
+                      <span className="text-emerald-700 dark:text-emerald-500 font-bold">↳</span>
                       <span>{log.resultSummary}</span>
                     </div>
                   )}
 
                   {log.errorSummary && (
-                    <div className="mt-1.5 text-[11px] text-rose-400 flex items-start gap-1">
+                    <div className="mt-1.5 text-[11px] text-rose-700 dark:text-rose-400 flex items-start gap-1">
                       <span className="font-bold">⚠</span>
                       <span>{log.errorSummary}</span>
                     </div>
@@ -167,7 +167,7 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
 
                   {/* Generated Webhook Event Preview */}
                   {log.generatedWebhookEvent && (
-                    <div className="mt-2 pt-2 border-t border-zinc-800/60">
+                    <div className="mt-2 pt-2 border-t border-border/60">
                       <button
                         onClick={() => toggleWebhook(log.id)}
                         className="flex items-center gap-1.5 text-[11px] text-primary hover:underline cursor-pointer w-full"
@@ -185,11 +185,11 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
                       </button>
 
                       {isWebhookOpen && (
-                        <div className="mt-1.5 p-2 rounded bg-zinc-900/80 border border-zinc-800 text-[10px] space-y-1">
+                        <div className="mt-1.5 p-2 rounded bg-muted/50 border border-border text-[10px] space-y-1">
                           <div className="text-muted-foreground text-[9px] mb-1">
                             // Verificar en endpoint con: caerus.webhooks.constructEvent(payload, signature, secret)
                           </div>
-                          <pre className="text-zinc-300 font-mono overflow-x-auto">
+                          <pre className="text-foreground font-mono overflow-x-auto">
                             {JSON.stringify(log.generatedWebhookEvent.payload, null, 2)}
                           </pre>
                         </div>

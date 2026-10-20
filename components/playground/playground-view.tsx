@@ -183,7 +183,7 @@ export function PlaygroundView({
         <div className="flex items-center justify-between flex-wrap gap-3">
           <TabsList className="bg-muted/60 p-1">
             <TabsTrigger value="sre" className="gap-2 text-xs sm:text-sm font-medium">
-              <Ticket className="h-4 w-4 text-emerald-400" />
+              <Ticket className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
               SRE · Butacas y recursos
             </TabsTrigger>
             <TabsTrigger value="dls" className="gap-2 text-xs sm:text-sm font-medium">

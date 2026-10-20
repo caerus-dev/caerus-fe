@@ -92,31 +92,31 @@ export function DlsPlayground({
     switch (status) {
       case "IDLE":
         return (
-          <Badge variant="outline" className="bg-zinc-800 text-zinc-400 border-zinc-700 text-[10px]">
+          <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-[10px]">
             IDLE
           </Badge>
         )
       case "HOLDING":
         return (
-          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px]">
+          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 text-[10px]">
             HOLDING LOCK
           </Badge>
         )
       case "WAITING":
         return (
-          <Badge variant="outline" className="bg-amber-500/10 text-amber-400 border-amber-500/30 text-[10px] animate-pulse">
+          <Badge variant="outline" className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] animate-pulse">
             WAITING (STREAM)
           </Badge>
         )
       case "ABORTED":
         return (
-          <Badge variant="outline" className="bg-rose-500/10 text-rose-400 border-rose-500/30 text-[10px]">
+          <Badge variant="outline" className="bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30 text-[10px]">
             ABORTED (DEADLOCK)
           </Badge>
         )
       case "COMPLETED":
         return (
-          <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/30 text-[10px]">
+          <Badge variant="outline" className="bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30 text-[10px]">
             COMPLETED
           </Badge>
         )
@@ -166,10 +166,10 @@ export function DlsPlayground({
                 className={`p-3 rounded-lg border text-left transition-all ${
                   activeScenario === "deadlock"
                     ? "bg-rose-500/10 border-rose-500/60 ring-1 ring-rose-500/40"
-                    : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700"
+                    : "bg-muted/50 border-border hover:border-foreground/30"
                 }`}
               >
-                <div className="flex items-center gap-1.5 font-semibold text-xs text-rose-400 mb-1">
+                <div className="flex items-center gap-1.5 font-semibold text-xs text-rose-700 dark:text-rose-400 mb-1">
                   <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                   <span>Detección de Deadlock</span>
                 </div>
@@ -184,10 +184,10 @@ export function DlsPlayground({
                 className={`p-3 rounded-lg border text-left transition-all ${
                   activeScenario === "exclusive"
                     ? "bg-amber-500/10 border-amber-500/60 ring-1 ring-amber-500/40"
-                    : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700"
+                    : "bg-muted/50 border-border hover:border-foreground/30"
                 }`}
               >
-                <div className="flex items-center gap-1.5 font-semibold text-xs text-amber-400 mb-1">
+                <div className="flex items-center gap-1.5 font-semibold text-xs text-amber-700 dark:text-amber-400 mb-1">
                   <Lock className="h-3.5 w-3.5 shrink-0" />
                   <span>Lock Exclusivo</span>
                 </div>
@@ -202,10 +202,10 @@ export function DlsPlayground({
                 className={`p-3 rounded-lg border text-left transition-all ${
                   activeScenario === "shared_read"
                     ? "bg-blue-500/10 border-blue-500/60 ring-1 ring-blue-500/40"
-                    : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700"
+                    : "bg-muted/50 border-border hover:border-foreground/30"
                 }`}
               >
-                <div className="flex items-center gap-1.5 font-semibold text-xs text-blue-400 mb-1">
+                <div className="flex items-center gap-1.5 font-semibold text-xs text-blue-700 dark:text-blue-400 mb-1">
                   <Users className="h-3.5 w-3.5 shrink-0" />
                   <span>Lectura Compartida</span>
                 </div>
@@ -217,7 +217,7 @@ export function DlsPlayground({
           </div>
 
           {/* Stepper Walkthrough (Similar a Google UCP Playground) */}
-          <div className="p-4 rounded-xl bg-zinc-950/80 border border-border/80 space-y-3">
+          <div className="p-4 rounded-xl bg-muted/40 border border-border/80 space-y-3">
             {/* Stepper Pill Bar */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
               {steps.map((st, i) => {
@@ -232,12 +232,12 @@ export function DlsPlayground({
                       isCurrent
                         ? "bg-primary text-primary-foreground font-semibold shadow-sm"
                         : isExecuted
-                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                        ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30"
                         : "bg-muted/40 text-muted-foreground hover:bg-muted"
                     }`}
                   >
                     {isExecuted ? (
-                      <Check className="h-3 w-3 text-emerald-400" />
+                      <Check className="h-3 w-3 text-emerald-700 dark:text-emerald-400" />
                     ) : (
                       <span>{i + 1}.</span>
                     )}
@@ -248,7 +248,7 @@ export function DlsPlayground({
             </div>
 
             {/* Current Step Description Card */}
-            <div className="p-3.5 rounded-lg bg-zinc-900/80 border border-zinc-800 space-y-2">
+            <div className="p-3.5 rounded-lg bg-muted/50 border border-border space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <span className="font-semibold text-xs text-foreground font-mono">
                   {currentStep.title}
@@ -274,7 +274,7 @@ export function DlsPlayground({
                   </Button>
                 ) : (
                   <>
-                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs py-1">
+                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 text-xs py-1">
                       ✓ Paso {currentStepIndex + 1} ejecutado
                     </Badge>
 
@@ -302,7 +302,7 @@ export function DlsPlayground({
                 )}
 
                 {isScenarioCompleted && currentStepIndex === steps.length - 1 && (
-                  <Badge variant="outline" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs py-1 font-semibold">
+                  <Badge variant="outline" className="bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 text-xs py-1 font-semibold">
                     ✓ Escenario completado exitosamente
                   </Badge>
                 )}
@@ -326,7 +326,7 @@ export function DlsPlayground({
                         ? res.mode === "EXCLUSIVE"
                           ? "bg-amber-500/10 border-amber-500/40"
                           : "bg-blue-500/10 border-blue-500/40"
-                        : "bg-zinc-900/40 border-zinc-800"
+                        : "bg-muted/50 border-border"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -334,7 +334,7 @@ export function DlsPlayground({
                         {res.type === "FILE" ? (
                           <FileText className="h-4 w-4 text-primary" />
                         ) : (
-                          <Network className="h-4 w-4 text-purple-400" />
+                          <Network className="h-4 w-4 text-purple-700 dark:text-purple-400" />
                         )}
                         <div>
                           <div className="font-mono font-bold text-xs text-foreground">{res.name}</div>
@@ -347,14 +347,14 @@ export function DlsPlayground({
                           variant="outline"
                           className={
                             res.mode === "EXCLUSIVE"
-                              ? "bg-amber-500/20 text-amber-300 border-amber-500/30 text-[10px] font-mono"
-                              : "bg-blue-500/20 text-blue-300 border-blue-500/30 text-[10px] font-mono"
+                              ? "bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500/30 text-[10px] font-mono"
+                              : "bg-blue-500/20 text-blue-800 dark:text-blue-300 border-blue-500/30 text-[10px] font-mono"
                           }
                         >
                           {res.mode}
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="bg-zinc-800 text-zinc-500 border-zinc-700 text-[10px]">
+                        <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-[10px]">
                           LIBRE
                         </Badge>
                       )}
@@ -387,7 +387,7 @@ export function DlsPlayground({
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {workers.map((w) => (
-                <div key={w.id} className="p-3 rounded-lg border bg-zinc-900/50 border-zinc-800 space-y-2">
+                <div key={w.id} className="p-3 rounded-lg border bg-muted/50 border-border space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-xs text-foreground">{w.name}</span>
                     {getWorkerStatusBadge(w.status)}
@@ -401,7 +401,7 @@ export function DlsPlayground({
                       </span>
                     </div>
                     {w.waitingFor && (
-                      <div className="text-amber-400">
+                      <div className="text-amber-700 dark:text-amber-400">
                         Esperando: <span>{w.waitingFor}</span>
                       </div>
                     )}

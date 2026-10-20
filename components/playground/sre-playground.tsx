@@ -193,12 +193,12 @@ export function SrePlayground({
   const getSeatColor = (status: SeatStatus) => {
     switch (status) {
       case "AVAILABLE":
-        return "bg-zinc-900/50 text-zinc-500 border-zinc-800/80"
+        return "bg-muted/50 text-muted-foreground border-border/80"
       case "HELD_BY_ME":
       case "HELD_BY_OTHER":
-        return "bg-zinc-800/90 text-zinc-100 border-zinc-400 shadow-[0_0_12px_rgba(255,255,255,0.08)] animate-pulse"
+        return "bg-primary/15 text-foreground border-primary shadow-md animate-pulse"
       case "SOLD":
-        return "bg-zinc-950 text-zinc-600 border-zinc-900 line-through opacity-75"
+        return "bg-muted text-muted-foreground border-border line-through opacity-75"
     }
   }
 
@@ -258,7 +258,7 @@ export function SrePlayground({
           {/* Stepper View */}
           <div className="space-y-4">
               {/* Stepper Pill Bar */}
-              <div className="p-3.5 rounded-xl bg-zinc-950/80 border border-border/80 space-y-3">
+              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/80 space-y-3">
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
                   {stepperSteps.map((st, i) => {
                     const isExecuted = executedSteps.includes(i)
@@ -272,12 +272,12 @@ export function SrePlayground({
                           isCurrent
                             ? "bg-primary text-primary-foreground font-semibold shadow-sm"
                             : isExecuted
-                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                            ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30"
                             : "bg-muted/40 text-muted-foreground hover:bg-muted"
                         }`}
                       >
                         {isExecuted ? (
-                          <Check className="h-3 w-3 text-emerald-400" />
+                          <Check className="h-3 w-3 text-emerald-700 dark:text-emerald-400" />
                         ) : (
                           <span>{i + 1}.</span>
                         )}
@@ -288,7 +288,7 @@ export function SrePlayground({
                 </div>
 
                 {/* Step Description Card */}
-                <div className="p-3.5 rounded-lg bg-zinc-900/80 border border-zinc-800 space-y-2">
+                <div className="p-3.5 rounded-lg bg-muted/50 border border-border space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-semibold text-xs text-foreground font-mono">
                       {currentStep.title}
@@ -313,7 +313,7 @@ export function SrePlayground({
                       </Button>
                     ) : (
                       <>
-                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs py-1">
+                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 text-xs py-1">
                           ✓ Paso {stepperIndex + 1} ejecutado
                         </Badge>
 
@@ -351,7 +351,7 @@ export function SrePlayground({
                     )}
 
                     {isScenarioCompleted && stepperIndex === stepperSteps.length - 1 && (
-                      <Badge variant="outline" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-xs py-1 font-semibold">
+                      <Badge variant="outline" className="bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 text-xs py-1 font-semibold">
                         ✓ Demostración completada con éxito
                       </Badge>
                     )}
@@ -362,20 +362,20 @@ export function SrePlayground({
               {/* Dos Sesiones Concurrentes: Ana vs Beto */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {/* Sesión de Ana */}
-                <div className="p-3.5 rounded-lg border bg-zinc-900/50 border-zinc-800 space-y-2">
+                <div className="p-3.5 rounded-lg border bg-muted/50 border-border space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 font-semibold text-xs text-zinc-200 min-w-0">
-                      <UserCheck className="h-4 w-4 text-zinc-400 shrink-0" />
+                    <div className="flex items-center gap-1.5 font-semibold text-xs text-foreground min-w-0">
+                      <UserCheck className="h-4 w-4 text-muted-foreground shrink-0" />
                       <span className="truncate">Sesión 1: Navegador de &apos;Ana&apos;</span>
                     </div>
-                    <Badge variant="outline" className="text-[10px] font-mono border-zinc-700 bg-zinc-800/60 text-zinc-300 shrink-0">
+                    <Badge variant="outline" className="text-[10px] font-mono border-border bg-muted text-foreground shrink-0">
                       Cliente A
                     </Badge>
                   </div>
                   <div className="text-xs space-y-1 font-mono text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                       <span>Estado en A1:</span>
-                      <span className="font-semibold text-zinc-100">
+                      <span className="font-semibold text-foreground">
                         {a1Seat?.holderUser === "Ana"
                           ? a1Seat.status === "SOLD"
                             ? "COMPRA CONFIRMADA (SOLD)"
@@ -386,7 +386,7 @@ export function SrePlayground({
                       </span>
                     </div>
                     {a1Seat?.holderUser === "Ana" && a1Seat.status === "HELD_BY_ME" && (
-                      <div className="text-zinc-400 text-[11px]">
+                      <div className="text-muted-foreground text-[11px]">
                         TTL: 120s · Holder ID: {a1Seat.holderId?.slice(0, 10)}...
                       </div>
                     )}
@@ -394,20 +394,20 @@ export function SrePlayground({
                 </div>
 
                 {/* Sesión de Beto */}
-                <div className="p-3.5 rounded-lg border bg-zinc-900/50 border-zinc-800 space-y-2">
+                <div className="p-3.5 rounded-lg border bg-muted/50 border-border space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 font-semibold text-xs text-zinc-200 min-w-0">
-                      <Users className="h-4 w-4 text-zinc-400 shrink-0" />
+                    <div className="flex items-center gap-1.5 font-semibold text-xs text-foreground min-w-0">
+                      <Users className="h-4 w-4 text-muted-foreground shrink-0" />
                       <span className="truncate">Sesión 2: Navegador de &apos;Beto&apos;</span>
                     </div>
-                    <Badge variant="outline" className="text-[10px] font-mono border-zinc-700 bg-zinc-800/60 text-zinc-300 shrink-0">
+                    <Badge variant="outline" className="text-[10px] font-mono border-border bg-muted text-foreground shrink-0">
                       Cliente B
                     </Badge>
                   </div>
                   <div className="text-xs space-y-1 font-mono text-muted-foreground">
                     <div className="flex items-center gap-1.5">
                       <span>Estado en A1:</span>
-                      <span className="font-semibold text-zinc-100">
+                      <span className="font-semibold text-foreground">
                         {a1Seat?.holderUser === "Beto"
                           ? a1Seat.status === "SOLD"
                             ? "COMPRA CONFIRMADA (SOLD)"
@@ -420,17 +420,17 @@ export function SrePlayground({
                       </span>
                     </div>
                     {a1Seat?.holderUser === "Beto" && a1Seat.status === "HELD_BY_OTHER" && (
-                      <div className="text-zinc-400 text-[11px]">
+                      <div className="text-muted-foreground text-[11px]">
                         TTL: 120s · Holder ID: {a1Seat.holderId?.slice(0, 10)}... (Promovido)
                       </div>
                     )}
                     {a1Queue.some((q) => q.user === "Beto") && (
-                      <div className="text-zinc-400 text-[11px]">
+                      <div className="text-muted-foreground text-[11px]">
                         Esperando liberación para auto-asignación automática.
                       </div>
                     )}
                     {executedSteps.includes(1) && policy === "FAIL" && a1Seat?.holderUser !== "Beto" && (
-                      <div className="text-zinc-400 text-[11px]">
+                      <div className="text-muted-foreground text-[11px]">
                         Rechazo inmediato. La butaca ya estaba ocupada por Ana.
                       </div>
                     )}
@@ -441,30 +441,30 @@ export function SrePlayground({
 
           {/* Counters Legend */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
-            <div className="p-2 rounded bg-zinc-900/50 border border-zinc-800">
+            <div className="p-2 rounded bg-muted/50 border border-border">
               <span className="text-muted-foreground block text-[10px]">Disponibles</span>
-              <span className="font-bold text-zinc-300 text-sm font-mono">{availableCount}</span>
+              <span className="font-bold text-foreground text-sm font-mono">{availableCount}</span>
             </div>
-            <div className="p-2 rounded bg-zinc-900/50 border border-zinc-800">
+            <div className="p-2 rounded bg-muted/50 border border-border">
               <span className="text-muted-foreground block text-[10px]">Reserva Ana</span>
-              <span className="font-bold text-zinc-200 text-sm font-mono">{myHeldCount}</span>
+              <span className="font-bold text-foreground text-sm font-mono">{myHeldCount}</span>
             </div>
-            <div className="p-2 rounded bg-zinc-900/50 border border-zinc-800">
+            <div className="p-2 rounded bg-muted/50 border border-border">
               <span className="text-muted-foreground block text-[10px]">Reserva Beto</span>
-              <span className="font-bold text-zinc-200 text-sm font-mono">{otherHeldCount}</span>
+              <span className="font-bold text-foreground text-sm font-mono">{otherHeldCount}</span>
             </div>
-            <div className="p-2 rounded bg-zinc-900/50 border border-zinc-800">
+            <div className="p-2 rounded bg-muted/50 border border-border">
               <span className="text-muted-foreground block text-[10px]">En Cola FIFO</span>
-              <span className="font-bold text-zinc-300 text-sm font-mono">{queuedCount}</span>
+              <span className="font-bold text-foreground text-sm font-mono">{queuedCount}</span>
             </div>
-            <div className="p-2 rounded bg-zinc-900/50 border border-zinc-800">
+            <div className="p-2 rounded bg-muted/50 border border-border">
               <span className="text-muted-foreground block text-[10px]">Confirmados</span>
-              <span className="font-bold text-zinc-400 text-sm font-mono">{soldCount}</span>
+              <span className="font-bold text-muted-foreground text-sm font-mono">{soldCount}</span>
             </div>
           </div>
 
           {/* Cinema Screen Simulation */}
-          <div className="p-5 rounded-xl bg-zinc-950/70 border border-border flex flex-col items-center">
+          <div className="p-5 rounded-xl bg-muted/40 border border-border flex flex-col items-center">
             <div className="w-4/5 max-w-md h-3 rounded-t-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-80 mb-1" />
             <div className="text-[11px] font-mono tracking-widest text-muted-foreground uppercase mb-6 flex items-center gap-1.5">
               <span>━━ PANTALLA ━━</span>
@@ -490,7 +490,7 @@ export function SrePlayground({
                       <span className="text-[9px] font-normal opacity-90">Beto</span>
                     )}
                     {hasQueue && (
-                      <span className="absolute -top-1.5 -right-1.5 bg-zinc-800 text-zinc-200 border border-zinc-600 rounded-full w-4 h-4 text-[9px] flex items-center justify-center font-bold">
+                      <span className="absolute -top-1.5 -right-1.5 bg-secondary text-secondary-foreground border border-border rounded-full w-4 h-4 text-[9px] flex items-center justify-center font-bold">
                         {queueForSeat.length}
                       </span>
                     )}
