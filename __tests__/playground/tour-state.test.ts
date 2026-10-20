@@ -12,6 +12,7 @@ import {
   markTourCompleted,
   shouldAutoStart,
   computePopoverPlacement,
+  resolveViewportSize,
   type TourStep,
 } from '@/components/playground/tour/tour-state'
 import { planStepRun, createStepper } from '@/components/playground/stepper-state'
@@ -140,7 +141,43 @@ describe('popover placement', () => {
     )
     expect(p.mode).toBe('docked')
     expect(p.top + 200).toBeLessThanOrEqual(800)
-    expect(p.width).toBeLessThanOrEqual(390)
+    expect(p.left + (p.right ?? 0)).toBeLessThan(390)
+  })
+
+  it('docks with left/right insets instead of a fixed width', () => {
+    const p = computePopoverPlacement(null, { width: 320, height: 200 }, { width: 375, height: 700 })
+    expect(p.mode).toBe('docked')
+    expect(p.left).toBe(8)
+    expect(p.right).toBe(8)
+    expect('width' in p).toBe(false)
+    expect(p.top).toBe(700 - 200 - 8)
+  })
+})
+
+describe('resolveViewportSize', () => {
+  it('prefers the visible area over a widened layout viewport', () => {
+    expect(
+      resolveViewportSize({ clientWidth: 375, clientHeight: 700, innerWidth: 465, innerHeight: 812 }),
+    ).toEqual({ width: 375, height: 700 })
+  })
+
+  it('uses visualViewport when it is smaller', () => {
+    expect(
+      resolveViewportSize({
+        clientWidth: 465,
+        clientHeight: 812,
+        innerWidth: 465,
+        innerHeight: 812,
+        visualViewport: { width: 375, height: 600 },
+      }),
+    ).toEqual({ width: 375, height: 600 })
+  })
+
+  it('falls back to inner size when client size is unavailable', () => {
+    expect(resolveViewportSize({ clientWidth: 0, clientHeight: 0, innerWidth: 390, innerHeight: 800 })).toEqual({
+      width: 390,
+      height: 800,
+    })
   })
 })
 

@@ -117,14 +117,40 @@ export interface PopoverPlacement {
   mode: 'anchored' | 'centered' | 'docked'
   top: number
   left: number
-  /** Only set when `docked` (full-width bottom sheet). */
-  width?: number
+  /** Only set when `docked`: the sheet is stretched between `left` and `right` insets. */
+  right?: number
   side?: PopoverSide
   /** Arrow offset in px along the popover edge facing the target. */
   arrowOffset?: number
 }
 
 export const MOBILE_BREAKPOINT = 768
+
+export interface ViewportInput {
+  clientWidth: number
+  clientHeight: number
+  innerWidth: number
+  innerHeight: number
+  visualViewport?: { width: number; height: number } | null
+}
+
+/**
+ * Visible area the popover must fit in. `innerWidth` can be wider than the screen when the
+ * page overflows horizontally on mobile, so prefer the document client size and the visual
+ * viewport, taking the smallest positive value of each axis.
+ */
+export function resolveViewportSize(input: ViewportInput): Size {
+  const pick = (...values: Array<number | undefined>) => {
+    const valid = values.filter((v): v is number => typeof v === 'number' && v > 0)
+    return valid.length > 0 ? Math.min(...valid) : 0
+  }
+  return {
+    width: pick(input.clientWidth, input.visualViewport?.width) || input.innerWidth,
+    height: pick(input.clientHeight, input.visualViewport?.height) || input.innerHeight,
+  }
+}
+
+export const DOCKED_INSET = 8
 
 export function computePopoverPlacement(
   target: Rect | null,
@@ -133,12 +159,11 @@ export function computePopoverPlacement(
   { gap = 14, margin = 12 }: { gap?: number; margin?: number } = {},
 ): PopoverPlacement {
   if (viewport.width < MOBILE_BREAKPOINT) {
-    const width = viewport.width - margin * 2
     return {
       mode: 'docked',
-      top: Math.max(margin, viewport.height - size.height - margin),
-      left: margin,
-      width,
+      top: Math.max(DOCKED_INSET, viewport.height - size.height - DOCKED_INSET),
+      left: DOCKED_INSET,
+      right: DOCKED_INSET,
     }
   }
 

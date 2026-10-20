@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import {
   MOBILE_BREAKPOINT,
   computePopoverPlacement,
+  resolveViewportSize,
   type Rect,
   type Size,
   type TourCounter,
@@ -29,6 +30,15 @@ const SPOTLIGHT_PADDING = 6
 const TARGET_WAIT_MS = 1500
 const POPOVER_WIDTH = 340
 
+const readViewport = (): Size =>
+  resolveViewportSize({
+    clientWidth: document.documentElement.clientWidth,
+    clientHeight: document.documentElement.clientHeight,
+    innerWidth: window.innerWidth,
+    innerHeight: window.innerHeight,
+    visualViewport: window.visualViewport,
+  })
+
 const queryTarget = (name: string): HTMLElement | null => {
   const el = document.querySelector<HTMLElement>(`[data-tour="${name}"]`)
   if (!el) return null
@@ -45,10 +55,11 @@ const prefersReducedMotion = () =>
 
 function scrollTargetIntoView(el: HTMLElement, popoverHeight: number) {
   const behavior: ScrollBehavior = prefersReducedMotion() ? "auto" : "smooth"
-  if (window.innerWidth < MOBILE_BREAKPOINT) {
+  const viewport = readViewport()
+  if (viewport.width < MOBILE_BREAKPOINT) {
     // The popover is docked at the bottom: center the target in the space above it.
     const rect = el.getBoundingClientRect()
-    const available = window.innerHeight - popoverHeight - 24
+    const available = viewport.height - popoverHeight - 24
     const height = Math.min(rect.height, available)
     const desiredTop = 12 + Math.max(0, (available - height) / 2)
     window.scrollBy({ top: rect.top - desiredTop, behavior })
@@ -82,11 +93,8 @@ export function TourOverlay({
   })
 
   const measure = useCallback(() => {
-    setViewport((v) =>
-      v.width === window.innerWidth && v.height === window.innerHeight
-        ? v
-        : { width: window.innerWidth, height: window.innerHeight },
-    )
+    const vp = readViewport()
+    setViewport((v) => (v.width === vp.width && v.height === vp.height ? v : vp))
     if (!step.target) {
       setRect(null)
       return
@@ -104,7 +112,7 @@ export function TourOverlay({
   // Resolve the target (waiting for tab content to mount), scroll to it, then track it.
   useEffect(() => {
     setRect(null)
-    setViewport({ width: window.innerWidth, height: window.innerHeight })
+    setViewport(readViewport())
     if (!step.target) return
 
     let cancelled = false
@@ -127,6 +135,7 @@ export function TourOverlay({
       measure()
       window.addEventListener("scroll", schedule, { capture: true, passive: true })
       window.addEventListener("resize", schedule)
+      window.visualViewport?.addEventListener("resize", schedule)
       if (typeof ResizeObserver !== "undefined") {
         observer = new ResizeObserver(schedule)
         observer.observe(el)
@@ -153,6 +162,7 @@ export function TourOverlay({
       observer?.disconnect()
       window.removeEventListener("scroll", schedule, { capture: true })
       window.removeEventListener("resize", schedule)
+      window.visualViewport?.removeEventListener("resize", schedule)
     }
   }, [step.id, step.target, measure])
 
@@ -271,7 +281,9 @@ export function TourOverlay({
         style={{
           top: placement.top,
           left: placement.left,
-          width: placement.width ?? Math.min(POPOVER_WIDTH, viewport.width - 24),
+          ...(placement.right !== undefined
+            ? { right: placement.right, width: "auto" }
+            : { width: Math.min(POPOVER_WIDTH, viewport.width - 24) }),
         }}
       >
         {arrow && <span aria-hidden="true" className={arrow.className} style={arrow.style} />}
