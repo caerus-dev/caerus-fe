@@ -1,4 +1,3 @@
-import type { SharedResourceApi, UnitaryResource, ResourceHolder } from '@caerus-dev/sdk'
 import { SeatState, SdkCallLog } from './types'
 
 export type ConflictPolicy = 'FAIL' | 'QUEUE'

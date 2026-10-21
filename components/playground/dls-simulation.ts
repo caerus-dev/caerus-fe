@@ -1,5 +1,6 @@
-import type { LockMode } from '@caerus-dev/sdk'
 import { SdkCallLog } from './types'
+
+export type LockMode = 'SHARED_READ' | 'EXCLUSIVE'
 
 export type DlsScenario = 'shared_read' | 'exclusive' | 'deadlock'
 
@@ -41,7 +42,7 @@ export class DlsSimulation {
   }
 
   reset() {
-    // Solo dos workers: Alfa y Beta (Worker Gamma removido)
+    // Two workers: Alfa and Beta
     this.workers = new Map([
       [
         'alfa',
@@ -566,15 +567,5 @@ export class DlsSimulation {
       status: 'SUCCESS',
       durationMs: 0,
     }
-  }
-
-  runScenario(scenario: DlsScenario): { logs: SdkCallLog[] } {
-    this.reset()
-    const steps = this.getScenarioSteps(scenario)
-    const logs: SdkCallLog[] = []
-    for (const step of steps) {
-      logs.push(this.executeStep(scenario, step.stepIndex))
-    }
-    return { logs }
   }
 }

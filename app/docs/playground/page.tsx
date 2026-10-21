@@ -4,7 +4,7 @@ import { PlaygroundView } from "@/components/playground/playground-view"
 
 export const metadata: Metadata = {
   title: "Playground en Vivo | Caerus Docs",
-  description: "Simulador interactivo en tiempo real de concurrencia distribuida (SRE) y locking distribuido (DLS) con inspector de llamadas al SDK oficial.",
+  description: "Simulador interactivo en tiempo real de concurrencia distribuida (SRE) y locking distribuido (DLS) con un inspector que muestra el código del SDK que escribirías. No realiza llamadas reales.",
 }
 
 export default function DocsPlaygroundPage() {
@@ -16,7 +16,7 @@ export default function DocsPlaygroundPage() {
       ]}
       title="Playground en Vivo"
       badge="Live Simulator"
-      description="Experimentá con la gestión de concurrencia distribuida (SRE) y locking atómico (DLS). Ejecutá operaciones visuales y observá en tiempo real el código TypeScript, el comportamiento ante conflictos o encolamientos, expiraciones automáticas por TTL y contratos de SDK."
+      description="Experimenta con la gestión de concurrencia distribuida (SRE) y locking atómico (DLS). Ejecuta escenarios guiados y observa el código TypeScript del SDK que escribirías, el comportamiento ante conflictos o encolamientos y las expiraciones automáticas por TTL. Es una simulación: no realiza llamadas reales."
       hideToc={true}
     >
       <PlaygroundView showTopHeader={false} />

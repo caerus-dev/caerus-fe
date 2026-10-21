@@ -19,6 +19,13 @@ import { LiveInspector } from "@/components/playground/live-inspector"
 import { SreSimulation } from "@/components/playground/sre-simulation"
 import { DlsSimulation } from "@/components/playground/dls-simulation"
 import { SdkCallLog } from "@/components/playground/types"
+import {
+  StepperState,
+  DlsStepperState,
+  createStepper,
+  createDlsStepper,
+  resetStepper,
+} from "@/components/playground/stepper-state"
 
 const createInitialSreLog = (): SdkCallLog => ({
   id: `init_sre_${Date.now()}`,
@@ -57,6 +64,12 @@ export interface PlaygroundViewProps {
   initialTab?: "sre" | "dls"
 }
 
+const simulationNote = (
+  <p className="text-xs text-muted-foreground/80 max-w-2xl">
+    Es una simulación local: no se realizan llamadas reales a la API ni al SDK. El registro muestra el código que escribirías.
+  </p>
+)
+
 export function PlaygroundView({
   showTopHeader = true,
   initialTab = "sre",
@@ -64,6 +77,9 @@ export function PlaygroundView({
   const [activeTab, setActiveTab] = useState<string>(initialTab)
   const [sreLogs, setSreLogs] = useState<SdkCallLog[]>([])
   const [dlsLogs, setDlsLogs] = useState<SdkCallLog[]>([])
+  // Stepper progress lives here so it survives tab switches (inactive tabs unmount)
+  const [sreStepper, setSreStepper] = useState<StepperState>(createStepper)
+  const [dlsStepper, setDlsStepper] = useState<DlsStepperState>(() => createDlsStepper())
   const [, setRevision] = useState(0) // Helper state to force re-render on engine mutation
 
   // Persistent simulation engine instances across renders
@@ -108,9 +124,11 @@ export function PlaygroundView({
     if (activeTab === "sre" && sreEngineRef.current) {
       sreEngineRef.current.reset()
       setSreLogs([createInitialSreLog()])
+      setSreStepper(resetStepper)
     } else if (activeTab === "dls" && dlsEngineRef.current) {
       dlsEngineRef.current.reset()
       setDlsLogs([createInitialDlsLog()])
+      setDlsStepper(resetStepper)
     }
     handleStateChanged()
   }
@@ -127,11 +145,11 @@ export function PlaygroundView({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Link
-                href="/dashboard"
+                href="/dashboard/applications"
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors mr-2"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                Inicio
+                Aplicaciones
               </Link>
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-xs gap-1 py-0.5">
                 <Sparkles className="h-3 w-3" />
@@ -143,22 +161,11 @@ export function PlaygroundView({
             </h1>
             <p className="text-sm text-muted-foreground max-w-2xl">
               Experimenta con la gestión de concurrencia y locking distribuido.
-              Visualiza cómo responde el SDK, los estados de reserva y la emisión de eventos en tiempo real.
+              Observa qué código del SDK escribirías, los estados de reserva y los eventos que se emitirían.
             </p>
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleGlobalReset}
-              className="text-xs gap-1.5"
-              title="Reiniciar el simulador activo"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              Reiniciar
-            </Button>
-
             <Button asChild variant="outline" size="sm" className="text-xs gap-1.5">
               <Link href="/docs">
                 <BookOpen className="h-3.5 w-3.5" />
@@ -169,12 +176,14 @@ export function PlaygroundView({
         </div>
       )}
 
+      {simulationNote}
+
       {/* Tabs & Split-Screen Playground */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <TabsList className="bg-muted/60 p-1">
             <TabsTrigger value="sre" className="gap-2 text-xs sm:text-sm font-medium">
-              <Ticket className="h-4 w-4 text-emerald-400" />
+              <Ticket className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
               SRE · Butacas y recursos
             </TabsTrigger>
             <TabsTrigger value="dls" className="gap-2 text-xs sm:text-sm font-medium">
@@ -216,6 +225,8 @@ export function PlaygroundView({
                   onLogGenerated={handleLogGenerated}
                   onStateChanged={handleStateChanged}
                   onResetLogs={() => setSreLogs([createInitialSreLog()])}
+                  stepper={sreStepper}
+                  onStepperChange={setSreStepper}
                 />
               )}
             </TabsContent>
@@ -227,6 +238,8 @@ export function PlaygroundView({
                   onLogGenerated={handleLogGenerated}
                   onStateChanged={handleStateChanged}
                   onResetLogs={() => setDlsLogs([createInitialDlsLog()])}
+                  stepper={dlsStepper}
+                  onStepperChange={setDlsStepper}
                 />
               )}
             </TabsContent>
