@@ -69,7 +69,7 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
   }
 
   return (
-    <Card className="flex flex-col h-full bg-card border-border shadow-xl overflow-hidden">
+    <Card className="flex flex-col h-full min-w-0 bg-card border-border shadow-xl overflow-hidden">
       {/* Inspector Header */}
       <CardHeader className="py-3 px-4 border-b border-border/60 flex flex-row items-center justify-between space-y-0 bg-muted/60">
         <div className="flex items-center gap-2">
@@ -115,12 +115,16 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
           </div>
         ) : (
           <div className="divide-y divide-border/40 font-mono text-xs">
-            {logs.map((log) => {
+            {logs.map((log, index) => {
               const isWebhookOpen = expandedWebhooks[log.id] ?? false
               const timeString = new Date(log.timestamp).toLocaleTimeString("es-AR")
 
               return (
-                <div key={log.id} className="p-3 hover:bg-muted/50 transition-colors">
+                <div
+                  key={log.id}
+                  data-tour={index === 0 ? "inspector-latest-log" : undefined}
+                  className="p-3 hover:bg-muted/50 transition-colors"
+                >
                   {/* Top Bar: Timestamp, Method, Status, Latency */}
                   <div className="flex items-center justify-between gap-2 mb-1.5">
                     <div className="flex items-center gap-2 overflow-hidden">

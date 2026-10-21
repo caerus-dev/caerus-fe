@@ -24,7 +24,9 @@ import {
   resetStepper,
   selectDlsScenario,
   selectStep,
+  planStepRun,
 } from "./stepper-state"
+import { useRegisterTourRunner } from "./tour/tour-context"
 
 interface DlsPlaygroundProps {
   simulation: DlsSimulation
@@ -88,6 +90,32 @@ export function DlsPlayground({
     onStateChanged()
   }
 
+  // Guided tour: drive the same handlers the UI uses
+  useRegisterTourRunner("dls", {
+    runStep: (index) => {
+      const plan = planStepRun(stepper, index)
+      if (plan.kind === "noop") {
+        onStepperChange({ ...stepper, index })
+      } else if (plan.kind === "run") {
+        onLogGenerated(simulation.executeStep(activeScenario, index))
+        onStepperChange(markExecuted({ ...stepper, index }))
+        onStateChanged()
+      } else {
+        simulation.reset()
+        const logs: SdkCallLog[] = []
+        for (let i = 0; i <= plan.upTo; i++) logs.push(simulation.executeStep(activeScenario, i))
+        onLogGenerated(logs)
+        onStepperChange({ ...stepper, index, executed: Array.from({ length: index + 1 }, (_, i) => i) })
+        onStateChanged()
+      }
+    },
+    setOption: (value) => {
+      if (value !== activeScenario && (value === "deadlock" || value === "exclusive" || value === "shared_read")) {
+        handleSelectScenario(value)
+      }
+    },
+  })
+
   const getWorkerStatusBadge = (status: WorkerState["status"]) => {
     switch (status) {
       case "IDLE":
@@ -131,7 +159,7 @@ export function DlsPlayground({
       <Card className="bg-card/60 border-border">
         <CardHeader className="pb-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
+            <div data-tour="dls-overview" className="min-w-0">
               <CardTitle className="text-base font-bold flex items-center gap-2">
                 <Lock className="h-4 w-4 text-primary" />
                 Distributed Locking System (DLS)
@@ -155,7 +183,7 @@ export function DlsPlayground({
 
         <CardContent className="space-y-4">
           {/* Scenario Tabs (No text overlap: clean cards with wrapping) */}
-          <div className="space-y-2">
+          <div data-tour="dls-scenarios" className="space-y-2">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
               Escenarios de Concurrencia
             </span>
@@ -217,9 +245,9 @@ export function DlsPlayground({
           </div>
 
           {/* Stepper Walkthrough (Similar a Google UCP Playground) */}
-          <div className="p-4 rounded-xl bg-muted/40 border border-border/80 space-y-3">
+          <div className="min-w-0 p-4 rounded-xl bg-muted/40 border border-border/80 space-y-3">
             {/* Stepper Pill Bar */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+            <div className="flex max-w-full items-center gap-1.5 overflow-x-auto pb-1">
               {steps.map((st, i) => {
                 const isExecuted = executedSteps.includes(i)
                 const isCurrent = i === currentStepIndex
@@ -248,9 +276,9 @@ export function DlsPlayground({
             </div>
 
             {/* Current Step Description Card */}
-            <div className="p-3.5 rounded-lg bg-muted/50 border border-border space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-xs text-foreground font-mono">
+            <div data-tour="dls-step-card" className="p-3.5 rounded-lg bg-muted/50 border border-border space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-semibold text-xs text-foreground font-mono min-w-0 break-words">
                   {currentStep.title}
                 </span>
                 <Badge variant="outline" className="text-[10px] font-mono">
@@ -311,7 +339,7 @@ export function DlsPlayground({
           </div>
 
           {/* Visual Shared Resources */}
-          <div className="space-y-2">
+          <div data-tour="dls-resources" className="space-y-2">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
               Recursos Críticos Compartidos
             </span>
@@ -330,14 +358,14 @@ export function DlsPlayground({
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex min-w-0 items-center gap-2">
                         {res.type === "FILE" ? (
                           <FileText className="h-4 w-4 text-primary" />
                         ) : (
                           <Network className="h-4 w-4 text-purple-700 dark:text-purple-400" />
                         )}
                         <div>
-                          <div className="font-mono font-bold text-xs text-foreground">{res.name}</div>
+                          <div className="font-mono font-bold text-xs text-foreground break-all">{res.name}</div>
                           <div className="text-[10px] text-muted-foreground">ID: {res.id}</div>
                         </div>
                       </div>
@@ -381,19 +409,19 @@ export function DlsPlayground({
           </div>
 
           {/* Visual Workers (Solo Alfa y Beta) */}
-          <div className="space-y-2">
+          <div data-tour="dls-workers" className="space-y-2">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
               Workers / Microservicios Distribuidos
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {workers.map((w) => (
                 <div key={w.id} className="p-3 rounded-lg border bg-muted/50 border-border space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-1">
                     <span className="font-semibold text-xs text-foreground">{w.name}</span>
                     {getWorkerStatusBadge(w.status)}
                   </div>
 
-                  <div className="text-[11px] space-y-1 font-mono text-muted-foreground">
+                  <div className="text-[11px] space-y-1 font-mono text-muted-foreground break-words">
                     <div>
                       Locks activos:{" "}
                       <span className="text-foreground">

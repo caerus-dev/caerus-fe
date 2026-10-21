@@ -47,6 +47,22 @@ export function selectStep<T extends StepperState>(state: T, index: number): Sel
   return { state: { ...state, index, executed }, replayUpTo: index }
 }
 
+export type StepRunPlan =
+  | { kind: 'noop' }
+  | { kind: 'run' }
+  | { kind: 'replay'; upTo: number }
+
+/**
+ * How to make sure stepper step `index` has been executed (used by the guided tour):
+ * nothing if already done, run just that step when its predecessor ran, otherwise
+ * replay 0..index from a clean engine.
+ */
+export function planStepRun(state: StepperState, index: number): StepRunPlan {
+  if (state.executed.includes(index)) return { kind: 'noop' }
+  if (index === 0 || state.executed.includes(index - 1)) return { kind: 'run' }
+  return { kind: 'replay', upTo: index }
+}
+
 export function selectDlsScenario(state: DlsStepperState, scenario: DlsScenario): DlsStepperState {
   return { ...resetStepper(state), scenario }
 }

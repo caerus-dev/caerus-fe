@@ -9,6 +9,7 @@ import {
   BookOpen,
   ArrowLeft,
   RotateCcw,
+  CircleHelp,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -26,6 +27,10 @@ import {
   createDlsStepper,
   resetStepper,
 } from "@/components/playground/stepper-state"
+import { TourOverlay } from "@/components/playground/tour/tour-overlay"
+import { TourRegistryContext, type TourRegistry } from "@/components/playground/tour/tour-context"
+import { useTour } from "@/components/playground/tour/use-tour"
+import type { TourTab } from "@/components/playground/tour/tour-state"
 
 const createInitialSreLog = (): SdkCallLog => ({
   id: `init_sre_${Date.now()}`,
@@ -65,7 +70,7 @@ export interface PlaygroundViewProps {
 }
 
 const simulationNote = (
-  <p className="text-xs text-muted-foreground/80 max-w-2xl">
+  <p data-tour="playground-note" className="text-xs text-muted-foreground/80 max-w-2xl">
     Es una simulación local: no se realizan llamadas reales a la API ni al SDK. El registro muestra el código que escribirías.
   </p>
 )
@@ -137,8 +142,31 @@ export function PlaygroundView({
     setActiveTab(newTab)
   }
 
+  // Resets both simulators (used by the guided tour so the user always starts clean)
+  const handleResetAll = () => {
+    sreEngineRef.current?.reset()
+    dlsEngineRef.current?.reset()
+    setSreLogs([createInitialSreLog()])
+    setDlsLogs([createInitialDlsLog()])
+    setSreStepper(resetStepper)
+    setDlsStepper(resetStepper)
+    handleStateChanged()
+  }
+
+  // Guided tour: tabs register runners here so the tour drives the real handlers
+  const tourRegistry = useRef<TourRegistry>({})
+  const replayButtonRef = useRef<HTMLButtonElement>(null)
+  const tour = useTour({
+    activeTab: activeTab as TourTab,
+    setActiveTab: handleTabChange,
+    registry: tourRegistry,
+    resetAll: handleResetAll,
+    returnFocusRef: replayButtonRef,
+  })
+
   return (
-    <div className="space-y-6">
+    <TourRegistryContext.Provider value={tourRegistry}>
+    <div className="space-y-6 min-w-0">
       {/* Top Header Bar (solo si showTopHeader es true, ej: en Dashboard) */}
       {showTopHeader && (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border/60 pb-5">
@@ -165,7 +193,7 @@ export function PlaygroundView({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <Button asChild variant="outline" size="sm" className="text-xs gap-1.5">
               <Link href="/docs">
                 <BookOpen className="h-3.5 w-3.5" />
@@ -181,7 +209,7 @@ export function PlaygroundView({
       {/* Tabs & Split-Screen Playground */}
       <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <TabsList className="bg-muted/60 p-1">
+          <TabsList data-tour="playground-tabs" className="bg-muted/60 p-1 max-w-full max-sm:h-auto max-sm:flex-wrap max-sm:justify-start">
             <TabsTrigger value="sre" className="gap-2 text-xs sm:text-sm font-medium">
               <Ticket className="h-4 w-4 text-emerald-700 dark:text-emerald-400" />
               SRE · Butacas y recursos
@@ -192,7 +220,7 @@ export function PlaygroundView({
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -202,6 +230,19 @@ export function PlaygroundView({
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span>Reiniciar simulación</span>
+            </Button>
+
+            <Button
+              ref={replayButtonRef}
+              data-tour="playground-replay"
+              variant="outline"
+              size="sm"
+              onClick={() => tour.start(activeTab as TourTab)}
+              className="text-xs gap-1.5 h-8 bg-muted/30"
+              title="Ver el tutorial guiado"
+            >
+              <CircleHelp className="h-3.5 w-3.5" />
+              <span>Ver tutorial</span>
             </Button>
 
             {!showTopHeader && (
@@ -217,7 +258,7 @@ export function PlaygroundView({
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left Visual Simulation Panel (7 cols) */}
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-7 min-w-0 space-y-4">
             <TabsContent value="sre" className="m-0 focus-visible:outline-none">
               {sreEngineRef.current && (
                 <SrePlayground
@@ -246,7 +287,7 @@ export function PlaygroundView({
           </div>
 
           {/* Right Live SDK Inspector Panel (5 cols) */}
-          <div className="lg:col-span-5 sticky top-20">
+          <div className="lg:col-span-5 min-w-0 sticky top-20">
             <LiveInspector
               logs={activeTab === "sre" ? sreLogs : dlsLogs}
               onClear={handleClearInspector}
@@ -255,6 +296,20 @@ export function PlaygroundView({
           </div>
         </div>
       </Tabs>
+
+      {tour.active && tour.step && (
+        <TourOverlay
+          step={tour.step}
+          counter={tour.counter}
+          isFirst={tour.isFirst}
+          isLast={tour.isLast}
+          onNext={tour.next}
+          onBack={tour.back}
+          onSkip={tour.skip}
+          onTargetMissing={tour.skipMissing}
+        />
+      )}
     </div>
+    </TourRegistryContext.Provider>
   )
 }
