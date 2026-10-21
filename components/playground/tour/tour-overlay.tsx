@@ -291,7 +291,11 @@ export function TourOverlay({
         <div className="flex items-center justify-between gap-2 text-[11px] font-medium text-muted-foreground">
           <span className="flex items-center gap-1.5 uppercase tracking-wide text-primary">
             <KindIcon className="h-3.5 w-3.5" aria-hidden="true" />
-            {step.kind === "control" ? "Acción" : "Observa aquí"}
+            {step.kind === "control" ? (
+              "Acción"
+            ) : (
+              <span className="sr-only">Observa aquí</span>
+            )}
           </span>
           <span className="flex items-center gap-1">
             <span>{counter.label}</span>
