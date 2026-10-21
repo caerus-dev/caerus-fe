@@ -75,7 +75,7 @@ describe('persistence helper with broken storage', () => {
         throw new Error('x')
       },
     }
-    expect(() => hasCompletedTour(broken)).not.toThrow()
-    expect(() => markTourCompleted(broken)).not.toThrow()
+    expect(() => hasCompletedTour(broken, 'sre')).not.toThrow()
+    expect(() => markTourCompleted(broken, 'sre')).not.toThrow()
   })
 })

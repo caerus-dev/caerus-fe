@@ -46,7 +46,7 @@ function getStorage(): StorageLike | null {
 export function useTour({ activeTab, setActiveTab, registry, resetAll, returnFocusRef }: UseTourOptions) {
   const [session, setSession] = useState<TourSession>({ active: false, startTab: "sre", index: 0 })
   const directionRef = useRef<TourDirection>("forward")
-  const autoStartedRef = useRef(false)
+  const autoStartedRef = useRef<Set<TourTab>>(new Set())
 
   const steps: TourStep[] = useMemo(() => sequenceFor(TOUR_STEPS, session.startTab), [session.startTab])
   const step = session.active ? steps[session.index] : undefined
@@ -65,7 +65,7 @@ export function useTour({ activeTab, setActiveTab, registry, resetAll, returnFoc
   }, [])
 
   const finish = useCallback(() => {
-    markTourCompleted(getStorage())
+    markTourCompleted(getStorage(), latest.current.session.startTab)
     latest.current.resetAll()
     setSession((s) => ({ ...s, active: false, index: 0 }))
     requestAnimationFrame(() => returnFocusRef.current?.focus())
@@ -118,15 +118,18 @@ export function useTour({ activeTab, setActiveTab, registry, resetAll, returnFoc
     else next()
   }, [back, next])
 
-  // First run: auto-start once per mount, only on the client, after the page settled.
+  // First visit to each engine: auto-start its own tour once per mount, only on the client,
+  // after the page settled. Re-runs when the user switches tab.
   useEffect(() => {
-    if (!shouldAutoStart(getStorage(), autoStartedRef.current)) return
+    if (session.active) return
+    if (!shouldAutoStart(getStorage(), activeTab, autoStartedRef.current)) return
     const timer = window.setTimeout(() => {
-      autoStartedRef.current = true
-      start(latest.current.activeTab)
+      if (latest.current.session.active) return
+      autoStartedRef.current.add(activeTab)
+      start(activeTab)
     }, AUTO_START_DELAY_MS)
     return () => window.clearTimeout(timer)
-  }, [start])
+  }, [activeTab, session.active, start])
 
   return {
     active: session.active && !!step,

@@ -37,9 +37,9 @@ export type TourDirection = 'forward' | 'backward'
 export const filterStepsByTab = (steps: TourStep[], tab: TourTab): TourStep[] =>
   steps.filter((s) => s.tab === tab)
 
-/** SRE starts the whole tour (it hands off to DLS); DLS replays only its own part. */
+/** Each engine has its own self-contained tour: a tab never continues into the other one. */
 export const sequenceFor = (steps: TourStep[], startTab: TourTab): TourStep[] =>
-  startTab === 'sre' ? steps : filterStepsByTab(steps, startTab)
+  filterStepsByTab(steps, startTab)
 
 export const clampIndex = (index: number, total: number): number =>
   total <= 0 ? 0 : Math.min(Math.max(index, 0), total - 1)
@@ -67,35 +67,39 @@ export function stepCounter(steps: TourStep[], index: number): TourCounter {
 
 // --------------------------------------------------------------- persistence
 
-export const TOUR_STORAGE_KEY = 'caerus_playground_tour_v1'
+/** One flag per engine tab: `caerus_playground_tour_v2_sre`, `caerus_playground_tour_v2_dls`. */
+export const TOUR_STORAGE_PREFIX = 'caerus_playground_tour_v2_'
+
+export const tourStorageKey = (tab: TourTab): string => `${TOUR_STORAGE_PREFIX}${tab}`
 
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem'>
 
-export function hasCompletedTour(storage: StorageLike | null | undefined): boolean {
+export function hasCompletedTour(storage: StorageLike | null | undefined, tab: TourTab): boolean {
   if (!storage) return false
   try {
-    return storage.getItem(TOUR_STORAGE_KEY) === '1'
+    return storage.getItem(tourStorageKey(tab)) === '1'
   } catch {
     return false
   }
 }
 
 /** Returns true when the flag was persisted. */
-export function markTourCompleted(storage: StorageLike | null | undefined): boolean {
+export function markTourCompleted(storage: StorageLike | null | undefined, tab: TourTab): boolean {
   if (!storage) return false
   try {
-    storage.setItem(TOUR_STORAGE_KEY, '1')
+    storage.setItem(tourStorageKey(tab), '1')
     return true
   } catch {
     return false
   }
 }
 
-/** First visit only, and at most once per mount (also when storage is unavailable). */
+/** First visit to that engine only, and at most once per mount (also when storage is unavailable). */
 export const shouldAutoStart = (
   storage: StorageLike | null | undefined,
-  startedThisMount: boolean,
-): boolean => !startedThisMount && !hasCompletedTour(storage)
+  tab: TourTab,
+  startedThisMount: ReadonlySet<TourTab>,
+): boolean => !startedThisMount.has(tab) && !hasCompletedTour(storage, tab)
 
 // ----------------------------------------------------------------- placement
 

@@ -102,8 +102,8 @@ export const TOUR_STEPS: TourStep[] = [
     tab: 'sre',
     kind: 'control',
     target: 'playground-tabs',
-    title: 'Continuar con DLS',
-    body: 'SRE reserva recursos unitarios. Para coordinar varios recursos y evitar interbloqueos existe DLS. Pulsa Continuar para abrir esa pestaña.',
+    title: 'Siguiente: DLS',
+    body: 'Esto fue SRE, que reserva recursos unitarios. Para coordinar varios recursos y evitar interbloqueos existe DLS: abre su pestaña y la guía de ese motor empezará sola.',
   },
 
   // ------------------------------------------------------------------ DLS

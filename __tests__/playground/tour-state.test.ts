@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  TOUR_STORAGE_KEY,
+  tourStorageKey,
   filterStepsByTab,
   sequenceFor,
   clampIndex,
@@ -51,7 +51,7 @@ const throwingStorage = {
 describe('tour step navigation', () => {
   it('filters steps by tab and builds the sequence for a start tab', () => {
     expect(filterStepsByTab(steps, 'dls').map((s) => s.id)).toEqual(['c', 'd'])
-    expect(sequenceFor(steps, 'sre').map((s) => s.id)).toEqual(['a', 'b', 'c', 'd'])
+    expect(sequenceFor(steps, 'sre').map((s) => s.id)).toEqual(['a', 'b'])
     expect(sequenceFor(steps, 'dls').map((s) => s.id)).toEqual(['c', 'd'])
   })
 
@@ -80,31 +80,43 @@ describe('tour step navigation', () => {
 })
 
 describe('tour persistence', () => {
-  it('reads completion from a versioned key', () => {
-    expect(TOUR_STORAGE_KEY).toMatch(/_v\d+$/)
-    expect(hasCompletedTour(memoryStorage())).toBe(false)
-    expect(hasCompletedTour(memoryStorage({ [TOUR_STORAGE_KEY]: '1' }))).toBe(true)
+  it('uses a versioned key per engine', () => {
+    expect(tourStorageKey('sre')).toMatch(/_v\d+_sre$/)
+    expect(tourStorageKey('dls')).toMatch(/_v\d+_dls$/)
+    expect(tourStorageKey('sre')).not.toBe(tourStorageKey('dls'))
   })
 
-  it('writes completion and reports success', () => {
+  it('tracks completion independently for each engine', () => {
+    const s = memoryStorage({ [tourStorageKey('sre')]: '1' })
+    expect(hasCompletedTour(memoryStorage(), 'sre')).toBe(false)
+    expect(hasCompletedTour(s, 'sre')).toBe(true)
+    expect(hasCompletedTour(s, 'dls')).toBe(false)
+  })
+
+  it('writes completion for one engine only and reports success', () => {
     const s = memoryStorage()
-    expect(markTourCompleted(s)).toBe(true)
-    expect(s.data[TOUR_STORAGE_KEY]).toBe('1')
+    expect(markTourCompleted(s, 'dls')).toBe(true)
+    expect(s.data[tourStorageKey('dls')]).toBe('1')
+    expect(s.data[tourStorageKey('sre')]).toBeUndefined()
   })
 
   it('tolerates unavailable or throwing storage', () => {
-    expect(hasCompletedTour(throwingStorage)).toBe(false)
-    expect(hasCompletedTour(null)).toBe(false)
-    expect(markTourCompleted(throwingStorage)).toBe(false)
-    expect(markTourCompleted(null)).toBe(false)
+    expect(hasCompletedTour(throwingStorage, 'sre')).toBe(false)
+    expect(hasCompletedTour(null, 'sre')).toBe(false)
+    expect(markTourCompleted(throwingStorage, 'sre')).toBe(false)
+    expect(markTourCompleted(null, 'sre')).toBe(false)
   })
 
-  it('auto-starts at most once per mount and never after completion', () => {
-    expect(shouldAutoStart(memoryStorage(), false)).toBe(true)
-    expect(shouldAutoStart(memoryStorage(), true)).toBe(false)
-    expect(shouldAutoStart(memoryStorage({ [TOUR_STORAGE_KEY]: '1' }), false)).toBe(false)
-    expect(shouldAutoStart(throwingStorage, false)).toBe(true)
-    expect(shouldAutoStart(null, false)).toBe(true)
+  it('auto-starts each engine at most once per mount and never after completion', () => {
+    const none = new Set<'sre' | 'dls'>()
+    expect(shouldAutoStart(memoryStorage(), 'sre', none)).toBe(true)
+    expect(shouldAutoStart(memoryStorage(), 'sre', new Set(['sre']))).toBe(false)
+    expect(shouldAutoStart(memoryStorage(), 'dls', new Set(['sre']))).toBe(true)
+    const sreDone = memoryStorage({ [tourStorageKey('sre')]: '1' })
+    expect(shouldAutoStart(sreDone, 'sre', none)).toBe(false)
+    expect(shouldAutoStart(sreDone, 'dls', none)).toBe(true)
+    expect(shouldAutoStart(throwingStorage, 'dls', none)).toBe(true)
+    expect(shouldAutoStart(null, 'dls', none)).toBe(true)
   })
 })
 
