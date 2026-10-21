@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import { SreSimulation, ConflictPolicy } from "./sre-simulation"
 import { SdkCallLog, SeatStatus } from "./types"
@@ -243,25 +244,20 @@ export function SrePlayground({
             </div>
 
             {/* Selector de Política y Botón Reiniciar */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div data-tour="sre-policy" className="flex flex-wrap items-center gap-2 bg-muted/40 p-1 rounded-lg border border-border/60">
-                <span className="text-xs text-muted-foreground font-medium pl-1">Política:</span>
-                <Button
-                  variant={policy === "FAIL" ? "default" : "ghost"}
-                  size="sm"
-                  className="h-7 text-xs px-2.5"
-                  onClick={() => handlePolicyChange("FAIL")}
-                >
-                  FAIL (Fast-Reject)
-                </Button>
-                <Button
-                  variant={policy === "QUEUE" ? "default" : "ghost"}
-                  size="sm"
-                  className="h-7 text-xs px-2.5"
-                  onClick={() => handlePolicyChange("QUEUE")}
-                >
-                  QUEUE (Cola FIFO)
-                </Button>
+            <div className="flex flex-col items-start gap-2">
+              <div data-tour="sre-policy" className="flex flex-col items-start gap-1.5">
+                <span id="sre-policy-label" className="text-xs text-muted-foreground font-medium whitespace-nowrap">
+                  Política:
+                </span>
+                <Select value={policy} onValueChange={(value) => handlePolicyChange(value as ConflictPolicy)}>
+                  <SelectTrigger size="sm" aria-labelledby="sre-policy-label" className="h-8 w-[190px] text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="FAIL" className="text-xs">FAIL (Fast-Reject)</SelectItem>
+                    <SelectItem value="QUEUE" className="text-xs">QUEUE (Cola FIFO)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <Button
