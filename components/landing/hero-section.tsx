@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Zap } from "lucide-react"
 
-export function HeroSection() {
+export function HeroSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
   return (
     <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20 overflow-hidden w-full">
       {/* Background grid effect */}
@@ -36,7 +36,7 @@ export function HeroSection() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto">
           <Button asChild size="lg" className="glow-primary gap-2 text-base px-8 w-full sm:w-auto">
             <a href="/dashboard">
-              Comenzar gratis
+              {isLoggedIn ? "Ir al Dashboard" : "Comenzar gratis"}
               <ArrowRight className="h-4 w-4" />
             </a>
           </Button>

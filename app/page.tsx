@@ -14,7 +14,7 @@ export default async function HomePage() {
     <div className="min-h-screen overflow-x-hidden w-full">
       <Navbar user={session?.user} />
       <main className="w-full overflow-x-hidden">
-        <HeroSection />
+        <HeroSection isLoggedIn={!!session?.user} />
         <FeaturesSection />
         <CodeExamplesSection />
         <UseCasesSection />

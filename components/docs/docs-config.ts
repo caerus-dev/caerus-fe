@@ -106,10 +106,10 @@ export const docsConfig: DocsConfig = {
           keywords: ["grpc", "proto", "protobuf", "rpc", "sre", "dls", "createresource", "begintransaction", "acquirelock", "contratos"],
         },
         {
-          title: "Catálogo de Errores y Troubleshooting",
+          title: "Errores y Troubleshooting",
           href: "/docs/errors",
           description: "Mapeo de excepciones (ConflictError, ValidationError, ResourceNotFoundError) y códigos HTTP/gRPC.",
-          keywords: ["errores", "conflicterror", "validationerror", "idempotencia", "resourcenotfounderror", "troubleshooting", "fallas"],
+          keywords: ["errores", "catalogo", "conflicterror", "validationerror", "idempotencia", "resourcenotfounderror", "troubleshooting", "fallas"],
         },
       ],
     },

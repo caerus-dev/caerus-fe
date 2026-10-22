@@ -134,26 +134,18 @@ try {
 
 const client = new Dls.DlsClient({ apiKey: process.env.CAERUS_API_KEY! })
 
-// 1. Inicia una transacción con timeout
-const tx = await client.beginTransaction({ timeoutMs: 5000 })
+// 1. withTransaction orquesta transacción, heartbeat y liberación automática
+await client.withTransaction(async (tx) => {
+  // 2. Adquiere lock exclusivo con Fencing Token
+  const lock = await tx.acquireLock(
+    'order-processing', // Namespace del template configurado
+    'payment_user_123',  // Key dinámica
+    'EXCLUSIVE'
+  )
 
-// 2. Adquiere lock exclusivo con Fencing Token
-const lock = await client.acquireLock(
-  'order-processing', // Namespace del template configurado
-  'payment_user_123',  // Key dinámica
-  tx.transactionId,
-  'EXCLUSIVE'
-)
-
-if (lock.status === 'ACQUIRED') {
-  try {
-    // 3. Sección crítica protegida contra split-brain
-    await processPayment(userId, lock.fencingToken)
-  } finally {
-    // 4. Libera los locks asociados a la transacción
-    await client.releaseTransactionLocks(tx.transactionId)
-  }
-}`,
+  // 3. Sección crítica protegida contra split-brain y zombis
+  await processPayment(userId, lock.fencingToken)
+})`,
     render: () => (
       <code>
         <span className="text-chart-2">import</span>{" "}
@@ -174,78 +166,50 @@ if (lock.status === 'ACQUIRED') {
         <span className="text-foreground">{"! })"}</span>
         <br />
         <br />
-        <span className="text-muted-foreground">{"// 1. Inicia una transacción con timeout"}</span>
+        <span className="text-muted-foreground">{"// 1. withTransaction orquesta transacción, heartbeat y liberación automática"}</span>
         <br />
-        <span className="text-chart-2">const</span>{" "}
-        <span className="text-foreground">tx</span>{" "}
-        <span className="text-chart-2">=</span>{" "}
         <span className="text-chart-2">await</span>{" "}
         <span className="text-foreground">client.</span>
-        <span className="text-primary">beginTransaction</span>
-        <span className="text-foreground">{"({ timeoutMs: "}</span>
-        <span className="text-amber-500">5000</span>
-        <span className="text-foreground">{" })"}</span>
+        <span className="text-primary">withTransaction</span>
+        <span className="text-foreground">(</span>
+        <span className="text-chart-2">async</span>{" "}
+        <span className="text-foreground">(tx) {"=> {"}</span>
         <br />
+        <span className="text-muted-foreground">{"  // 2. Adquiere lock exclusivo con Fencing Token"}</span>
         <br />
-        <span className="text-muted-foreground">{"// 2. Adquiere lock exclusivo con Fencing Token"}</span>
-        <br />
+        <span className="text-foreground">{"  "}</span>
         <span className="text-chart-2">const</span>{" "}
         <span className="text-foreground">lock</span>{" "}
         <span className="text-chart-2">=</span>{" "}
         <span className="text-chart-2">await</span>{" "}
-        <span className="text-foreground">client.</span>
+        <span className="text-foreground">tx.</span>
         <span className="text-primary">acquireLock</span>
         <span className="text-foreground">(</span>
         <br />
-        <span className="text-foreground">{"  "}</span>
+        <span className="text-foreground">{"    "}</span>
         <span className="text-chart-3">{"'order-processing'"}</span>
         <span className="text-foreground">, </span>
         <span className="text-muted-foreground">{"// Namespace del template configurado"}</span>
         <br />
-        <span className="text-foreground">{"  "}</span>
+        <span className="text-foreground">{"    "}</span>
         <span className="text-chart-3">{"'payment_user_123'"}</span>
         <span className="text-foreground">,  </span>
         <span className="text-muted-foreground">{"// Key dinámica"}</span>
         <br />
-        <span className="text-foreground">{"  tx.transactionId,"}</span>
-        <br />
-        <span className="text-foreground">{"  "}</span>
+        <span className="text-foreground">{"    "}</span>
         <span className="text-chart-3">{"'EXCLUSIVE'"}</span>
         <br />
-        <span className="text-foreground">{")"}</span>
+        <span className="text-foreground">{"  )"}</span>
         <br />
         <br />
-        <span className="text-chart-2">if</span>{" "}
-        <span className="text-foreground">(lock.status === </span>
-        <span className="text-chart-3">{"'ACQUIRED'"}</span>
-        <span className="text-foreground">) {"{"}</span>
+        <span className="text-muted-foreground">{"  // 3. Sección crítica protegida contra split-brain y zombis"}</span>
         <br />
         <span className="text-foreground">{"  "}</span>
-        <span className="text-chart-2">try</span>{" "}
-        <span className="text-foreground">{"{"}</span>
-        <br />
-        <span className="text-muted-foreground">{"    // 3. Sección crítica protegida contra split-brain"}</span>
-        <br />
-        <span className="text-foreground">{"    "}</span>
         <span className="text-chart-2">await</span>{" "}
         <span className="text-primary">processPayment</span>
         <span className="text-foreground">(userId, lock.fencingToken)</span>
         <br />
-        <span className="text-foreground">{"  } "}</span>
-        <span className="text-chart-2">finally</span>{" "}
-        <span className="text-foreground">{"{"}</span>
-        <br />
-        <span className="text-muted-foreground">{"    // 4. Libera los locks asociados a la transacción"}</span>
-        <br />
-        <span className="text-foreground">{"    "}</span>
-        <span className="text-chart-2">await</span>{" "}
-        <span className="text-foreground">client.</span>
-        <span className="text-primary">releaseTransactionLocks</span>
-        <span className="text-foreground">(tx.transactionId)</span>
-        <br />
-        <span className="text-foreground">{"  }"}</span>
-        <br />
-        <span className="text-foreground">{"}"}</span>
+        <span className="text-foreground">{"})"}</span>
       </code>
     ),
   },

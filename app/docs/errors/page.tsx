@@ -18,7 +18,7 @@ export default function DocsErrorsPage() {
     <DocsPageLayout
       breadcrumbs={[
         { label: "Referencia", href: "/docs/errors" },
-        { label: "Catálogo de Errores" },
+        { label: "Errores y Troubleshooting" },
       ]}
       title="Errores y Troubleshooting"
       badge="Reference Guide"

@@ -196,6 +196,16 @@ export default function DocsProtoPage() {
             <p className="text-xs text-muted-foreground leading-relaxed">
               Elimina el recurso del inventario activo. Si tiene reservas pendientes (<code>PENDING</code>), estas se invalidan o expiran según la configuración del template.
             </p>
+
+            <CodeBlock
+              language="protobuf"
+              title="sre_service.proto"
+              wrap={true}
+              code={`message DeleteResourceRequest {
+  // Clave única del recurso a eliminar
+  string key = 1;
+}`}
+            />
           </div>
         </div>
 
@@ -282,6 +292,16 @@ message TakeOptionalSettings {
             <p className="text-xs text-muted-foreground leading-relaxed">
               Libera anticipadamente el recurso cuando el usuario desiste de la compra o el pago falla, reintegrando las unidades al inventario inmediatamente sin necesidad de esperar a que expire el TTL.
             </p>
+
+            <CodeBlock
+              language="protobuf"
+              title="sre_service.proto"
+              wrap={true}
+              code={`message ReleaseRequest {
+  // ID del holder emitido por Take a liberar
+  string resource_holder_id = 1;
+}`}
+            />
           </div>
 
           {/* Extend */}
@@ -295,6 +315,18 @@ message TakeOptionalSettings {
             <p className="text-xs text-muted-foreground leading-relaxed">
               Otorga tiempo adicional (<code>extra_ms</code>) a una reserva en curso en caso de que el cliente requiera más tiempo para completar un formulario o verificación biométrica.
             </p>
+
+            <CodeBlock
+              language="protobuf"
+              title="sre_service.proto"
+              wrap={true}
+              code={`message ExtendRequest {
+  // ID del holder cuya vigencia se desea extender
+  string resource_holder_id = 1;
+  // Milisegundos adicionales a sumar al vencimiento actual
+  int32 extra_ms = 2;
+}`}
+            />
           </div>
         </div>
 
@@ -344,6 +376,93 @@ message TakeOptionalSettings {
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Listado paginado de holders históricos y activos, filtrables por clave de recurso, estado y orden cronológico.
               </p>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-2">
+            <div className="rounded-xl border border-border/60 bg-muted/15 p-5 space-y-3">
+              <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground">
+                Mensajes de Consulta y Filtros SRE
+              </h4>
+              <CodeBlock
+                language="protobuf"
+                title="sre_service.proto"
+                wrap={true}
+                code={`message GetResourceRequest {
+  string key = 1;
+}
+
+message GetResourcesByGroupKeyRequest {
+  string group_key = 1;
+  int32 page = 2;
+  optional int32 page_size = 3;
+}
+
+message GetResourceHolderRequest {
+  string resource_holder_id = 1;
+}
+
+message GetResourceHoldersListRequest {
+  optional string resource_key = 1;
+  int32 page = 2;
+  optional int32 page_size = 3;
+  enum SortDirection {
+    DESCENDING = 0;
+    ASCENDING = 1;
+  }
+  optional SortDirection created_at_sort_direction = 4;
+  optional ResourceHolderResponse.ResourceHolderStatus status_filter = 5;
+}`}
+              />
+            </div>
+
+            <div className="rounded-xl border border-border/60 bg-muted/15 p-5 space-y-3">
+              <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground">
+                Modelos de Entidad y Respuestas SRE
+              </h4>
+              <CodeBlock
+                language="protobuf"
+                title="sre_service.proto"
+                wrap={true}
+                code={`message ResourceResponse {
+  string resource_id = 1;
+  string key = 2;
+  string template_id = 3;
+  int32 available_amount = 4;
+  int32 pending_count = 5;
+  optional string group_key = 6;
+  optional string metadata = 7;
+  int64 created_at_ms = 8;
+  int64 updated_at_ms = 9;
+}
+
+message ResourceHolderResponse {
+  enum ResourceHolderStatus {
+    PENDING = 0;
+    CONFIRMED = 1;
+    RELEASED = 2;
+    QUEUED = 3;
+    EXPIRED = 4;
+  }
+  string holder_id = 1;
+  string resource_id = 2;
+  ResourceHolderStatus status = 3;
+  int32 amount = 4;
+  int64 expires_at = 5;
+  optional string metadata = 6;
+  int64 created_at_ms = 7;
+}
+
+message GetResourcesByGroupKeyResponse {
+  repeated ResourceResponse resources = 1;
+  bool next_page = 2;
+}
+
+message GetResourceHoldersListResponse {
+  repeated ResourceHolderResponse resource_holders = 1;
+  bool next_page = 2;
+}`}
+              />
             </div>
           </div>
         </div>
@@ -410,6 +529,24 @@ message BeginTransactionResponse {
             <p className="text-xs text-muted-foreground leading-relaxed">
               Extiende el tiempo límite de vida (<code>extra_ms</code>) de una transacción en ejecución si el proceso que la opera detecta que la sección crítica requiere más tiempo de procesamiento.
             </p>
+
+            <CodeBlock
+              language="protobuf"
+              title="dls_service.proto"
+              wrap={true}
+              code={`message RenewTransactionRequest {
+  // ID único de la transacción a renovar
+  string transaction_id = 1;
+  // Milisegundos adicionales a sumar a su tiempo de vida máximo
+  int64 extra_ms = 2;
+}
+
+message RenewTransactionResponse {
+  string transaction_id = 1;
+  // Nueva marca de tiempo absoluta de expiración (ms de época)
+  int64 new_expires_at = 2;
+}`}
+            />
           </div>
 
           {/* ReleaseTransactionLocks */}
@@ -423,6 +560,16 @@ message BeginTransactionResponse {
             <p className="text-xs text-muted-foreground leading-relaxed">
               Libera atómicamente todos los locks asociados a una transacción. Permite en una sola llamada de red desbloquear múltiples recursos tomados durante el flujo de trabajo.
             </p>
+
+            <CodeBlock
+              language="protobuf"
+              title="dls_service.proto"
+              wrap={true}
+              code={`message ReleaseTransactionLocksRequest {
+  // ID de la transacción cuyos locks se liberarán atómicamente
+  string transaction_id = 1;
+}`}
+            />
           </div>
         </div>
 
@@ -460,6 +607,16 @@ message BeginTransactionResponse {
   EXCLUSIVE = 1;
   // Bloqueo compartido de lectura (múltiples lectores)
   SHARED_READ = 2;
+}
+
+enum LockStatus {
+  LOCK_STATUS_UNSPECIFIED = 0;
+  // Lock otorgado exitosamente
+  ACQUIRED = 1;
+  // Solicitud denegada (ej. recurso ocupado bajo política FAIL)
+  DENIED = 2;
+  // Solicitud en cola de espera (política QUEUE)
+  QUEUED = 3;
 }
 
 message AcquireLockRequest {
@@ -500,6 +657,18 @@ message AcquireLockResponse {
             <p className="text-xs text-muted-foreground leading-relaxed">
               Libera un lock individual identificado por su <code>lock_id</code> y vinculado a su <code>transaction_id</code>, permitiendo a los procesos en espera encolados adquirir el recurso de inmediato.
             </p>
+
+            <CodeBlock
+              language="protobuf"
+              title="dls_service.proto"
+              wrap={true}
+              code={`message ReleaseLockRequest {
+  // ID único del lock a liberar
+  string lock_id = 1;
+  // Transacción propietaria devuelta por BeginTransaction
+  string transaction_id = 2;
+}`}
+            />
           </div>
         </div>
 
@@ -529,6 +698,67 @@ message AcquireLockResponse {
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Informa el estado de la transacción (<code>ACTIVE</code>, <code>ABORTED</code>, etc.), causa de aborto si ocurrió y todos los locks retenidos o en espera.
               </p>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-2">
+            <div className="rounded-xl border border-border/60 bg-muted/15 p-5 space-y-3">
+              <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground">
+                Inspección de Bloqueos DLS
+              </h4>
+              <CodeBlock
+                language="protobuf"
+                title="dls_service.proto"
+                wrap={true}
+                code={`message GetLockStatusRequest {
+  string namespace = 1;
+  string lock_key = 2;
+}
+
+message GetLockStatusResponse {
+  bool is_held = 1;
+  LockMode current_mode = 2;
+  repeated LockHolderInfo active_holders = 3;
+  int32 pending_queue_size = 4;
+}
+
+message LockHolderInfo {
+  string lock_id = 1;
+  int64 expires_at = 2;
+  int64 fencing_token = 3;
+}`}
+              />
+            </div>
+
+            <div className="rounded-xl border border-border/60 bg-muted/15 p-5 space-y-3">
+              <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground">
+                Diagnóstico de Transacciones DLS
+              </h4>
+              <CodeBlock
+                language="protobuf"
+                title="dls_service.proto"
+                wrap={true}
+                code={`message GetTransactionStatusRequest {
+  string transaction_id = 1;
+}
+
+message GetTransactionStatusResponse {
+  // Estado actual (ej: ACTIVE, ABORT_REQUESTED, ABORTED)
+  string status = 1;
+  // Si fue abortada (ej: ciclo de deadlock detectado), describe el motivo
+  string abort_reason = 2;
+  repeated TransactionLockInfo locks = 3;
+  // Tiempo de vida absoluto en milisegundos de época
+  int64 expires_at = 4;
+}
+
+message TransactionLockInfo {
+  string namespace = 1;
+  string lock_key = 2;
+  LockMode requested_mode = 3;
+  LockStatus status = 4;
+}`}
+              />
             </div>
           </div>
         </div>
