@@ -44,7 +44,7 @@ export default function DocsDashboardPage() {
         { label: "Consola Web & Dashboard" },
       ]}
       title="Guía de la Consola Web y Configuración"
-      badge="Guía UI"
+      badge="Consola Web"
       description="Aprende a navegar el panel de control de Caerus: cómo crear aplicaciones, configurar entornos aislados, definir plantillas de concurrencia y qué impacto tiene cada opción en tus flujos de producción."
       tocItems={tocItems}
     >

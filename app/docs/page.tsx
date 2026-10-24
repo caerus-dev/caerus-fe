@@ -20,7 +20,7 @@ export default function DocsOverviewPage() {
     <DocsPageLayout
       breadcrumbs={[{ label: "Comenzando" }, { label: "Visión General" }]}
       title="Visión General de la Plataforma"
-      badge="Core Platform"
+      badge="Plataforma Core"
       description="Caerus es una plataforma Backend-as-a-Service (BaaS) diseñada para resolver la concurrencia distribuida, reservas de recursos limitados y sincronización de procesos críticos sin complejidad operativa."
       tocItems={tocItems}
     >

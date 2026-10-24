@@ -15,7 +15,7 @@ export default function DocsPlaygroundPage() {
         { label: "Playground en Vivo" },
       ]}
       title="Playground en Vivo"
-      badge="Live Simulator"
+      badge="Simulador en Vivo"
       description="Experimenta con la gestión de concurrencia distribuida (SRE) y locking atómico (DLS). Ejecuta escenarios guiados y observa el código TypeScript del SDK que escribirías, el comportamiento ante conflictos o encolamientos y las expiraciones automáticas por TTL. Es una simulación: no realiza llamadas reales."
       hideToc={true}
     >

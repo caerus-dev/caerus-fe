@@ -13,6 +13,7 @@ const tocItems = [
   { id: "opciones", title: "Tabla de Opciones" },
   { id: "sre", title: "Uso con SRE (Inventario)" },
   { id: "dls", title: "Uso con DLS (Locks Distribuidos)" },
+  { id: "webhooks", title: "Verificación de Webhooks" },
   { id: "testing", title: "Mocks y Testing" },
   { id: "repositorios", title: "Repositorios Oficiales" },
   { id: "siguiente-paso", title: "Siguientes Pasos" },
@@ -407,6 +408,155 @@ err := locks.WithTransaction(ctx, func(ctx context.Context, tx dls.Tx) error {
 	// Ejecutar tarea crítica...
 	return nil
 }, &dls.TransactionOptions{Timeout: 15 * time.Second})`,
+            },
+          }}
+        />
+      </section>
+
+      {/* Webhooks */}
+      <section id="webhooks" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Verificación de Webhooks
+        </h2>
+        <p className="text-muted-foreground leading-relaxed">
+          Validación criptográfica de eventos entrantes con la cabecera <code className="text-primary font-mono text-xs">Caerus-Signature</code>. Requiere el cuerpo de la petición en crudo para comprobar la firma:
+        </p>
+
+        <CodeBlock
+          snippets={{
+            typescript: {
+              language: "typescript",
+              title: "webhook-handler.ts",
+              label: "TypeScript",
+              code: `import express from 'express';
+import { CaerusClient, CaerusSignatureError, CaerusWebhookExpiredError } from '@caerus-dev/sdk';
+
+const caerus = new CaerusClient({ apiKey: process.env.CAERUS_API_KEY! });
+const app = express();
+
+// Requiere el cuerpo en crudo (Buffer) sin procesar por express.json()
+app.post('/api/webhooks/caerus', express.raw({ type: 'application/json' }), (req, res) => {
+  const signature = req.headers['caerus-signature'] as string;
+  const webhookSecret = process.env.CAERUS_WEBHOOK_SECRET!;
+
+  try {
+    const event = caerus.webhooks.constructEvent(
+      req.body, // Buffer en crudo
+      signature,
+      webhookSecret
+    );
+
+    console.log(\`Evento recibido: \${event.eventType} (ID: \${event.eventId})\`);
+    res.status(200).json({ received: true });
+  } catch (err) {
+    if (err instanceof CaerusSignatureError) {
+      return res.status(400).send(\`Firma inválida: \${err.message}\`);
+    }
+    if (err instanceof CaerusWebhookExpiredError) {
+      return res.status(400).send('Firma fuera de la tolerancia de tiempo');
+    }
+    return res.status(500).send('Error interno');
+  }
+});`,
+            },
+            java: {
+              language: "java",
+              title: "CaerusWebhookController.java",
+              label: "Java",
+              code: `package com.example.webhooks;
+
+import dev.caerus.sdk.sre.CaerusClient;
+import dev.caerus.sdk.sre.CaerusClientOptions;
+import dev.caerus.sdk.webhooks.CaerusEvent;
+import dev.caerus.sdk.webhooks.CaerusSignatureError;
+import dev.caerus.sdk.webhooks.CaerusWebhookExpiredError;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/webhooks")
+public class CaerusWebhookController {
+
+    private final CaerusClient caerus = new CaerusClient(
+        CaerusClientOptions.builder().apiKey(System.getenv("CAERUS_API_KEY")).build()
+    );
+
+    // Requiere los bytes del cuerpo en crudo antes de cualquier serialización
+    @PostMapping("/caerus")
+    public ResponseEntity<String> handleWebhook(
+            @RequestBody byte[] rawPayload,
+            @RequestHeader("Caerus-Signature") String signatureHeader) {
+
+        String secret = System.getenv("CAERUS_WEBHOOK_SECRET");
+
+        try {
+            CaerusEvent event = caerus.webhooks().constructEvent(
+                rawPayload,
+                signatureHeader,
+                secret
+            );
+
+            System.out.printf("Evento verificado: %s (ID: %s)%n", event.eventType(), event.eventId());
+            return ResponseEntity.ok("{\\"received\\": true}");
+        } catch (CaerusSignatureError e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Firma inválida: " + e.getMessage());
+        } catch (CaerusWebhookExpiredError e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Firma fuera de la tolerancia de tiempo");
+        }
+    }
+}`,
+            },
+            go: {
+              language: "go",
+              title: "webhook_handler.go",
+              label: "Go",
+              code: `package main
+
+import (
+	"errors"
+	"io"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/caerus-dev/caerus-sdk-go/webhooks"
+)
+
+func caerusWebhookHandler(w http.ResponseWriter, r *http.Request) {
+	// 1. Leer el cuerpo de la petición en crudo
+	payload, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Error al leer payload", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	signature := r.Header.Get("Caerus-Signature")
+	secret := os.Getenv("CAERUS_WEBHOOK_SECRET")
+
+	// 2. Validar firma criptográfica y construir evento tipado
+	event, err := webhooks.ConstructEvent(payload, signature, secret, nil)
+	if err != nil {
+		var sigErr *webhooks.SignatureError
+		var expErr *webhooks.ExpiredError
+
+		if errors.As(err, &sigErr) {
+			http.Error(w, "Firma inválida", http.StatusUnauthorized)
+			return
+		}
+		if errors.As(err, &expErr) {
+			http.Error(w, "Firma fuera de la tolerancia de tiempo", http.StatusBadRequest)
+			return
+		}
+		http.Error(w, "Payload corrupto", http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("Evento recibido: %s (ID: %s)", event.EventType, event.EventID)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(\`{"received": true}\`))
+}`,
             },
           }}
         />

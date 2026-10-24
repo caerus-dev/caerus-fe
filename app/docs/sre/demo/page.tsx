@@ -20,7 +20,7 @@ export default function DocsSreDemoPage() {
         { label: "Quickstart & Sample (Cine)" },
       ]}
       title="Quickstart & Sample: Caerus Cine"
-      badge="Sample Project"
+      badge="Proyecto de Referencia"
       description="Aplicación de referencia completa construida con @caerus-dev/sdk. Demuestra reserva concurrente de butacas de cine, expiración automática por TTL y cómo las políticas FAIL vs QUEUE transforman la experiencia sin cambiar código."
       tocItems={tocItems}
     >

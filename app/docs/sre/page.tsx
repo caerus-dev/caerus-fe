@@ -21,7 +21,7 @@ export default function DocsSrePage() {
         { label: "Conceptos Fundamentales" },
       ]}
       title="Shared Resource Engine (SRE)"
-      badge="Business Engine"
+      badge="Motor SRE"
       description="El motor transaccional para reservas temporales de recursos limitados. Diseñado para cines, venta de tickets, reservas de turnos y stock de e-commerce."
       tocItems={tocItems}
     >

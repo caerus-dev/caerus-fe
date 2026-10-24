@@ -23,7 +23,7 @@ export default function DocsDlsPage() {
         { label: "Conceptos Fundamentales" },
       ]}
       title="Distributed Locking Service (DLS)"
-      badge="System Engine"
+      badge="Motor DLS"
       description="Sincronización a bajo nivel y exclusión mutua distribuida para microservicios. Evita condiciones de carrera, doble facturación y escritura concurrente en almacenamiento compartido."
       tocItems={tocItems}
     >

@@ -21,7 +21,7 @@ export default function DocsDlsDemoPage() {
         { label: "Quickstart & Sample (Locks)" },
       ]}
       title="Quickstart & Sample: Microservicios DLS"
-      badge="Sample Project"
+      badge="Proyecto de Referencia"
       description="Proyecto de microservicios de referencia construido con @caerus-dev/sdk. Demuestra exclusión mutua distribuida, Fencing Tokens monotónicos, adquisición streaming y resolución de deadlocks en tiempo real."
       tocItems={tocItems}
     >

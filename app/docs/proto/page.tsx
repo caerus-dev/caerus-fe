@@ -28,7 +28,7 @@ export default function DocsProtoPage() {
         { label: "Contratos gRPC & Protobuf" },
       ]}
       title="Especificación de Servicios gRPC (Protobuf)"
-      badge="Core Protocol"
+      badge="Contratos gRPC"
       description="Referencia exhaustiva y agnóstica al lenguaje de programación de los contratos Protocol Buffers (proto3) que definen la API de transporte de alto rendimiento de Caerus."
       tocItems={tocItems}
     >

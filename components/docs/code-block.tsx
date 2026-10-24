@@ -297,7 +297,7 @@ interface SignatureBlockProps {
   badge?: string
 }
 
-export function SignatureBlock({ signature, signatures, badge = "Signature" }: SignatureBlockProps) {
+export function SignatureBlock({ signature, signatures, badge = "Firma del Método" }: SignatureBlockProps) {
   const { language, setLanguage } = useDocsLanguage()
   const [copied, setCopied] = useState(false)
 

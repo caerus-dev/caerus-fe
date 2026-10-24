@@ -21,7 +21,7 @@ export default function DocsErrorsPage() {
         { label: "Errores y Troubleshooting" },
       ]}
       title="Errores y Troubleshooting"
-      badge="Reference Guide"
+      badge="Guía de Referencia"
       description="Guía exhaustiva de clases de error tipadas en @caerus-dev/sdk, códigos de estado gRPC/HTTP asociados y estrategias recomendadas de mitigación."
       tocItems={tocItems}
     >
