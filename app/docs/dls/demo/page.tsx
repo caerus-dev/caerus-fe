@@ -8,6 +8,7 @@ import { docsConfig } from "@/components/docs/docs-config"
 
 const tocItems = [
   { id: "concepto-sample", title: "Idea Central del Sample" },
+  { id: "demo-en-vivo", title: "Probala en Vivo" },
   { id: "escenarios", title: "Los 4 Escenarios de Concurrencia" },
   { id: "grafo-deadlock", title: "Grafo de Espera y Selección de Víctima" },
   { id: "repositorio-github", title: "Repositorio Oficial en GitHub" },
@@ -36,6 +37,28 @@ export default function DocsDlsDemoPage() {
         <p className="text-muted-foreground leading-relaxed">
           Cada evento refleja respuestas del motor de Caerus mediante Server-Sent Events (SSE) y grafica el estado de cada worker: <code>IDLE</code>, <code>STARTING_TX</code>, <code>HOLDING</code>, <code>QUEUED</code> o <code>DEADLOCK_ABORTED</code>.
         </p>
+      </section>
+
+      <section id="demo-en-vivo" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Probala en Vivo
+        </h2>
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            La demo está desplegada contra el motor real de Caerus. Elegí un escenario y mirá en vivo cómo los workers obtienen sus locks, hacen cola, reciben fencing tokens y cómo el motor rompe un deadlock.
+          </p>
+          <Button asChild size="sm" className="gap-2 shrink-0">
+            <a
+              href={docsConfig.demoDlsLiveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Cpu className="h-4 w-4" />
+              <span>Abrir Caerus DLS</span>
+              <ExternalLink className="h-3 w-3 opacity-70" />
+            </a>
+          </Button>
+        </div>
       </section>
 
       {/* Los 4 Escenarios */}

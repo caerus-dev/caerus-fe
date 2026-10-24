@@ -8,6 +8,7 @@ import { docsConfig } from "@/components/docs/docs-config"
 
 const tocItems = [
   { id: "concepto-sample", title: "Idea Central del Sample" },
+  { id: "demo-en-vivo", title: "Probala en Vivo" },
   { id: "comparativa", title: "FAIL vs QUEUE en Cartelera" },
   { id: "repositorio-github", title: "Repositorio Oficial en GitHub" },
 ]
@@ -35,6 +36,28 @@ export default function DocsSreDemoPage() {
         <p className="text-muted-foreground leading-relaxed">
           Este proyecto de referencia corre contra el motor de Caerus a través del paquete oficial <code>@caerus-dev/sdk</code> y ejercita <strong>los trece verbos</strong> de su API pública (recursos unitarios, saldo con cupo para el candy bar, confirmaciones definitivas y cancelaciones).
         </p>
+      </section>
+
+      <section id="demo-en-vivo" className="space-y-4">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
+          Probala en Vivo
+        </h2>
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            La demo está desplegada contra el motor real de Caerus. Abrila en dos pestañas y pedí la misma butaca en las dos para ver el conflicto en <strong>El Último Horizonte</strong> y la fila de espera en <strong>Lluvia de Neón</strong>.
+          </p>
+          <Button asChild size="sm" className="gap-2 shrink-0">
+            <a
+              href={docsConfig.demoSreLiveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Film className="h-4 w-4" />
+              <span>Abrir Caerus Cine</span>
+              <ExternalLink className="h-3 w-3 opacity-70" />
+            </a>
+          </Button>
+        </div>
       </section>
 
       {/* Comparativa */}
