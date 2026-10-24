@@ -292,7 +292,7 @@ export function CodeExamplesSection() {
         <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-8 text-xs sm:text-sm text-muted-foreground">
           <span>Integraciones y SDKs:</span>
           <div className="flex flex-wrap justify-center gap-2">
-            {["TypeScript / Node.js", "gRPC"].map((sdk) => (
+            {["TypeScript / Node.js", "Java 17+", "Go 1.26+", "gRPC"].map((sdk) => (
               <span
                 key={sdk}
                 className="px-3 py-1 rounded-full bg-secondary border border-border text-foreground text-xs sm:text-sm"

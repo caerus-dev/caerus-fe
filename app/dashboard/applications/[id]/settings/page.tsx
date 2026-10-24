@@ -46,6 +46,7 @@ export default function ApplicationSettingsPage({
   const [isSaving, setIsSaving] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteAppError, setDeleteAppError] = useState<{ message: string, details?: string[] } | null>(null)
+  const [myRole, setMyRole] = useState<string>("VIEWER")
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -86,6 +87,7 @@ export default function ApplicationSettingsPage({
             name: appData.name,
             description: appData.description || "",
           })
+          setMyRole(appData.myRole || "VIEWER")
         } else {
           console.error("Failed to load application details")
         }
@@ -470,37 +472,39 @@ export default function ApplicationSettingsPage({
       </div>
 
         {/* Danger Zone */}
-        <Card className="border-destructive/50">
-          <CardHeader>
-            <CardTitle className="text-destructive flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" />
-              Zona de peligro
-            </CardTitle>
-            <CardDescription>
-              Acciones irreversibles para tu aplicación
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between p-4 rounded-lg border border-destructive/30 bg-destructive/5">
-              <div>
-                <p className="font-medium text-foreground">
-                  Eliminar aplicación
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Elimina permanentemente esta aplicación y todos sus datos
-                </p>
+        {myRole === "OWNER" && (
+          <Card className="border-destructive/50">
+            <CardHeader>
+              <CardTitle className="text-destructive flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5" />
+                Zona de peligro
+              </CardTitle>
+              <CardDescription>
+                Acciones irreversibles para tu aplicación
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between p-4 rounded-lg border border-destructive/30 bg-destructive/5">
+                <div>
+                  <p className="font-medium text-foreground">
+                    Eliminar aplicación
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Elimina permanentemente esta aplicación y todos sus datos
+                  </p>
+                </div>
+                <Button
+                  variant="destructive"
+                  onClick={() => setDeleteDialogOpen(true)}
+                  disabled={isSaving}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Eliminar
+                </Button>
               </div>
-              <Button
-                variant="destructive"
-                onClick={() => setDeleteDialogOpen(true)}
-                disabled={isSaving}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Eliminar
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="flex justify-end gap-3">
           <Button asChild variant="outline" disabled={isSaving}>
@@ -521,50 +525,52 @@ export default function ApplicationSettingsPage({
         </div>
 
         {/* Delete Dialog */}
-        <Dialog open={deleteDialogOpen} onOpenChange={(open) => {
-          setDeleteDialogOpen(open)
-          if (!open) setDeleteAppError(null)
-        }}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Eliminar aplicación</DialogTitle>
-              <DialogDescription className="break-words [overflow-wrap:anywhere] [word-break:break-word]">
-                Esta acción eliminará permanentemente la aplicación{" "}
-                <span className="font-medium text-foreground break-words [overflow-wrap:anywhere] [word-break:break-word]">
-                  {formData.name}
-                </span>{" "}
-                junto con todas sus configuraciones, API keys, y datos de uso.
-                Esta acción no se puede deshacer.
-              </DialogDescription>
-            </DialogHeader>
-            {deleteAppError && (
-              <div className="bg-destructive/15 border border-destructive/30 text-destructive text-sm rounded-md p-3 space-y-2 mt-2">
-                <div className="font-semibold">{deleteAppError.message}</div>
-                {deleteAppError.details && deleteAppError.details.length > 0 && (
-                  <ul className="list-disc list-inside space-y-1 ml-1">
-                    {deleteAppError.details.map((detail, idx) => (
-                      <li key={idx}>{detail}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setDeleteDialogOpen(false)
-                  setDeleteAppError(null)
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button variant="destructive" onClick={handleDelete}>
-                Eliminar permanentemente
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        {myRole === "OWNER" && (
+          <Dialog open={deleteDialogOpen} onOpenChange={(open) => {
+            setDeleteDialogOpen(open)
+            if (!open) setDeleteAppError(null)
+          }}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Eliminar aplicación</DialogTitle>
+                <DialogDescription className="break-words [overflow-wrap:anywhere] [word-break:break-word]">
+                  Esta acción eliminará permanentemente la aplicación{" "}
+                  <span className="font-medium text-foreground break-words [overflow-wrap:anywhere] [word-break:break-word]">
+                    {formData.name}
+                  </span>{" "}
+                  junto con todas sus configuraciones, API keys, y datos de uso.
+                  Esta acción no se puede deshacer.
+                </DialogDescription>
+              </DialogHeader>
+              {deleteAppError && (
+                <div className="bg-destructive/15 border border-destructive/30 text-destructive text-sm rounded-md p-3 space-y-2 mt-2">
+                  <div className="font-semibold">{deleteAppError.message}</div>
+                  {deleteAppError.details && deleteAppError.details.length > 0 && (
+                    <ul className="list-disc list-inside space-y-1 ml-1">
+                      {deleteAppError.details.map((detail, idx) => (
+                        <li key={idx}>{detail}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setDeleteDialogOpen(false)
+                    setDeleteAppError(null)
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button variant="destructive" onClick={handleDelete}>
+                  Eliminar permanentemente
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
 
         {/* Create/Edit Environment Dialog */}
         <Dialog open={envDialogOpen} onOpenChange={(open) => {

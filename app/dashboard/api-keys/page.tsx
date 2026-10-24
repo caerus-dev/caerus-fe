@@ -45,6 +45,111 @@ export default function ApiKeysPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [isCreatingKey, setIsCreatingKey] = useState(false)
   const [setupModalOpen, setSetupModalOpen] = useState(false)
+  const [selectedLang, setSelectedLang] = useState<"ts" | "java" | "go">("ts")
+
+  const SDK_SNIPPETS = {
+    ts: {
+      label: "TypeScript",
+      code: `import { CaerusClient } from '@caerus-dev/sdk'
+
+const caerus = new CaerusClient({
+  apiKey: process.env.CAERUS_API_KEY
+})`,
+      render: () => (
+        <code>
+          <span className="text-chart-2">import</span>
+          {" { "}
+          <span className="text-chart-3">CaerusClient</span>
+          {" } "}
+          <span className="text-chart-2">from</span>{" "}
+          <span className="text-primary">{`'@caerus-dev/sdk'`}</span>
+          {"\n\n"}
+          <span className="text-chart-2">const</span> caerus ={" "}
+          <span className="text-chart-2">new</span>{" "}
+          <span className="text-chart-3">CaerusClient</span>
+          {"({\n"}
+          {"  "}apiKey: process.env.
+          <span className="text-primary">CAERUS_API_KEY</span>
+          {"\n})"}
+        </code>
+      ),
+    },
+    java: {
+      label: "Java",
+      code: `import dev.caerus.CaerusClient;
+import dev.caerus.CaerusClientOptions;
+
+CaerusClient caerus = new CaerusClient(
+    CaerusClientOptions.builder()
+        .apiKey(System.getenv("CAERUS_API_KEY"))
+        .build()
+);`,
+      render: () => (
+        <code>
+          <span className="text-chart-2">import</span>{" "}
+          <span className="text-chart-3">dev.caerus.CaerusClient</span>;
+          {"\n"}
+          <span className="text-chart-2">import</span>{" "}
+          <span className="text-chart-3">dev.caerus.CaerusClientOptions</span>;
+          {"\n\n"}
+          <span className="text-chart-3">CaerusClient</span> caerus ={" "}
+          <span className="text-chart-2">new</span>{" "}
+          <span className="text-chart-3">CaerusClient</span>(
+          {"\n    "}
+          <span className="text-chart-3">CaerusClientOptions</span>.builder()
+          {"\n        "}.apiKey(
+          <span className="text-chart-3">System</span>.getenv(
+          <span className="text-primary">{`"CAERUS_API_KEY"`}</span>))
+          {"\n        "}.build()
+          {"\n);"}
+        </code>
+      ),
+    },
+    go: {
+      label: "Go",
+      code: `package main
+
+import (
+	"os"
+
+	"github.com/caerus-dev/caerus-sdk-go/sre"
+)
+
+func main() {
+	client, err := sre.NewClient(sre.ClientOptions{
+		APIKey: os.Getenv("CAERUS_API_KEY"),
+	})
+	if err != nil {
+		panic(err)
+	}
+	_ = client
+}`,
+      render: () => (
+        <code>
+          <span className="text-chart-2">package</span> main
+          {"\n\n"}
+          <span className="text-chart-2">import</span> (
+          {"\n\t"}<span className="text-primary">{`"os"`}</span>
+          {"\n\n\t"}<span className="text-primary">{`"github.com/caerus-dev/caerus-sdk-go/sre"`}</span>
+          {"\n)"}
+          {"\n\n"}
+          <span className="text-chart-2">func</span> main() {"{"}
+          {"\n\t"}client, err := sre.
+          <span className="text-chart-3">NewClient</span>(sre.
+          <span className="text-chart-3">ClientOptions</span>{"{"}
+          {"\n\t\t"}APIKey: os.
+          <span className="text-chart-3">Getenv</span>(
+          <span className="text-primary">{`"CAERUS_API_KEY"`}</span>),
+          {"\n\t"}{"})"}
+          {"\n\t"}<span className="text-chart-2">if</span> err != nil {"{"}
+          {"\n\t\t"}panic(err)
+          {"\n\t"}{"}"}
+          {"\n\t"}_ = client
+          {"\n}"}
+        </code>
+      ),
+    },
+  }
 
   // Fetch all applications
   const fetchApps = useCallback(async () => {
@@ -446,24 +551,38 @@ export default function ApiKeysPage() {
       {/* Quick start code */}
       <Card className="bg-card/50 border-border">
         <CardHeader>
-          <CardTitle className="text-lg">Inicio rápido</CardTitle>
+          <CardTitle className="text-lg">Ejemplo de inicialización</CardTitle>
           <CardDescription>
-            Usa tu API key para autenticar solicitudes
+            Usa tu API key para autenticar solicitudes con cualquiera de los SDKs oficiales
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-lg border border-border bg-secondary/30 overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-secondary/50">
-              <span className="text-xs font-mono text-muted-foreground">
-                TypeScript
-              </span>
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-secondary/50">
+              <div className="flex items-center gap-1">
+                {(["ts", "java", "go"] as const).map((lang) => (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => setSelectedLang(lang)}
+                    className={cn(
+                      "px-2.5 py-1 text-xs font-medium rounded-md transition-colors",
+                      selectedLang === lang
+                        ? "bg-background text-foreground font-semibold shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {SDK_SNIPPETS[lang].label}
+                  </button>
+                ))}
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-7 text-xs gap-1"
                 onClick={() =>
                   copyToClipboard(
-                    `import { CaerusClient } from '@caerus-dev/sdk'\n\nconst caerus = new CaerusClient({\n  apiKey: process.env.CAERUS_API_KEY\n})`,
+                    SDK_SNIPPETS[selectedLang].code,
                     "snippet"
                   )
                 }
@@ -476,23 +595,8 @@ export default function ApiKeysPage() {
                 Copiar
               </Button>
             </div>
-            <pre className="p-4 text-sm font-mono overflow-x-auto">
-              <code>
-                <span className="text-chart-2">import</span>
-                {" { "}
-                <span className="text-chart-3">CaerusClient</span>
-                {" } "}
-                <span className="text-chart-2">from</span>{" "}
-                <span className="text-primary">{`'@caerus-dev/sdk'`}</span>
-                {"\n\n"}
-                <span className="text-chart-2">const</span> caerus ={" "}
-                <span className="text-chart-2">new</span>{" "}
-                <span className="text-chart-3">CaerusClient</span>
-                {"({\n"}
-                {"  "}apiKey: process.env.
-                <span className="text-primary">CAERUS_API_KEY</span>
-                {"\n})"}
-              </code>
+            <pre className="p-4 text-xs sm:text-sm font-mono overflow-x-auto">
+              {SDK_SNIPPETS[selectedLang].render()}
             </pre>
           </div>
         </CardContent>

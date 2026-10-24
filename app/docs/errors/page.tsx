@@ -120,6 +120,27 @@ try {
     throw error;
 }`,
             },
+            go: {
+              language: "go",
+              title: "manejo_conflicto.go",
+              label: "Go",
+              code: `import (
+    "errors"
+    "log"
+    "github.com/caerus-dev/caerus-sdk-go/sre"
+)
+
+holder, err := caerus.Unitary("butaca_A1").Take(ctx, nil)
+if err != nil {
+    var conflict *sre.ConflictError
+    if errors.As(err, &conflict) {
+        log.Printf("Asiento ocupado o sin cupo: %s (reason: %s)", conflict.Error(), conflict.Reason())
+        // Informar amistosamente al cliente para que elija otra butaca
+        return
+    }
+    log.Fatalf("Error inesperado: %v", err)
+}`,
+            },
           }}
         />
       </section>
@@ -175,6 +196,30 @@ try {
     }
 }`,
             },
+            go: {
+              language: "go",
+              title: "manejo_idempotencia.go",
+              label: "Go",
+              code: `import (
+    "errors"
+    "fmt"
+    "log"
+    "github.com/caerus-dev/caerus-sdk-go/sre"
+)
+
+// Envía siempre una clave idempotente única asociada a la operación
+holder, err := caerus.Unitary("butaca_A1").Take(ctx, &sre.TakeOptions{
+    IdempotencyKey: fmt.Sprintf("req_%s", orderID),
+})
+if err != nil {
+    var valErr *sre.ValidationError
+    if errors.As(err, &valErr) && valErr.Reason() == "IDEMPOTENCY_KEY_REQUIRED" {
+        log.Printf("Clave de idempotencia requerida: %s", valErr.Error())
+        return
+    }
+    log.Fatalf("Error: %v", err)
+}`,
+            },
           }}
         />
       </section>
@@ -221,6 +266,27 @@ try {
     // Notificar al cliente que la reserva no existe o ya caducó
 } catch (CaerusError error) {
     throw error;
+}`,
+            },
+            go: {
+              language: "go",
+              title: "manejo_not_found.go",
+              label: "Go",
+              code: `import (
+    "errors"
+    "log"
+    "github.com/caerus-dev/caerus-sdk-go/sre"
+)
+
+_, err := caerus.Confirm(ctx, holderID, nil)
+if err != nil {
+    var notFound *sre.ResourceNotFoundError
+    if errors.As(err, &notFound) {
+        log.Printf("Holder o recurso no encontrado o expirado: %s", notFound.Error())
+        // Notificar al cliente que la reserva no existe o ya caducó
+        return
+    }
+    log.Fatalf("Error inesperado: %v", err)
 }`,
             },
           }}
