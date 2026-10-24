@@ -20,6 +20,8 @@ export interface DocsConfig {
   protoRepoUrl: string
   demoSreRepoUrl: string
   demoDlsRepoUrl: string
+  demoSreLiveUrl: string
+  demoDlsLiveUrl: string
   sections: DocSection[]
 }
 
@@ -32,6 +34,8 @@ export const docsConfig: DocsConfig = {
   protoRepoUrl: "https://github.com/caerus-dev/caerus-protos",
   demoSreRepoUrl: "https://github.com/caerus-dev/demo-sdk",
   demoDlsRepoUrl: "https://github.com/caerus-dev/demo-dls",
+  demoSreLiveUrl: "https://caerus-cine.vercel.app",
+  demoDlsLiveUrl: "https://caerus-dls.vercel.app",
   sections: [
     {
       title: "Comenzando",
