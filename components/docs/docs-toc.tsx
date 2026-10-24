@@ -134,24 +134,6 @@ export function DocsToc({ items = [], className }: DocsTocProps) {
             <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100" />
           </a>
           <a
-            href={docsConfig.demoSreLiveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between text-xs text-muted-foreground hover:text-foreground py-1 px-2 rounded-md hover:bg-muted transition-colors group"
-          >
-            <span>Demo SRE en vivo</span>
-            <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100" />
-          </a>
-          <a
-            href={docsConfig.demoDlsLiveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between text-xs text-muted-foreground hover:text-foreground py-1 px-2 rounded-md hover:bg-muted transition-colors group"
-          >
-            <span>Demo DLS en vivo</span>
-            <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100" />
-          </a>
-          <a
             href={docsConfig.protoRepoUrl}
             target="_blank"
             rel="noopener noreferrer"
