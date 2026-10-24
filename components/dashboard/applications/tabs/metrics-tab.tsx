@@ -102,11 +102,15 @@ export function MetricsTab({ appId, selectedEnv, currentEnvDetails }: MetricsTab
         const stats = await statsRes.json()
         const top = await topRes.json()
 
-        // Format dates for charts
-        const formattedStats = stats.map((stat: any) => ({
-          ...stat,
-          displayDate: format(new Date(stat.date), "MMM dd")
-        }))
+        // Format dates for charts (parse YYYY-MM-DD as local date to prevent UTC timezone shift)
+        const formattedStats = stats.map((stat: any) => {
+          const [year, month, day] = String(stat.date).split("-").map(Number)
+          const localDate = new Date(year, (month || 1) - 1, day || 1)
+          return {
+            ...stat,
+            displayDate: format(localDate, "MMM dd"),
+          }
+        })
 
         setStatsData(formattedStats)
         setTopResources(top)

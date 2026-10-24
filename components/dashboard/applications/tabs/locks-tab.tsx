@@ -121,7 +121,7 @@ export function LocksTab({
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
                           <span>Tipo de adquisición: {{'FAIL': 'Fallo', 'RETRY': 'Reintento', 'QUEUE': 'Encolar'}[lock.conflictResolution as string] || lock.conflictResolution}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                          <span>Deadlocks: {lock.deadlockResolutionStrategy}</span>
+                          <span>Deadlocks: {{'KILL_PRIORITY': 'Terminar proceso', 'ALERT': 'Solo alertar', 'ALERT_ONLY': 'Solo alertar'}[lock.deadlockResolutionStrategy as string] || lock.deadlockResolutionStrategy}</span>
                           <span className="hidden sm:inline text-muted-foreground/50">•</span>
                           <span>Fencing tokens: {lock.fencingTokenRequired ? "Activado" : "Desactivado"}</span>
                         </div>

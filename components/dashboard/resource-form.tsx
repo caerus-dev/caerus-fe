@@ -238,7 +238,7 @@ export function ResourceForm({
                         </span>
                       </div>
                       <FormControl>
-                        <Input placeholder="ej. seat, trip_capacity" maxLength={100} {...field} disabled={isEditing} />
+                        <Input placeholder="ej. butaca_sala, stock_producto" maxLength={100} {...field} disabled={isEditing} />
                       </FormControl>
                       <FormDescription>
                         Identificador único para este tipo de recurso.

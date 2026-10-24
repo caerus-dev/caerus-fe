@@ -133,7 +133,7 @@ export function ResourcesTab({
                         </>
                       )}
                       <span className="hidden sm:inline text-muted-foreground/50">•</span>
-                      <span>Res: {template.conflictResolution}</span>
+                      <span>Resolución: {{'FAIL': 'Fallo', 'RETRY': 'Reintento', 'QUEUE': 'Encolar'}[template.conflictResolution as string] || template.conflictResolution}</span>
                     </div>
                     {template.description && (
                       <p className="text-xs text-muted-foreground italic mt-1 pr-6 line-clamp-2 break-words [overflow-wrap:anywhere] [word-break:break-word]" title={template.description}>

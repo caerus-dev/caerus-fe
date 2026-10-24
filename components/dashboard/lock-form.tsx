@@ -229,7 +229,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                         </span>
                       </div>
                       <FormControl>
-                        <Input placeholder="ej. order_processing" maxLength={100} {...field} disabled={isEditing} />
+                        <Input placeholder="ej. procesamiento_pagos, reporte_mensual" maxLength={100} {...field} disabled={isEditing} />
                       </FormControl>
                       <FormDescription>
                         Identificador único para agrupar estos locks.

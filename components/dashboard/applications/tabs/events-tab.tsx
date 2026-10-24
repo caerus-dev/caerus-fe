@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { format, formatDistanceToNow, subDays, subHours } from "date-fns";
+import { format, formatDistanceToNow, subDays, subHours, startOfDay, endOfDay } from "date-fns";
 import { es } from "date-fns/locale";
 import {
   Search,
@@ -155,8 +155,8 @@ export function EventsTab({
     }
     if (datePreset === "CUSTOM") {
       return {
-        from: customFrom ? customFrom.toISOString() : undefined,
-        to: customTo ? customTo.toISOString() : undefined,
+        from: customFrom ? startOfDay(customFrom).toISOString() : undefined,
+        to: customTo ? endOfDay(customTo).toISOString() : undefined,
       };
     }
     return { from: undefined, to: undefined };
