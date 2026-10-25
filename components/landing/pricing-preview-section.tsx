@@ -5,12 +5,12 @@ import { Badge } from "@/components/ui/badge"
 
 export function PricingPreviewSection() {
   return (
-    <section id="pricing" className="py-20 px-6 bg-secondary/15 border-y border-border/40 scroll-mt-20">
+    <section id="pricing" className="scroll-mt-24 px-6 py-24 sm:py-32">
       <div className="max-w-5xl mx-auto">
-        <div className="rounded-3xl border border-border bg-card/60 backdrop-blur-md p-8 sm:p-12 shadow-xl relative overflow-hidden">
+        <div className="rounded-3xl border border-border bg-card p-8 sm:p-12 relative overflow-hidden">
           {/* Subtle background glow */}
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-chart-2/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
             <div className="max-w-2xl space-y-4">
@@ -44,14 +44,14 @@ export function PricingPreviewSection() {
                   <span>Sube de nivel cuando quieras</span>
                 </div>
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                  <ShieldCheck className="h-4 w-4 text-emerald-500 shrink-0" />
+                  <ShieldCheck className="h-4 w-4 text-chart-3 shrink-0" />
                   <span>SLA y soporte para empresas</span>
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row md:flex-col gap-3 shrink-0 items-start md:items-end justify-center">
-              <Button asChild size="lg" className="w-full sm:w-auto h-12 px-6 font-semibold gap-2 shadow-lg shadow-primary/20">
+              <Button asChild size="lg" className="w-full sm:w-auto h-12 px-6 rounded-full font-semibold gap-2 shadow-lg shadow-primary/30">
                 <Link href="/pricing">
                   Ver detalle de cada plan
                   <ArrowRight className="h-4 w-4" />

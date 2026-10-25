@@ -1,14 +1,15 @@
 import Link from "next/link"
+import Image from "next/image"
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/60 bg-card/20 backdrop-blur-sm">
+    <footer className="border-t border-border/60">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Brand & Tagline */}
           <div className="flex flex-col items-center md:items-start gap-2.5 text-center md:text-left">
             <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-90">
-              <img src="/logo.svg" alt="Caerus Logo" className="h-7 w-auto" />
+              <Image src="/logo.svg" alt="Caerus Logo" width={28} height={28} className="h-7 w-auto" />
               <span className="text-xl font-bold tracking-tight">Caerus</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">

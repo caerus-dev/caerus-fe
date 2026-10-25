@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useState, MouseEvent } from "react"
 import { usePathname } from "next/navigation"
 import { Menu, X, LayoutDashboard, LogOut, Settings } from "lucide-react"
@@ -62,11 +63,11 @@ export function Navbar({ user }: { user?: NavbarUser }) {
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-      <nav className="mx-auto flex md:grid md:grid-cols-3 max-w-7xl items-center justify-between px-6 py-4 lg:px-8 w-full">
+    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
+      <nav className="mx-auto flex w-full max-w-6xl items-center justify-between rounded-full border border-border/70 bg-background/60 px-4 py-2.5 backdrop-blur-xl md:grid md:grid-cols-3 lg:px-6">
         <div className="flex items-center gap-2 md:justify-self-start">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Caerus Logo" className="h-8 w-auto transition-transform duration-200 hover:scale-105" />
+            <Image src="/logo.svg" alt="Caerus Logo" width={32} height={32} priority className="h-8 w-auto transition-transform duration-200 hover:scale-105" />
             <span className="text-xl font-semibold tracking-tight">Caerus</span>
           </Link>
         </div>
@@ -82,13 +83,13 @@ export function Navbar({ user }: { user?: NavbarUser }) {
                 className={cn(
                   "relative text-base font-semibold transition-all duration-200 hover:scale-105",
                   active
-                    ? "text-primary [text-shadow:0_0_12px_rgba(217,70,239,0.7),0_0_20px_rgba(217,70,239,0.4)]"
+                    ? "text-primary [text-shadow:0_0_12px_color-mix(in_oklab,var(--primary)_70%,transparent)]"
                     : "text-muted-foreground/90 hover:text-primary"
                 )}
               >
                 {item.name}
                 {active && (
-                  <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 rounded-full bg-primary shadow-[0_0_8px_rgba(217,70,239,0.8)]" />
+                  <span className="absolute -bottom-1.5 left-0 right-0 h-0.5 rounded-full bg-primary shadow-[0_0_8px_color-mix(in_oklab,var(--primary)_80%,transparent)]" />
                 )}
               </Link>
             )
@@ -102,7 +103,7 @@ export function Navbar({ user }: { user?: NavbarUser }) {
                 href="/dashboard"
                 className={cn(
                   buttonVariants({ size: "sm" }),
-                  "glow-primary bg-primary text-primary-foreground font-semibold px-4 hover:bg-primary/95 transition-all hover:scale-105 duration-200"
+                  "rounded-full glow-primary bg-primary text-primary-foreground font-semibold px-4 hover:bg-primary/95 transition-all hover:scale-105 duration-200"
                 )}
               >
                 Dashboard
@@ -152,10 +153,10 @@ export function Navbar({ user }: { user?: NavbarUser }) {
             </>
           ) : (
             <>
-              <a href="/auth/login?returnTo=/dashboard" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+              <a href="/auth/login?returnTo=/dashboard" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "rounded-full")}>
                 Iniciar sesión
               </a>
-              <a href="/auth/login?screen_hint=signup&returnTo=/dashboard" className={cn(buttonVariants({ size: "sm" }), "glow-primary")}>
+              <a href="/auth/login?screen_hint=signup&returnTo=/dashboard" className={cn(buttonVariants({ size: "sm" }), "rounded-full glow-primary")}>
                 Comenzar gratis
               </a>
             </>
@@ -164,7 +165,7 @@ export function Navbar({ user }: { user?: NavbarUser }) {
 
         <button
           type="button"
-          className="md:hidden"
+          className="md:hidden rounded-full p-1.5"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           <span className="sr-only">Alternar menú</span>
@@ -178,7 +179,7 @@ export function Navbar({ user }: { user?: NavbarUser }) {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-xl">
+        <div className="mx-auto mt-2 max-w-6xl overflow-hidden rounded-3xl border border-border/70 bg-background/95 backdrop-blur-xl md:hidden">
           <div className="space-y-1 px-6 py-4">
             {navigation.map((item) => {
               const active = isActive(item)
@@ -189,7 +190,7 @@ export function Navbar({ user }: { user?: NavbarUser }) {
                   className={cn(
                     "block py-2 text-base font-semibold transition-all duration-200",
                     active
-                      ? "text-primary [text-shadow:0_0_12px_rgba(217,70,239,0.7),0_0_20px_rgba(217,70,239,0.4)] font-bold"
+                      ? "text-primary [text-shadow:0_0_12px_color-mix(in_oklab,var(--primary)_70%,transparent)] font-bold"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                   onClick={(e) => {
