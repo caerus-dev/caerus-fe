@@ -129,7 +129,7 @@ try {
   },
   {
     id: "lock",
-    label: "Distributed Lock",
+    label: "Adquirir lock distribuido",
     language: "typescript",
     code: `import { Dls } from '@caerus-dev/sdk'
 
@@ -144,7 +144,7 @@ await client.withTransaction(async (tx) => {
     'EXCLUSIVE'
   )
 
-  // 3. Sección crítica protegida contra split-brain y zombis
+  // 3. Sección crítica protegida contra split-brain y procesos zombi
   await processPayment(userId, lock.fencingToken)
 })`,
     render: () => (
@@ -203,7 +203,7 @@ await client.withTransaction(async (tx) => {
         <span className="text-foreground">{"  )"}</span>
         <br />
         <br />
-        <span className="text-muted-foreground">{"  // 3. Sección crítica protegida contra split-brain y zombis"}</span>
+        <span className="text-muted-foreground">{"  // 3. Sección crítica protegida contra split-brain y procesos zombi"}</span>
         <br />
         <span className="text-foreground">{"  "}</span>
         <span className="text-chart-2">await</span>{" "}
