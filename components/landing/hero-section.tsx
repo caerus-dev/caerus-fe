@@ -1,96 +1,87 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import { ArrowRight, Zap } from "lucide-react"
+import { ConcurrencyStage } from "./concurrency-stage"
+import { RotatingWord } from "./rotating-word"
+
+const rotatingResources = ["recurso", "stock", "turno", "pago", "cupo", "lock"]
+
+const primaryCtaClass =
+  "group relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-7 text-base font-medium [@media(min-height:850px)_and_(min-width:1280px)]:h-14 [@media(min-height:850px)_and_(min-width:1280px)]:px-9 [@media(min-height:850px)_and_(min-width:1280px)]:text-lg text-primary-foreground shadow-[0_10px_40px_-6px_color-mix(in_oklab,var(--primary)_75%,transparent)] transition-[box-shadow,transform] hover:shadow-[0_10px_60px_-4px_color-mix(in_oklab,var(--primary)_95%,transparent)] active:translate-y-px sm:w-auto"
+
+const secondaryCtaClass =
+  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-border bg-secondary/60 px-7 text-base font-medium [@media(min-height:850px)_and_(min-width:1280px)]:h-14 [@media(min-height:850px)_and_(min-width:1280px)]:px-9 [@media(min-height:850px)_and_(min-width:1280px)]:text-lg text-foreground backdrop-blur transition-colors hover:border-primary/40 hover:bg-secondary sm:w-auto"
 
 export function HeroSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
+  const primaryHref = isLoggedIn ? "/dashboard" : "/auth/login?screen_hint=signup&returnTo=/dashboard"
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 pt-20 overflow-hidden w-full">
-      {/* Background grid effect */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.25_0.005_325/0.3)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.25_0.005_325/0.3)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_100%)]" />
-      
-      {/* Glow effect */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[600px] h-[400px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
+    <section className="relative isolate w-full overflow-hidden pb-20">
+      <HeroBackdrop />
 
-      <div className="relative z-10 max-w-5xl mx-auto text-center w-full">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full border border-border bg-secondary/50 text-xs sm:text-sm text-muted-foreground mb-6 sm:mb-8 max-w-full">
-          <Zap className="h-4 w-4 text-primary shrink-0" />
-          <span className="truncate">Backend as a Service para Concurrencia</span>
-        </div>
+      <div className="mx-auto flex max-w-6xl flex-col items-center px-4 text-center sm:px-6">
+        {/* Intro block fills the viewport (minus a peek of the stage) so the message and CTAs are always above the fold. */}
+        <div className="flex min-h-[calc(100svh-clamp(5rem,calc(5rem+(100svh-700px)*0.35),14rem))] w-full flex-col items-center justify-center pb-8 pt-28 sm:pt-32">
+          <p className="relative mb-8 [@media(min-height:850px)_and_(min-width:1280px)]:mb-10 inline-flex max-w-full animate-rise items-center gap-2 overflow-hidden rounded-full border border-primary/30 bg-primary/10 py-1.5 pl-2 pr-4 text-xs text-foreground/90 motion-reduce:animate-none sm:text-sm">
+            <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <Zap className="size-3" aria-hidden="true" />
+            </span>
+            <span className="truncate">Backend as a Service para Concurrencia</span>
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 left-0 w-1/4 animate-beam bg-gradient-to-r from-transparent via-primary/30 to-transparent motion-reduce:animate-none"
+            />
+          </p>
 
-        {/* Main headline */}
-        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-balance leading-[1.15] mb-6">
-          Gestiona la{" "}
-          <span className="text-primary">concurrencia</span>
-          <br className="hidden sm:inline" />{" "}
-          sin escribir código complejo
-        </h1>
+          <h1 className="max-w-5xl [@media(min-height:850px)_and_(min-width:1280px)]:max-w-6xl text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.04em] sm:text-6xl lg:text-7xl [@media(min-height:850px)_and_(min-width:1280px)]:text-[5.25rem]">
+            <span className="block animate-rise [animation-delay:80ms] motion-reduce:animate-none">
+              Gestiona la <span className="text-primary">concurrencia</span>
+            </span>
+            <span className="block animate-rise [animation-delay:200ms] motion-reduce:animate-none">
+              sin escribir código complejo
+            </span>
+          </h1>
 
-        {/* Subheadline */}
-        <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-10 text-pretty leading-relaxed">
-          Recursos compartidos, locks distribuidos y coordinación en tiempo real. 
-          Integra nuestra API y olvídate de implementar lógica distribuida desde cero.
-        </p>
+          <p className="mt-6 [@media(min-height:850px)_and_(min-width:1280px)]:mt-8 max-w-2xl [@media(min-height:850px)_and_(min-width:1280px)]:max-w-3xl animate-rise text-pretty text-base leading-relaxed text-muted-foreground [animation-delay:320ms] motion-reduce:animate-none sm:text-xl [@media(min-height:850px)_and_(min-width:1280px)]:text-2xl">
+            Recursos compartidos, locks distribuidos y coordinación en tiempo real. Integra nuestra API y olvídate de
+            implementar lógica distribuida desde cero.
+          </p>
 
-        {/* CTA buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-xs sm:max-w-none mx-auto">
-          <Button asChild size="lg" className="glow-primary gap-2 text-base px-8 w-full sm:w-auto">
-            <a href="/dashboard">
+          <div className="mt-8 [@media(min-height:850px)_and_(min-width:1280px)]:mt-10 flex w-full max-w-xs animate-rise flex-col items-center justify-center gap-3 [animation-delay:440ms] motion-reduce:animate-none sm:w-auto sm:max-w-none sm:flex-row">
+            <a href={primaryHref} className={primaryCtaClass}>
               {isLoggedIn ? "Ir al Dashboard" : "Comenzar gratis"}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
             </a>
-          </Button>
-          <Button asChild size="lg" variant="outline" className="gap-2 text-base px-8 w-full sm:w-auto">
-            <Link href="/docs">
+            <Link href="/docs" className={secondaryCtaClass}>
               Ver documentación
             </Link>
-          </Button>
+          </div>
         </div>
 
-        {/* Code preview */}
-        <div className="mt-12 sm:mt-16 max-w-2xl mx-auto w-full">
-          <div className="rounded-xl border border-border bg-card/50 backdrop-blur-sm overflow-hidden text-left shadow-lg">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-secondary/30">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-destructive/50" />
-                <div className="w-3 h-3 rounded-full bg-chart-3/50" />
-                <div className="w-3 h-3 rounded-full bg-primary/50" />
-              </div>
-              <span className="text-xs text-muted-foreground font-mono ml-2">reservation.ts</span>
-            </div>
-            <div className="p-3.5 sm:p-6 text-left font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto max-w-full">
-              <code>
-                <span className="text-muted-foreground">{"// Reserva un asiento en 2 líneas"}</span>
-                <br />
-                <span className="text-chart-2">const</span>{" "}
-                <span className="text-foreground">holder</span>{" "}
-                <span className="text-chart-2">=</span>{" "}
-                <span className="text-chart-2">await</span>{" "}
-                <span className="text-foreground">caerus</span>
-                <span className="text-foreground">.</span>
-                <span className="text-primary">unitary</span>
-                <span className="text-foreground">(</span>
-                <span className="text-chart-3">{'"seat_J4"'}</span>
-                <span className="text-foreground">).</span>
-                <span className="text-primary">take</span>
-                <span className="text-foreground">()</span>
-                <br />
-                <br />
-                <span className="text-muted-foreground">{"// Confirma cuando el pago sea exitoso"}</span>
-                <br />
-                <span className="text-chart-2">await</span>{" "}
-                <span className="text-foreground">caerus</span>
-                <span className="text-foreground">.</span>
-                <span className="text-primary">confirm</span>
-                <span className="text-foreground">(</span>
-                <span className="text-foreground">holder.id</span>
-                <span className="text-foreground">)</span>
-                <span className="cursor-blink text-primary">|</span>
-              </code>
-            </div>
-          </div>
+        <div className="relative w-full max-w-5xl animate-rise [animation-delay:600ms] motion-reduce:animate-none">
+          <div
+            aria-hidden="true"
+            className="absolute -inset-x-10 -top-10 bottom-0 -z-10 rounded-[3rem] bg-[radial-gradient(ellipse_at_center,color-mix(in_oklab,var(--primary)_25%,transparent),transparent_65%)] blur-2xl"
+          />
+          <ConcurrencyStage />
+          <p className="mt-5 text-sm text-muted-foreground">
+            <span className="sr-only">Mil peticiones, un mismo recurso, cero conflictos.</span>
+            <span aria-hidden="true">
+              Mil peticiones. Un mismo <RotatingWord words={rotatingResources} />. Cero conflictos.
+            </span>
+          </p>
         </div>
       </div>
     </section>
+  )
+}
+
+function HeroBackdrop() {
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+      <div className="absolute inset-0 [background-image:linear-gradient(color-mix(in_oklab,var(--foreground)_5%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_oklab,var(--foreground)_5%,transparent)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_70%_55%_at_50%_30%,black,transparent)]" />
+      <div className="absolute left-1/2 top-[-18rem] h-[42rem] w-[70rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--primary)_30%,transparent),transparent)] blur-3xl" />
+      <div className="absolute left-[12%] top-[22rem] h-80 w-80 rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--chart-2)_25%,transparent),transparent)] blur-3xl" />
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
+    </div>
   )
 }

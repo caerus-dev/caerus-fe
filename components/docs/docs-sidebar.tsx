@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Search, ChevronDown, Sparkles, Layers, Lock, BookOpen, FileCode, Terminal } from "lucide-react"
+import { Search } from "lucide-react"
 import { docsConfig, DocSection } from "./docs-config"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"

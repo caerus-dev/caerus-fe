@@ -1,12 +1,13 @@
 import { ShoppingCart, Calendar, Ticket, CreditCard } from "lucide-react"
+import { SectionHeading } from "./section-heading"
 
 const useCases = [
   {
     icon: Ticket,
-    title: "Venta de Entradas",
+    title: "Eventos y reservas",
     description:
-      "Evita sobreventa de asientos en cines, conciertos o eventos. Reserva temporal mientras el usuario completa el pago.",
-    example: "Cines, Ticketeras, Aerolíneas",
+      "Evita la sobreventa en eventos, vuelos y reservas. Retén el recurso de forma temporal mientras el usuario completa el pago.",
+    example: "Ticketeras, Aerolíneas, Eventos",
   },
   {
     icon: ShoppingCart,
@@ -33,39 +34,37 @@ const useCases = [
 
 export function UseCasesSection() {
   return (
-    <section className="py-24 px-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Section header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-            Casos de <span className="text-primary">uso</span>
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Desde startups hasta empresas, resolvemos problemas reales de
-            concurrencia.
-          </p>
-        </div>
+    <section className="px-6 py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl">
+        <SectionHeading
+          id="casos"
+          title={
+            <>
+              Casos de <span className="text-primary">uso</span>
+            </>
+          }
+          description="Desde startups hasta empresas, resolvemos problemas reales de concurrencia."
+        />
 
-        {/* Use cases grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2">
           {useCases.map((useCase) => (
             <div
               key={useCase.title}
-              className="flex gap-5 p-6 rounded-xl border border-border bg-card/30 hover:bg-card/50 transition-colors"
+              className="group relative flex gap-5 overflow-hidden rounded-2xl border border-border bg-card p-7 transition-colors hover:border-primary/40"
             >
-              <div className="flex-shrink-0">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
-                  <useCase.icon className="h-7 w-7 text-primary" />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-primary/0 blur-3xl transition-colors duration-500 group-hover:bg-primary/20"
+              />
+              <div className="relative shrink-0">
+                <div className="flex size-12 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
+                  <useCase.icon className="size-6" aria-hidden="true" />
                 </div>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold mb-2">{useCase.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-3">
-                  {useCase.description}
-                </p>
-                <span className="text-xs text-primary font-medium">
-                  {useCase.example}
-                </span>
+              <div className="relative">
+                <h3 className="mb-2 text-xl font-semibold">{useCase.title}</h3>
+                <p className="mb-3 text-sm leading-relaxed text-muted-foreground">{useCase.description}</p>
+                <span className="font-mono text-xs text-primary/80">{useCase.example}</span>
               </div>
             </div>
           ))}

@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import { Copy, Check } from "lucide-react"
+import { SectionHeading } from "./section-heading"
 
 interface CodeExample {
   id: string
@@ -20,8 +21,8 @@ const codeExamples: CodeExample[] = [
 
 const caerus = new CaerusClient({ apiKey: process.env.CAERUS_API_KEY! })
 
-// 1. Retiene temporalmente un recurso (asiento, stock, cupo)
-const holder = await caerus.unitary('seat_A12').take({
+// 1. Retiene temporalmente un recurso (stock, turno, cupo)
+const holder = await caerus.unitary('recurso_A12').take({
   ttlSeconds: 120,
   metadata: { orderId: 'ord_1234' }
 })
@@ -57,7 +58,7 @@ try {
         <span className="text-foreground">{"! })"}</span>
         <br />
         <br />
-        <span className="text-muted-foreground">{"// 1. Retiene temporalmente un recurso (asiento, stock, cupo)"}</span>
+        <span className="text-muted-foreground">{"// 1. Retiene temporalmente un recurso (stock, turno, cupo)"}</span>
         <br />
         <span className="text-chart-2">const</span>{" "}
         <span className="text-foreground">holder</span>{" "}
@@ -66,7 +67,7 @@ try {
         <span className="text-foreground">caerus.</span>
         <span className="text-primary">unitary</span>
         <span className="text-foreground">(</span>
-        <span className="text-chart-3">{"'seat_A12'"}</span>
+        <span className="text-chart-3">{"'recurso_A12'"}</span>
         <span className="text-foreground">).</span>
         <span className="text-primary">take</span>
         <span className="text-foreground">{"({"}</span>
@@ -230,21 +231,21 @@ export function CodeExamplesSection() {
   }
 
   return (
-    <section className="py-24 px-6 bg-secondary/20">
+    <section className="border-y border-border/60 bg-secondary/20 px-6 py-24 sm:py-32">
       <div className="max-w-5xl mx-auto">
-        {/* Section header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
-            Integración en <span className="text-primary">minutos</span>
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            SDK intuitivo con ejemplos claros. Desde la configuración hasta producción
-            sin fricción.
-          </p>
+        <div className="mb-12">
+          <SectionHeading
+            title={
+              <>
+                Integración en <span className="text-primary">minutos</span>
+              </>
+            }
+            description="SDK intuitivo con ejemplos claros. Desde la configuración hasta producción sin fricción."
+          />
         </div>
 
         {/* Code block */}
-        <div className="rounded-xl border border-border bg-card/80 backdrop-blur-sm overflow-hidden">
+        <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm overflow-hidden shadow-[0_30px_80px_-40px_color-mix(in_oklab,var(--primary)_35%,transparent)]">
           {/* Tabs */}
           <div className="flex items-center justify-between border-b border-border bg-secondary/30 px-4">
             <div className="flex gap-1 overflow-x-auto py-2">
@@ -252,7 +253,7 @@ export function CodeExamplesSection() {
                 <button
                   key={example.id}
                   onClick={() => setActiveTab(example.id)}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
+                  className={`px-4 py-2 text-sm font-medium rounded-full transition-colors whitespace-nowrap ${
                     activeTab === example.id
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary"
