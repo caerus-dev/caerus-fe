@@ -14,10 +14,10 @@ export function RotatingWord({ words, interval = 2200 }: { words: string[]; inte
   }, [words.length, interval])
 
   return (
-    <span className="relative inline-block overflow-hidden align-bottom">
+    <span className="relative inline-block">
       <span
         key={words[index]}
-        className="inline-block animate-rise bg-linear-to-b from-primary/60 to-primary bg-clip-text pb-1 text-transparent motion-reduce:animate-none"
+        className="inline-block animate-rise bg-linear-to-b from-primary/60 to-primary bg-clip-text text-transparent motion-reduce:animate-none"
       >
         {words[index]}
       </span>
