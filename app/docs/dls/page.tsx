@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 
 const tocItems = [
   { id: "conceptos", title: "¿Qué es DLS y para qué sirve?" },
-  { id: "modos", title: "Modos: Exclusive vs Shared Read" },
+  { id: "modos", title: "Modos: Exclusivo vs Lectura Compartida" },
   { id: "fencing", title: "Fencing Tokens contra Split-Brain" },
   { id: "deadlocks", title: "Detección y Resolución de Deadlocks" },
   { id: "codigo", title: "Ejemplo de Uso con el SDK" },
@@ -41,17 +41,17 @@ export default function DocsDlsPage() {
           ¿Qué es DLS y para qué sirve?
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Mientras que el SRE está enfocado en inventario de negocio (butacas, cupos), el <strong>Distributed Locking Service (DLS)</strong> está diseñado para la sincronización entre procesos. Por ejemplo, garantizar que un worker programado que genera reportes financieros o cobra suscripciones mensuales corra en una sola instancia a la vez.
+          Mientras que el SRE está enfocado en inventario de negocio (butacas, cupos), el <strong>Distributed Locking Service (DLS)</strong> está diseñado para la sincronización entre procesos. Por ejemplo, garantizar que una tarea programada que genera reportes financieros o cobra suscripciones mensuales corra en una sola instancia a la vez.
         </p>
       </section>
 
-      {/* Modos: Exclusive vs Shared Read */}
+      {/* Modos: Exclusivo vs Lectura Compartida */}
       <section id="modos" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Modos de Bloqueo: Exclusive vs Shared Read
+          Modos de Bloqueo: Exclusivo vs Lectura Compartida
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          DLS soporta el patrón de concurrencia Read/Write Locks:
+          DLS soporta el patrón de concurrencia de lectura y escritura (Read/Write Locks):
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
@@ -59,11 +59,11 @@ export default function DocsDlsPage() {
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Lock className="h-4 w-4 text-purple-500" />
-                <span>EXCLUSIVE (Escritura)</span>
+                <span>Exclusivo</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Garantiza exclusión total. Solo un worker puede poseer el lock a la vez. Cualquier otro intento de adquisición exclusiva o compartida queda bloqueado o rechazado.
+              Garantiza exclusión total. Solo un proceso puede poseer el lock a la vez. Cualquier otro intento de adquisición exclusiva o compartida queda bloqueado o rechazado.
             </CardContent>
           </Card>
 
@@ -71,11 +71,11 @@ export default function DocsDlsPage() {
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <Cpu className="h-4 w-4 text-blue-500" />
-                <span>SHARED_READ (Lectura)</span>
+                <span>Lectura Compartida</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Múltiples workers pueden poseer el lock en simultáneo para tareas de solo lectura, impidiendo que entre un escritor exclusivo hasta que todos los lectores terminen.
+              Múltiples procesos pueden poseer el lock en simultáneo para tareas de solo lectura, impidiendo que entre un escritor exclusivo hasta que todos los lectores terminen.
             </CardContent>
           </Card>
         </div>
@@ -87,7 +87,7 @@ export default function DocsDlsPage() {
           Fencing Tokens contra Split-Brain y Pausas de GC
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          En sistemas distribuidos, un distributed lock básico <strong>no es suficiente</strong>. Si un proceso sufre una pausa prolongada de Garbage Collection (GC) o latencia de red, su lock puede vencer en el servidor mientras el proceso cree que todavía lo tiene. Al despertar, podría escribir datos corruptos pisando al nuevo dueño legítimo del lock.
+          En sistemas distribuidos, un lock básico <strong>no es suficiente</strong>. Si un proceso sufre una pausa prolongada de Garbage Collection (GC) o latencia de red, su lock puede vencer en el servidor mientras el proceso cree que todavía lo tiene. Al despertar, podría escribir datos desfasados pisando al nuevo dueño legítimo del lock (problema conocido como <em>Split-Brain</em>).
         </p>
 
         <div className="rounded-xl border border-primary/40 bg-primary/5 p-4 space-y-2 text-xs text-muted-foreground leading-relaxed">
@@ -104,13 +104,13 @@ export default function DocsDlsPage() {
       {/* Detección de Deadlocks */}
       <section id="deadlocks" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Detección y Resolución Automática de Deadlocks
+          Detección y Resolución Automática de Deadlocks (Bloqueos Mutuos)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Cuando múltiples microservicios adquieren recursos en distinto orden (e.g. Worker A tiene el Recurso 1 y espera el Recurso 2, mientras Worker B tiene el Recurso 2 y espera el Recurso 1), se produce un <strong>bloqueo mutuo o Deadlock</strong>.
+          Cuando múltiples procesos adquieren recursos en distinto orden (por ejemplo, el Proceso A tiene el Recurso 1 y espera el Recurso 2, mientras el Proceso B tiene el Recurso 2 y espera el Recurso 1), se produce un <strong>bloqueo mutuo o deadlock</strong> en el que nadie puede avanzar.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          El motor de Caerus mantiene un grafo dirigido de dependencias (<em>Wait-For Graph</em>). En cuanto detecta un ciclo cerrado, aplica automáticamente la resolución configurada: aborta a la <strong>víctima</strong> (el proceso con menor prioridad o menor antigüedad en la transacción) y emite un evento/webhook para que los demás puedan continuar.
+          El motor de Caerus detecta automáticamente estos ciclos de bloqueo entre transacciones y aplica la resolución configurada: aborta a la <strong>transacción víctima</strong> (la de menor prioridad o menor progreso) y emite un evento/webhook para que los demás procesos continúen su ejecución de forma segura.
         </p>
       </section>
 
@@ -259,7 +259,7 @@ func main() {
           <h3 className="text-base font-semibold text-foreground">¿Listo para probar el motor DLS?</h3>
         </div>
         <p className="text-xs text-muted-foreground max-w-2xl leading-relaxed">
-          Simula locks distribuidos, transacciones cruzadas y resolución de deadlocks directamente en el <strong>Playground interactivo</strong> o clona el proyecto de microservicios de referencia en GitHub.
+          Simula locks distribuidos, transacciones cruzadas y resolución de deadlocks directamente en el <strong>Playground interactivo</strong> o clona el proyecto de referencia (Showcase DLS) en GitHub.
         </p>
         <div className="pt-2 flex flex-wrap gap-2">
           <Button asChild className="gap-2 bg-purple-600 hover:bg-purple-700 text-white text-xs">

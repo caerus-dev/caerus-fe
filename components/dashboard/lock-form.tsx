@@ -319,7 +319,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
             <CardHeader>
               <CardTitle className="text-lg">Adquisición y resolución de deadlocks</CardTitle>
               <CardDescription>
-                Configura cómo los workers adquieren locks y cómo se resuelven los bloqueos mutuos.
+                Configura cómo se adquieren los locks y cómo se resuelven los bloqueos mutuos.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">

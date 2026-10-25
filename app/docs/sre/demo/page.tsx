@@ -8,7 +8,7 @@ import { docsConfig } from "@/components/docs/docs-config"
 
 const tocItems = [
   { id: "concepto-sample", title: "Idea Central del Sample" },
-  { id: "comparativa", title: "FAIL vs QUEUE en Cartelera" },
+  { id: "comparativa", title: "Rechazo Inmediato vs Fila en Cartelera" },
   { id: "repositorio-github", title: "Repositorio Oficial en GitHub" },
 ]
 
@@ -21,7 +21,7 @@ export default function DocsSreDemoPage() {
       ]}
       title="Quickstart & Sample: Caerus Cine"
       badge="Proyecto de Referencia"
-      description="Aplicación de referencia completa construida con @caerus-dev/sdk. Demuestra reserva concurrente de butacas de cine, expiración automática por TTL y cómo las políticas FAIL vs QUEUE transforman la experiencia sin cambiar código."
+      description="Aplicación de referencia completa construida con @caerus-dev/sdk. Demuestra reserva concurrente de butacas de cine, expiración automática por TTL y cómo las políticas de rechazo inmediato vs fila automática transforman la experiencia sin cambiar código."
       tocItems={tocItems}
     >
       {/* Concepto Sample */}
@@ -33,7 +33,7 @@ export default function DocsSreDemoPage() {
           En un cine, cuando dos personas intentan reservar la misma butaca exactamente en el mismo instante, deben colisionar de verdad. Las butacas se retienen temporalmente por unos minutos; si nadie las paga, se liberan solas al expirar el TTL; y si el usuario cancela su selección, vuelven de inmediato a estar disponibles.
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          Este proyecto de referencia corre contra el motor de Caerus a través del paquete oficial <code>@caerus-dev/sdk</code> y ejercita <strong>los trece verbos</strong> de su API pública (recursos unitarios, saldo con cupo para el candy bar, confirmaciones definitivas y cancelaciones).
+          Este proyecto de referencia corre contra el motor de Caerus a través del paquete oficial <code>@caerus-dev/sdk</code> y utiliza su API pública para gestionar recursos unitarios (butacas), inventario múltiple con cupo (candy bar), confirmaciones definitivas y cancelaciones.
         </p>
       </section>
 
@@ -49,25 +49,25 @@ export default function DocsSreDemoPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
           <Card className="border-border/70 bg-muted/20">
             <CardHeader className="p-4 pb-2">
-              <Badge variant="outline" className="w-fit text-[10px] mb-1">Plantilla butaca (FAIL)</Badge>
+              <Badge variant="outline" className="w-fit text-[10px] mb-1">Plantilla butaca (Rechazo inmediato)</Badge>
               <CardTitle className="text-base">🎬 El Último Horizonte</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground space-y-2 leading-relaxed">
-              <p>• Política de conflicto: <strong>FAIL</strong></p>
-              <p>• Si dos usuarios piden la misma butaca, el segundo recibe de inmediato un <code>ConflictError</code> y la pierde.</p>
+              <p>• Política de conflicto: <strong>Rechazo inmediato</strong> (<code>FAIL</code>)</p>
+              <p>• Si dos usuarios piden la misma butaca, el segundo recibe de inmediato un error de conflicto y la pierde.</p>
               <p>• Cuando el primero libera la butaca, no hay traspaso automático; queda libre para quien llegue primero.</p>
             </CardContent>
           </Card>
 
           <Card className="border-border/70 bg-muted/20">
             <CardHeader className="p-4 pb-2">
-              <Badge variant="secondary" className="w-fit text-[10px] text-amber-500 mb-1">Plantilla butaca_fila (QUEUE)</Badge>
+              <Badge variant="secondary" className="w-fit text-[10px] text-amber-500 mb-1">Plantilla butaca_fila (Fila de espera)</Badge>
               <CardTitle className="text-base">🎬 Lluvia de Neón</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground space-y-2 leading-relaxed">
-              <p>• Política de conflicto: <strong>QUEUE</strong> (Fila de espera)</p>
+              <p>• Política de conflicto: <strong>Fila de espera</strong> (<code>QUEUE</code>)</p>
               <p>• Si el segundo pide la butaca ocupada, <strong>queda automáticamente en la fila</strong>.</p>
-              <p>• Cuando el primero libera la butaca o vence su TTL, el motor <strong>se la asigna solo al segundo en segundos</strong>.</p>
+              <p>• Cuando el primero libera la butaca o vence su TTL, el motor <strong>se la asigna automáticamente al siguiente en segundos</strong>.</p>
             </CardContent>
           </Card>
         </div>
@@ -84,7 +84,7 @@ export default function DocsSreDemoPage() {
           Repositorio Oficial en GitHub
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Todo el código fuente del proyecto, el esquema de variables de entorno (<code>.env.example</code>), la arquitectura del proxy de observabilidad del SDK y las instrucciones detalladas para ejecutarlo localmente se encuentran disponibles en GitHub:
+          Todo el código fuente del proyecto, el esquema de variables de entorno (<code>.env.example</code>) y las instrucciones detalladas para ejecutarlo localmente se encuentran disponibles en GitHub:
         </p>
 
         <div className="rounded-xl border border-border/70 bg-muted/20 p-5 space-y-4">

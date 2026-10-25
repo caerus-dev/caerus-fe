@@ -332,7 +332,7 @@ _, err = caerus.Confirm(ctx, holder.ID, nil)`,
           Uso con DLS (Locks Distribuidos)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Sincronización y exclusión mutua distribuida entre workers concurrentes mediante transacciones y Fencing Tokens:
+          Sincronización y exclusión mutua distribuida entre procesos concurrentes mediante transacciones y Fencing Tokens:
         </p>
 
         <CodeBlock

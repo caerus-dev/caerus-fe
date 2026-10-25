@@ -169,8 +169,8 @@ describe('DlsSimulation Engine', () => {
     expect(log1.status).toBe('SUCCESS')
     const res = dls.getResources().find((r) => r.id === 'file:reports_export')
     expect(res?.mode).toBe('SHARED_READ')
-    expect(res?.heldBy).toContain('Worker Alfa')
-    expect(res?.heldBy).toContain('Worker Beta')
+    expect(res?.heldBy).toContain('Proceso Alfa')
+    expect(res?.heldBy).toContain('Proceso Beta')
 
     // Step 2: Release
     const log2 = dls.executeStep('shared_read', 2)
@@ -183,7 +183,7 @@ describe('DlsSimulation Engine', () => {
     dls.executeStep('exclusive', 0)
     const res = dls.getResources().find((r) => r.id === 'file:reports_export')
     expect(res?.mode).toBe('EXCLUSIVE')
-    expect(res?.heldBy).toEqual(['Worker Alfa'])
+    expect(res?.heldBy).toEqual(['Proceso Alfa'])
 
     // Step 1: Beta queues
     const log1 = dls.executeStep('exclusive', 1)
@@ -194,7 +194,7 @@ describe('DlsSimulation Engine', () => {
     // Step 2: Alfa completes, Beta promoted
     const log2 = dls.executeStep('exclusive', 2)
     expect(log2.status).toBe('SUCCESS')
-    expect(res?.heldBy).toEqual(['Worker Beta'])
+    expect(res?.heldBy).toEqual(['Proceso Beta'])
     expect(beta?.status).toBe('HOLDING')
 
     // Step 3: Beta releases

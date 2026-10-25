@@ -269,7 +269,7 @@ export class SreSimulation {
           logs.push({
             id: `sweep_${Date.now()}_${seat.code}`,
             timestamp: Date.now(),
-            method: `// [Sweeper Worker Backend]\n// TTL expirado para holder ${expiredHolderId} (${seat.code})`,
+            method: `// [Motor Caerus · expiración automática]\n// TTL expirado para holder ${expiredHolderId} (${seat.code})`,
             argsString: `elapsed: +${seconds}s`,
             action: 'expiración',
             status: 'EXPIRED',

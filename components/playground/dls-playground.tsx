@@ -220,7 +220,7 @@ export function DlsPlayground({
                   <span>Lock Exclusivo</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground leading-snug break-words">
-                  Worker Beta retenido en cola streaming hasta que Alfa concluye su bloque.
+                  Proceso Beta retenido en cola streaming hasta que Alfa concluye su bloque.
                 </p>
               </button>
 
@@ -238,7 +238,7 @@ export function DlsPlayground({
                   <span>Lectura Compartida</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground leading-snug break-words">
-                  Múltiples workers leen en paralelo en modo SHARED_READ sin bloquearse.
+                  Múltiples procesos leen en paralelo en modo SHARED_READ sin bloquearse.
                 </p>
               </button>
             </div>
@@ -408,10 +408,10 @@ export function DlsPlayground({
             </div>
           </div>
 
-          {/* Visual Workers (Solo Alfa y Beta) */}
+          {/* Procesos (Alfa y Beta) */}
           <div data-tour="dls-workers" className="space-y-2">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">
-              Workers / Microservicios Distribuidos
+              Procesos Distribuidos
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {workers.map((w) => (

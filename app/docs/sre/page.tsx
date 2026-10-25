@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const tocItems = [
-  { id: "conceptos", title: "Recursos Unitarios vs Pooled" },
+  { id: "conceptos", title: "Recursos Unitarios vs Múltiples" },
   { id: "ciclo-vida", title: "Ciclo de Vida de una Reserva" },
   { id: "verbos", title: "Verbos: take, confirm y release" },
-  { id: "estrategias", title: "Políticas de Conflicto (FAIL vs QUEUE)" },
+  { id: "estrategias", title: "Políticas de Conflicto: Rechazo vs Fila" },
   { id: "recursos-practica", title: "Quickstart & Playground" },
 ]
 
@@ -33,10 +33,10 @@ export default function DocsSrePage() {
         }}
       />
 
-      {/* Conceptos: Unitary vs Pooled */}
+      {/* Conceptos: Unitarios vs Múltiples */}
       <section id="conceptos" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Recursos Unitarios vs Pooled (Con Cupo)
+          Recursos Unitarios vs Múltiples (Pooled)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
           En Caerus, la distinción entre un recurso del que hay <em>exactamente uno</em> y un recurso del que hay <em>múltiples unidades intercambiables</em> es una distinción formal en el sistema de tipos de los SDKs (TypeScript, Java y Go):
@@ -91,10 +91,10 @@ holder, err := caerus.Unitary("butaca-D9").Take(ctx, &sre.TakeOptions{
           <div className="rounded-xl border border-border/70 p-4 bg-muted/20">
             <h3 className="font-semibold text-sm text-foreground mb-1 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-blue-500" />
-              <span>Recurso Pooled (<code>pooled</code>)</span>
+              <span>Recurso Múltiple (<code>pooled</code>)</span>
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-              Mantiene un saldo o inventario de unidades intercambiables. Ejemplo: 50 combos de pochoclos o 30 vacantes de un curso.
+              Mantiene un inventario con cupo de unidades intercambiables. Ejemplo: 50 combos de pochoclos o 30 vacantes de un curso.
             </p>
             <CodeBlock
               snippets={{
@@ -147,7 +147,7 @@ holder, err := caerus.Pooled("combo-grande").TakeMany(ctx, 3, &sre.TakeOptions{
                              │
             release() ───────┼────────▶  RELEASED    (Liberado anticipadamente)
                              │
-           TTL Expira ───────┴────────▶  EXPIRED     (Worker lo restaura solo)`}</pre>
+           TTL Expira ───────┴────────▶  EXPIRED     (El motor lo restaura solo)`}</pre>
         </div>
       </section>
 
@@ -264,7 +264,7 @@ holder, err := caerus.Pooled("combo-grande").TakeMany(ctx, 3, &sre.TakeOptions{
       {/* Políticas de Conflicto */}
       <section id="estrategias" className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight text-foreground border-b border-border/40 pb-2">
-          Políticas de Conflicto: FAIL vs QUEUE
+          Políticas de Conflicto: Rechazo Inmediato (FAIL) vs Fila (QUEUE)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
           La política de conflicto se configura en la plantilla del recurso (desde el dashboard) y el motor la ejecuta automáticamente:
@@ -274,24 +274,24 @@ holder, err := caerus.Pooled("combo-grande").TakeMany(ctx, 3, &sre.TakeOptions{
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-sm flex items-center justify-between">
-                <span>Estrategia FAIL</span>
-                <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Rechazo Directo</span>
+                <span>Rechazo Inmediato (FAIL)</span>
+                <span className="text-[10px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Fallo directo</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Si dos usuarios piden la misma butaca al mismo tiempo, el segundo recibe de inmediato un <code>ConflictError</code>. No hay espera.
+              Si dos usuarios solicitan la misma butaca al mismo tiempo, el segundo recibe de inmediato un <code>ConflictError</code>. No hay espera.
             </CardContent>
           </Card>
 
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-sm flex items-center justify-between">
-                <span>Estrategia QUEUE</span>
-                <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded font-semibold">Fila Automática</span>
+                <span>Fila Automática (QUEUE)</span>
+                <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded font-semibold">Encolado automático</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              El segundo solicitante queda encolado. Si el primer usuario libera la butaca o su tiempo expira, el motor <strong>se la asigna solo al siguiente</strong> en cuestión de segundos.
+              El segundo solicitante queda encolado. Si el primer usuario libera la butaca o su tiempo expira, el motor <strong>se la asigna automáticamente al siguiente</strong> en cuestión de segundos.
             </CardContent>
           </Card>
         </div>

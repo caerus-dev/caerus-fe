@@ -80,7 +80,7 @@ export default function DocsErrorsPage() {
           Manejo de <code>ConflictError</code>
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Ocurre cuando intentas un <code>take()</code> sobre un recurso unitario ya tomado o cuando un recurso con cupo no tiene saldo suficiente:
+          Ocurre cuando intentas un <code>take()</code> sobre un recurso unitario ya tomado o cuando un recurso múltiple (con cupo) no tiene saldo suficiente:
         </p>
 
         <CodeBlock
@@ -323,7 +323,7 @@ if err != nil {
               3. ¿Por qué mi holder cambió de PENDING a EXPIRED?
             </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Causa: El tiempo de vida otorgado en <code>ttlSeconds</code> transcurrió sin que tu backend llamara a <code>caerus.confirm(holder.id)</code>. El sweeper de Caerus restauró el stock de forma automática.
+              Causa: El tiempo de vida otorgado en <code>ttlSeconds</code> transcurrió sin que tu backend llamara a <code>caerus.confirm(holder.id)</code>. El motor de Caerus restauró el stock de forma automática.
             </p>
           </div>
         </div>

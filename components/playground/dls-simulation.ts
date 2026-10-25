@@ -48,7 +48,7 @@ export class DlsSimulation {
         'alfa',
         {
           id: 'alfa',
-          name: 'Worker Alfa',
+          name: 'Proceso Alfa',
           color: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
           status: 'IDLE',
           heldLocks: [],
@@ -58,7 +58,7 @@ export class DlsSimulation {
         'beta',
         {
           id: 'beta',
-          name: 'Worker Beta',
+          name: 'Proceso Beta',
           color: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
           status: 'IDLE',
           heldLocks: [],
@@ -104,14 +104,14 @@ export class DlsSimulation {
         return [
           {
             stepIndex: 0,
-            title: '1. Worker Alfa inicia withTransaction y adquiere SHARED_READ',
-            description: 'Worker Alfa solicita lectura compartida en el archivo de reportes dentro de una transacción gestionada.',
+            title: '1. Proceso Alfa inicia withTransaction y adquiere SHARED_READ',
+            description: 'Proceso Alfa solicita lectura compartida en el archivo de reportes dentro de una transacción gestionada.',
             actionLabel: 'Ejecutar: Alfa adquiere SHARED_READ',
           },
           {
             stepIndex: 1,
-            title: '2. Worker Beta adquiere SHARED_READ simultáneamente',
-            description: 'Worker Beta solicita el mismo lock. Al ser SHARED_READ, no es bloqueado y ambos leen en paralelo sin esperas.',
+            title: '2. Proceso Beta adquiere SHARED_READ simultáneamente',
+            description: 'Proceso Beta solicita el mismo lock. Al ser SHARED_READ, no es bloqueado y ambos leen en paralelo sin esperas.',
             actionLabel: 'Ejecutar: Beta adquiere SHARED_READ',
           },
           {
@@ -126,26 +126,26 @@ export class DlsSimulation {
         return [
           {
             stepIndex: 0,
-            title: '1. Worker Alfa adquiere EXCLUSIVE con withTransaction',
-            description: 'Worker Alfa adquiere un lock exclusivo sobre el archivo para modificarlo dentro de su transacción.',
+            title: '1. Proceso Alfa adquiere EXCLUSIVE con withTransaction',
+            description: 'Proceso Alfa adquiere un lock exclusivo sobre el archivo para modificarlo dentro de su transacción.',
             actionLabel: 'Ejecutar: Alfa adquiere lock EXCLUSIVE',
           },
           {
             stepIndex: 1,
-            title: '2. Worker Beta solicita EXCLUSIVE y queda en espera',
-            description: 'Worker Beta intenta adquirir el mismo archivo. El lock está ocupado, por lo que queda en cola streaming gRPC esperando disponibilidad.',
+            title: '2. Proceso Beta solicita EXCLUSIVE y queda en espera',
+            description: 'Proceso Beta intenta adquirir el mismo archivo. El lock está ocupado, por lo que queda en cola streaming gRPC esperando disponibilidad.',
             actionLabel: 'Ejecutar: Beta solicita lock y espera',
           },
           {
             stepIndex: 2,
             title: '3. Alfa completa y Caerus despierta a Beta',
-            description: 'Worker Alfa termina su bloque withTransaction. Caerus libera el lock y despierta a Beta otorgándole el recurso.',
+            description: 'Proceso Alfa termina su bloque withTransaction. Caerus libera el lock y despierta a Beta otorgándole el recurso.',
             actionLabel: 'Ejecutar: Alfa libera y Beta adquiere',
           },
           {
             stepIndex: 3,
-            title: '4. Worker Beta completa su transacción',
-            description: 'Worker Beta termina su escritura y withTransaction libera el recurso automáticamente.',
+            title: '4. Proceso Beta completa su transacción',
+            description: 'Proceso Beta termina su escritura y withTransaction libera el recurso automáticamente.',
             actionLabel: 'Ejecutar: Beta completa y libera',
           },
         ]
@@ -154,13 +154,13 @@ export class DlsSimulation {
         return [
           {
             stepIndex: 0,
-            title: '1. Worker Alfa adquiere Archivo (EXCLUSIVE)',
+            title: '1. Proceso Alfa adquiere Archivo (EXCLUSIVE)',
             description: 'Alfa inicia withTransaction y toma posesión exclusiva de file:reports_export.',
             actionLabel: 'Ejecutar: Alfa adquiere Archivo',
           },
           {
             stepIndex: 1,
-            title: '2. Worker Beta adquiere Red (EXCLUSIVE)',
+            title: '2. Proceso Beta adquiere Red (EXCLUSIVE)',
             description: 'Beta inicia withTransaction concurrente y toma posesión exclusiva de network:cloud_uploader.',
             actionLabel: 'Ejecutar: Beta adquiere Red',
           },
@@ -206,17 +206,17 @@ export class DlsSimulation {
         return {
           id: `dls_sr_${now}_0`,
           timestamp: now,
-          method: `// [Worker Alfa] Transacción gestionada\nawait dls.withTransaction(async (tx) => {\n  const lock = await tx.acquireLock(\n    'task_processing',\n    'file:reports_export',\n    'SHARED_READ',\n    { leaseMs: 15000 }\n  )\n  // Lectura concurrente...\n}, { owner: 'Worker Alfa' })`,
+          method: `// [Proceso Alfa] Transacción gestionada\nawait dls.withTransaction(async (tx) => {\n  const lock = await tx.acquireLock(\n    'task_processing',\n    'file:reports_export',\n    'SHARED_READ',\n    { leaseMs: 15000 }\n  )\n  // Lectura concurrente...\n}, { owner: 'Proceso Alfa' })`,
           argsString: `mode: SHARED_READ`,
           action: 'withTransaction',
           status: 'SUCCESS',
-          resultSummary: `ACQUIRED · fencingToken: #${token} · Lectura compartida otorgada a Worker Alfa`,
+          resultSummary: `ACQUIRED · fencingToken: #${token} · Lectura compartida otorgada a Proceso Alfa`,
           durationMs: 2,
           generatedWebhookEvent: {
             type: 'lock.acquired',
             payload: {
               lockKey: 'file:reports_export',
-              worker: 'Worker Alfa',
+              worker: 'Proceso Alfa',
               mode: 'SHARED_READ',
               fencingToken: token,
             },
@@ -234,17 +234,17 @@ export class DlsSimulation {
         return {
           id: `dls_sr_${now}_1`,
           timestamp: now,
-          method: `// [Worker Beta] Transacción concurrente simultánea\nawait dls.withTransaction(async (tx) => {\n  const lock = await tx.acquireLock(\n    'task_processing',\n    'file:reports_export',\n    'SHARED_READ',\n    { leaseMs: 15000 }\n  )\n  // Lectura simultánea sin bloqueo...\n}, { owner: 'Worker Beta' })`,
+          method: `// [Proceso Beta] Transacción concurrente simultánea\nawait dls.withTransaction(async (tx) => {\n  const lock = await tx.acquireLock(\n    'task_processing',\n    'file:reports_export',\n    'SHARED_READ',\n    { leaseMs: 15000 }\n  )\n  // Lectura simultánea sin bloqueo...\n}, { owner: 'Proceso Beta' })`,
           argsString: `mode: SHARED_READ`,
           action: 'withTransaction',
           status: 'SUCCESS',
-          resultSummary: `ACQUIRED · fencingToken: #${token} · Worker Beta lee en paralelo sin bloqueo`,
+          resultSummary: `ACQUIRED · fencingToken: #${token} · Proceso Beta lee en paralelo sin bloqueo`,
           durationMs: 1,
           generatedWebhookEvent: {
             type: 'lock.acquired',
             payload: {
               lockKey: 'file:reports_export',
-              worker: 'Worker Beta',
+              worker: 'Proceso Beta',
               mode: 'SHARED_READ',
               fencingToken: token,
             },
@@ -273,7 +273,7 @@ export class DlsSimulation {
             type: 'lock.released',
             payload: {
               lockKey: 'file:reports_export',
-              releasedBy: ['Worker Alfa', 'Worker Beta'],
+              releasedBy: ['Proceso Alfa', 'Proceso Beta'],
             },
           },
         }
@@ -297,17 +297,17 @@ export class DlsSimulation {
         return {
           id: `dls_ex_${now}_0`,
           timestamp: now,
-          method: `// [Worker Alfa] Escritura exclusiva\nawait dls.withTransaction(async (tx) => {\n  const lock = await tx.acquireLock(\n    'task_processing',\n    'file:reports_export',\n    'EXCLUSIVE',\n    { leaseMs: 30000 }\n  )\n  // Modificando archivo...\n}, { owner: 'Worker Alfa' })`,
+          method: `// [Proceso Alfa] Escritura exclusiva\nawait dls.withTransaction(async (tx) => {\n  const lock = await tx.acquireLock(\n    'task_processing',\n    'file:reports_export',\n    'EXCLUSIVE',\n    { leaseMs: 30000 }\n  )\n  // Modificando archivo...\n}, { owner: 'Proceso Alfa' })`,
           argsString: `mode: EXCLUSIVE`,
           action: 'withTransaction',
           status: 'SUCCESS',
-          resultSummary: `ACQUIRED · fencingToken: #${token} · Acceso exclusivo garantizado a Worker Alfa`,
+          resultSummary: `ACQUIRED · fencingToken: #${token} · Acceso exclusivo garantizado a Proceso Alfa`,
           durationMs: 3,
           generatedWebhookEvent: {
             type: 'lock.acquired',
             payload: {
               lockKey: 'file:reports_export',
-              worker: 'Worker Alfa',
+              worker: 'Proceso Alfa',
               mode: 'EXCLUSIVE',
               fencingToken: token,
             },
@@ -323,17 +323,17 @@ export class DlsSimulation {
         return {
           id: `dls_ex_${now}_1`,
           timestamp: now,
-          method: `// [Worker Beta] Intento de acceso a recurso exclusivo:\nawait dls.withTransaction(async (tx) => {\n  // Bloqueado en cola gRPC streaming hasta que Alfa libere\n  const lock = await tx.acquireLock(\n    'task_processing',\n    'file:reports_export',\n    'EXCLUSIVE'\n  )\n}, { owner: 'Worker Beta' })`,
+          method: `// [Proceso Beta] Intento de acceso a recurso exclusivo:\nawait dls.withTransaction(async (tx) => {\n  // Bloqueado en cola gRPC streaming hasta que Alfa libere\n  const lock = await tx.acquireLock(\n    'task_processing',\n    'file:reports_export',\n    'EXCLUSIVE'\n  )\n}, { owner: 'Proceso Beta' })`,
           argsString: `mode: EXCLUSIVE`,
           action: 'contención',
           status: 'PENDING',
-          resultSummary: `WAITING · Lock ocupado por Worker Alfa. Worker Beta retenido en cola streaming`,
+          resultSummary: `WAITING · Lock ocupado por Proceso Alfa. Proceso Beta retenido en cola streaming`,
           durationMs: 2,
           generatedWebhookEvent: {
             type: 'lock.queued',
             payload: {
               lockKey: 'file:reports_export',
-              worker: 'Worker Beta',
+              worker: 'Proceso Beta',
               state: 'BLOCKED_BY_EXCLUSIVE_HOLDER',
             },
           },
@@ -355,17 +355,17 @@ export class DlsSimulation {
         return {
           id: `dls_ex_${now}_2`,
           timestamp: now,
-          method: `// Worker Alfa completa su bloque withTransaction -> Libera lock\n// Caerus despierta al worker en espera (Worker Beta) y le entrega el lock`,
+          method: `// Proceso Alfa completa su bloque withTransaction -> Libera lock\n// Caerus despierta al proceso en espera (Proceso Beta) y le entrega el lock`,
           argsString: `promotion`,
           action: 'promoción',
           status: 'SUCCESS',
-          resultSummary: `ACQUIRED · fencingToken: #${token} · Lock transferido automáticamente a Worker Beta`,
+          resultSummary: `ACQUIRED · fencingToken: #${token} · Lock transferido automáticamente a Proceso Beta`,
           durationMs: 2,
           generatedWebhookEvent: {
             type: 'lock.acquired',
             payload: {
               lockKey: 'file:reports_export',
-              worker: 'Worker Beta',
+              worker: 'Proceso Beta',
               mode: 'EXCLUSIVE',
               fencingToken: token,
             },
@@ -382,17 +382,17 @@ export class DlsSimulation {
         return {
           id: `dls_ex_${now}_3`,
           timestamp: now,
-          method: `// Worker Beta concluye su bloque withTransaction\n// Recurso liberado automáticamente`,
+          method: `// Proceso Beta concluye su bloque withTransaction\n// Recurso liberado automáticamente`,
           argsString: '',
           action: 'auto-release',
           status: 'RELEASED',
-          resultSummary: 'RELEASED · Worker Beta completó exitosamente. Recurso totalmente libre.',
+          resultSummary: 'RELEASED · Proceso Beta completó exitosamente. Recurso totalmente libre.',
           durationMs: 1,
           generatedWebhookEvent: {
             type: 'lock.released',
             payload: {
               lockKey: 'file:reports_export',
-              worker: 'Worker Beta',
+              worker: 'Proceso Beta',
             },
           },
         }
@@ -417,17 +417,17 @@ export class DlsSimulation {
         return {
           id: `dls_dl_${now}_0`,
           timestamp: now,
-          method: `// [Worker Alfa] Inicia transacción y adquiere Archivo\nawait dls.withTransaction(async (tx) => {\n  await tx.acquireLock('task_processing', 'file:reports_export', 'EXCLUSIVE')\n  // Procesando archivo antes de subir a la nube...\n}, { owner: 'Worker Alfa' })`,
+          method: `// [Proceso Alfa] Inicia transacción y adquiere Archivo\nawait dls.withTransaction(async (tx) => {\n  await tx.acquireLock('task_processing', 'file:reports_export', 'EXCLUSIVE')\n  // Procesando archivo antes de subir a la nube...\n}, { owner: 'Proceso Alfa' })`,
           argsString: `mode: EXCLUSIVE`,
           action: 'withTransaction',
           status: 'SUCCESS',
-          resultSummary: `ACQUIRED · fencingToken: #${token} · Worker Alfa retiene Archivo`,
+          resultSummary: `ACQUIRED · fencingToken: #${token} · Proceso Alfa retiene Archivo`,
           durationMs: 2,
           generatedWebhookEvent: {
             type: 'lock.acquired',
             payload: {
               lockKey: 'file:reports_export',
-              worker: 'Worker Alfa',
+              worker: 'Proceso Alfa',
               mode: 'EXCLUSIVE',
               fencingToken: token,
             },
@@ -447,17 +447,17 @@ export class DlsSimulation {
         return {
           id: `dls_dl_${now}_1`,
           timestamp: now,
-          method: `// [Worker Beta] Inicia transacción concurrente y adquiere Red\nawait dls.withTransaction(async (tx) => {\n  await tx.acquireLock('task_processing', 'network:cloud_uploader', 'EXCLUSIVE')\n  // Canal de red reservado...\n}, { owner: 'Worker Beta' })`,
+          method: `// [Proceso Beta] Inicia transacción concurrente y adquiere Red\nawait dls.withTransaction(async (tx) => {\n  await tx.acquireLock('task_processing', 'network:cloud_uploader', 'EXCLUSIVE')\n  // Canal de red reservado...\n}, { owner: 'Proceso Beta' })`,
           argsString: `mode: EXCLUSIVE`,
           action: 'withTransaction',
           status: 'SUCCESS',
-          resultSummary: `ACQUIRED · fencingToken: #${token} · Worker Beta retiene Canal de Red`,
+          resultSummary: `ACQUIRED · fencingToken: #${token} · Proceso Beta retiene Canal de Red`,
           durationMs: 2,
           generatedWebhookEvent: {
             type: 'lock.acquired',
             payload: {
               lockKey: 'network:cloud_uploader',
-              worker: 'Worker Beta',
+              worker: 'Proceso Beta',
               mode: 'EXCLUSIVE',
               fencingToken: token,
             },
@@ -485,7 +485,7 @@ export class DlsSimulation {
           generatedWebhookEvent: {
             type: 'deadlock.detected',
             payload: {
-              cycle: ['Worker Alfa', 'Worker Beta'],
+              cycle: ['Proceso Alfa', 'Proceso Beta'],
               resources: ['file:reports_export', 'network:cloud_uploader'],
             },
           },
@@ -512,10 +512,10 @@ export class DlsSimulation {
           id: `dls_dl_${now}_3`,
           timestamp: now,
           method: `// [Detector de Deadlocks de Caerus]\n// Detecta el interbloqueo y aborta proactivamente la transacción de Beta\n// withTransaction de Beta captura DeadlockAbortedError y libera sus recursos\n// Alfa recibe el canal de red liberado con nuevo fencingToken`,
-          argsString: `victim: Worker Beta`,
+          argsString: `victim: Proceso Beta`,
           action: 'deadlock resolve',
           status: 'RELEASED',
-          errorSummary: 'DeadlockAbortedError: Transacción de Worker Beta abortada automáticamente para resolver el ciclo',
+          errorSummary: 'DeadlockAbortedError: Transacción de Proceso Beta abortada automáticamente para resolver el ciclo',
           resultSummary: `RESOLVED · Locks de Beta liberados forzosamente. Red otorgada a Alfa (Token #${token}).`,
           durationMs: 2,
           generatedWebhookEvent: {
@@ -541,16 +541,16 @@ export class DlsSimulation {
         return {
           id: `dls_dl_${now}_4`,
           timestamp: now,
-          method: `// Worker Alfa completa su exportación y subida\n// withTransaction de Alfa finaliza y libera ambos recursos\n// Worker Beta reintenta su bloque withTransaction exitosamente`,
+          method: `// Proceso Alfa completa su exportación y subida\n// withTransaction de Alfa finaliza y libera ambos recursos\n// Proceso Beta reintenta su bloque withTransaction exitosamente`,
           argsString: `completed`,
           action: 'auto-release',
           status: 'RELEASED',
-          resultSummary: 'COMPLETED · Worker Alfa finalizó. Beta reintentó y concluyó. Todos los locks liberados.',
+          resultSummary: 'COMPLETED · Proceso Alfa finalizó. Beta reintentó y concluyó. Todos los locks liberados.',
           durationMs: 1,
           generatedWebhookEvent: {
             type: 'lock.released',
             payload: {
-              releasedBy: ['Worker Alfa', 'Worker Beta'],
+              releasedBy: ['Proceso Alfa', 'Proceso Beta'],
               resources: ['file:reports_export', 'network:cloud_uploader'],
             },
           },

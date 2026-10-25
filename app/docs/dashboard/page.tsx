@@ -193,12 +193,12 @@ export default function DocsDashboardPage() {
             {/* Modo */}
             <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
-                <span className="font-mono font-bold text-sm text-foreground">Modo (Unitario vs Pooled)</span>
+                <span className="font-mono font-bold text-sm text-foreground">Modo (Unitario vs Múltiple)</span>
                 <Badge variant="secondary" className="text-[10px] font-mono">Tipo de Stock</Badge>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 <strong>Unitario:</strong> Existe exactamente 1 unidad atómica (ej: butaca <code>D9</code>, turno de las 10:00).<br />
-                <strong>Pooled (Múltiple):</strong> Existe un cupo de N unidades fungibles e intercambiables (ej: 50 entradas generales, 200 items de inventario).
+                <strong>Múltiple (pooled):</strong> Existe un cupo de N unidades fungibles e intercambiables (ej: 50 entradas generales, 200 items de inventario).
               </p>
             </div>
 
@@ -289,7 +289,7 @@ export default function DocsDashboardPage() {
           Plantillas de Bloqueos Distribuidos (DLS)
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Las plantillas DLS definen el comportamiento de exclusión mutua para microservicios concurrentes (procesamiento de pagos, sincronización de inventario con ERPs, workers de facturación periódica). Para configurarlas, haz clic en la pestaña <strong>"Locks"</strong> y selecciona <strong>"Nuevo Lock"</strong>.
+          Las plantillas DLS definen el comportamiento de exclusión mutua para microservicios concurrentes (procesamiento de pagos, sincronización de inventario con ERPs, tareas de facturación periódica). Para configurarlas, haz clic en la pestaña <strong>"Locks"</strong> y selecciona <strong>"Nuevo Lock"</strong>.
         </p>
 
         {/* Opciones DLS */}
@@ -319,7 +319,7 @@ export default function DocsDashboardPage() {
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 <strong>EXCLUSIVE:</strong> Exclusión mutua total. Solo 1 proceso puede retener el lock a la vez.<br />
-                <strong>READ_WRITE:</strong> Permite múltiples procesos leyendo en simultáneo (<code>SHARED_READ</code>), pero exige exclusión absoluta cuando un worker solicita escribir (<code>EXCLUSIVE</code>).
+                <strong>READ_WRITE:</strong> Permite múltiples procesos leyendo en simultáneo (<code>SHARED_READ</code>), pero exige exclusión absoluta cuando un proceso solicita escribir (<code>EXCLUSIVE</code>).
               </p>
             </div>
 
@@ -330,7 +330,7 @@ export default function DocsDashboardPage() {
                 <Badge variant="outline" className="text-[10px] font-mono border-purple-500/30 text-purple-500">Recomendado</Badge>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Genera un número de versión monotónico creciente con cada adquisición respaldado por consenso estricto. Protege a tu base de datos contra workers "zombies" demorados por recolección de basura o pausas de red (Split-Brain).
+                Genera un número de versión monotónico creciente con cada adquisición respaldado por consenso estricto. Protege a tu base de datos contra procesos "zombies" demorados por recolección de basura o pausas de red (Split-Brain).
               </p>
             </div>
 
@@ -353,7 +353,7 @@ export default function DocsDashboardPage() {
                 <Badge variant="secondary" className="text-[10px] font-mono">FAIL | QUEUE | RETRY</Badge>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Define qué ocurre si un worker intenta bloquear una clave que ya está ocupada:
+                Define qué ocurre si un proceso intenta bloquear una clave que ya está ocupada:
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
                 <div className="rounded-lg border border-border/50 bg-background/50 p-3 space-y-1">

@@ -68,13 +68,13 @@ export const docsConfig: DocsConfig = {
         {
           title: "Conceptos Fundamentales",
           href: "/docs/sre",
-          description: "Recursos Unitarios vs Pooled, ciclo de vida (take -> confirm/release), TTL y estrategias de conflicto.",
+          description: "Recursos Unitarios vs Múltiples (Pooled), ciclo de vida (take -> confirm/release), TTL y estrategias de conflicto.",
           keywords: ["sre", "unitary", "pooled", "take", "confirm", "release", "ttl", "conflict", "queue", "fail"],
         },
         {
           title: "Quickstart & Sample (Cine)",
           href: "/docs/sre/demo",
-          description: "Aplicación de referencia en Node.js/Next.js: reserva concurrente de butacas con políticas FAIL y QUEUE.",
+          description: "Aplicación de referencia en Node.js/Next.js: reserva concurrente de butacas con rechazo inmediato (FAIL) y fila de espera (QUEUE).",
           keywords: ["sample", "quickstart", "cine", "demo-sdk", "butacas", "sre sample", "github"],
         },
       ],
@@ -85,14 +85,14 @@ export const docsConfig: DocsConfig = {
         {
           title: "Conceptos Fundamentales",
           href: "/docs/dls",
-          description: "Exclusión mutua, modos Exclusive vs Shared Read, Fencing Tokens y Deadlocks.",
+          description: "Exclusión mutua, modos Exclusivo vs Lectura Compartida, Fencing Tokens y Deadlocks.",
           keywords: ["dls", "distributed lock", "fencing token", "deadlock", "exclusive", "shared read", "transacciones"],
         },
         {
           title: "Quickstart & Sample (Locks)",
           href: "/docs/dls/demo",
-          description: "Microservicios de referencia: transacciones distribuidas, Fencing Tokens monotónicos y resolución de deadlocks.",
-          keywords: ["sample", "quickstart", "dls", "locks", "workers", "grafo", "deadlock", "github", "demo-dls"],
+          description: "Showcase DLS de referencia: transacciones distribuidas, Fencing Tokens monotónicos y resolución de deadlocks.",
+          keywords: ["sample", "quickstart", "dls", "locks", "procesos", "grafo", "deadlock", "github", "demo-dls"],
         },
       ],
     },

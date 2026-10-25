@@ -113,7 +113,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'observe',
     target: 'dls-overview',
     title: 'Locks distribuidos',
-    body: 'DLS coordina el acceso exclusivo o compartido a recursos entre varios workers, con colas de espera y detección automática de interbloqueos.',
+    body: 'DLS coordina el acceso exclusivo o compartido a recursos entre varios procesos, con colas de espera y detección automática de interbloqueos.',
   },
   {
     id: 'dls-scenarios',
@@ -130,7 +130,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'control',
     target: 'dls-step-card',
     title: 'Alfa adquiere el Archivo',
-    body: 'Al continuar, la guía ejecuta el paso 1: el Worker Alfa toma un lock EXCLUSIVE sobre el Archivo.',
+    body: 'Al continuar, la guía ejecuta el paso 1: el Proceso Alfa toma un lock EXCLUSIVE sobre el Archivo.',
     onNext: { type: 'run-step', stepIndex: 0 },
   },
   {
@@ -155,7 +155,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'control',
     target: 'dls-step-card',
     title: 'Beta adquiere la Red',
-    body: 'Al continuar, se ejecuta el paso 2: el Worker Beta toma el lock EXCLUSIVE sobre el recurso de Red.',
+    body: 'Al continuar, se ejecuta el paso 2: el Proceso Beta toma el lock EXCLUSIVE sobre el recurso de Red.',
     onNext: { type: 'run-step', stepIndex: 1 },
   },
   {
@@ -172,7 +172,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'control',
     target: 'dls-step-card',
     title: 'Provocar contención cruzada',
-    body: 'Cada worker pedirá el recurso que tiene el otro. Ninguno puede avanzar: es un interbloqueo clásico.',
+    body: 'Cada proceso pedirá el recurso que tiene el otro. Ninguno puede avanzar: es un interbloqueo clásico.',
     onNext: { type: 'run-step', stepIndex: 2 },
   },
   {
@@ -180,8 +180,8 @@ export const TOUR_STEPS: TourStep[] = [
     tab: 'dls',
     kind: 'observe',
     target: 'dls-workers',
-    title: 'Workers en espera',
-    body: 'Observa el estado de cada worker y el campo Esperando: ambos aguardan un recurso que posee el otro.',
+    title: 'Procesos en espera',
+    body: 'Observa el estado de cada proceso y el campo Esperando: ambos aguardan un recurso que posee el otro.',
   },
   {
     id: 'dls-run-resolve',
@@ -198,7 +198,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'observe',
     target: 'dls-workers',
     title: 'Resultado de la detección',
-    body: 'El detector aborta una de las transacciones (ABORTED) y libera sus locks, de modo que el otro worker puede continuar. El Inspector registra el evento.',
+    body: 'El detector aborta una de las transacciones (ABORTED) y libera sus locks, de modo que el otro proceso puede continuar. El Inspector registra el evento.',
   },
   {
     id: 'done',

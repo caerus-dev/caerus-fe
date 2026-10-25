@@ -136,7 +136,7 @@ export default function DocsProtoPage() {
   string template_name = 1;
   // Identificador único del recurso (ej: "seat_J4", "curso_react_2026")
   string key = 2;
-  // Cantidad inicial (1 para Unitarios, N para Pooled)
+  // Cantidad inicial (1 para unitarios, N para múltiples)
   int32 available_amount = 3;
   // Clave de agrupación opcional (ej: "fila_J", "sala_1")
   optional string group_key = 4;
@@ -642,7 +642,7 @@ message AcquireLockResponse {
             />
 
             <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-600 dark:text-amber-400">
-              <strong>Fencing Token:</strong> El valor <code>fencing_token</code> se incrementa estrictamente con cada adquisición. Los procesos deben enviar este token a las bases de datos o servicios de almacenamiento secundarios para descartar escrituras tardías de workers demorados por recolección de basura o pausas de red (prevención contra split-brain).
+              <strong>Fencing Token:</strong> El valor <code>fencing_token</code> se incrementa estrictamente con cada adquisición. Los procesos deben enviar este token a las bases de datos o servicios de almacenamiento secundarios para descartar escrituras tardías de procesos demorados por recolección de basura o pausas de red (prevención contra split-brain).
             </div>
           </div>
 

@@ -123,9 +123,9 @@ export default function DocsOverviewPage() {
             </CardHeader>
             <CardContent className="p-5 pt-0 space-y-3 text-xs text-muted-foreground">
               <ul className="list-disc list-inside space-y-1">
-                <li>Recursos <strong>Unitarios</strong> (asientos numerados) vs <strong>Con cupo</strong> (entradas generales).</li>
+                <li>Recursos <strong>Unitarios</strong> (asientos numerados) vs <strong>Múltiples</strong> (con cupo, ej: entradas generales).</li>
                 <li>Ciclo: <code>take()</code> con TTL ➔ <code>confirm()</code> o <code>release()</code>.</li>
-                <li>Estrategias de conflicto: <code>FAIL</code> vs <code>QUEUE</code> (fila de espera).</li>
+                <li>Estrategias de conflicto: rechazo inmediato (<code>FAIL</code>) vs fila de espera (<code>QUEUE</code>).</li>
               </ul>
               <div className="pt-2 flex gap-2">
                 <Button asChild variant="outline" size="sm" className="text-xs gap-1">
@@ -154,7 +154,7 @@ export default function DocsOverviewPage() {
             </CardHeader>
             <CardContent className="p-5 pt-0 space-y-3 text-xs text-muted-foreground">
               <ul className="list-disc list-inside space-y-1">
-                <li>Locks <strong>Exclusive</strong> y <strong>Shared Read</strong> en transacciones.</li>
+                <li>Locks <strong>exclusivos</strong> y de <strong>lectura compartida</strong> en transacciones.</li>
                 <li><strong>Fencing Tokens</strong> monotónicos para evitar escrituras obsoletas (split-brain).</li>
                 <li>Detección y resolución automática de ciclos de <strong>Deadlock</strong>.</li>
               </ul>

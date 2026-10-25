@@ -20,9 +20,9 @@ export default function DocsDlsDemoPage() {
         { label: "DLS", href: "/docs/dls" },
         { label: "Quickstart & Sample (Locks)" },
       ]}
-      title="Quickstart & Sample: Microservicios DLS"
+      title="Quickstart & Sample: Showcase DLS"
       badge="Proyecto de Referencia"
-      description="Proyecto de microservicios de referencia construido con @caerus-dev/sdk. Demuestra exclusión mutua distribuida, Fencing Tokens monotónicos, adquisición streaming y resolución de deadlocks en tiempo real."
+      description="Aplicación de referencia construida con @caerus-dev/sdk. Demuestra exclusión mutua distribuida, Fencing Tokens monotónicos, adquisición streaming y resolución de deadlocks en tiempo real."
       tocItems={tocItems}
     >
       {/* Concepto Sample */}
@@ -31,10 +31,10 @@ export default function DocsDlsDemoPage() {
           Idea Central del Sample
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Comprender cómo interactúan múltiples microservicios concurrentes al solicitar locks puede ser complejo. Este proyecto de referencia provee una arquitectura modular con workers independientes (2 o 3 procesos) que compiten por recursos compartidos (como <code>file:reports_export</code> o <code>network:cloud_uploader</code>).
+          Comprender cómo interactúan múltiples microservicios concurrentes al solicitar locks puede ser complejo. Este proyecto de referencia provee una arquitectura modular con procesos independientes (2 o 3 nodos) que compiten por recursos compartidos (como <code>file:reports_export</code> o <code>network:cloud_uploader</code>).
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          Cada evento refleja respuestas del motor de Caerus mediante Server-Sent Events (SSE) y grafica el estado de cada worker: <code>IDLE</code>, <code>STARTING_TX</code>, <code>HOLDING</code>, <code>QUEUED</code> o <code>DEADLOCK_ABORTED</code>.
+          Cada evento refleja en vivo las respuestas del motor de Caerus mediante streaming HTTP y muestra el estado de cada proceso en tiempo real: <strong>En espera</strong>, <strong>Abriendo transacción</strong>, <strong>Con lock</strong>, <strong>En cola</strong>, <strong>Víctima de deadlock</strong> o <strong>Terminado</strong>.
         </p>
       </section>
 
@@ -48,40 +48,40 @@ export default function DocsDlsDemoPage() {
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <Badge variant="outline" className="w-fit text-[10px] text-blue-500 mb-1">Lectura Concurrente</Badge>
-              <CardTitle className="text-sm">1. Lectura Compartida (<code>SHARED_READ</code>)</CardTitle>
+              <CardTitle className="text-sm">1. Lectura Compartida</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Muestra cómo múltiples workers adquieren locks <code>SHARED_READ</code> sobre el mismo archivo en paralelo sin bloquearse entre sí, hasta que un escritor exclusivo solicita el recurso.
+              Muestra cómo múltiples procesos adquieren locks en modo de lectura compartida sobre el mismo archivo en paralelo sin bloquearse entre sí, hasta que un escritor exclusivo solicita el recurso.
             </CardContent>
           </Card>
 
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <Badge variant="outline" className="w-fit text-[10px] text-emerald-500 mb-1">Exclusión Mutua</Badge>
-              <CardTitle className="text-sm">2. Tarea Simple (<code>EXCLUSIVE</code>)</CardTitle>
+              <CardTitle className="text-sm">2. Tarea Simple (Modo Exclusivo)</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Ejecuta una transacción exclusiva con generación de <strong>Fencing Token</strong> monotónico. El worker toma el lock, escribe en el archivo y libera la transacción de forma segura.
+              Ejecuta una transacción exclusiva con generación de <strong>Fencing Token</strong> monotónico. El proceso toma el lock, escribe en el archivo y libera la transacción de forma segura.
             </CardContent>
           </Card>
 
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <Badge variant="outline" className="w-fit text-[10px] text-red-500 mb-1">Ciclo Cruzado</Badge>
-              <CardTitle className="text-sm">3. Detección de Deadlock (Cruzado)</CardTitle>
+              <CardTitle className="text-sm">3. Detección de Deadlock</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Worker A retiene el Recurso 1 y solicita el 2; Worker B retiene el 2 y solicita el 1. El motor detecta el ciclo en el grafo y aborta a la víctima designada para desatorar el sistema.
+              El Proceso Alpha retiene el Recurso 1 y solicita el 2; el Proceso Beta retiene el 2 y solicita el 1. El motor detecta el ciclo en el grafo y aborta a la víctima designada para destrabar el sistema.
             </CardContent>
           </Card>
 
           <Card className="border-border/60 bg-muted/20">
             <CardHeader className="p-4 pb-2">
               <Badge variant="outline" className="w-fit text-[10px] text-purple-500 mb-1">Alta Concurrencia</Badge>
-              <CardTitle className="text-sm">4. Estampida (100 Workers)</CardTitle>
+              <CardTitle className="text-sm">4. Estampida (100 Procesos)</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0 text-xs text-muted-foreground leading-relaxed">
-              Lanza una ráfaga masiva de solicitudes simultáneas contra un solo recurso para verificar la estabilidad de la cola distribuida, streaming gRPC y ausencia de condiciones de carrera.
+              Lanza una ráfaga masiva de 100 procesos simultáneos contra un mismo recurso para verificar la estabilidad de la cola distribuida, el streaming gRPC y la ausencia de condiciones de carrera.
             </CardContent>
           </Card>
         </div>
@@ -93,10 +93,10 @@ export default function DocsDlsDemoPage() {
           Grafo de Espera y Selección de Víctima
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          En el escenario de Deadlock, el inspector destaca con color ámbar y rojo las aristas que forman el ciclo cerrado (<code>Worker A ➔ Recurso 2 ➔ Worker B ➔ Recurso 1 ➔ Worker A</code>).
+          En el escenario de Deadlock, el inspector destaca con color ámbar y rojo las aristas que forman el ciclo cerrado <br/> (<code>Proceso Alpha ➔ Recurso 2 ➔ Proceso Beta ➔ Recurso 1 ➔ Proceso Alpha</code>).
         </p>
         <p className="text-muted-foreground leading-relaxed">
-          El motor de Caerus selecciona a la víctima con menor prioridad o menor progreso transaccional, emite una señal de aborto para liberar sus recursos retenidos y permite que los workers restantes completen su trabajo de forma transparente.
+          El motor de Caerus selecciona a la víctima con menor prioridad o menor progreso transaccional, emite una señal de aborto para liberar sus recursos retenidos y permite que los procesos restantes completen su trabajo de forma transparente.
         </p>
       </section>
 
@@ -106,7 +106,7 @@ export default function DocsDlsDemoPage() {
           Repositorio Oficial en GitHub
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          El código completo de los microservicios, el archivo de variables (<code>.env.example</code>) y la guía detallada de configuración y ejecución local se encuentran disponibles en GitHub:
+          Todo el código fuente del proyecto, el archivo de variables (<code>.env.example</code>) y la guía detallada de configuración y ejecución local se encuentran disponibles en GitHub:
         </p>
 
         <div className="rounded-xl border border-border/70 bg-muted/20 p-5 space-y-4">
