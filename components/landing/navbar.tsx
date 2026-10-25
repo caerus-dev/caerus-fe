@@ -18,7 +18,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const navigation = [
-  { name: "Producto", href: "/#features" },
+  { name: "Producto", href: "/" },
   { name: "Documentación", href: "/docs" },
   { name: "Precios", href: "/pricing" },
 ]
@@ -43,6 +43,13 @@ export function Navbar({ user, leading, actions }: NavbarProps) {
   const pathname = usePathname()
 
   const handleScroll = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Already on the landing: a link to "/" should bring the user back to the top.
+    if (href === "/" && (pathname === "/" || pathname === "")) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (window.location.hash) window.history.pushState(null, "", window.location.pathname);
+      return;
+    }
     if (href.startsWith("#") || href.startsWith("/#")) {
       const hash = href.includes("#") ? href.substring(href.indexOf("#")) : "";
       if (hash && (pathname === "/" || pathname === "")) {
