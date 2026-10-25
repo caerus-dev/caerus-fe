@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/landing/navbar"
 import { HeroSection } from "@/components/landing/hero-section"
 import { FeaturesSection } from "@/components/landing/features-section"
-import { HowItWorks } from "@/components/landing/how-it-works"
 import { CodeExamplesSection } from "@/components/landing/code-examples-section"
 import { UseCasesSection } from "@/components/landing/use-cases-section"
 import { PricingPreviewSection } from "@/components/landing/pricing-preview-section"
@@ -18,7 +17,6 @@ export default async function HomePage() {
       <main className="w-full overflow-x-hidden">
         <HeroSection isLoggedIn={!!session?.user} />
         <FeaturesSection />
-        <HowItWorks />
         <CodeExamplesSection />
         <UseCasesSection />
         <PricingPreviewSection />
