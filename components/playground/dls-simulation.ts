@@ -104,20 +104,20 @@ export class DlsSimulation {
         return [
           {
             stepIndex: 0,
-            title: '1. Proceso Alfa inicia withTransaction y adquiere SHARED_READ',
+            title: '1. Proceso Alfa inicia withTransaction y adquiere lectura compartida',
             description: 'Proceso Alfa solicita lectura compartida en el archivo de reportes dentro de una transacción gestionada.',
-            actionLabel: 'Ejecutar: Alfa adquiere SHARED_READ',
+            actionLabel: 'Ejecutar: Alfa adquiere lectura compartida',
           },
           {
             stepIndex: 1,
-            title: '2. Proceso Beta adquiere SHARED_READ simultáneamente',
-            description: 'Proceso Beta solicita el mismo lock. Al ser SHARED_READ, no es bloqueado y ambos leen en paralelo sin esperas.',
-            actionLabel: 'Ejecutar: Beta adquiere SHARED_READ',
+            title: '2. Proceso Beta adquiere lectura compartida simultáneamente',
+            description: 'Proceso Beta solicita el mismo lock. Al ser de lectura compartida, no es bloqueado y ambos leen en paralelo sin esperas.',
+            actionLabel: 'Ejecutar: Beta adquiere lectura compartida',
           },
           {
             stepIndex: 2,
             title: '3. Finalización automática al salir de withTransaction',
-            description: 'Ambos callbacks completan su trabajo y withTransaction libera todos los locks automáticamente.',
+            description: 'Ambos procesos completan su trabajo y withTransaction libera todos los locks automáticamente.',
             actionLabel: 'Ejecutar: Finalizar transacciones y liberar',
           },
         ]
@@ -126,13 +126,13 @@ export class DlsSimulation {
         return [
           {
             stepIndex: 0,
-            title: '1. Proceso Alfa adquiere EXCLUSIVE con withTransaction',
+            title: '1. Proceso Alfa adquiere lock exclusivo con withTransaction',
             description: 'Proceso Alfa adquiere un lock exclusivo sobre el archivo para modificarlo dentro de su transacción.',
-            actionLabel: 'Ejecutar: Alfa adquiere lock EXCLUSIVE',
+            actionLabel: 'Ejecutar: Alfa adquiere lock exclusivo',
           },
           {
             stepIndex: 1,
-            title: '2. Proceso Beta solicita EXCLUSIVE y queda en espera',
+            title: '2. Proceso Beta solicita lock exclusivo y queda en espera',
             description: 'Proceso Beta intenta adquirir el mismo archivo. El lock está ocupado, por lo que queda en cola streaming gRPC esperando disponibilidad.',
             actionLabel: 'Ejecutar: Beta solicita lock y espera',
           },
@@ -154,13 +154,13 @@ export class DlsSimulation {
         return [
           {
             stepIndex: 0,
-            title: '1. Proceso Alfa adquiere Archivo (EXCLUSIVE)',
+            title: '1. Proceso Alfa adquiere Archivo (Exclusivo)',
             description: 'Alfa inicia withTransaction y toma posesión exclusiva de file:reports_export.',
             actionLabel: 'Ejecutar: Alfa adquiere Archivo',
           },
           {
             stepIndex: 1,
-            title: '2. Proceso Beta adquiere Red (EXCLUSIVE)',
+            title: '2. Proceso Beta adquiere Red (Exclusivo)',
             description: 'Beta inicia withTransaction concurrente y toma posesión exclusiva de network:cloud_uploader.',
             actionLabel: 'Ejecutar: Beta adquiere Red',
           },
@@ -263,7 +263,7 @@ export class DlsSimulation {
         return {
           id: `dls_sr_${now}_2`,
           timestamp: now,
-          method: `// Salida de withTransaction de ambos workers:\n// Caerus libera automáticamente los locks asociados a las transacciones`,
+          method: `// Salida de withTransaction de ambos procesos:\n// Caerus libera automáticamente los locks asociados a las transacciones`,
           argsString: '',
           action: 'auto-release',
           status: 'RELEASED',

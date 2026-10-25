@@ -121,31 +121,31 @@ export function DlsPlayground({
       case "IDLE":
         return (
           <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-[10px]">
-            IDLE
+            En espera
           </Badge>
         )
       case "HOLDING":
         return (
           <Badge variant="outline" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 text-[10px]">
-            HOLDING LOCK
+            Con lock
           </Badge>
         )
       case "WAITING":
         return (
           <Badge variant="outline" className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 text-[10px] animate-pulse">
-            WAITING (STREAM)
+            En cola
           </Badge>
         )
       case "ABORTED":
         return (
           <Badge variant="outline" className="bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30 text-[10px]">
-            ABORTED (DEADLOCK)
+            Víctima de deadlock
           </Badge>
         )
       case "COMPLETED":
         return (
           <Badge variant="outline" className="bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/30 text-[10px]">
-            COMPLETED
+            Terminado
           </Badge>
         )
     }
@@ -162,7 +162,7 @@ export function DlsPlayground({
             <div data-tour="dls-overview" className="min-w-0">
               <CardTitle className="text-base font-bold flex items-center gap-2">
                 <Lock className="h-4 w-4 text-primary" />
-                Distributed Locking System (DLS)
+                Distributed Locking Service (DLS)
               </CardTitle>
               <CardDescription className="text-xs mt-0.5">
                 Simulación paso a paso con <code>withTransaction</code>, colas streaming y resolución automática de interbloqueos.
@@ -238,7 +238,7 @@ export function DlsPlayground({
                   <span>Lectura Compartida</span>
                 </div>
                 <p className="text-[11px] text-muted-foreground leading-snug break-words">
-                  Múltiples procesos leen en paralelo en modo SHARED_READ sin bloquearse.
+                  Múltiples procesos leen en paralelo en modo lectura compartida sin bloquearse.
                 </p>
               </button>
             </div>
@@ -375,15 +375,15 @@ export function DlsPlayground({
                           variant="outline"
                           className={
                             res.mode === "EXCLUSIVE"
-                              ? "bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500/30 text-[10px] font-mono"
-                              : "bg-blue-500/20 text-blue-800 dark:text-blue-300 border-blue-500/30 text-[10px] font-mono"
+                              ? "bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500/30 text-[10px]"
+                              : "bg-blue-500/20 text-blue-800 dark:text-blue-300 border-blue-500/30 text-[10px]"
                           }
                         >
-                          {res.mode}
+                          {res.mode === "EXCLUSIVE" ? "Exclusivo" : "Lectura compartida"}
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-[10px]">
-                          LIBRE
+                          Libre
                         </Badge>
                       )}
                     </div>

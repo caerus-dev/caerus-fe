@@ -44,7 +44,7 @@ const caerus = new CaerusClient({
   argsString: "{ endpoint: 'api.caerus.dev', apiKey: 'caer_live_sim_demo' }",
   action: "init",
   status: "SUCCESS",
-  resultSummary: "Caerus SRE Client listo. Conectado a api.caerus.dev",
+  resultSummary: "Cliente Caerus SRE listo. Conectado a api.caerus.dev",
   durationMs: 0,
 })
 
@@ -60,7 +60,7 @@ const dls = new DlsClient({
   argsString: "{ endpoint: 'api.caerus.dev', apiKey: 'caer_live_sim_demo' }",
   action: "init",
   status: "SUCCESS",
-  resultSummary: "Caerus DLS Client listo. Conectado a api.caerus.dev",
+  resultSummary: "Cliente Caerus DLS listo. Conectado a api.caerus.dev",
   durationMs: 0,
 })
 
@@ -185,7 +185,7 @@ export function PlaygroundView({
               </Badge>
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              Caerus Live Playground
+              Playground en Vivo
             </h1>
             <p className="text-sm text-muted-foreground max-w-2xl">
               Experimenta con la gestión de concurrencia y locking distribuido.

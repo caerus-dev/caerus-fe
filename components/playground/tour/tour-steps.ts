@@ -28,7 +28,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'control',
     target: 'sre-policy',
     title: 'Política de conflicto',
-    body: 'FAIL rechaza de inmediato al segundo solicitante. QUEUE lo coloca en una cola FIFO. Para este recorrido se usa FAIL.',
+    body: 'Fallo automático rechaza de inmediato al segundo solicitante. Cola (Fila FIFO) lo coloca en una fila de espera por orden de llegada. Para este recorrido se usa Fallo automático.',
     onNext: { type: 'set-option', value: 'FAIL' },
   },
   {
@@ -46,7 +46,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'observe',
     target: 'sre-seat-a1',
     title: 'La butaca A1 cambió',
-    body: 'A1 aparece resaltada y marcada con el nombre de Ana: tiene una reserva temporal (PENDING) a su nombre.',
+    body: 'A1 aparece resaltada y marcada con el nombre de Ana: tiene una reserva temporal pendiente a su nombre.',
   },
   {
     id: 'sre-sessions',
@@ -54,7 +54,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'observe',
     target: 'sre-sessions',
     title: 'Estado de cada sesión',
-    body: 'Cada tarjeta simula el navegador de un cliente. La de Ana indica RESERVA ACTIVA, con el TTL de 120 s y el ID del holder.',
+    body: 'Cada tarjeta simula el navegador de un cliente. La de Ana indica RESERVA ACTIVA (Pendiente), con el TTL de 120 s y el ID del holder.',
   },
   {
     id: 'sre-stats',
@@ -87,7 +87,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'observe',
     target: 'sre-session-beto',
     title: 'El conflicto se resuelve',
-    body: 'Con FAIL, Beto recibe un rechazo inmediato y no hay sobreventa. Con QUEUE quedaría en la cola. El Inspector registra el resultado.',
+    body: 'Con la política de fallo automático, Beto recibe un rechazo inmediato y no hay sobreventa. Con la política de cola quedaría en la fila de espera. El Inspector registra el resultado.',
   },
   {
     id: 'sre-reset',
@@ -130,7 +130,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'control',
     target: 'dls-step-card',
     title: 'Alfa adquiere el Archivo',
-    body: 'Al continuar, la guía ejecuta el paso 1: el Proceso Alfa toma un lock EXCLUSIVE sobre el Archivo.',
+    body: 'Al continuar, la guía ejecuta el paso 1: el Proceso Alfa toma un lock exclusivo sobre el Archivo.',
     onNext: { type: 'run-step', stepIndex: 0 },
   },
   {
@@ -139,7 +139,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'observe',
     target: 'dls-resources',
     title: 'Dueño y fencing token',
-    body: 'El Archivo muestra su dueño, el modo EXCLUSIVE y un fencing token. Ese token creciente permite rechazar escrituras de dueños anteriores.',
+    body: 'El Archivo muestra su dueño, el modo Exclusivo y un fencing token. Ese token creciente permite rechazar escrituras de dueños anteriores.',
   },
   {
     id: 'dls-log',
@@ -155,7 +155,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'control',
     target: 'dls-step-card',
     title: 'Beta adquiere la Red',
-    body: 'Al continuar, se ejecuta el paso 2: el Proceso Beta toma el lock EXCLUSIVE sobre el recurso de Red.',
+    body: 'Al continuar, se ejecuta el paso 2: el Proceso Beta toma el lock exclusivo sobre el recurso de Red.',
     onNext: { type: 'run-step', stepIndex: 1 },
   },
   {
@@ -198,7 +198,7 @@ export const TOUR_STEPS: TourStep[] = [
     kind: 'observe',
     target: 'dls-workers',
     title: 'Resultado de la detección',
-    body: 'El detector aborta una de las transacciones (ABORTED) y libera sus locks, de modo que el otro proceso puede continuar. El Inspector registra el evento.',
+    body: 'El detector aborta una de las transacciones y libera sus locks, de modo que el otro proceso puede continuar. El Inspector registra el evento.',
   },
   {
     id: 'done',

@@ -71,7 +71,7 @@ export function SrePlayground({
             stepIndex: 0,
             title: "1. Ana intenta reservar la butaca A1",
             description:
-              "Ana selecciona la butaca A1. Caerus genera una reserva temporal exclusiva por 120 segundos (estado PENDING) para que complete el pago.",
+              "Ana selecciona la butaca A1. Caerus genera una reserva temporal exclusiva por 120 segundos (estado pendiente) para que complete el pago.",
             actionLabel: "Ana reserva butaca A1",
             action: () => {
               simulation.reset()
@@ -83,7 +83,7 @@ export function SrePlayground({
             stepIndex: 1,
             title: "2. Beto intenta reservar la misma butaca A1",
             description:
-              "Beto intenta apartar A1 al mismo tiempo. Al estar configurada la política FAIL, Caerus rechaza la solicitud de inmediato para evitar sobreventas.",
+              "Beto intenta apartar A1 al mismo tiempo. Al estar configurada la política de fallo automático, Caerus rechaza la solicitud de inmediato para evitar sobreventas.",
             actionLabel: "Beto intenta reservar A1",
             action: () => {
               const res = simulation.takeSeat("A1", "Beto")
@@ -94,7 +94,7 @@ export function SrePlayground({
             stepIndex: 2,
             title: "3. Ana completa el pago y confirma la compra",
             description:
-              "Ana finaliza el pago. Caerus consolida la compra definitivamente (estado SOLD) y cancela el temporizador de expiración.",
+              "Ana finaliza el pago. Caerus consolida la compra definitivamente y cancela el temporizador de expiración.",
             actionLabel: "Ana confirma su compra",
             action: () => {
               const logs = simulation.confirmHeldSeats("A1")
@@ -118,7 +118,7 @@ export function SrePlayground({
             stepIndex: 0,
             title: "1. Ana intenta reservar la butaca A1",
             description:
-              "Ana selecciona la butaca A1. Caerus genera una reserva temporal por 120 segundos para que complete la compra.",
+              "Ana selecciona la butaca A1. Caerus genera una reserva temporal por 120 segundos (estado pendiente) para que complete la compra.",
             actionLabel: "Ana reserva butaca A1",
             action: () => {
               simulation.reset()
@@ -128,9 +128,9 @@ export function SrePlayground({
           },
           {
             stepIndex: 1,
-            title: "2. Beto compite por A1 y entra en la fila justa (QUEUE)",
+            title: "2. Beto compite por A1 y entra en la fila justa",
             description:
-              "Beto intenta reservar la misma butaca. Con la política QUEUE, Caerus no lo rechaza: lo coloca en espera en la posición #1 de la fila justa.",
+              "Beto intenta reservar la misma butaca. Con la política de cola, Caerus no lo rechaza: lo coloca en espera en la posición #1 de la fila justa.",
             actionLabel: "Beto entra en cola FIFO",
             action: () => {
               const res = simulation.takeSeat("A1", "Beto")
@@ -236,7 +236,7 @@ export function SrePlayground({
             <div data-tour="sre-overview" className="min-w-0">
               <CardTitle className="text-base font-bold flex items-center gap-2">
                 <Ticket className="h-4 w-4 text-primary" />
-                Single Resource Execution (SRE) · Venta de Butacas
+                Shared Resource Engine (SRE) · Venta de Butacas
               </CardTitle>
               <CardDescription className="text-xs mt-0.5">
                 Reserva temporal atómica con plantillas unitarias y TTL. Previene sobreventa sin bloqueos pesados.
@@ -254,8 +254,8 @@ export function SrePlayground({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="FAIL" className="text-xs">FAIL (Fast-Reject)</SelectItem>
-                    <SelectItem value="QUEUE" className="text-xs">QUEUE (Cola FIFO)</SelectItem>
+                    <SelectItem value="FAIL" className="text-xs">Fallo automático</SelectItem>
+                    <SelectItem value="QUEUE" className="text-xs">Cola (Fila FIFO)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -399,10 +399,10 @@ export function SrePlayground({
                       <span className="font-semibold text-foreground">
                         {a1Seat?.holderUser === "Ana"
                           ? a1Seat.status === "SOLD"
-                            ? "COMPRA CONFIRMADA (SOLD)"
-                            : "RESERVA ACTIVA (PENDING)"
+                            ? "COMPRA CONFIRMADA"
+                            : "RESERVA ACTIVA (Pendiente)"
                           : a1Seat?.status === "SOLD"
-                          ? "COMPRA FINALIZADA (SOLD)"
+                          ? "COMPRA FINALIZADA"
                           : "SIN RESERVA"}
                       </span>
                     </div>
@@ -431,8 +431,8 @@ export function SrePlayground({
                       <span className="font-semibold text-foreground">
                         {a1Seat?.holderUser === "Beto"
                           ? a1Seat.status === "SOLD"
-                            ? "COMPRA CONFIRMADA (SOLD)"
-                            : "RESERVA ACTIVA (PENDING)"
+                            ? "COMPRA CONFIRMADA"
+                            : "RESERVA ACTIVA (Pendiente)"
                           : a1Queue.some((q) => q.user === "Beto")
                           ? "EN COLA FIFO (Posición #1)"
                           : executedSteps.includes(1) && policy === "FAIL"
@@ -502,7 +502,7 @@ export function SrePlayground({
                     key={seat.code}
                     data-tour={seat.code === "A1" ? "sre-seat-a1" : undefined}
                     className={`aspect-square rounded-md border flex flex-col items-center justify-center text-xs font-mono font-bold transition-all relative cursor-default ${getSeatColor(seat.status)}`}
-                    title={`${seat.code} · ${seat.status}${hasQueue ? ` · (${queueForSeat.length} en cola)` : ""}`}
+                    title={`${seat.code} · ${seat.status === "AVAILABLE" ? "Disponible" : seat.status === "SOLD" ? "Confirmada" : `Reservada (${seat.holderUser})`}${hasQueue ? ` · (${queueForSeat.length} en cola)` : ""}`}
                   >
                     <span>{seat.code}</span>
                     {seat.holderUser === "Ana" && (
@@ -539,10 +539,10 @@ export function SrePlayground({
             <strong>1. Aprovisionamiento:</strong> Cada butaca se registra previamente en el inventario con su plantilla de concurrencia mediante <code>await caerus.createUnitary(&apos;cinema_seats&apos;, &apos;seat_a1&apos;)</code> (stock exacto = 1).
           </span>
           <span className="block">
-            <strong>2. Reserva Concurrente:</strong> Al intentar comprar, el backend invoca <code>caerus.unitary(&apos;seat_a1&apos;).take(&#123; ttlSeconds: 120 &#125;)</code> emitiendo un lease temporal atómico (<code>ResourceHolder</code> en estado <code>PENDING</code>). Si compiten dos usuarios, la política <code>FAIL</code> rechaza la colisión con <code>ConflictError</code> garantizando cero sobreventa, y la política <code>QUEUE</code> encola la solicitud en orden FIFO para asignarla automáticamente al liberarse el holder.
+            <strong>2. Reserva Concurrente:</strong> Al intentar comprar, el backend invoca <code>caerus.unitary(&apos;seat_a1&apos;).take(&#123; ttlSeconds: 120 &#125;)</code> emitiendo una reserva temporal atómica (<code>ResourceHolder</code> en estado <code>PENDING</code>). Si compiten dos usuarios, la política de <strong>fallo automático</strong> rechaza la colisión con <code>ConflictError</code> garantizando cero sobreventa, y la política de <strong>cola</strong> encola la solicitud en orden FIFO para asignarla automáticamente al liberarse el holder.
           </span>
           <span className="block">
-            <strong>3. Confirmación Definitiva:</strong> Al completarse el pago, <code>caerus.confirm(holderId)</code> asienta la butaca como vendida (<code>SOLD</code>) y cancela el TTL.
+            <strong>3. Confirmación Definitiva:</strong> Al completarse el pago, <code>caerus.confirm(holderId)</code> asienta la butaca como confirmada definitivamente y cancela el TTL.
           </span>
         </p>
       </div>
