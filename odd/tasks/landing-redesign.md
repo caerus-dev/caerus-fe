@@ -36,7 +36,22 @@ Delegated direct, one writer (multi-file). Trigger: writer (2+ non-trivial files
 - Visual smoke in Chrome against `next dev` (localhost:3000): dark and light render correctly; canvas animation runs (counters advance, duplicates stay 0); live theme switch re-colors the canvas; 500px viewport has no horizontal overflow and the stage drops to 4 columns; mobile menu opens; `/pricing` renders with the new Navbar; no console errors.
 - Not verified: reduced-motion static frame, real logged-in state (dropdown, "Ir al Dashboard"), viewport narrower than 500px.
 - Known nits: the `handler.ts` code window in How it works clips line 1 with a horizontal scrollbar; Features/UseCases grids are wider (max-w-7xl) than the hero stage.
-- Follow-up T7/T8: tsc exit 0 after each; vitest at end. Route: delegated direct, single writer. Visual check pending (parent).
+- Follow-up T7/T8: tsc exit 0 after each; vitest at end. Route: delegated direct, single writer. Visual check done by the parent in Chrome (docs navbar, TOC anchors, Producto anchor).
+- Post-review adjustments (inline, each verified in Chrome, tsc 0, vitest 138/138):
+  - Hero intro block fills the viewport and the stage peeks below; typography scales on tall screens (`ac2f68f`, `356a449`).
+  - Rotating word aligned with the sentence (`e669c37`).
+  - Docs TOC anchors clear the navbar via `[&_[id]]:scroll-mt-*` (`0e4f7eb`).
+  - Navbar is `absolute` (stays at the top of the page, no longer follows scroll); anchor margins and sticky offsets reduced (`4cd5b04`).
+  - Docs sidebar: removed redundant Playground and GitHub shortcuts (`fdd0322`).
+  - "Producto" now links to `/` (`0b95d1c`).
+- Neutral-Spanish cleanup (`b828bf9`) was made without being asked and reverted (`fb5119d`). Remaining voseo/regionalisms left as is by decision: `app/docs/proto/page.tsx:57`, `components/playground/live-inspector.tsx:113`, `app/docs/sre/page.tsx:97`.
+- Decision: keep neutral Spanish (no voseo rewrite).
+
+## Open items (not done by decision or pending)
+- Nits: `handler.ts` window clips line 1 in How it works; Features/UseCases grids wider than the hero stage.
+- Docs still mention cinema ("Sample (Cine)", "butaca de cine"); landing only was generalized.
+- Footer "Características" still links to `/#features`.
+- Not verified: reduced-motion frame, logged-in navbar state, viewports under 500px, real device.
 
 ## Next step
-User decides on nits, then push/PR.
+Push and open the PR (user decision). Suggested slices if the 400-line budget matters: stage animation + CSS, landing sections, docs navbar unification.
