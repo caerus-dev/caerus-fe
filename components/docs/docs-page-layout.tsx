@@ -94,7 +94,7 @@ export function DocsPageLayout({
         </header>
 
         {/* Contenido principal */}
-        <div className="space-y-10 prose-headings:scroll-mt-28">{children}</div>
+        <div className="space-y-10 [&_[id]]:scroll-mt-28">{children}</div>
       </article>
 
       {/* Columna Derecha (TOC & Acciones) */}
