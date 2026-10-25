@@ -13,7 +13,7 @@ export function SectionHeading({
   id?: string
 }) {
   return (
-    <div id={id} className={`mx-auto max-w-2xl text-center${id ? " scroll-mt-28" : ""}`}>
+    <div id={id} className={`mx-auto max-w-2xl text-center${id ? " scroll-mt-8" : ""}`}>
       {eyebrow ? (
         <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">{eyebrow}</p>
       ) : null}

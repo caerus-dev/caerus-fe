@@ -29,7 +29,7 @@ export function DocsShell({
       <div className="mx-auto flex-1 w-full max-w-[1600px] pt-24 px-4 sm:px-6 lg:px-8">
         <div className="flex gap-8">
           {/* Sidebar Izquierda (Desktop) */}
-          <aside className="hidden lg:block w-64 shrink-0 sticky top-24 h-[calc(100svh-6rem)] overflow-y-auto py-8 pr-4 border-r border-border/50 scrollbar-thin">
+          <aside className="hidden lg:block w-64 shrink-0 sticky top-6 h-[calc(100svh-3rem)] overflow-y-auto py-8 pr-4 border-r border-border/50 scrollbar-thin">
             <DocsSidebar onSearchClick={() => setSearchOpen(true)} />
           </aside>
 
