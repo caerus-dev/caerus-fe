@@ -1,7 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { DocsHeader } from "./docs-header"
+import { Navbar } from "@/components/landing/navbar"
+import { DocsMobileNav } from "./docs-mobile-nav"
+import { DocsThemeToggle } from "./docs-theme-toggle"
 import { DocsSidebar } from "./docs-sidebar"
 import { DocsSearchDialog } from "./docs-search-dialog"
 import { DocsLanguageProvider } from "./language-context"
@@ -17,13 +19,17 @@ export function DocsShell({
 
   return (
     <DocsLanguageProvider>
-      <div className="min-h-screen flex flex-col bg-background text-foreground">
-        <DocsHeader onSearchClick={() => setSearchOpen(true)} user={user} />
+      <div className="min-h-svh flex flex-col bg-background text-foreground">
+        <Navbar
+          user={user}
+          leading={<DocsMobileNav onSearchClick={() => setSearchOpen(true)} />}
+          actions={<DocsThemeToggle />}
+        />
 
-      <div className="mx-auto flex-1 w-full max-w-[1600px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex-1 w-full max-w-[1600px] pt-24 px-4 sm:px-6 lg:px-8">
         <div className="flex gap-8">
           {/* Sidebar Izquierda (Desktop) */}
-          <aside className="hidden lg:block w-64 shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto py-8 pr-4 border-r border-border/50 scrollbar-thin">
+          <aside className="hidden lg:block w-64 shrink-0 sticky top-24 h-[calc(100svh-6rem)] overflow-y-auto py-8 pr-4 border-r border-border/50 scrollbar-thin">
             <DocsSidebar onSearchClick={() => setSearchOpen(true)} />
           </aside>
 

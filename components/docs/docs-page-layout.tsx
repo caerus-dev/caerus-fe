@@ -94,12 +94,12 @@ export function DocsPageLayout({
         </header>
 
         {/* Contenido principal */}
-        <div className="space-y-10 prose-headings:scroll-mt-20">{children}</div>
+        <div className="space-y-10 prose-headings:scroll-mt-28">{children}</div>
       </article>
 
       {/* Columna Derecha (TOC & Acciones) */}
       {!hideToc && tocItems.length > 0 && (
-        <aside className="hidden xl:block w-64 shrink-0 sticky top-24 h-[calc(100vh-7rem)] overflow-y-auto pl-2 scrollbar-thin">
+        <aside className="hidden xl:block w-64 shrink-0 sticky top-24 h-[calc(100svh-7rem)] overflow-y-auto pl-2 scrollbar-thin">
           <DocsToc items={tocItems} />
         </aside>
       )}

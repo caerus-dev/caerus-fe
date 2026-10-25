@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { useState, MouseEvent } from "react"
+import { useState, type MouseEvent, type ReactNode } from "react"
 import { usePathname } from "next/navigation"
 import { Menu, X, LayoutDashboard, LogOut, Settings } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -30,7 +30,15 @@ interface NavbarUser {
   email?: string;
 }
 
-export function Navbar({ user }: { user?: NavbarUser }) {
+interface NavbarProps {
+  user?: NavbarUser
+  /** Rendered on the left, before the logo. The caller controls its visibility per breakpoint. */
+  leading?: ReactNode
+  /** Rendered on the right, before the auth buttons (desktop) or next to the menu button (mobile). */
+  actions?: ReactNode
+}
+
+export function Navbar({ user, leading, actions }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
 
@@ -66,6 +74,7 @@ export function Navbar({ user }: { user?: NavbarUser }) {
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
       <nav className="mx-auto flex w-full max-w-6xl items-center justify-between rounded-full border border-border/70 bg-background/60 px-4 py-2.5 backdrop-blur-xl md:grid md:grid-cols-3 lg:px-6">
         <div className="flex items-center gap-2 md:justify-self-start">
+          {leading}
           <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.svg" alt="Caerus Logo" width={32} height={32} priority className="h-8 w-auto transition-transform duration-200 hover:scale-105" />
             <span className="text-xl font-semibold tracking-tight">Caerus</span>
@@ -97,6 +106,7 @@ export function Navbar({ user }: { user?: NavbarUser }) {
         </div>
 
         <div className="hidden md:flex md:items-center md:gap-4 md:justify-self-end">
+          {actions}
           {user ? (
             <>
               <Link
@@ -163,18 +173,21 @@ export function Navbar({ user }: { user?: NavbarUser }) {
           )}
         </div>
 
-        <button
-          type="button"
-          className="md:hidden rounded-full p-1.5"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          <span className="sr-only">Alternar menú</span>
-          {mobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
-        </button>
+        <div className="flex items-center gap-1 md:hidden">
+          {actions}
+          <button
+            type="button"
+            className="rounded-full p-1.5"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <span className="sr-only">Alternar menú</span>
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}
