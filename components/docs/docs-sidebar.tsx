@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Search, Sparkles, Github } from "lucide-react"
+import { Search } from "lucide-react"
 import { docsConfig, DocSection } from "./docs-config"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
@@ -56,33 +56,6 @@ export function DocsSidebar({ onSearchClick, onNavigate, className }: DocsSideba
             ⌘K
           </button>
         )}
-      </div>
-
-      {/* Enlaces rápidos */}
-      <div className="flex flex-col gap-0.5">
-        <Link
-          href="/docs/playground"
-          onClick={onNavigate}
-          className={cn(
-            "flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs transition-colors",
-            pathname === "/docs/playground"
-              ? "bg-primary/10 text-primary font-medium"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-          )}
-        >
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-          <span>Playground</span>
-        </Link>
-        <a
-          href={docsConfig.sdkRepoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={onNavigate}
-          className="flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground hover:bg-muted/50"
-        >
-          <Github className="h-3.5 w-3.5" />
-          <span>GitHub</span>
-        </a>
       </div>
 
       {/* Árbol de Secciones */}
