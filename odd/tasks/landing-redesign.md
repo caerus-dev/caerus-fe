@@ -22,6 +22,8 @@ Port the new landing design (`~/Downloads/optimizacion-de-landing-page`, live at
 - [x] T3 Hero restyle with stage (auth-aware CTAs kept) (commit a95b086)
 - [x] T4 Features / CodeExamples / UseCases restyle + genericize copy (commit 4daeb9c)
 - [x] T5 How it works + Final CTA + page composition + Navbar/Footer/PricingPreview restyle (commit 4f5727e)
+- [x] T7 Shared floating Navbar in /docs (slots leading/actions), docs-header removed (commit a522144)
+- [x] T8 Land #features (and #como-funciona, #casos) under the pill via SectionHeading id + scroll-mt-28 (commit 54fae4e)
 - [x] T6 Checks (tsc, vitest) passed; visual smoke done in Chrome (see evidence)
 
 ## Route
@@ -34,6 +36,7 @@ Delegated direct, one writer (multi-file). Trigger: writer (2+ non-trivial files
 - Visual smoke in Chrome against `next dev` (localhost:3000): dark and light render correctly; canvas animation runs (counters advance, duplicates stay 0); live theme switch re-colors the canvas; 500px viewport has no horizontal overflow and the stage drops to 4 columns; mobile menu opens; `/pricing` renders with the new Navbar; no console errors.
 - Not verified: reduced-motion static frame, real logged-in state (dropdown, "Ir al Dashboard"), viewport narrower than 500px.
 - Known nits: the `handler.ts` code window in How it works clips line 1 with a horizontal scrollbar; Features/UseCases grids are wider (max-w-7xl) than the hero stage.
+- Follow-up T7/T8: tsc exit 0 after each; vitest at end. Route: delegated direct, single writer. Visual check pending (parent).
 
 ## Next step
 User decides on nits, then push/PR.
