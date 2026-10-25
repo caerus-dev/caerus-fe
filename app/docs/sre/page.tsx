@@ -94,7 +94,7 @@ holder, err := caerus.Unitary("butaca-D9").Take(ctx, &sre.TakeOptions{
               <span>Recurso Múltiple (<code>pooled</code>)</span>
             </h3>
             <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-              Mantiene un inventario con cupo de unidades intercambiables. Ejemplo: 50 combos de palomitas o 30 vacantes de un curso.
+              Mantiene un inventario con cupo de unidades intercambiables. Ejemplo: 50 combos de pochoclos o 30 vacantes de un curso.
             </p>
             <CodeBlock
               snippets={{
