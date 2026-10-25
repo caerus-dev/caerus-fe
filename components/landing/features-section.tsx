@@ -48,9 +48,10 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="scroll-mt-24 px-6 py-24 sm:py-32">
+    <section className="px-6 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
+          id="features"
           title={
             <>
               Todo lo que necesitas para <span className="text-primary">concurrencia</span>

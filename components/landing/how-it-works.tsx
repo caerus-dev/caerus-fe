@@ -41,9 +41,10 @@ const code: Token[][] = [
 
 export function HowItWorks() {
   return (
-    <section id="como-funciona" className="scroll-mt-24 overflow-x-clip px-6 py-24 sm:py-32">
+    <section className="overflow-x-clip px-6 py-24 sm:py-32">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
+          id="como-funciona"
           eyebrow="Cómo funciona"
           title={
             <>

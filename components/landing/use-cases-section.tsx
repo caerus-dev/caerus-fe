@@ -34,9 +34,10 @@ const useCases = [
 
 export function UseCasesSection() {
   return (
-    <section id="casos" className="scroll-mt-24 px-6 py-24 sm:py-32">
+    <section className="px-6 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl">
         <SectionHeading
+          id="casos"
           title={
             <>
               Casos de <span className="text-primary">uso</span>
