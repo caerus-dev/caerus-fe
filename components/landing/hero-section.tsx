@@ -46,7 +46,7 @@ export function HeroSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
             implementar lógica distribuida desde cero.
           </p>
 
-          <div className="mt-8 [@media(min-height:850px)_and_(min-width:1280px)]:mt-10 flex w-full max-w-xs animate-rise flex-col items-center justify-center gap-3 [animation-delay:440ms] motion-reduce:animate-none sm:w-auto sm:max-w-none sm:flex-row">
+          <div className="mt-8 [@media(min-height:850px)_and_(min-width:1280px)]:mt-10 flex w-full max-w-xs animate-rise flex-col items-center justify-center gap-3 [animation-delay:440ms] motion-reduce:animate-none sm:w-auto sm:max-w-none sm:flex-row-reverse">
             <a href={primaryHref} className={primaryCtaClass}>
               {isLoggedIn ? "Ir al Dashboard" : "Comenzar gratis"}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
