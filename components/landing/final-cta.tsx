@@ -27,7 +27,7 @@ export function FinalCta({ isLoggedIn }: { isLoggedIn?: boolean }) {
           <p className="mx-auto mt-5 max-w-xl text-pretty text-lg text-muted-foreground">
             Empieza gratis con el plan Developer y escala cuando crezca tu tráfico.
           </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row-reverse">
             <a
               href={primaryHref}
               className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary px-7 text-base font-medium text-primary-foreground shadow-[0_10px_40px_-6px_color-mix(in_oklab,var(--primary)_75%,transparent)] transition-[box-shadow,transform] hover:shadow-[0_10px_60px_-4px_color-mix(in_oklab,var(--primary)_95%,transparent)] active:translate-y-px sm:w-auto"
