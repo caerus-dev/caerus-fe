@@ -285,7 +285,7 @@ export function MetricsTab({ appId, selectedEnv, currentEnvDetails }: MetricsTab
                 key: "totalBillingUnits", 
                 label: "Unidades de facturación", 
                 color: "var(--chart-5)",
-                description: "Cantidad total de unidades de facturación generadas por el uso de la plataforma en este período."
+                description: "Cantidad de unidades de facturación consumidas en este entorno durante el período seleccionado."
               }} 
               data={statsData} 
             />
