@@ -79,7 +79,7 @@ export default async function PricingPage() {
               return (
                 <div
                   key={plan.code}
-                  className={`relative flex flex-col rounded-2xl border p-8 backdrop-blur-sm transition-all duration-300 ${
+                  className={`relative flex flex-col rounded-xl border p-8 backdrop-blur-sm transition-all duration-300 ${
                     meta.highlight
                       ? "border-primary bg-card/80 shadow-2xl shadow-primary/15 scale-105 z-10"
                       : "border-border bg-card/50 hover:border-border/80 hover:bg-card/70"
@@ -159,7 +159,7 @@ export default async function PricingPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {faqs.map((faq, i) => (
-                <div key={i} className="p-5 rounded-xl border border-border/60 bg-card/40 space-y-2">
+                <div key={i} className="p-5 rounded-lg border border-border/60 bg-card/40 space-y-2">
                   <h3 className="font-semibold text-sm flex items-start gap-2">
                     <HelpCircle className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <span>{faq.question}</span>

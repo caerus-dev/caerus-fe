@@ -75,7 +75,7 @@ export function DocsToc({ items = [], className }: DocsTocProps) {
       )}
 
       {/* Card de Recursos y Repositorios (estilo SlothUI) */}
-      <div className="rounded-xl border border-border/70 bg-muted/30 p-3.5 flex flex-col gap-3">
+      <div className="rounded-lg border border-border/70 bg-muted/30 p-3.5 flex flex-col gap-3">
         <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
           <Github className="h-4 w-4 text-primary" />
           <span>Repositorios del Proyecto</span>

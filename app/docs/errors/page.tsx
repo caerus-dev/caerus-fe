@@ -34,7 +34,7 @@ export default function DocsErrorsPage() {
           El SDK mapea las respuestas binarias de error de gRPC a clases de excepción estándar de JavaScript / TypeScript:
         </p>
 
-        <div className="border border-border/70 rounded-xl overflow-hidden my-4">
+        <div className="border border-border/70 rounded-lg overflow-hidden my-4">
           <Table>
             <TableHeader className="bg-muted/40 text-xs">
               <TableRow>
@@ -300,7 +300,7 @@ if err != nil {
         </h2>
 
         <div className="space-y-3">
-          <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+          <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
             <h4 className="text-sm font-semibold text-foreground mb-1">
               1. "OpenSSL: wrong version number" al conectar localmente
             </h4>
@@ -309,7 +309,7 @@ if err != nil {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+          <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
             <h4 className="text-sm font-semibold text-foreground mb-1">
               2. "Invalid format in endpoint"
             </h4>
@@ -318,7 +318,7 @@ if err != nil {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+          <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
             <h4 className="text-sm font-semibold text-foreground mb-1">
               3. ¿Por qué mi holder cambió de PENDING a EXPIRED?
             </h4>

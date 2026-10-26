@@ -43,7 +43,7 @@ export default function DocsSrePage() {
         </p>
 
         <div className="grid grid-cols-1 gap-6 my-4">
-          <div className="rounded-xl border border-border/70 p-4 bg-muted/20">
+          <div className="rounded-lg border border-border/70 p-4 bg-muted/20">
             <h3 className="font-semibold text-sm text-foreground mb-1 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               <span>Recurso Unitario (<code>unitary</code>)</span>
@@ -88,7 +88,7 @@ holder, err := caerus.Unitary("butaca-D9").Take(ctx, &sre.TakeOptions{
             />
           </div>
 
-          <div className="rounded-xl border border-border/70 p-4 bg-muted/20">
+          <div className="rounded-lg border border-border/70 p-4 bg-muted/20">
             <h3 className="font-semibold text-sm text-foreground mb-1 flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-blue-500" />
               <span>Recurso Múltiple (<code>pooled</code>)</span>
@@ -138,7 +138,7 @@ holder, err := caerus.Pooled("combo-grande").TakeMany(ctx, 3, &sre.TakeOptions{
           Toda reserva devuelve un <strong>Holder</strong> que representa la retención temporal en estado <code>PENDING</code>:
         </p>
 
-        <div className="rounded-xl border border-border/60 bg-muted/30 p-5 font-mono text-xs text-muted-foreground leading-relaxed overflow-x-auto">
+        <div className="rounded-lg border border-border/60 bg-muted/30 p-5 font-mono text-xs text-muted-foreground leading-relaxed overflow-x-auto">
           <pre>{`                      ┌──────────────┐
        take()  ──────▶│   PENDING    │  (Unidades apartadas por TTL)
                       └──────┬───────┘
@@ -298,7 +298,7 @@ holder, err := caerus.Pooled("combo-grande").TakeMany(ctx, 3, &sre.TakeOptions{
       </section>
 
       {/* Enlace a la Especificación gRPC / Proto */}
-      <div className="rounded-xl border border-emerald-500/30 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="rounded-lg border border-emerald-500/30 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Layers className="h-4 w-4 text-emerald-500" />
@@ -317,7 +317,7 @@ holder, err := caerus.Pooled("combo-grande").TakeMany(ctx, 3, &sre.TakeOptions{
       </div>
 
       {/* Enlace a Recursos de Práctica */}
-      <section id="recursos-practica" className="rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent p-6 space-y-3">
+      <section id="recursos-practica" className="rounded-lg border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent p-6 space-y-3">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-amber-500" />
           <h3 className="text-base font-semibold text-foreground">¿Listo para probar el motor SRE?</h3>

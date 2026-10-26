@@ -45,7 +45,7 @@ export default function DocsProtoPage() {
         </p>
 
         {/* Banner de Repositorio caerus-protos */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-primary/30 bg-primary/5 my-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg border border-primary/30 bg-primary/5 my-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 font-mono">
@@ -116,7 +116,7 @@ export default function DocsProtoPage() {
           </h3>
 
           {/* CreateResource */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc CreateResource (CreateResourceRequest) returns (ResourceResponse)
@@ -151,7 +151,7 @@ export default function DocsProtoPage() {
           </div>
 
           {/* UpdateResource */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc UpdateResource (UpdateResourceRequest) returns (ResourceResponse)
@@ -186,7 +186,7 @@ export default function DocsProtoPage() {
           </div>
 
           {/* DeleteResource */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc DeleteResource (DeleteResourceRequest) returns (google.protobuf.Empty)
@@ -217,7 +217,7 @@ export default function DocsProtoPage() {
           </h3>
 
           {/* Take */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc Take (TakeRequest) returns (ResourceHolderResponse)
@@ -257,7 +257,7 @@ message TakeOptionalSettings {
           </div>
 
           {/* Confirm */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc Confirm (ConfirmRequest) returns (ResourceHolderResponse)
@@ -282,7 +282,7 @@ message TakeOptionalSettings {
           </div>
 
           {/* Release */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc Release (ReleaseRequest) returns (google.protobuf.Empty)
@@ -305,7 +305,7 @@ message TakeOptionalSettings {
           </div>
 
           {/* Extend */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc Extend (ExtendRequest) returns (ResourceHolderResponse)
@@ -338,7 +338,7 @@ message TakeOptionalSettings {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-primary">GetResource</span>
                 <Badge variant="outline" className="font-mono text-[10px]">GetResourceRequest</Badge>
@@ -348,7 +348,7 @@ message TakeOptionalSettings {
               </p>
             </div>
 
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-primary">GetResourcesByGroupKey</span>
                 <Badge variant="outline" className="font-mono text-[10px]">GetResourcesByGroupKeyRequest</Badge>
@@ -358,7 +358,7 @@ message TakeOptionalSettings {
               </p>
             </div>
 
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-primary">GetResourceHolder</span>
                 <Badge variant="outline" className="font-mono text-[10px]">GetResourceHolderRequest</Badge>
@@ -368,7 +368,7 @@ message TakeOptionalSettings {
               </p>
             </div>
 
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-primary">GetResourceHoldersList</span>
                 <Badge variant="outline" className="font-mono text-[10px]">GetResourceHoldersListRequest</Badge>
@@ -380,7 +380,7 @@ message TakeOptionalSettings {
           </div>
 
           <div className="space-y-4 pt-2">
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-5 space-y-3">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-5 space-y-3">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground">
                 Mensajes de Consulta y Filtros SRE
               </h4>
@@ -416,7 +416,7 @@ message GetResourceHoldersListRequest {
               />
             </div>
 
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-5 space-y-3">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-5 space-y-3">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground">
                 Modelos de Entidad y Respuestas SRE
               </h4>
@@ -491,7 +491,7 @@ message GetResourceHoldersListResponse {
           </h3>
 
           {/* BeginTransaction */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc BeginTransaction (BeginTransactionRequest) returns (BeginTransactionResponse)
@@ -519,7 +519,7 @@ message BeginTransactionResponse {
           </div>
 
           {/* RenewTransaction */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc RenewTransaction (RenewTransactionRequest) returns (RenewTransactionResponse)
@@ -550,7 +550,7 @@ message RenewTransactionResponse {
           </div>
 
           {/* ReleaseTransactionLocks */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc ReleaseTransactionLocks (ReleaseTransactionLocksRequest) returns (google.protobuf.Empty)
@@ -581,7 +581,7 @@ message RenewTransactionResponse {
           </h3>
 
           {/* AcquireLock */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc AcquireLock (AcquireLockRequest) returns (stream AcquireLockResponse)
@@ -647,7 +647,7 @@ message AcquireLockResponse {
           </div>
 
           {/* ReleaseLock */}
-          <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+          <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground break-words">
                 rpc ReleaseLock (ReleaseLockRequest) returns (google.protobuf.Empty)
@@ -680,7 +680,7 @@ message AcquireLockResponse {
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-purple-500">GetLockStatus</span>
                 <Badge variant="outline" className="font-mono text-[10px]">GetLockStatusResponse</Badge>
@@ -690,7 +690,7 @@ message AcquireLockResponse {
               </p>
             </div>
 
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-purple-500">GetTransactionStatus</span>
                 <Badge variant="outline" className="font-mono text-[10px]">GetTransactionStatusResponse</Badge>
@@ -702,7 +702,7 @@ message AcquireLockResponse {
           </div>
 
           <div className="space-y-4 pt-2">
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-5 space-y-3">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-5 space-y-3">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground">
                 Inspección de Bloqueos DLS
               </h4>
@@ -730,7 +730,7 @@ message LockHolderInfo {
               />
             </div>
 
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-5 space-y-3">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-5 space-y-3">
               <h4 className="font-mono font-bold text-xs sm:text-sm text-foreground">
                 Diagnóstico de Transacciones DLS
               </h4>
@@ -774,7 +774,7 @@ message TransactionLockInfo {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-1.5">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-1.5">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <span className="font-mono font-bold text-sm text-amber-500">FAILED_PRECONDITION</span>
               <Badge variant="secondary" className="font-mono text-[11px]">HTTP 409 Conflict</Badge>
@@ -784,7 +784,7 @@ message TransactionLockInfo {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-1.5">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-1.5">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <span className="font-mono font-bold text-sm text-blue-500">NOT_FOUND</span>
               <Badge variant="secondary" className="font-mono text-[11px]">HTTP 404 Not Found</Badge>
@@ -794,7 +794,7 @@ message TransactionLockInfo {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-1.5">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-1.5">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <span className="font-mono font-bold text-sm text-purple-500">UNAUTHENTICATED</span>
               <Badge variant="secondary" className="font-mono text-[11px]">HTTP 401 Unauthorized</Badge>
@@ -804,7 +804,7 @@ message TransactionLockInfo {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-1.5">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-1.5">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <span className="font-mono font-bold text-sm text-red-500">INVALID_ARGUMENT</span>
               <Badge variant="secondary" className="font-mono text-[11px]">HTTP 400 Bad Request</Badge>
@@ -814,7 +814,7 @@ message TransactionLockInfo {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-1.5 md:col-span-2">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-1.5 md:col-span-2">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <span className="font-mono font-bold text-sm text-foreground">DEADLINE_EXCEEDED</span>
               <Badge variant="secondary" className="font-mono text-[11px]">HTTP 504 Gateway Timeout</Badge>
@@ -825,7 +825,7 @@ message TransactionLockInfo {
           </div>
         </div>
 
-        <div className="flex items-center justify-between p-4 rounded-xl border border-border/70 bg-muted/20 mt-6 flex-wrap gap-4">
+        <div className="flex items-center justify-between p-4 rounded-lg border border-border/70 bg-muted/20 mt-6 flex-wrap gap-4">
           <div className="space-y-0.5">
             <h4 className="text-sm font-semibold text-foreground">¿Utilizas TypeScript o Node.js?</h4>
             <p className="text-xs text-muted-foreground">Consulta la guía del SDK oficial con tipado estricto y manejo de excepciones.</p>

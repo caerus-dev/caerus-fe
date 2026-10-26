@@ -279,7 +279,7 @@ export function SrePlayground({
           {/* Stepper View */}
           <div className="space-y-4">
               {/* Stepper Pill Bar */}
-              <div className="min-w-0 p-3.5 rounded-xl bg-muted/40 border border-border/80 space-y-3">
+              <div className="min-w-0 p-3.5 rounded-lg bg-muted/40 border border-border/80 space-y-3">
                 <div className="flex max-w-full items-center gap-1.5 overflow-x-auto pb-1">
                   {stepperSteps.map((st, i) => {
                     const isExecuted = executedSteps.includes(i)
@@ -289,7 +289,7 @@ export function SrePlayground({
                       <button
                         key={st.title}
                         onClick={() => handleStepClick(i)}
-                        className={`h-7 px-2.5 rounded-full text-xs font-mono shrink-0 flex items-center gap-1.5 transition-all ${
+                        className={`h-7 px-2.5 rounded-md text-xs font-mono shrink-0 flex items-center gap-1.5 transition-all ${
                           isCurrent
                             ? "bg-primary text-primary-foreground font-semibold shadow-sm"
                             : isExecuted
@@ -485,7 +485,7 @@ export function SrePlayground({
           </div>
 
           {/* Cinema Screen Simulation */}
-          <div className="p-5 rounded-xl bg-muted/40 border border-border flex flex-col items-center">
+          <div className="p-5 rounded-lg bg-muted/40 border border-border flex flex-col items-center">
             <div className="w-4/5 max-w-md h-3 rounded-t-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-80 mb-1" />
             <div className="text-[11px] font-mono tracking-widest text-muted-foreground uppercase mb-6 flex items-center gap-1.5">
               <span>━━ PANTALLA ━━</span>

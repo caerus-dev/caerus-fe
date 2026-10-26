@@ -501,9 +501,9 @@ export function SetupPaymentMethodModal({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {isLoadingPlans && plans.length === 0 ? (
                 <>
-                  <div className="h-64 rounded-xl border border-border bg-muted/40 animate-pulse" />
-                  <div className="h-64 rounded-xl border border-border bg-muted/40 animate-pulse" />
-                  <div className="h-64 rounded-xl border border-border bg-muted/40 animate-pulse" />
+                  <div className="h-64 rounded-lg border border-border bg-muted/40 animate-pulse" />
+                  <div className="h-64 rounded-lg border border-border bg-muted/40 animate-pulse" />
+                  <div className="h-64 rounded-lg border border-border bg-muted/40 animate-pulse" />
                 </>
               ) : (
                 plans.map((p) => {
@@ -519,7 +519,7 @@ export function SetupPaymentMethodModal({
                           setSelectedPlanCode(p.code);
                         }
                       }}
-                      className={`rounded-xl border-2 p-4 transition-all flex flex-col justify-between relative ${
+                      className={`rounded-lg border-2 p-4 transition-all flex flex-col justify-between relative ${
                         isEnterprise
                           ? "border-border/70 hover:border-purple-500/50 bg-card/60"
                           : isSelected
@@ -528,17 +528,17 @@ export function SetupPaymentMethodModal({
                       }`}
                     >
                       {p.code === "DEVELOPER" && (
-                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-[9px] font-bold uppercase tracking-wider py-0.5 px-2.5 rounded-full">
+                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-[9px] font-bold uppercase tracking-wider py-0.5 px-2.5 rounded-md">
                           Comienza gratis
                         </span>
                       )}
                       {p.code === "STARTUP" && (
-                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[9px] font-bold uppercase tracking-wider py-0.5 px-2.5 rounded-full">
+                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-[9px] font-bold uppercase tracking-wider py-0.5 px-2.5 rounded-md">
                           Más popular
                         </span>
                       )}
                       {isEnterprise && (
-                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-[9px] font-bold uppercase tracking-wider py-0.5 px-2.5 rounded-full">
+                        <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-[9px] font-bold uppercase tracking-wider py-0.5 px-2.5 rounded-md">
                           A medida
                         </span>
                       )}

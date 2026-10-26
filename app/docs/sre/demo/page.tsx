@@ -72,7 +72,7 @@ export default function DocsSreDemoPage() {
           </Card>
         </div>
 
-        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-xs text-muted-foreground leading-relaxed">
+        <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-xs text-muted-foreground leading-relaxed">
           <strong className="text-foreground">Mismo código en la aplicación: </strong>
           La diferencia de comportamiento entre ambas películas reside 100% en la configuración de la plantilla en el dashboard de Caerus, sin necesidad de modificar una sola línea de código en el backend.
         </div>
@@ -87,7 +87,7 @@ export default function DocsSreDemoPage() {
           Todo el código fuente del proyecto, el esquema de variables de entorno (<code>.env.example</code>) y las instrucciones detalladas para ejecutarlo localmente se encuentran disponibles en GitHub:
         </p>
 
-        <div className="rounded-xl border border-border/70 bg-muted/20 p-5 space-y-4">
+        <div className="rounded-lg border border-border/70 bg-muted/20 p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">

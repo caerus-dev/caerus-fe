@@ -245,7 +245,7 @@ export function DlsPlayground({
           </div>
 
           {/* Stepper Walkthrough (Similar a Google UCP Playground) */}
-          <div className="min-w-0 p-4 rounded-xl bg-muted/40 border border-border/80 space-y-3">
+          <div className="min-w-0 p-4 rounded-lg bg-muted/40 border border-border/80 space-y-3">
             {/* Stepper Pill Bar */}
             <div className="flex max-w-full items-center gap-1.5 overflow-x-auto pb-1">
               {steps.map((st, i) => {
@@ -256,7 +256,7 @@ export function DlsPlayground({
                   <button
                     key={st.stepIndex}
                     onClick={() => handleStepClick(i)}
-                    className={`h-7 px-2.5 rounded-full text-xs font-mono shrink-0 flex items-center gap-1.5 transition-all ${
+                    className={`h-7 px-2.5 rounded-md text-xs font-mono shrink-0 flex items-center gap-1.5 transition-all ${
                       isCurrent
                         ? "bg-primary text-primary-foreground font-semibold shadow-sm"
                         : isExecuted

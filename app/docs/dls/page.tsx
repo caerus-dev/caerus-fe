@@ -90,7 +90,7 @@ export default function DocsDlsPage() {
           En sistemas distribuidos, un lock básico <strong>no es suficiente</strong>. Si un proceso sufre una pausa prolongada de Garbage Collection (GC) o latencia de red, su lock puede vencer en el servidor mientras el proceso cree que todavía lo tiene. Al despertar, podría escribir datos desfasados pisando al nuevo dueño legítimo del lock (problema conocido como <em>Split-Brain</em>).
         </p>
 
-        <div className="rounded-xl border border-primary/40 bg-primary/5 p-4 space-y-2 text-xs text-muted-foreground leading-relaxed">
+        <div className="rounded-lg border border-primary/40 bg-primary/5 p-4 space-y-2 text-xs text-muted-foreground leading-relaxed">
           <div className="flex items-center gap-2 font-semibold text-foreground">
             <Key className="h-4 w-4 text-primary" />
             <span>Garantía de Secuencia Monótona (Consenso Distribuido)</span>
@@ -234,7 +234,7 @@ func main() {
       </section>
 
       {/* Enlace a la Especificación gRPC / Proto */}
-      <div className="rounded-xl border border-purple-500/30 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="rounded-lg border border-purple-500/30 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Lock className="h-4 w-4 text-purple-500" />
@@ -253,7 +253,7 @@ func main() {
       </div>
 
       {/* Enlace a Recursos de Práctica */}
-      <section id="recursos-practica" className="rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-transparent p-6 space-y-3">
+      <section id="recursos-practica" className="rounded-lg border border-purple-500/30 bg-gradient-to-r from-purple-500/10 to-transparent p-6 space-y-3">
         <div className="flex items-center gap-2">
           <Cpu className="h-5 w-5 text-purple-500" />
           <h3 className="text-base font-semibold text-foreground">¿Listo para probar el motor DLS?</h3>
