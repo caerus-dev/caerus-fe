@@ -13,7 +13,7 @@ export function DocsMobileNav({ onSearchClick }: { onSearchClick?: () => void })
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 rounded-full text-muted-foreground">
+        <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 rounded-md text-muted-foreground">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Abrir menú de navegación</span>
         </Button>

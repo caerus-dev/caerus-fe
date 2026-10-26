@@ -17,7 +17,7 @@ export function DocsThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="h-8 w-8 rounded-full text-muted-foreground"
+      className="h-8 w-8 rounded-md text-muted-foreground"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       title="Cambiar tema"
       disabled={!mounted}

@@ -9,7 +9,7 @@ const primaryCtaClass =
   "group relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-md bg-primary px-7 text-base font-medium [@media(min-height:850px)_and_(min-width:1280px)]:h-14 [@media(min-height:850px)_and_(min-width:1280px)]:px-9 [@media(min-height:850px)_and_(min-width:1280px)]:text-lg text-primary-foreground shadow-[0_10px_40px_-6px_color-mix(in_oklab,var(--primary)_75%,transparent)] transition-[box-shadow,transform] hover:shadow-[0_10px_60px_-4px_color-mix(in_oklab,var(--primary)_95%,transparent)] active:translate-y-px sm:w-auto"
 
 const secondaryCtaClass =
-  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-border bg-secondary/60 px-7 text-base font-medium [@media(min-height:850px)_and_(min-width:1280px)]:h-14 [@media(min-height:850px)_and_(min-width:1280px)]:px-9 [@media(min-height:850px)_and_(min-width:1280px)]:text-lg text-foreground backdrop-blur transition-colors hover:border-primary/40 hover:bg-secondary sm:w-auto"
+  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-border bg-secondary/60 px-7 text-base font-medium [@media(min-height:850px)_and_(min-width:1280px)]:h-14 [@media(min-height:850px)_and_(min-width:1280px)]:px-9 [@media(min-height:850px)_and_(min-width:1280px)]:text-lg text-foreground backdrop-blur transition-colors hover:border-primary/40 hover:bg-secondary sm:w-auto"
 
 export function HeroSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
   const primaryHref = isLoggedIn ? "/dashboard" : "/auth/login?screen_hint=signup&returnTo=/dashboard"

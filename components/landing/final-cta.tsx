@@ -37,7 +37,7 @@ export function FinalCta({ isLoggedIn }: { isLoggedIn?: boolean }) {
             </a>
             <Link
               href="/pricing"
-              className="inline-flex h-12 w-full items-center justify-center rounded-full border border-border bg-background/60 px-7 text-base font-medium backdrop-blur transition-colors hover:border-primary/40 sm:w-auto"
+              className="inline-flex h-12 w-full items-center justify-center rounded-md border border-border bg-background/60 px-7 text-base font-medium backdrop-blur transition-colors hover:border-primary/40 sm:w-auto"
             >
               Ver planes
             </Link>
