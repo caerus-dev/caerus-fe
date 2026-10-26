@@ -70,7 +70,7 @@ const formSchema = z.object({
     const retries = data.maxRetries ?? 5;
     if (interval * retries > 30000) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: "custom",
         message: "El tiempo total de espera acumulado (intervalo x reintentos) no debe superar los 30.000 ms. Usa la estrategia Cola (queue).",
         path: ["retryInterval"],
       });
@@ -102,7 +102,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
     return `/dashboard/applications/${applicationId}?tab=locks`
   }
 
-  const form = useForm<LockFormValues>({
+  const form = useForm<z.input<typeof formSchema>, unknown, LockFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       namespace: "",
@@ -379,7 +379,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                       <FormItem className="space-y-2">
                         <FormLabel>Intervalo de reintento (ms)</FormLabel>
                         <FormControl>
-                          <Input type="number" min={10} max={30000} {...field} />
+                          <Input type="number" min={10} max={30000} {...field} value={(field.value as number | undefined) ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -392,7 +392,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                       <FormItem className="space-y-2">
                         <FormLabel>Máximo de reintentos</FormLabel>
                         <FormControl>
-                          <Input type="number" min={1} max={10} {...field} />
+                          <Input type="number" min={1} max={10} {...field} value={(field.value as number | undefined) ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

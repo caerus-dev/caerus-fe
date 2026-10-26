@@ -101,7 +101,7 @@ export function ResourceForm({
     return `/dashboard/applications/${applicationId}?tab=resources`
   }
 
-  const form = useForm<ResourceFormValues>({
+  const form = useForm<z.input<typeof formSchema>, unknown, ResourceFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
       name: "",
@@ -320,7 +320,7 @@ export function ResourceForm({
                     <FormItem>
                       <FormLabel>TTL por defecto (segundos)</FormLabel>
                       <FormControl>
-                        <Input type="number" min={1} max={86400} {...field} />
+                        <Input type="number" min={1} max={86400} {...field} value={(field.value as number | undefined) ?? ""} />
                       </FormControl>
                       <FormDescription>
                         Tiempo máximo en segundos que una reserva permanece activa antes de liberarse automáticamente.
@@ -386,7 +386,7 @@ export function ResourceForm({
                         <FormItem className="space-y-2">
                           <FormLabel className="text-sm">Intervalo de reintento (segundos)</FormLabel>
                           <FormControl>
-                            <Input type="number" min={1} max={5} {...field} />
+                            <Input type="number" min={1} max={5} {...field} value={(field.value as number | undefined) ?? ""} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -399,7 +399,7 @@ export function ResourceForm({
                         <FormItem className="space-y-2">
                           <FormLabel className="text-sm">Máximo de reintentos</FormLabel>
                           <FormControl>
-                            <Input type="number" min={1} max={5} {...field} />
+                            <Input type="number" min={1} max={5} {...field} value={(field.value as number | undefined) ?? ""} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
