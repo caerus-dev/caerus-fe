@@ -245,7 +245,7 @@ export function CodeExamplesSection() {
         </div>
 
         {/* Code block */}
-        <div className="rounded-2xl border border-border bg-card/80 backdrop-blur-sm overflow-hidden shadow-[0_30px_80px_-40px_color-mix(in_oklab,var(--primary)_35%,transparent)]">
+        <div className="rounded-xl border border-border bg-card/80 backdrop-blur-sm overflow-hidden shadow-[0_30px_80px_-40px_color-mix(in_oklab,var(--primary)_35%,transparent)]">
           {/* Tabs */}
           <div className="flex items-center justify-between border-b border-border bg-secondary/30 px-4">
             <div className="flex gap-1 overflow-x-auto py-2">
@@ -253,7 +253,7 @@ export function CodeExamplesSection() {
                 <button
                   key={example.id}
                   onClick={() => setActiveTab(example.id)}
-                  className={`px-4 py-2 text-sm font-medium rounded-full transition-colors whitespace-nowrap ${
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
                     activeTab === example.id
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -296,7 +296,7 @@ export function CodeExamplesSection() {
             {["TypeScript / Node.js", "Java 17+", "Go 1.26+", "gRPC"].map((sdk) => (
               <span
                 key={sdk}
-                className="px-3 py-1 rounded-full bg-secondary border border-border text-foreground text-xs sm:text-sm"
+                className="px-3 py-1 rounded-md bg-secondary border border-border text-foreground text-xs sm:text-sm"
               >
                 {sdk}
               </span>

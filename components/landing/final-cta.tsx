@@ -7,7 +7,7 @@ export function FinalCta({ isLoggedIn }: { isLoggedIn?: boolean }) {
 
   return (
     <section className="px-4 pb-24 sm:px-6 sm:pb-32">
-      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl border border-primary/25 bg-card px-6 py-20 text-center sm:px-12 sm:py-28">
+      <div className="relative mx-auto max-w-6xl overflow-hidden rounded-xl border border-primary/25 bg-card px-6 py-20 text-center sm:px-12 sm:py-28">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute left-1/2 top-full h-[36rem] w-[60rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklab,var(--primary)_40%,transparent),transparent)] blur-2xl" />
           <div className="absolute inset-0 [background-image:radial-gradient(color-mix(in_oklab,var(--foreground)_9%,transparent)_1px,transparent_1px)] [background-size:20px_20px] [mask-image:linear-gradient(to_bottom,transparent,black)]" />
@@ -30,7 +30,7 @@ export function FinalCta({ isLoggedIn }: { isLoggedIn?: boolean }) {
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a
               href={primaryHref}
-              className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-7 text-base font-medium text-primary-foreground shadow-[0_10px_40px_-6px_color-mix(in_oklab,var(--primary)_75%,transparent)] transition-[box-shadow,transform] hover:shadow-[0_10px_60px_-4px_color-mix(in_oklab,var(--primary)_95%,transparent)] active:translate-y-px sm:w-auto"
+              className="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary px-7 text-base font-medium text-primary-foreground shadow-[0_10px_40px_-6px_color-mix(in_oklab,var(--primary)_75%,transparent)] transition-[box-shadow,transform] hover:shadow-[0_10px_60px_-4px_color-mix(in_oklab,var(--primary)_95%,transparent)] active:translate-y-px sm:w-auto"
             >
               {isLoggedIn ? "Ir al Dashboard" : "Crear cuenta gratis"}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />

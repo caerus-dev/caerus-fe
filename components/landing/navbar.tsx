@@ -79,7 +79,7 @@ export function Navbar({ user, leading, actions }: NavbarProps) {
 
   return (
     <header className="absolute inset-x-0 top-0 z-50 px-4 pt-4">
-      <nav className="mx-auto flex w-full max-w-6xl items-center justify-between rounded-full border border-border/70 bg-background/60 px-4 py-2.5 backdrop-blur-xl md:grid md:grid-cols-3 lg:px-6">
+      <nav className="mx-auto flex w-full max-w-6xl items-center justify-between rounded-md border border-border/70 bg-background/60 px-4 py-2.5 backdrop-blur-xl md:grid md:grid-cols-3 lg:px-6">
         <div className="flex items-center gap-2 md:justify-self-start">
           {leading}
           <Link href="/" className="flex items-center gap-2">
@@ -120,7 +120,7 @@ export function Navbar({ user, leading, actions }: NavbarProps) {
                 href="/dashboard"
                 className={cn(
                   buttonVariants({ size: "sm" }),
-                  "rounded-full glow-primary bg-primary text-primary-foreground font-semibold px-4 hover:bg-primary/95 transition-all hover:scale-105 duration-200"
+                  "rounded-md glow-primary bg-primary text-primary-foreground font-semibold px-4 hover:bg-primary/95 transition-all hover:scale-105 duration-200"
                 )}
               >
                 Dashboard
@@ -170,10 +170,10 @@ export function Navbar({ user, leading, actions }: NavbarProps) {
             </>
           ) : (
             <>
-              <a href="/auth/login?returnTo=/dashboard" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "rounded-full")}>
+              <a href="/auth/login?returnTo=/dashboard" className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "rounded-md")}>
                 Iniciar sesión
               </a>
-              <a href="/auth/login?screen_hint=signup&returnTo=/dashboard" className={cn(buttonVariants({ size: "sm" }), "rounded-full glow-primary")}>
+              <a href="/auth/login?screen_hint=signup&returnTo=/dashboard" className={cn(buttonVariants({ size: "sm" }), "rounded-md glow-primary")}>
                 Comenzar gratis
               </a>
             </>
@@ -184,7 +184,7 @@ export function Navbar({ user, leading, actions }: NavbarProps) {
           {actions}
           <button
             type="button"
-            className="rounded-full p-1.5"
+            className="rounded-md p-1.5"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <span className="sr-only">Alternar menú</span>
@@ -199,7 +199,7 @@ export function Navbar({ user, leading, actions }: NavbarProps) {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="mx-auto mt-2 max-w-6xl overflow-hidden rounded-3xl border border-border/70 bg-background/95 backdrop-blur-xl md:hidden">
+        <div className="mx-auto mt-2 max-w-6xl overflow-hidden rounded-xl border border-border/70 bg-background/95 backdrop-blur-xl md:hidden">
           <div className="space-y-1 px-6 py-4">
             {navigation.map((item) => {
               const active = isActive(item)
