@@ -206,7 +206,7 @@ export function Navbar({ user, mobileMenu, actions }: NavbarProps) {
             </Link>
           </SheetHeader>
 
-          <div className="flex-1 space-y-6 overflow-y-auto px-3 py-4">
+          <div className="flex-1 space-y-3 overflow-y-auto px-3 py-4">
             <nav className="flex flex-col gap-1">
               {navigation.map((item) => {
                 const active = isActive(item)
@@ -232,7 +232,7 @@ export function Navbar({ user, mobileMenu, actions }: NavbarProps) {
             </nav>
 
             {mobileMenu && (
-              <div className="border-t border-border/70 px-1 pt-5">{mobileMenu(closeMobileMenu)}</div>
+              <div className="border-t border-border/70 px-1 pt-4">{mobileMenu(closeMobileMenu)}</div>
             )}
           </div>
 
