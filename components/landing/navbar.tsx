@@ -2,9 +2,9 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { useState, type MouseEvent, type ReactNode } from "react"
+import { useEffect, useState, type MouseEvent, type ReactNode } from "react"
 import { usePathname } from "next/navigation"
-import { Menu, X, LayoutDashboard, LogOut, Settings } from "lucide-react"
+import { Menu, LayoutDashboard, LogOut, Settings } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import {
@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const navigation = [
@@ -185,22 +186,26 @@ export function Navbar({ user, leading, actions }: NavbarProps) {
           <button
             type="button"
             className="rounded-md p-1.5"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => setMobileMenuOpen(true)}
           >
-            <span className="sr-only">Alternar menú</span>
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            <span className="sr-only">Abrir menú</span>
+            <Menu className="h-6 w-6" />
           </button>
         </div>
       </nav>
 
       {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="mx-auto mt-2 max-w-6xl overflow-hidden rounded-xl border border-border/70 bg-background/95 backdrop-blur-xl md:hidden">
-          <div className="space-y-1 px-6 py-4">
+      <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+        <SheetContent side="right" className="w-72 gap-0 border-border/70 bg-background/95 p-0 backdrop-blur-xl md:hidden">
+          <SheetHeader className="border-b border-border/70 p-4">
+            <SheetTitle className="sr-only">Menú</SheetTitle>
+            <SheetDescription className="sr-only">Navegación principal</SheetDescription>
+            <Link href="/" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+              <Image src="/logo.svg" alt="Caerus Logo" width={32} height={32} className="h-8 w-auto" />
+              <span className="text-xl font-semibold tracking-tight">Caerus</span>
+            </Link>
+          </SheetHeader>
+          <div className="flex-1 space-y-1 overflow-y-auto px-6 py-4">
             {navigation.map((item) => {
               const active = isActive(item)
               return (
@@ -262,8 +267,8 @@ export function Navbar({ user, leading, actions }: NavbarProps) {
               )}
             </div>
           </div>
-        </div>
-      )}
+        </SheetContent>
+      </Sheet>
     </header>
   )
 }
