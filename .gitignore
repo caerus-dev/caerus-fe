@@ -21,6 +21,7 @@ node_modules
 .idea/
 .env*
 package-lock.json
+pnpm-workspace.yaml
 
 # local tooling
 .codegraph/
