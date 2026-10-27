@@ -141,11 +141,7 @@ export default function ApplicationDashboard({
             name: data.name,
             description: data.description || "",
             environments: envs,
-            status: "active",
             createdAt: data.createdAt || new Date().toISOString(),
-            resources: [],
-            locks: [],
-            apiKeys: [],
             myRole: data.myRole || "VIEWER",
           })
         } else {
@@ -178,7 +174,6 @@ export default function ApplicationDashboard({
           fetch(`/api/distributed-lock-templates?environmentId=${activeEnvObj.id}`),
           fetch(`/api/environments/${activeEnvObj.id}/api-keys`),
           fetch(`/api/environments/${activeEnvObj.id}/webhooks`),
-          new Promise((resolve) => setTimeout(resolve, 300)),
         ])
 
         if (!isSubscribed) return
@@ -186,7 +181,6 @@ export default function ApplicationDashboard({
         if (envRes.ok) {
           const envData = await envRes.json()
           setCurrentEnvDetails({ ...envData, id: activeEnvObj.id })
-          setLocks(envData.locks || [])
         }
 
         if (templatesRes.ok) {

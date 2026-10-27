@@ -48,10 +48,7 @@ interface Application {
   name: string
   description: string
   environments: string[]
-  collaborators: number
-  apiCalls: number
   createdAt: string
-  status: "active" | "inactive"
   myRole?: string
 }
 
@@ -100,17 +97,14 @@ export default function ApplicationsPage() {
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data && Array.isArray(data.content)) {
-            const mapped = data.content.map((app: any) => {
+            const mapped: Application[] = data.content.map((app: any) => {
               const envs = app.environments ? app.environments.map((env: any) => env.name) : [];
               return {
                 id: app.id.toString(),
                 name: app.name,
                 description: app.description || "",
                 environments: envs,
-                collaborators: app.collaboratorsCount || 1,
-                apiCalls: app.apiCallsCount || 0,
                 createdAt: app.createdAt || new Date().toISOString(),
-                status: "active",
                 myRole: app.myRole || "VIEWER",
               };
             });
@@ -164,12 +158,6 @@ export default function ApplicationsPage() {
         setDeleteAppError({ message: "Ocurrió un error inesperado al eliminar la aplicación" })
       }
     }
-  }
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`
-    return num.toString()
   }
 
   const formatDate = (dateString: string) => {
@@ -270,12 +258,6 @@ export default function ApplicationsPage() {
                       <span className="break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0">
                         {app.name}
                       </span>
-                      <Badge
-                        variant={app.status === "active" ? "default" : "secondary"}
-                        className="text-xs shrink-0"
-                      >
-                        {app.status === "active" ? "Activa" : "Inactiva"}
-                      </Badge>
                       <span className="inline-flex shrink-0 items-center">
                         {getRoleBadge(app.myRole || "VIEWER")}
                       </span>
@@ -351,18 +333,12 @@ export default function ApplicationsPage() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-4 pt-2 border-t border-border">
+                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border">
                   <div className="text-center">
                     <p className="text-lg font-semibold text-foreground">
-                      {app.collaborators}
+                      {app.environments.length}
                     </p>
-                    <p className="text-xs text-muted-foreground">Colaboradores</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-semibold text-foreground">
-                      {formatNumber(app.apiCalls)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">Llamadas a la API</p>
+                    <p className="text-xs text-muted-foreground">Entornos</p>
                   </div>
                   <div className="text-center">
                     <p className="text-sm font-semibold text-foreground h-7 flex items-center justify-center whitespace-nowrap">
@@ -440,12 +416,6 @@ export default function ApplicationsPage() {
                     <DialogTitle className="text-xl font-bold tracking-tight text-foreground break-words [overflow-wrap:anywhere] [word-break:break-word] min-w-0">
                       {selectedAppForDetails?.name}
                     </DialogTitle>
-                    <Badge
-                      variant={selectedAppForDetails?.status === "active" ? "default" : "secondary"}
-                      className="text-xs shrink-0"
-                    >
-                      {selectedAppForDetails?.status === "active" ? "Activa" : "Inactiva"}
-                    </Badge>
                     <span className="shrink-0">
                       {selectedAppForDetails && getRoleBadge(selectedAppForDetails.myRole || "VIEWER")}
                     </span>
@@ -494,12 +464,12 @@ export default function ApplicationsPage() {
                   </span>
                   <div className="text-xs text-foreground/90 space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Colaboradores:</span>
-                      <span className="font-semibold">{selectedAppForDetails.collaborators}</span>
+                      <span className="text-muted-foreground">Entornos:</span>
+                      <span className="font-semibold">{selectedAppForDetails.environments?.length || 0}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Llamadas a la API:</span>
-                      <span className="font-semibold">{formatNumber(selectedAppForDetails.apiCalls)}</span>
+                      <span className="text-muted-foreground">Creada:</span>
+                      <span className="font-semibold">{formatDate(selectedAppForDetails.createdAt)}</span>
                     </div>
                   </div>
                 </div>

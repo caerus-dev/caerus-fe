@@ -95,18 +95,18 @@ export function DuplicateLockDialog({
             (e) => e.id === targetEnvId || e.id?.toString() === targetEnvId
           )
           const envName = envObj?.name || targetEnvId
-          const numericEnvId = isNaN(Number(targetEnvId)) ? targetEnvId : Number(targetEnvId)
+          const resolution = (template.conflictResolution || "FAIL").toUpperCase()
           
           const payload = {
             namespace: template.namespace,
             description: template.description || "",
-            lockType: template.lockType || "MUTEX",
-            conflictResolution: (template.conflictResolution || "WAIT").toUpperCase(),
-            retryIntervalMs: template.retryIntervalMs ? Number(template.retryIntervalMs) : null,
-            maxRetryCount: template.maxRetryCount ? Number(template.maxRetryCount) : null,
+            lockType: template.lockType || "EXCLUSIVE",
+            conflictResolution: resolution,
+            retryIntervalMs: resolution === "RETRY" ? Number(template.retryIntervalMs ?? 100) : 0,
+            maxRetryCount: resolution === "RETRY" ? Number(template.maxRetryCount ?? 5) : 0,
             fencingTokenRequired: Boolean(template.fencingTokenRequired),
-            deadlockResolutionStrategy: (template.deadlockResolutionStrategy || "TIMEOUT").toUpperCase(),
-            environmentId: numericEnvId,
+            deadlockResolutionStrategy: (template.deadlockResolutionStrategy || "ALERT").toUpperCase(),
+            environmentId: targetEnvId,
           }
 
           const res = await fetch("/api/distributed-lock-templates", {

@@ -99,7 +99,7 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:8080";
 export async function getPublicBillingPlans(): Promise<BillingPlan[]> {
   try {
     const res = await fetch(`${BACKEND_URL}/v1/billing/plans`, {
-      cache: "no-store",
+      next: { revalidate: 3600 },
     });
     if (res.ok) {
       const data = await res.json();

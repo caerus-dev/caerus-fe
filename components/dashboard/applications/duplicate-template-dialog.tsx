@@ -95,19 +95,18 @@ export function DuplicateTemplateDialog({
             (e) => e.id === targetEnvId || e.id?.toString() === targetEnvId
           )
           const envName = envObj?.name || targetEnvId
-          const numericEnvId = isNaN(Number(targetEnvId)) ? targetEnvId : Number(targetEnvId)
+          const resolution = (template.conflictResolution || "FAIL").toUpperCase()
           const payload = {
             name: template.name,
             description: template.description || "",
             type: template.type || "UNITARY",
             defaultTtlSec: Number(template.defaultTtlSec || 3600),
-            conflictResolution: (template.conflictResolution || "WAIT").toUpperCase(),
-            retryIntervalSec: template.retryIntervalSec ? Number(template.retryIntervalSec) : null,
-            maxRetryCount: template.maxRetryCount ? Number(template.maxRetryCount) : null,
+            conflictResolution: resolution,
+            retryIntervalSec: resolution === "RETRY" && template.retryIntervalSec ? Number(template.retryIntervalSec) : null,
+            maxRetryCount: resolution === "RETRY" && template.maxRetryCount ? Number(template.maxRetryCount) : null,
             useIdempotency: Boolean(template.useIdempotency),
             saveMetadata: Boolean(template.saveMetadata),
-            notificationWebhookUrl: template.notificationWebhookUrl || null,
-            environmentId: numericEnvId,
+            environmentId: targetEnvId,
           }
 
           const res = await fetch("/api/shared-resource-templates", {

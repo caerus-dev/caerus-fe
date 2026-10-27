@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { SetupPaymentMethodModal } from "@/components/billing/SetupPaymentMethodModal"
-import { cn, formatDateTime } from "@/lib/utils"
+import { cn, formatDateTime, getEnvColors } from "@/lib/utils"
 
 const EMPTY_ENVIRONMENTS: any[] = []
 
@@ -371,11 +371,7 @@ func main() {
                         <span className="flex items-center gap-2 font-mono">
                           <span className={cn(
                             "h-2 w-2 rounded-full shrink-0",
-                            env.name === "prod" || env.name === "production"
-                              ? "bg-primary animate-pulse"
-                              : env.name === "stage" || env.name === "staging"
-                              ? "bg-chart-4"
-                              : "bg-chart-2"
+                            getEnvColors(env.name, env.color, env.id).dot
                           )} />
                           <span>{env.name}</span>
                         </span>

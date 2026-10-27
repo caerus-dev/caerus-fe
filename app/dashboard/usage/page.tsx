@@ -37,6 +37,7 @@ import {
 import { ChartConfig, ChartContainer } from "@/components/ui/chart"
 import { useUser } from "@/hooks/use-user"
 import { useApps } from "@/components/dashboard/apps-context"
+import { EnvBadge } from "@/components/dashboard/shared/env-badge"
 import { toast } from "sonner"
 import { formatPercentage, formatNumber } from "@/lib/utils"
 
@@ -545,16 +546,7 @@ export default function UsagePage() {
                       </Link>
                       <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                         {app.environments.map((env) => (
-                          <span
-                            key={env}
-                            className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${
-                              env.toLowerCase() === "production" || env.toLowerCase() === "prod"
-                                ? "bg-primary/15 text-primary"
-                                : "bg-secondary text-muted-foreground"
-                            }`}
-                          >
-                            {env}
-                          </span>
+                          <EnvBadge key={env} environment={env} />
                         ))}
                       </div>
                     </div>
