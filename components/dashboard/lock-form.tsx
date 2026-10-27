@@ -40,45 +40,9 @@ import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { cn, translateBackendError } from "@/lib/utils"
+import { lockFormSchema, type LockFormValues } from "@/lib/schemas/lock-form"
 
-const formSchema = z.object({
-  namespace: z.string().min(2, {
-    message: "El Namespace debe tener al menos 2 caracteres.",
-  }).max(100, {
-    message: "El Namespace no puede superar los 100 caracteres.",
-  }).regex(/^[a-z0-9_]+$/, {
-    message: "El Namespace solo puede contener letras minúsculas, números y guiones bajos.",
-  }),
-  description: z.string().max(500, {
-    message: "La descripción no puede superar los 500 caracteres.",
-  }).optional(),
-  type: z.enum(["exclusive", "read-write"]),
-  deadlockStrategy: z.enum(["alert", "kill"]),
-  acquisitionStrategy: z.enum(["fail", "retry", "queue"]),
-  retryInterval: z.coerce.number()
-    .min(10, { message: "El intervalo debe ser de al menos 10 ms." })
-    .max(30000, { message: "El intervalo no puede superar los 30.000 ms (30 segundos)." })
-    .optional(),
-  maxRetries: z.coerce.number()
-    .min(1, { message: "El número de reintentos debe ser de al menos 1." })
-    .max(10, { message: "El número máximo de reintentos no puede superar los 10." })
-    .optional(),
-  requireFencingToken: z.boolean().default(true),
-}).superRefine((data, ctx) => {
-  if (data.acquisitionStrategy === "retry") {
-    const interval = data.retryInterval ?? 100;
-    const retries = data.maxRetries ?? 5;
-    if (interval * retries > 30000) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "El tiempo total de espera acumulado (intervalo x reintentos) no debe superar los 30.000 ms. Usa la estrategia Cola (queue).",
-        path: ["retryInterval"],
-      });
-    }
-  }
-})
-
-export type LockFormValues = z.infer<typeof formSchema>
+export type { LockFormValues }
 
 interface LockFormProps {
   applicationId: string
@@ -102,8 +66,8 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
     return `/dashboard/applications/${applicationId}?tab=locks`
   }
 
-  const form = useForm<LockFormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.input<typeof lockFormSchema>, unknown, LockFormValues>({
+    resolver: zodResolver(lockFormSchema),
     defaultValues: initialData || {
       namespace: "",
       description: "",
@@ -379,7 +343,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                       <FormItem className="space-y-2">
                         <FormLabel>Intervalo de reintento (ms)</FormLabel>
                         <FormControl>
-                          <Input type="number" min={10} max={30000} {...field} />
+                          <Input type="number" min={10} max={30000} {...field} value={(field.value as number | undefined) ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -392,7 +356,7 @@ export function LockForm({ applicationId, environmentId, lockId, initialData, is
                       <FormItem className="space-y-2">
                         <FormLabel>Máximo de reintentos</FormLabel>
                         <FormControl>
-                          <Input type="number" min={1} max={10} {...field} />
+                          <Input type="number" min={1} max={10} {...field} value={(field.value as number | undefined) ?? ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
