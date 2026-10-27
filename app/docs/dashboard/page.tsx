@@ -61,7 +61,7 @@ export default function DocsDashboardPage() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">1</span>
               <h3 className="font-semibold text-sm text-foreground">Aplicación (Tenant)</h3>
@@ -71,7 +71,7 @@ export default function DocsDashboardPage() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">2</span>
               <h3 className="font-semibold text-sm text-foreground">Entornos (Environments)</h3>
@@ -81,7 +81,7 @@ export default function DocsDashboardPage() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">3</span>
               <h3 className="font-semibold text-sm text-foreground">Plantillas (Templates)</h3>
@@ -91,7 +91,7 @@ export default function DocsDashboardPage() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">4</span>
               <h3 className="font-semibold text-sm text-foreground">Instancias en Tiempo Real</h3>
@@ -113,7 +113,7 @@ export default function DocsDashboardPage() {
         </p>
 
         <div className="space-y-4 my-4">
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-5 space-y-3">
+          <div className="rounded-lg border border-border/60 bg-muted/15 p-5 space-y-3">
             <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
               <Plus className="h-4 w-4 text-primary" />
               <span>Campos requeridos en el alta</span>
@@ -145,7 +145,7 @@ export default function DocsDashboardPage() {
           Cada entorno representa un ciclo de despliegue con <strong>aislamiento criptográfico y de almacenamiento absoluto</strong>: una reserva efectuada en <code>dev</code> jamás colisionará ni consumirá stock de <code>production</code>.
         </p>
 
-        <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2 my-4">
+        <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2 my-4">
           <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
             <Sliders className="h-4 w-4 text-primary" />
             <span>Configuración y Colores</span>
@@ -180,7 +180,7 @@ export default function DocsDashboardPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Nombre */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Nombre (name)</span>
                 <Badge variant="secondary" className="text-[10px] font-mono">Identificador</Badge>
@@ -191,7 +191,7 @@ export default function DocsDashboardPage() {
             </div>
 
             {/* Modo */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Modo (Unitario vs Múltiple)</span>
                 <Badge variant="secondary" className="text-[10px] font-mono">Tipo de Stock</Badge>
@@ -203,7 +203,7 @@ export default function DocsDashboardPage() {
             </div>
 
             {/* TTL */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">TTL por Defecto (Segundos)</span>
                 <Badge variant="secondary" className="text-[10px] font-mono">Temporizador</Badge>
@@ -214,7 +214,7 @@ export default function DocsDashboardPage() {
             </div>
 
             {/* Idempotencia */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Exigir Idempotencia</span>
                 <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/30 text-emerald-500">Switch</Badge>
@@ -225,7 +225,7 @@ export default function DocsDashboardPage() {
             </div>
 
             {/* Guardar Metadata */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Guardar Metadata</span>
                 <Badge variant="outline" className="text-[10px] font-mono">Switch</Badge>
@@ -236,7 +236,7 @@ export default function DocsDashboardPage() {
             </div>
 
             {/* Estrategias de Conflicto */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2 md:col-span-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2 md:col-span-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Estrategia de Resolución de Conflicto</span>
                 <Badge variant="secondary" className="text-[10px] font-mono">FAIL | QUEUE | RETRY</Badge>
@@ -301,7 +301,7 @@ export default function DocsDashboardPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Namespace */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Namespace</span>
                 <Badge variant="secondary" className="text-[10px] font-mono">Agrupador</Badge>
@@ -312,7 +312,7 @@ export default function DocsDashboardPage() {
             </div>
 
             {/* Tipo de Lock */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Tipo de Bloqueo</span>
                 <Badge variant="secondary" className="text-[10px] font-mono">EXCLUSIVE vs READ_WRITE</Badge>
@@ -324,7 +324,7 @@ export default function DocsDashboardPage() {
             </div>
 
             {/* Fencing Token */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Exigir Fencing Token</span>
                 <Badge variant="outline" className="text-[10px] font-mono border-purple-500/30 text-purple-500">Recomendado</Badge>
@@ -335,7 +335,7 @@ export default function DocsDashboardPage() {
             </div>
 
             {/* Estrategia de Deadlock */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Resolución de Deadlocks</span>
                 <Badge variant="secondary" className="text-[10px] font-mono">ALERT vs KILL_PRIORITY</Badge>
@@ -347,7 +347,7 @@ export default function DocsDashboardPage() {
             </div>
 
             {/* Estrategia de Adquisición */}
-            <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2 md:col-span-2">
+            <div className="rounded-lg border border-border/60 bg-muted/15 p-4 space-y-2 md:col-span-2">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="font-mono font-bold text-sm text-foreground">Estrategia de Adquisición de Lock</span>
                 <Badge variant="secondary" className="text-[10px] font-mono">FAIL | QUEUE | RETRY</Badge>
@@ -389,7 +389,7 @@ export default function DocsDashboardPage() {
           Para que tu código se comunique con Caerus, necesitas una <strong>API Key</strong> vinculada al entorno en el que deseas operar.
         </p>
 
-        <div className="space-y-3 rounded-xl border border-border/60 bg-muted/15 p-5">
+        <div className="space-y-3 rounded-lg border border-border/60 bg-muted/15 p-5">
           <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
             <Key className="h-4 w-4 text-primary" />
             <span>Buenas prácticas de manejo de credenciales</span>
@@ -455,7 +455,7 @@ export default function DocsDashboardPage() {
           </Card>
         </div>
 
-        <div className="flex items-center justify-between p-4 rounded-xl border border-border/70 bg-muted/20 mt-6 flex-wrap gap-4">
+        <div className="flex items-center justify-between p-4 rounded-lg border border-border/70 bg-muted/20 mt-6 flex-wrap gap-4">
           <div className="space-y-0.5">
             <h4 className="text-sm font-semibold text-foreground">¿Listo para conectar tu código?</h4>
             <p className="text-xs text-muted-foreground">Una vez creadas tus plantillas y API Keys, consulta la guía de inicio rápido con el SDK oficial.</p>

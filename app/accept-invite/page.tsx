@@ -67,7 +67,7 @@ export default function AcceptInvitePage({
               <CardDescription>Estamos vinculando tu cuenta con el nuevo proyecto en Caerus...</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center pb-8 min-h-[120px]">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 px-3 py-1.5 rounded-full border border-border/20">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/30 px-3 py-1.5 rounded-md border border-border/20">
                 <Sparkles className="w-4 h-4 text-yellow-500 animate-pulse" />
                 <span>Validando credenciales seguras...</span>
               </div>

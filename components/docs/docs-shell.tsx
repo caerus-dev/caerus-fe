@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { Navbar } from "@/components/landing/navbar"
-import { DocsMobileNav } from "./docs-mobile-nav"
 import { DocsThemeToggle } from "./docs-theme-toggle"
 import { DocsSidebar } from "./docs-sidebar"
 import { DocsSearchDialog } from "./docs-search-dialog"
@@ -22,7 +21,15 @@ export function DocsShell({
       <div className="min-h-svh flex flex-col bg-background text-foreground">
         <Navbar
           user={user}
-          leading={<DocsMobileNav onSearchClick={() => setSearchOpen(true)} />}
+          mobileMenu={(close) => (
+            <DocsSidebar
+              onSearchClick={() => {
+                close()
+                setSearchOpen(true)
+              }}
+              onNavigate={close}
+            />
+          )}
           actions={<DocsThemeToggle />}
         />
 

@@ -79,7 +79,7 @@ export default function DocsOverviewPage() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
-          <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-1.5">
+          <div className="rounded-lg border border-border/60 bg-muted/30 p-4 space-y-1.5">
             <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
               <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
               <span>Ejecución Atómica en Memoria</span>
@@ -89,7 +89,7 @@ export default function DocsOverviewPage() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-1.5">
+          <div className="rounded-lg border border-border/60 bg-muted/30 p-4 space-y-1.5">
             <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
               <span className="inline-block h-2 w-2 rounded-full bg-blue-500" />
               <span>Persistencia y Tolerancia a Fallos</span>
@@ -182,7 +182,7 @@ export default function DocsOverviewPage() {
         </h2>
 
         {/* Banner Consola Web */}
-        <div className="rounded-xl border border-primary/25 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 my-4">
+        <div className="rounded-lg border border-primary/25 bg-muted/20 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 my-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="flex h-2 w-2 rounded-full bg-primary" />

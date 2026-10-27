@@ -50,14 +50,14 @@ export function UseCasesSection() {
           {useCases.map((useCase) => (
             <div
               key={useCase.title}
-              className="group relative flex gap-5 overflow-hidden rounded-2xl border border-border bg-card p-7 transition-colors hover:border-primary/40"
+              className="group relative flex gap-5 overflow-hidden rounded-xl border border-border bg-card p-7 transition-colors hover:border-primary/40"
             >
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-primary/0 blur-3xl transition-colors duration-500 group-hover:bg-primary/20"
               />
               <div className="relative shrink-0">
-                <div className="flex size-12 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
+                <div className="flex size-12 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-primary">
                   <useCase.icon className="size-6" aria-hidden="true" />
                 </div>
               </div>

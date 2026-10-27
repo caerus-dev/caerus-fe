@@ -109,7 +109,7 @@ export default function DocsDlsDemoPage() {
           Todo el código fuente del proyecto, el archivo de variables (<code>.env.example</code>) y la guía detallada de configuración y ejecución local se encuentran disponibles en GitHub:
         </p>
 
-        <div className="rounded-xl border border-border/70 bg-muted/20 p-5 space-y-4">
+        <div className="rounded-lg border border-border/70 bg-muted/20 p-5 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">

@@ -6,10 +6,10 @@ import { RotatingWord } from "./rotating-word"
 const rotatingResources = ["recurso", "stock", "turno", "pago", "cupo", "lock"]
 
 const primaryCtaClass =
-  "group relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-7 text-base font-medium [@media(min-height:850px)_and_(min-width:1280px)]:h-14 [@media(min-height:850px)_and_(min-width:1280px)]:px-9 [@media(min-height:850px)_and_(min-width:1280px)]:text-lg text-primary-foreground shadow-[0_10px_40px_-6px_color-mix(in_oklab,var(--primary)_75%,transparent)] transition-[box-shadow,transform] hover:shadow-[0_10px_60px_-4px_color-mix(in_oklab,var(--primary)_95%,transparent)] active:translate-y-px sm:w-auto"
+  "group relative inline-flex h-12 w-full items-center justify-center gap-2 overflow-hidden rounded-md bg-primary px-7 text-base font-medium [@media(min-height:850px)_and_(min-width:1280px)]:h-14 [@media(min-height:850px)_and_(min-width:1280px)]:px-9 [@media(min-height:850px)_and_(min-width:1280px)]:text-lg text-primary-foreground shadow-[0_10px_40px_-6px_color-mix(in_oklab,var(--primary)_75%,transparent)] transition-[box-shadow,transform] hover:shadow-[0_10px_60px_-4px_color-mix(in_oklab,var(--primary)_95%,transparent)] active:translate-y-px sm:w-auto"
 
 const secondaryCtaClass =
-  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-border bg-secondary/60 px-7 text-base font-medium [@media(min-height:850px)_and_(min-width:1280px)]:h-14 [@media(min-height:850px)_and_(min-width:1280px)]:px-9 [@media(min-height:850px)_and_(min-width:1280px)]:text-lg text-foreground backdrop-blur transition-colors hover:border-primary/40 hover:bg-secondary sm:w-auto"
+  "inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-border bg-secondary/60 px-7 text-base font-medium [@media(min-height:850px)_and_(min-width:1280px)]:h-14 [@media(min-height:850px)_and_(min-width:1280px)]:px-9 [@media(min-height:850px)_and_(min-width:1280px)]:text-lg text-foreground backdrop-blur transition-colors hover:border-primary/40 hover:bg-secondary sm:w-auto"
 
 export function HeroSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
   const primaryHref = isLoggedIn ? "/dashboard" : "/auth/login?screen_hint=signup&returnTo=/dashboard"
@@ -21,7 +21,7 @@ export function HeroSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
       <div className="mx-auto flex max-w-6xl flex-col items-center px-4 text-center sm:px-6">
         {/* Intro block fills the viewport (minus a peek of the stage) so the message and CTAs are always above the fold. */}
         <div className="flex min-h-[calc(100svh-clamp(5rem,calc(5rem+(100svh-700px)*0.35),14rem))] w-full flex-col items-center justify-center pb-8 pt-28 sm:pt-32">
-          <p className="relative mb-8 [@media(min-height:850px)_and_(min-width:1280px)]:mb-10 inline-flex max-w-full animate-rise items-center gap-2 overflow-hidden rounded-full border border-primary/30 bg-primary/10 py-1.5 pl-2 pr-4 text-xs text-foreground/90 motion-reduce:animate-none sm:text-sm">
+          <p className="relative mb-8 [@media(min-height:850px)_and_(min-width:1280px)]:mb-10 inline-flex max-w-full animate-rise items-center gap-2 overflow-hidden rounded-md border border-primary/30 bg-primary/10 py-1.5 pl-2 pr-4 text-xs text-foreground/90 motion-reduce:animate-none sm:text-sm">
             <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <Zap className="size-3" aria-hidden="true" />
             </span>
@@ -46,7 +46,7 @@ export function HeroSection({ isLoggedIn }: { isLoggedIn?: boolean }) {
             implementar lógica distribuida desde cero.
           </p>
 
-          <div className="mt-8 [@media(min-height:850px)_and_(min-width:1280px)]:mt-10 flex w-full max-w-xs animate-rise flex-col items-center justify-center gap-3 [animation-delay:440ms] motion-reduce:animate-none sm:w-auto sm:max-w-none sm:flex-row">
+          <div className="mt-8 [@media(min-height:850px)_and_(min-width:1280px)]:mt-10 flex w-full max-w-xs animate-rise flex-col items-center justify-center gap-3 [animation-delay:440ms] motion-reduce:animate-none sm:w-auto sm:max-w-none sm:flex-row-reverse">
             <a href={primaryHref} className={primaryCtaClass}>
               {isLoggedIn ? "Ir al Dashboard" : "Comenzar gratis"}
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />

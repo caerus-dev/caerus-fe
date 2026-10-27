@@ -414,7 +414,7 @@ export function ConcurrencyStage() {
   }, [])
 
   return (
-    <figure className="relative overflow-hidden rounded-2xl border border-border bg-card/60 shadow-[0_40px_120px_-40px_color-mix(in_oklab,var(--primary)_45%,transparent)] backdrop-blur">
+    <figure className="relative overflow-hidden rounded-xl border border-border bg-card/60 shadow-[0_40px_120px_-40px_color-mix(in_oklab,var(--primary)_45%,transparent)] backdrop-blur">
       <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-5">
         <div className="flex items-center gap-2">
           <span className="relative flex size-2">

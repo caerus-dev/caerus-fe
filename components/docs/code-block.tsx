@@ -185,7 +185,7 @@ export function CodeBlock({
   const lines = activeSnippet.code.trim().split("\n")
 
   return (
-    <div className={cn("relative my-4 rounded-xl border border-border/70 bg-muted/30 overflow-hidden font-mono text-sm shadow-xs", className)}>
+    <div className={cn("relative my-4 rounded-lg border border-border/70 bg-muted/30 overflow-hidden font-mono text-sm shadow-xs", className)}>
       {/* Header with Tabs or Single Title */}
       {hasSnippets ? (
         <div className="flex items-center justify-between border-b border-border/60 bg-muted/40 px-2 pt-1">
@@ -315,7 +315,7 @@ export function SignatureBlock({ signature, signatures, badge = "Firma del Méto
   const lines = activeSignature.trim().split("\n")
 
   return (
-    <div className="my-5 rounded-xl border border-border/80 bg-muted/40 p-3.5 font-mono text-sm text-foreground shadow-xs">
+    <div className="my-5 rounded-lg border border-border/80 bg-muted/40 p-3.5 font-mono text-sm text-foreground shadow-xs">
       <div className="flex items-center justify-between border-b border-border/50 pb-2 mb-2.5">
         <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[11px] font-sans font-medium text-primary uppercase tracking-wide">
           {badge}

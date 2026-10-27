@@ -64,17 +64,17 @@ export function FeaturesSection() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group relative overflow-hidden rounded-2xl border border-border bg-card p-7 transition-colors hover:border-primary/40"
+              className="group relative overflow-hidden rounded-xl border border-border bg-card p-7 transition-colors hover:border-primary/40"
             >
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -right-16 -top-16 size-48 rounded-full bg-primary/0 blur-3xl transition-colors duration-500 group-hover:bg-primary/20"
               />
               <div className="relative mb-6 flex items-start justify-between">
-                <div className="flex size-11 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary">
+                <div className="flex size-11 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-primary">
                   <feature.icon className="size-5" aria-hidden="true" />
                 </div>
-                <span className="rounded-full border border-border bg-secondary/60 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                <span className="rounded-md border border-border bg-secondary/60 px-2.5 py-1 text-xs font-medium text-muted-foreground">
                   {feature.badge}
                 </span>
               </div>

@@ -81,21 +81,21 @@ export default function DocsSdkPage() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-muted-foreground pt-1">
-          <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 space-y-1">
+          <div className="rounded-lg border border-border/70 bg-muted/20 p-3.5 space-y-1">
             <span className="font-semibold text-foreground flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4 text-emerald-500" />
               TypeScript / Node.js
             </span>
             <p>Requiere Node.js 20 o superior. Incluye tipos completos de TypeScript y empaquetado dual ESM y CommonJS.</p>
           </div>
-          <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 space-y-1">
+          <div className="rounded-lg border border-border/70 bg-muted/20 p-3.5 space-y-1">
             <span className="font-semibold text-foreground flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4 text-emerald-500" />
               Java 17+
             </span>
             <p>Compatible con Java 17 o superior. Empaqueta gRPC (Netty) y Protobuf sin exponer dependencias conflictivas.</p>
           </div>
-          <div className="rounded-xl border border-border/70 bg-muted/20 p-3.5 space-y-1">
+          <div className="rounded-lg border border-border/70 bg-muted/20 p-3.5 space-y-1">
             <span className="font-semibold text-foreground flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4 text-emerald-500" />
               Go 1.26+
@@ -212,7 +212,7 @@ var client, _ = sre.NewClient(sre.ClientOptions{
           }}
         />
 
-        <div className="rounded-xl border border-border/60 bg-muted/30 p-4 text-xs text-muted-foreground space-y-1.5">
+        <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-xs text-muted-foreground space-y-1.5">
           <div className="flex items-center gap-2 font-semibold text-foreground">
             <Server className="h-4 w-4 text-primary shrink-0" />
             <span>Formato de endpoint y TLS</span>
@@ -229,7 +229,7 @@ var client, _ = sre.NewClient(sre.ClientOptions{
           Tabla de Opciones
         </h2>
 
-        <div className="border border-border/70 rounded-xl overflow-hidden">
+        <div className="border border-border/70 rounded-lg overflow-hidden">
           <Table>
             <TableHeader className="bg-muted/40 text-xs">
               <TableRow>
@@ -620,7 +620,7 @@ mockDls := dls.NewInMemoryClient()`,
           Repositorios Oficiales en GitHub
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-xl border border-border/70 bg-muted/20 p-4 space-y-3">
+          <div className="rounded-lg border border-border/70 bg-muted/20 p-4 space-y-3">
             <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
               <Code2 className="h-4 w-4 text-primary" />
               <span>caerus-sdk-ts (TypeScript)</span>
@@ -636,7 +636,7 @@ mockDls := dls.NewInMemoryClient()`,
             </Button>
           </div>
 
-          <div className="rounded-xl border border-border/70 bg-muted/20 p-4 space-y-3">
+          <div className="rounded-lg border border-border/70 bg-muted/20 p-4 space-y-3">
             <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
               <Cpu className="h-4 w-4 text-purple-400" />
               <span>caerus-sdk-java (Java)</span>
@@ -652,7 +652,7 @@ mockDls := dls.NewInMemoryClient()`,
             </Button>
           </div>
 
-          <div className="rounded-xl border border-border/70 bg-muted/20 p-4 space-y-3">
+          <div className="rounded-lg border border-border/70 bg-muted/20 p-4 space-y-3">
             <div className="flex items-center gap-2 font-semibold text-sm text-foreground">
               <Code2 className="h-4 w-4 text-emerald-400" />
               <span>caerus-sdk-go (Go)</span>
