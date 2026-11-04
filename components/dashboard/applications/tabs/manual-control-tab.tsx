@@ -748,6 +748,45 @@ export function ManualControlTab({
     });
   };
 
+  // Rellena el formulario de UPDATE_RESOURCE (metadatos + groupKey) con el estado
+  // actual del recurso, sin cambiar de método ni pisar el panel de resultados.
+  const fillUpdateFormFromResource = (targetRes: any, fallbackGroupKey?: string) => {
+    const nextGroupKey = targetRes?.groupKey || fallbackGroupKey;
+    if (nextGroupKey) {
+      setGroupKey(nextGroupKey);
+    }
+    const matchedT = localTemplates.find(
+      (t: any) => t.id === targetRes.templateId || t.name === targetRes.templateId || t.id?.toLowerCase() === targetRes.templateId?.toLowerCase()
+    );
+    if (matchedT && !matchedT.saveMetadata) {
+      setMetadata("");
+    } else {
+      setMetadata(
+        typeof targetRes.metadata === "object" && targetRes.metadata !== null
+          ? JSON.stringify(targetRes.metadata, null, 2)
+          : targetRes.metadata || ""
+      );
+    }
+  };
+
+  const loadCurrentResourceIntoForm = async (resKey: string, fallbackGroupKey?: string) => {
+    const cleanKey = resKey.trim();
+    if (!envId || !cleanKey) return;
+    try {
+      const res = await fetch(`/api/environments/${envId}/sre/resources/${encodeURIComponent(cleanKey)}`);
+      if (!res.ok) {
+        toast.error("No se pudieron cargar los datos actuales del recurso.");
+        return;
+      }
+      const data = await res.json();
+      setResolvedResource(data);
+      fillUpdateFormFromResource(data, fallbackGroupKey);
+      toast.success("Datos actuales cargados en el formulario.");
+    } catch {
+      toast.error("Error de red al cargar los datos actuales del recurso.");
+    }
+  };
+
   const handlePrepareStockUpdate = (res: LiveResourceResponse | string, currentGroupKey?: string) => {
     let targetRes: any = null;
     let targetKey = "";
@@ -772,18 +811,11 @@ export function ManualControlTab({
     }
     if (targetRes) {
       setResult(targetRes);
-      const matchedT = localTemplates.find(
-        (t: any) => t.id === targetRes.templateId || t.name === targetRes.templateId || t.id?.toLowerCase() === targetRes.templateId?.toLowerCase()
-      );
-      if (matchedT && !matchedT.saveMetadata) {
-        setMetadata("");
-      } else {
-        setMetadata(
-          typeof targetRes.metadata === "object"
-            ? JSON.stringify(targetRes.metadata, null, 2)
-            : targetRes.metadata || ""
-        );
-      }
+      fillUpdateFormFromResource(targetRes, targetGroupKey);
+    } else if (targetKey) {
+      // Ej. viniendo desde la lista de holders: el recurso no está en `result`,
+      // así que lo buscamos para precargar metadatos/grupo actuales.
+      void loadCurrentResourceIntoForm(targetKey, targetGroupKey);
     }
     setSreMethod("UPDATE_RESOURCE");
     toast.info("Modo de actualización preparado", {
@@ -1071,11 +1103,7 @@ export function ManualControlTab({
                               className="text-[10px] text-primary hover:underline flex items-center gap-1 cursor-pointer"
                               disabled={isLoading}
                               onClick={() => {
-                                executeCall({
-                                  overrideProduct: "SRE",
-                                  overrideMethod: "GET_RESOURCE",
-                                  overrideParams: { resourceKey: resourceKey.trim() },
-                                });
+                                void loadCurrentResourceIntoForm(resourceKey, groupKey);
                               }}
                             >
                               <Search className="h-2.5 w-2.5" />
