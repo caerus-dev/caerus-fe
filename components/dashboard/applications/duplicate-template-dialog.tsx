@@ -49,7 +49,7 @@ function parseAndTranslateError(raw: any, templateName?: string, failedEnvNames:
       return `Ya existe una plantilla de recurso con el nombre "${templateName || ''}" en ${envsLabel}.`
     }
     if (msg.includes("not found")) {
-      return `El recurso o ${envsLabel} no fue encontrado.`
+      return `No se encontró el recurso o ${envsLabel}.`
     }
   }
 

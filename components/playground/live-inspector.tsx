@@ -110,7 +110,7 @@ export function LiveInspector({ logs, onClear, productName = "Caerus SDK" }: Liv
             </div>
             <p className="text-sm font-medium text-foreground">Inspector listo y a la escucha</p>
             <p className="text-xs text-muted-foreground max-w-xs mt-1">
-              Interactuá con la simulación para ver la ejecución del SDK de {productName} en tiempo real.
+              Interactúa con la simulación para ver la ejecución del SDK de {productName} en tiempo real.
             </p>
           </div>
         ) : (

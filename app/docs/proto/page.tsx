@@ -54,7 +54,7 @@ export default function DocsProtoPage() {
               <span className="font-semibold text-xs text-foreground">Definiciones canónicas .proto</span>
             </div>
             <p className="text-xs text-muted-foreground">
-              Descargá o cloná los esquemas <code>sre_service.proto</code> y <code>dls_service.proto</code> para compilar tus propios clientes con <code>protoc</code> o <code>buf</code>.
+              Descarga o clona los esquemas <code>sre_service.proto</code> y <code>dls_service.proto</code> para compilar tus propios clientes con <code>protoc</code> o <code>buf</code>.
             </p>
           </div>
           <Button asChild size="sm" variant="outline" className="gap-2 shrink-0 text-xs h-8 bg-background/50">

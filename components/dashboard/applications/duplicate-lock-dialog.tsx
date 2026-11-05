@@ -49,7 +49,7 @@ function parseAndTranslateError(raw: any, templateName?: string, failedEnvNames:
       return `Ya existe una plantilla de lock con el nombre "${templateName || ''}" en ${envsLabel}.`
     }
     if (msg.includes("not found")) {
-      return `La plantilla o ${envsLabel} no fue encontrada.`
+      return `No se encontró la plantilla o ${envsLabel}.`
     }
   }
 
