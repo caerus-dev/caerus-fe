@@ -601,7 +601,13 @@ export function ManualControlTab({
         }
       }
 
-      const res = await fetch(url, fetchOptions);
+      const isReadMethod = !fetchOptions.method || fetchOptions.method === "GET";
+      let res = await fetch(url, fetchOptions);
+      if (isReadMethod && res.status >= 500) {
+        // Reintento único y silencioso ante reconexión del canal gRPC o socket inactivo
+        await new Promise((r) => setTimeout(r, 250));
+        res = await fetch(url, fetchOptions);
+      }
       const endTime = performance.now();
       const elapsed = Math.round(endTime - startTime);
       setExecutionTimeMs(elapsed);
@@ -1675,20 +1681,12 @@ export function ManualControlTab({
                                   </span>
                                 </span>
                                 <span>•</span>
-                                <span>
-                                  En cola:{" "}
+                                <span title="Unidades retenidas por holders en estado PENDING (no incluye la cola QUEUED)">
+                                  Reservado:{" "}
                                   <span className={cn("font-bold font-mono", res.pendingCount > 0 ? "text-amber-400" : "text-muted-foreground")}>
                                     {res.pendingCount}
                                   </span>
                                 </span>
-                                {res.updatedAtMs > 0 && (
-                                  <>
-                                    <span>•</span>
-                                    <span>
-                                      Act: {formatDistanceSafe(res.updatedAtMs)}
-                                    </span>
-                                  </>
-                                )}
                               </div>
                             </div>
 
@@ -1922,8 +1920,11 @@ export function ManualControlTab({
                     </div>
 
                     <div className="p-3 rounded-lg border border-border/60 bg-background/50 space-y-1">
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground">
-                        Peticiones en Cola
+                      <span
+                        className="text-[10px] uppercase font-bold text-muted-foreground"
+                        title="Unidades retenidas por holders en estado PENDING (no incluye la cola QUEUED)"
+                      >
+                        Reservado (Pending)
                       </span>
                       <p className={cn("text-xl font-bold font-mono", result.pendingCount > 0 ? "text-amber-400" : "text-foreground")}>
                         {result.pendingCount ?? 0}

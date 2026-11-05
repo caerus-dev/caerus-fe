@@ -194,7 +194,7 @@ export default function DocsProtoPage() {
               <Badge variant="secondary" className="text-[11px] font-mono shrink-0">Baja de Recurso</Badge>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Elimina el recurso del inventario activo. Si tiene reservas pendientes (<code>PENDING</code>), estas se invalidan o expiran según la configuración del template.
+              Elimina el recurso del inventario activo. Si tiene reservas activas (<code>PENDING</code>) o solicitudes en cola (<code>QUEUED</code>), la operación es rechazada con <code>FAILED_PRECONDITION</code>: primero hay que liberarlas o confirmarlas.
             </p>
 
             <CodeBlock
