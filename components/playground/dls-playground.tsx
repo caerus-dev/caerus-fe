@@ -162,7 +162,7 @@ export function DlsPlayground({
             <div data-tour="dls-overview" className="min-w-0">
               <CardTitle className="text-base font-bold flex items-center gap-2">
                 <Lock className="h-4 w-4 text-primary" />
-                Distributed Locking Service (DLS)
+                Distributed Lock Service (DLS)
               </CardTitle>
               <CardDescription className="text-xs mt-0.5">
                 Simulación paso a paso con <code>withTransaction</code>, colas streaming y resolución automática de interbloqueos.

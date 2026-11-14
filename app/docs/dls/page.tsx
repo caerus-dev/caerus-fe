@@ -22,7 +22,7 @@ export default function DocsDlsPage() {
         { label: "DLS", href: "/docs/dls" },
         { label: "Conceptos Fundamentales" },
       ]}
-      title="Distributed Locking Service (DLS)"
+      title="Distributed Lock Service (DLS)"
       badge="Motor DLS"
       description="Sincronización a bajo nivel y exclusión mutua distribuida para microservicios. Evita condiciones de carrera, doble facturación y escritura concurrente en almacenamiento compartido."
       tocItems={tocItems}
@@ -41,7 +41,7 @@ export default function DocsDlsPage() {
           ¿Qué es DLS y para qué sirve?
         </h2>
         <p className="text-muted-foreground leading-relaxed">
-          Mientras que el SRE está enfocado en inventario de negocio (butacas, cupos), el <strong>Distributed Locking Service (DLS)</strong> está diseñado para la sincronización entre procesos. Por ejemplo, garantizar que una tarea programada que genera reportes financieros o cobra suscripciones mensuales corra en una sola instancia a la vez.
+          Mientras que el SRE está enfocado en inventario de negocio (butacas, cupos), el <strong>Distributed Lock Service (DLS)</strong> está diseñado para la sincronización entre procesos. Por ejemplo, garantizar que una tarea programada que genera reportes financieros o cobra suscripciones mensuales corra en una sola instancia a la vez.
         </p>
       </section>
 
