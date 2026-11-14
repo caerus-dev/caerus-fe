@@ -146,7 +146,7 @@ export default function DocsOverviewPage() {
             <CardHeader className="p-5 pb-3">
               <div className="flex items-center gap-2">
                 <Lock className="h-5 w-5 text-purple-500" />
-                <CardTitle className="text-base">Distributed Locking Service (DLS)</CardTitle>
+                <CardTitle className="text-base">Distributed Lock Service (DLS)</CardTitle>
               </div>
               <CardDescription className="text-xs pt-1">
                 Motor de sincronización a bajo nivel y exclusión mutua para microservicios.

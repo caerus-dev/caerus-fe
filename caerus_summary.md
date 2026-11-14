@@ -135,7 +135,7 @@ $$\text{Available} \xrightarrow{\text{Take()}} \text{PENDING} \begin{cases} \xri
 
 ---
 
-### B. Distributed Locking Service (DLS) — System-Level Engine
+### B. Distributed Lock Service (DLS) — System-Level Engine
 
 Designed for low-level process synchronization, preventing race conditions across microservices (e.g., ensuring a scheduled billing worker only charges a customer once).
 
@@ -225,7 +225,7 @@ Note: A strict Backup & Disaster Recovery policy is enforced, dumping PostgreSQL
 2. **Release 1 (SRE Core & Portal Base) - MVP:** WebApp onboarding, Auth0 authentication, and the Shared Resource Engine (SRE) MVP with Redis lock handlers and conflict strategies.
 
 
-3. **Release 2 (DLS & Integrations):** Distributed Locking Service (DLS) + SDKs
+3. **Release 2 (DLS & Integrations):** Distributed Lock Service (DLS) + SDKs
 
 
 4. **Release 3 (B2B Maturity & Observability):** Fencing Token support, Deadlock detection, Metric dashboards, alerts via Webhooks, and subscription monitoring.

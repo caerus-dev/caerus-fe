@@ -80,7 +80,7 @@ export const docsConfig: DocsConfig = {
       ],
     },
     {
-      title: "Distributed Locking Service (DLS)",
+      title: "Distributed Lock Service (DLS)",
       items: [
         {
           title: "Conceptos Fundamentales",
